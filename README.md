@@ -1,6 +1,6 @@
 # PythonEcom - Django Project
 
-A Django-based ecommerce project.
+A Django-based ecommerce project with MySQL database.
 
 ---
 
@@ -10,6 +10,7 @@ Make sure the following are installed on your PC before starting:
 
 - [Python 3.10+](https://www.python.org/downloads/) ✅
 - [Git](https://git-scm.com/downloads) ✅
+- [MySQL 8.0+](https://dev.mysql.com/downloads/) ✅ (or use [Laragon](https://laragon.org/))
 - pip (comes with Python) ✅
 
 ---
@@ -29,27 +30,30 @@ cd pythonecom
 
 ### Step 2 — Create a Virtual Environment
 
-A virtual environment keeps your project's packages separate from other projects.
-
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 ---
 
 ### Step 3 — Activate the Virtual Environment
 
-**On Windows:**
-```bash
-venv\Scripts\activate
+**On Windows (PowerShell):**
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+**On Windows (CMD):**
+```cmd
+.venv\Scripts\activate.bat
 ```
 
 **On Mac/Linux:**
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
-> ✅ You will see `(venv)` at the start of your terminal line when it's active.
+> ✅ You will see `(.venv)` at the start of your terminal line when it's active.
 
 ---
 
@@ -59,21 +63,50 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> This installs all required packages like Django automatically.
+> This installs all required packages like Django and mysqlclient automatically.
 
 ---
 
-### Step 5 — Run Database Migrations
+### Step 5 — Create MySQL Database
+
+Open MySQL (Workbench, HeidiSQL, Laragon, or CLI) and run:
+
+```sql
+CREATE DATABASE pythonecom_db;
+```
+
+---
+
+### Step 6 — Configure Database in `settings.py`
+
+Open `pythonecom/settings.py` and update the `DATABASES` section:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'pythonecom.custom_mysql_backend',
+        'NAME': 'pythonecom_db',
+        'USER': 'root',           # your MySQL username
+        'PASSWORD': '',           # your MySQL password
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+```
+
+---
+
+### Step 7 — Run Database Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-> This sets up the database (SQLite) on your new PC.
+> This creates all required tables in your MySQL database.
 
 ---
 
-### Step 6 — (Optional) Create a Superuser for Admin Panel
+### Step 8 — (Optional) Create Superuser for Admin Panel
 
 ```bash
 python manage.py createsuperuser
@@ -83,7 +116,7 @@ python manage.py createsuperuser
 
 ---
 
-### Step 7 — Run the Development Server
+### Step 9 — Run the Development Server
 
 ```bash
 python manage.py runserver
@@ -93,10 +126,12 @@ python manage.py runserver
 
 ## 🌐 Open in Browser
 
-| Page         | URL                              |
-|--------------|----------------------------------|
-| Product Page | http://127.0.0.1:8000/product/   |
-| Admin Panel  | http://127.0.0.1:8000/admin/     |
+| Page           | URL                                |
+|----------------|------------------------------------|
+| Home Page      | http://127.0.0.1:8000/             |
+| Product List   | http://127.0.0.1:8000/products/    |
+| Add Product    | http://127.0.0.1:8000/products/create/ |
+| Admin Panel    | http://127.0.0.1:8000/admin/       |
 
 ---
 
@@ -105,39 +140,55 @@ python manage.py runserver
 ```
 pythonecom/
 │
-├── pythonecom/         # Main project folder (settings, urls)
-│   ├── settings.py     # Project configuration
-│   ├── urls.py         # Root URL configuration
+├── pythonecom/                    # Main project folder
+│   ├── settings.py                # Project configuration
+│   ├── urls.py                    # Root URL configuration
+│   ├── custom_mysql_backend/      # Custom MySQL backend (version fix)
+│   │   ├── __init__.py
+│   │   └── base.py
 │   └── wsgi.py
 │
-├── product/            # Product app
-│   ├── models.py       # Database models
-│   ├── views.py        # Page logic
-│   ├── urls.py         # App URL configuration
-│   └── admin.py
+├── home/                          # Home app
+│   ├── views.py
+│   ├── urls.py
+│   └── templates/home/
+│       └── index.html
 │
-├── manage.py           # Django management tool
-├── requirements.txt    # Project dependencies
-└── README.md           # This file
+├── product/                       # Product app (CRUD)
+│   ├── models.py                  # Product model
+│   ├── views.py                   # CRUD views
+│   ├── urls.py                    # Product URLs
+│   ├── forms.py                   # Product form
+│   └── templates/product/
+│       ├── list.html
+│       ├── detail.html
+│       ├── form.html
+│       └── confirm_delete.html
+│
+├── manage.py                      # Django management tool
+├── requirements.txt               # Project dependencies
+└── README.md                      # This file
 ```
 
 ---
 
 ## 🔧 Common Commands
 
-| Task                        | Command                           |
-|-----------------------------|-----------------------------------|
-| Start server                | `python manage.py runserver`      |
-| Make new migrations         | `python manage.py makemigrations` |
-| Apply migrations            | `python manage.py migrate`        |
-| Create admin user           | `python manage.py createsuperuser`|
-| Open Django shell           | `python manage.py shell`          |
-| Collect static files        | `python manage.py collectstatic`  |
+| Task                        | Command                             |
+|-----------------------------|-------------------------------------|
+| Start server                | `python manage.py runserver`        |
+| Make new migrations         | `python manage.py makemigrations`   |
+| Apply migrations            | `python manage.py migrate`          |
+| Create admin user           | `python manage.py createsuperuser`  |
+| Freeze dependencies         | `pip freeze > requirements.txt`     |
+| Open Django shell           | `python manage.py shell`            |
 
 ---
 
 ## ⚠️ Notes
 
-- The `db.sqlite3` file is **not included** in the repo (it's in `.gitignore`). That's why you must run `migrate` after cloning.
-- Never share your `SECRET_KEY` publicly. For production, move it to an environment variable.
+- The `db.sqlite3` file is **not included** in the repo — MySQL is used instead.
+- `__pycache__/` and `.venv/` are excluded from git via `.gitignore`.
+- Never share your `SECRET_KEY` publicly. Move it to a `.env` file for production.
 - `DEBUG = True` is for development only. Set it to `False` in production.
+- The `custom_mysql_backend` is a workaround for using MySQL 8.0.x with Django 5.x.
