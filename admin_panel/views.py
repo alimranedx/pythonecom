@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Sum, Count, Q
+from django.core.exceptions import ValidationError
+from core.validators import validate_image_file
 from rbac.decorators import require_permission
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
 from product.models import Product, Category, Brand, ProductImage
@@ -88,9 +90,15 @@ def admin_product_create(request):
         if form.is_valid():
             p = form.save()
             gallery_files = request.FILES.getlist('gallery_images')
+            valid_count = 0
             for f in gallery_files:
-                ProductImage.objects.create(product=p, image=f)
-            messages.success(request, f"Product '{p.name}' created with {len(gallery_files)} gallery image(s).")
+                try:
+                    validate_image_file(f)
+                    ProductImage.objects.create(product=p, image=f)
+                    valid_count += 1
+                except ValidationError as e:
+                    messages.warning(request, f"Skipped file '{f.name}': {e.message}")
+            messages.success(request, f"Product '{p.name}' created with {valid_count} gallery image(s).")
             return redirect('admin_product_list')
     else:
         form = ProductForm()
@@ -105,10 +113,16 @@ def admin_product_edit(request, pk):
         if form.is_valid():
             form.save()
             gallery_files = request.FILES.getlist('gallery_images')
+            valid_count = 0
             for f in gallery_files:
-                ProductImage.objects.create(product=product, image=f)
-            if gallery_files:
-                messages.success(request, f"Added {len(gallery_files)} new gallery image(s).")
+                try:
+                    validate_image_file(f)
+                    ProductImage.objects.create(product=product, image=f)
+                    valid_count += 1
+                except ValidationError as e:
+                    messages.warning(request, f"Skipped file '{f.name}': {e.message}")
+            if valid_count > 0:
+                messages.success(request, f"Added {valid_count} new gallery image(s).")
             else:
                 messages.success(request, f"Product '{product.name}' updated successfully.")
             return redirect('admin_product_edit', pk=product.pk)
@@ -126,8 +140,11 @@ def admin_product_edit(request, pk):
 def admin_product_image_delete(request, pk):
     image = get_object_or_404(ProductImage, pk=pk)
     product_pk = image.product.pk
-    image.delete()
-    messages.success(request, "Gallery image deleted.")
+    if request.method == 'POST':
+        image.delete()
+        messages.success(request, "Gallery image deleted.")
+    else:
+        messages.error(request, "Invalid request method.")
     return redirect('admin_product_edit', pk=product_pk)
 
 

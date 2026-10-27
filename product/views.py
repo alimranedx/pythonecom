@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import Product, Category, Brand
 from .forms import ProductForm
 
@@ -11,8 +12,8 @@ def product_list(request):
     """
     products = Product.objects.filter(is_active=True).select_related('category', 'brand')
 
-    # Keyword Search
-    query = request.GET.get('q', '').strip()
+    # Keyword Search (bounded to 100 chars to prevent search query DoS)
+    query = request.GET.get('q', '').strip()[:100]
     if query:
         products = products.filter(
             Q(name__icontains=query) |
@@ -90,8 +91,11 @@ def product_add_review(request, pk):
     if request.method == 'POST':
         from django.contrib import messages
         from .models import ProductReview
-        rating = int(request.POST.get('rating', 5))
-        comment = request.POST.get('comment', '').strip()
+        try:
+            rating = max(1, min(int(request.POST.get('rating', 5)), 5))
+        except (ValueError, TypeError):
+            rating = 5
+        comment = request.POST.get('comment', '').strip()[:1000]
         if comment:
             ProductReview.objects.create(
                 product=product,
@@ -127,10 +131,11 @@ def product_quick_view(request, pk):
     })
 
 
-# Legacy / quick CRUD views (also available via custom admin panel)
+# Legacy / quick CRUD views (restricted to staff members)
+@staff_member_required(login_url='admin_login')
 def product_create(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             p = form.save()
             return redirect('product_detail', pk=p.pk)
@@ -139,10 +144,11 @@ def product_create(request):
     return render(request, 'product/form.html', {'form': form, 'title': 'Add Product'})
 
 
+@staff_member_required(login_url='admin_login')
 def product_update(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
+        form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
             return redirect('product_detail', pk=product.pk)
@@ -151,6 +157,7 @@ def product_update(request, pk):
     return render(request, 'product/form.html', {'form': form, 'title': 'Edit Product', 'product': product})
 
 
+@staff_member_required(login_url='admin_login')
 def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':

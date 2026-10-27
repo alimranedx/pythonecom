@@ -94,3 +94,34 @@ This document provides technical documentation covering the system architecture,
 - `GET|POST /app-admin/rbac/roles/create/` — Create custom administrative role.
 - `GET|POST /app-admin/rbac/roles/<id>/edit/` — Interactive module/submodule permission checkbox matrix.
 - `GET|POST /app-admin/rbac/staff/` — Staff user role assignment manager.
+
+---
+
+## 5. Security Architecture & Threat Modeling
+
+### 5.1 Remote Code Execution (RCE) & Web Shell Defense
+- **Command Whitelisting**: No subprocess or shell invocation utilities exist in application code.
+- **File Upload Hardening**:
+  - `core/validators.validate_image_file` implements three checks:
+    1. Size validation: Rejects payloads exceeding 5 MB.
+    2. Whitelist validation: Accepts only `['.jpg', '.jpeg', '.png', '.webp']`.
+    3. Bytecode validation: Invokes Pillow's `Image.open(file).verify()` to inspect low-level headers and identify fake polyglot scripts.
+  - `core/validators.get_safe_upload_path` generates non-deterministic UUID4 filenames, discarding user-supplied paths to eliminate path traversal (`../../`).
+
+### 5.2 Denial of Service (DoS) Protections
+- **Payload Constraints**: Maximum request body and file upload memory bounded at 5MB via `DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE`. Maximum form fields bounded to 1,000 via `DATA_UPLOAD_MAX_NUMBER_FIELDS`.
+- **Query Complexity Protection**: Catalog search query parameters are truncated to 100 characters, preventing heavy regex/wildcard DB degradation.
+- **Cart & Order Overflow Clamping**: Cart quantities are clamped to `max(1, min(qty, 100))` to prevent arithmetic overflow and negative stock exploitation.
+
+### 5.3 Cross-Site Scripting (XSS) & Header Policies
+- **Template Context Auto-Escaping**: Untrusted customer data is auto-escaped at the Django rendering layer. No `|safe` tags exist on user-generated inputs.
+- **SVG Blocking**: Vector images are excluded from file uploads to eliminate SVG-embedded script execution.
+- **HTTP Security Headers**:
+  - `X_FRAME_OPTIONS = 'DENY'` (blocks framing/clickjacking)
+  - `SECURE_CONTENT_TYPE_NOSNIFF = True` (prevents MIME-type confusion attacks)
+  - `SECURE_BROWSER_XSS_FILTER = True` (activates browser XSS filters)
+  - `SESSION_COOKIE_HTTPONLY = True`, `SESSION_COOKIE_SAMESITE = 'Lax'` (mitigates session theft)
+
+### 5.4 Open Redirect & IDOR Protection
+- **Redirect Target Validation**: `core/validators.get_safe_redirect_url` verifies `next` query strings and `HTTP_REFERER` headers against `url_has_allowed_host_and_scheme(allowed_hosts={request.get_host()})`. Malicious external domains fall back to safe internal endpoints.
+- **Direct Object Reference Scoping**: Order receipts (`order_confirmation`), address edits, and wishlist mutations strictly compare object ownership against `request.user` or verify active checkout session keys. Unauthorized attempts raise `PermissionDenied` (HTTP 403).

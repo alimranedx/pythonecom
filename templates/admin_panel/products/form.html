@@ -96,9 +96,12 @@
                                 <div class="col-auto">
                                     <div class="position-relative border rounded p-1 bg-white" style="width: 100px; height: 100px;">
                                         <img src="{{ gimg.image.url }}" alt="Gallery" class="w-100 h-100 rounded" style="object-fit: cover;">
-                                        <a href="{% url 'admin_product_image_delete' gimg.pk %}" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center" style="width: 22px; height: 22px;" title="Delete image" onclick="return confirm('Remove this gallery image?');">
-                                            <i class="bi bi-x fs-6"></i>
-                                        </a>
+                                        <form action="{% url 'admin_product_image_delete' gimg.pk %}" method="post" class="position-absolute top-0 end-0 m-1" onsubmit="return confirm('Remove this gallery image?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm p-0 rounded-circle d-flex align-items-center justify-content-center" style="width: 22px; height: 22px;" title="Delete image">
+                                                <i class="bi bi-x fs-6"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             {% endfor %}

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from core.validators import validate_image_file
 from .models import CustomerProfile, Address
 
 
@@ -35,7 +36,7 @@ class CustomerLoginForm(AuthenticationForm):
 
 class UserProfileForm(forms.ModelForm):
     phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone number'}))
-    avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
+    avatar = forms.ImageField(required=False, validators=[validate_image_file], widget=forms.FileInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = User
@@ -57,6 +58,7 @@ class UserProfileForm(forms.ModelForm):
         profile.phone = self.cleaned_data.get('phone', '')
         if self.cleaned_data.get('avatar'):
             profile.avatar = self.cleaned_data['avatar']
+        profile.full_clean()
         profile.save()
         return user
 

@@ -4,6 +4,8 @@ from django.contrib.auth import login, logout, authenticate, update_session_auth
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
+from core.validators import get_safe_redirect_url
 from .forms import CustomerRegistrationForm, CustomerLoginForm, UserProfileForm, AddressForm
 from .models import CustomerProfile, Address, Wishlist
 from orders.models import Order
@@ -41,7 +43,7 @@ def customer_login(request):
     if request.user.is_authenticated:
         return redirect('customer_dashboard')
 
-    next_url = request.GET.get('next', 'customer_dashboard')
+    next_url = request.GET.get('next', '') or request.POST.get('next', '')
 
     if request.method == 'POST':
         form = CustomerLoginForm(request, data=request.POST)
@@ -51,13 +53,15 @@ def customer_login(request):
             if request.session.session_key:
                 CartService.merge_guest_cart(request.session.session_key, user)
             messages.success(request, f"Welcome back, {user.username}!")
-            return redirect(next_url if next_url else 'customer_dashboard')
+            if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+            return redirect('customer_dashboard')
         else:
             messages.error(request, "Invalid username or password.")
     else:
         form = CustomerLoginForm()
 
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'next': next_url})
 
 
 def customer_logout(request):
@@ -207,7 +211,7 @@ def wishlist_toggle(request, product_id):
         })
 
     messages.success(request, msg)
-    return redirect(request.META.get('HTTP_REFERER', 'wishlist_view'))
+    return redirect(get_safe_redirect_url(request, request.META.get('HTTP_REFERER'), 'wishlist_view'))
 
 
 @login_required

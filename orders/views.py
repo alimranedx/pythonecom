@@ -28,14 +28,14 @@ def checkout(request):
 
     if request.method == 'POST':
         shipping_data = {
-            'full_name': request.POST.get('full_name', '').strip(),
-            'email': request.POST.get('email', '').strip(),
-            'phone': request.POST.get('phone', '').strip(),
-            'street_address': request.POST.get('street_address', '').strip(),
-            'city': request.POST.get('city', '').strip(),
-            'postal_code': request.POST.get('postal_code', '').strip(),
-            'country': request.POST.get('country', 'Bangladesh').strip(),
-            'notes': request.POST.get('notes', '').strip(),
+            'full_name': request.POST.get('full_name', '').strip()[:120],
+            'email': request.POST.get('email', '').strip()[:120],
+            'phone': request.POST.get('phone', '').strip()[:30],
+            'street_address': request.POST.get('street_address', '').strip()[:255],
+            'city': request.POST.get('city', '').strip()[:100],
+            'postal_code': request.POST.get('postal_code', '').strip()[:20],
+            'country': request.POST.get('country', 'Bangladesh').strip()[:100],
+            'notes': request.POST.get('notes', '').strip()[:500],
             'payment_method': request.POST.get('payment_method', 'cod'),
         }
 
@@ -52,6 +52,7 @@ def checkout(request):
                 shipping_data=shipping_data,
                 user=request.user if request.user.is_authenticated else None,
             )
+            request.session['last_order_number'] = order.order_number
             messages.success(request, f"Order {order.order_number} confirmed! Thank you for shopping with us.")
             return redirect('order_confirmation', order_number=order.order_number)
         except ValidationError as e:
@@ -66,4 +67,12 @@ def checkout(request):
 
 def order_confirmation(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
+    # IDOR Protection: Restrict viewing customer receipts only to the order owner, authorized session, or staff members
+    from django.core.exceptions import PermissionDenied
+    if order.user:
+        if order.user != request.user and not (request.user.is_authenticated and request.user.is_staff):
+            raise PermissionDenied("You do not have permission to view this order confirmation.")
+    else:
+        if request.session.get('last_order_number') != order.order_number and not (request.user.is_authenticated and request.user.is_staff):
+            raise PermissionDenied("You do not have permission to view this order confirmation.")
     return render(request, 'orders/confirmation.html', {'order': order})

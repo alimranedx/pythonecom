@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-lx1t3rkvbc)px7(o6m(s_e4n3685r-25hs%&u@n-ev87dg@y3o'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-lx1t3rkvbc)px7(o6m(s_e4n3685r-25hs%&u@n-ev87dg@y3o')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -144,3 +145,34 @@ LOGOUT_REDIRECT_URL = 'home'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ==============================================================================
+# PRODUCTION SECURITY & HARDENING CONFIGURATION
+# ==============================================================================
+
+# Clickjacking Protection
+X_FRAME_OPTIONS = 'DENY'
+
+# MIME-Sniffing & XSS Protection Headers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+
+# Session & Cookie Hardening
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Denial of Service (DoS) & Memory Exhaustion Safeguards
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024   # 5 MB maximum request payload
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024   # 5 MB maximum file upload
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000            # Limit multipart form keys
+
+# Automated Production HTTPS Hardening (Engages automatically when DEBUG=False)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+

@@ -2,13 +2,14 @@ from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 from core.models import TimeStampedModel
+from core.validators import validate_image_file
 
 
 class Category(TimeStampedModel):
     name = models.CharField(max_length=120)
     slug = models.SlugField(max_length=150, unique=True, blank=True)
     icon = models.CharField(max_length=50, default="bi-tag", help_text="Bootstrap icon class")
-    image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    image = models.ImageField(upload_to='categories/', blank=True, null=True, validators=[validate_image_file])
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children')
     is_featured = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
@@ -31,7 +32,7 @@ class Category(TimeStampedModel):
 class Brand(TimeStampedModel):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
-    logo = models.ImageField(upload_to='brands/', blank=True, null=True)
+    logo = models.ImageField(upload_to='brands/', blank=True, null=True, validators=[validate_image_file])
 
     class Meta:
         ordering = ['name']
@@ -56,7 +57,7 @@ class Product(TimeStampedModel):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     stock = models.IntegerField(default=0)
-    image = models.ImageField(upload_to='products/', blank=True, null=True)
+    image = models.ImageField(upload_to='products/', blank=True, null=True, validators=[validate_image_file])
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     is_flash_sale = models.BooleanField(default=False)
@@ -106,7 +107,7 @@ class Product(TimeStampedModel):
 
 class ProductImage(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/gallery/')
+    image = models.ImageField(upload_to='products/gallery/', validators=[validate_image_file])
     alt_text = models.CharField(max_length=150, blank=True)
     order = models.PositiveIntegerField(default=0)
 

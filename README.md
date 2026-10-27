@@ -121,6 +121,21 @@ Super Administrators can create new roles and assign any combination of module p
 
 ---
 
+## 🔒 Enterprise Security & Vulnerability Defense Matrix
+
+The platform underwent a full security audit and implements defense-in-depth mitigations:
+
+| Attack Vector | Vulnerability Classification | Mitigation & Defense Architecture |
+| :--- | :--- | :--- |
+| **Shell Script / RCE** | Remote Code Execution | **Zero OS Execution:** No `os.system`, `subprocess`, `popen`, `eval()`, or `exec()` in codebase.<br>**Dual-Layer Upload Validation (`core/validators.py`):** Whitelists only `.jpg`, `.jpeg`, `.png`, `.webp`. Rejects executable extensions (`.php`, `.sh`, `.exe`). Deep Pillow bytecode verification (`img.verify()`) catches polyglot files disguised as images. |
+| **Denial of Service (DoS)** | Resource Exhaustion | **Memory Caps (`settings.py`):** `DATA_UPLOAD_MAX_MEMORY_SIZE = 5MB`, `FILE_UPLOAD_MAX_MEMORY_SIZE = 5MB`, `DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000`.<br>**Bounded User Inputs:** Search queries capped at 100 chars, cart quantities strictly clamped to `1 <= qty <= 100`, product reviews capped at 1,000 chars. |
+| **JavaScript Injection (XSS)** | Cross-Site Scripting | **Auto-Escaped Templates:** All dynamic variables contextually escaped by Django template engine. Zero unescaped `\|safe` filters on customer-supplied input.<br>**SVG Filtering:** SVG uploads rejected to prevent stored SVG-script injection.<br>**Security Headers:** `SECURE_CONTENT_TYPE_NOSNIFF = True`, `SECURE_BROWSER_XSS_FILTER = True`. |
+| **Open Redirect** | CWE-601 | **Safe URL Resolution (`core/validators.py`):** All `next` login parameters and `HTTP_REFERER` headers validated against `url_has_allowed_host_and_scheme()` before issuing redirects. |
+| **IDOR** | Insecure Direct Object Reference | **Scoped Receipts & Profiles:** Customer orders, address records, and wishlist queries strictly scoped to `user=request.user`. Order confirmation receipts require matching ownership or active checkout session; unauthorized attempts trigger `PermissionDenied` (HTTP 403). |
+| **Clickjacking & CSRF** | UI Redressing / Session Hijacking | **Iframe Defense:** `X_FRAME_OPTIONS = 'DENY'` headers.<br>**CSRF Enforcement:** All POST mutations protected by CSRF tokens with `SameSite='Lax'` and `HttpOnly=True` session cookies. |
+
+---
+
 ## 🧪 Running Automated Tests
 
 Run the verification suite verifying storefront routes, RBAC protection, and atomic order placement:
