@@ -2,6 +2,69 @@
 
 {% block title %}{{ product.name }} | PythonEcom{% endblock %}
 
+{% block extra_head %}
+<style>
+    /* Circle Mirror Zoom Styles */
+    .zoom-container {
+        position: relative;
+        background: #f8fafc;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 420px;
+        cursor: crosshair;
+        border: 1px solid #e2e8f0;
+    }
+    #mainProductImg {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        display: block;
+        user-select: none;
+    }
+    .circle-mirror-lens {
+        position: absolute;
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        border: 3px solid rgba(37, 99, 235, 0.9);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(0, 0, 0, 0.2);
+        background-repeat: no-repeat;
+        pointer-events: none;
+        display: none;
+        z-index: 100;
+        backdrop-filter: brightness(1.05);
+    }
+    .thumb-btn {
+        width: 72px;
+        height: 72px;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        background: #fff;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        object-fit: contain;
+    }
+    .thumb-btn:hover, .thumb-btn.active {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    .wishlist-btn-detail {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        transition: all 0.2s;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <!-- Breadcrumb -->
@@ -17,31 +80,64 @@
     </nav>
 
     <!-- Product Showcase Card -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
         <div class="row g-4">
-            <!-- Left: Product Image Showcase -->
+            <!-- Left: Image Showcase with Circle Mirror Zoom & Thumbnails -->
             <div class="col-lg-5">
-                <div class="rounded-4 bg-light p-4 text-center position-relative d-flex align-items-center justify-content-center" style="height: 380px;">
+                <!-- Main Zoom Container -->
+                <div class="zoom-container position-relative" id="zoomContainer">
                     {% if product.has_discount %}
                         <span class="badge-discount fs-6 px-3 py-2">-{{ product.discount_percent }}% OFF</span>
                     {% endif %}
+
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" id="mainProductImg">
                     {% else %}
-                        <i class="bi bi-box-seam display-1 text-secondary opacity-50"></i>
+                        <div class="text-center text-muted" id="placeholderImgBox">
+                            <i class="bi bi-box-seam display-1 opacity-50 d-block mb-2"></i>
+                            <span class="small">No primary photo uploaded</span>
+                        </div>
                     {% endif %}
+
+                    <!-- Circular Magnifier Loupe -->
+                    <div class="circle-mirror-lens" id="circleLens"></div>
+                </div>
+
+                <div class="text-center text-muted small mt-2">
+                    <i class="bi bi-search me-1 text-primary"></i> Move mouse over photo for <strong>circular mirror zoom</strong>
+                </div>
+
+                <!-- Gallery Thumbnails Row -->
+                <div class="d-flex flex-wrap gap-2 justify-content-center mt-3" id="galleryThumbs">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="thumb-btn active" onclick="switchProductImage('{{ product.image.url }}', this)" alt="Main Photo">
+                    {% endif %}
+                    {% for g in gallery_images %}
+                        <img src="{{ g.image.url }}" class="thumb-btn" onclick="switchProductImage('{{ g.image.url }}', this)" alt="Gallery Angle">
+                    {% endfor %}
                 </div>
             </div>
 
             <!-- Right: Product Info & Buy Controls -->
             <div class="col-lg-7 d-flex flex-column">
-                <div class="mb-2">
-                    {% if product.brand %}
-                        <span class="badge bg-light text-dark border me-2">{{ product.brand.name }}</span>
-                    {% endif %}
-                    {% if product.category %}
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">{{ product.category.name }}</span>
-                    {% endif %}
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        {% if product.brand %}
+                            <span class="badge bg-light text-dark border me-2">{{ product.brand.name }}</span>
+                        {% endif %}
+                        {% if product.category %}
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">{{ product.category.name }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Wishlist Toggle Button -->
+                    <button type="button" class="btn btn-light border wishlist-btn-detail" onclick="toggleWishlist({{ product.pk }}, this)" title="Save to Wishlist">
+                        {% if product.pk in user_wishlist_ids %}
+                            <i class="bi bi-heart-fill text-danger"></i>
+                        {% else %}
+                            <i class="bi bi-heart text-secondary"></i>
+                        {% endif %}
+                    </button>
                 </div>
 
                 <h2 class="fw-bold mb-2">{{ product.name }}</h2>
@@ -54,7 +150,7 @@
                         <i class="bi bi-star-fill"></i>
                         <i class="bi bi-star-fill"></i>
                         <i class="bi bi-star-half"></i>
-                        <span class="text-muted ms-1">(4.8/5 from 36 reviews)</span>
+                        <span class="text-muted ms-1">({{ reviews.count }} review{{ reviews.count|pluralize }})</span>
                     </div>
                     <span class="text-secondary">|</span>
                     <div>
@@ -80,14 +176,14 @@
                         <span class="display-6 fw-bold text-primary">${{ product.effective_price }}</span>
                         {% if product.has_discount %}
                             <span class="fs-4 text-decoration-line-through text-muted">${{ product.price }}</span>
-                            <span class="badge bg-danger">Save ${{ product.price|floatformat:2|add:"-product.effective_price"|default:"discount" }}</span>
+                            <span class="badge bg-danger">Discount Active</span>
                         {% endif %}
                     </div>
-                    <small class="text-muted d-block mt-1">Tax included. Free shipping on orders over $50.</small>
+                    <small class="text-muted d-block mt-1">Tax included. Free Express delivery on orders over $50.</small>
                 </div>
 
                 <!-- Short Summary -->
-                <p class="text-secondary mb-4">{{ product.short_description|default:product.description|truncatewords:40 }}</p>
+                <p class="text-secondary mb-4">{{ product.short_description|default:product.description|truncatewords:45 }}</p>
 
                 <!-- Add to Cart Form -->
                 <form action="{% url 'add_to_cart' product.pk %}" method="post" class="mt-auto">
@@ -109,10 +205,10 @@
                 <!-- Value Proposition Highlights -->
                 <div class="row g-2 pt-3 border-top mt-2 small text-muted">
                     <div class="col-6">
-                        <i class="bi bi-truck text-primary me-1"></i> Ships within 24-48 hours
+                        <i class="bi bi-truck text-primary me-1"></i> Fast Shipping within 24-48h
                     </div>
                     <div class="col-6">
-                        <i class="bi bi-shield-check text-success me-1"></i> 100% Genuine Guarantee
+                        <i class="bi bi-shield-check text-success me-1"></i> 100% Genuine Brand Product
                     </div>
                 </div>
             </div>
@@ -120,7 +216,7 @@
     </div>
 
     <!-- Product Details & Description Tabs -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
         <ul class="nav nav-pills mb-4 border-bottom pb-3" id="productTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active fw-semibold" id="desc-tab" data-bs-toggle="pill" data-bs-target="#desc" type="button" role="tab">Detailed Description</button>
@@ -165,31 +261,75 @@
                 </table>
             </div>
 
-            <!-- Reviews -->
+            <!-- Customer Reviews & Submission Form -->
             <div class="tab-pane fade" id="reviews" role="tabpanel">
-                {% if reviews %}
-                    <div class="list-group list-group-flush mb-4">
-                        {% for r in reviews %}
-                            <div class="list-group-item px-0 py-3">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <strong class="text-dark">{{ r.user.username }}</strong>
-                                    <small class="text-muted">{{ r.created_at|date:"M d, Y" }}</small>
-                                </div>
-                                <div class="text-warning small mb-2">
-                                    {% for i in "12345" %}
-                                        <i class="bi bi-star-fill"></i>
-                                    {% endfor %}
-                                </div>
-                                <p class="text-secondary mb-0 small">{{ r.comment }}</p>
+                <div class="row g-4">
+                    <!-- Existing Reviews List -->
+                    <div class="col-lg-7">
+                        <h6 class="fw-bold mb-3">Customer Feedback</h6>
+                        {% if reviews %}
+                            <div class="list-group list-group-flush">
+                                {% for r in reviews %}
+                                    <div class="list-group-item px-0 py-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <strong class="text-dark">{{ r.user.get_full_name|default:r.user.username }}</strong>
+                                            <small class="text-muted">{{ r.created_at|date:"M d, Y" }}</small>
+                                        </div>
+                                        <div class="text-warning small mb-2">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= r.rating %}
+                                                    <i class="bi bi-star-fill"></i>
+                                                {% else %}
+                                                    <i class="bi bi-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <p class="text-secondary mb-0 small">{{ r.comment }}</p>
+                                    </div>
+                                {% endfor %}
                             </div>
-                        {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-chat-square-quote display-4 mb-2 d-block"></i>
+                                <p class="mb-0">No customer reviews yet. Be the first to review this product!</p>
+                            </div>
+                        {% endif %}
                     </div>
-                {% else %}
-                    <div class="text-center py-4 text-muted">
-                        <i class="bi bi-chat-square-quote display-4 mb-2 d-block"></i>
-                        <p class="mb-0">No customer reviews yet. Be the first to review this product!</p>
+
+                    <!-- Leave a Review Form -->
+                    <div class="col-lg-5">
+                        <div class="card border rounded-3 p-3 bg-light">
+                            <h6 class="fw-bold mb-2">Write a Review</h6>
+                            {% if request.user.is_authenticated %}
+                                <form action="{% url 'product_add_review' product.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-semibold">Your Rating</label>
+                                        <select name="rating" class="form-select form-select-sm">
+                                            <option value="5">⭐⭐⭐⭐⭐ (5 - Excellent)</option>
+                                            <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
+                                            <option value="3">⭐⭐⭐ (3 - Average)</option>
+                                            <option value="2">⭐⭐ (2 - Below Average)</option>
+                                            <option value="1">⭐ (1 - Poor)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold">Your Review</label>
+                                        <textarea name="comment" rows="3" class="form-control form-control-sm" required placeholder="What did you like or dislike about this product?"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                                        Submit Review
+                                    </button>
+                                </form>
+                            {% else %}
+                                <p class="small text-muted mb-3">Please sign in to your customer account to submit a review.</p>
+                                <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                    Sign In to Review
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -203,7 +343,11 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="card product-card border-0 shadow-sm h-100">
                             <div class="product-img-wrapper">
-                                <i class="bi bi-box-seam display-4 text-primary opacity-50"></i>
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid" style="max-height: 100%;">
+                                {% else %}
+                                    <i class="bi bi-box-seam display-4 text-primary opacity-50"></i>
+                                {% endif %}
                             </div>
                             <div class="card-body p-3 d-flex flex-column">
                                 <h6 class="fw-bold text-truncate mb-1">
@@ -223,4 +367,70 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// ==========================================
+// CIRCLE MIRROR ZOOM ENGINE (Magnifying Loupe)
+// ==========================================
+const zoomContainer = document.getElementById('zoomContainer');
+const mainImg = document.getElementById('mainProductImg');
+const circleLens = document.getElementById('circleLens');
+const ZOOM_LEVEL = 2.4; // 2.4x magnification factor
+
+function initCircleZoom() {
+    if (!mainImg || !circleLens) return;
+
+    // Set background image of circle lens to matching main photo
+    circleLens.style.backgroundImage = `url("${mainImg.src}")`;
+
+    zoomContainer.addEventListener('mouseenter', () => {
+        circleLens.style.display = 'block';
+        updateLensBackground();
+    });
+
+    zoomContainer.addEventListener('mouseleave', () => {
+        circleLens.style.display = 'none';
+    });
+
+    zoomContainer.addEventListener('mousemove', (e) => {
+        const rect = zoomContainer.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const lensRadius = circleLens.offsetWidth / 2;
+
+        // Position the circle lens centered on the cursor
+        circleLens.style.left = `${x - lensRadius}px`;
+        circleLens.style.top = `${y - lensRadius}px`;
+
+        // Calculate background position inside the circular mirror
+        const bgX = -(x * ZOOM_LEVEL - lensRadius);
+        const bgY = -(y * ZOOM_LEVEL - lensRadius);
+        circleLens.style.backgroundPosition = `${bgX}px ${bgY}px`;
+    });
+}
+
+function updateLensBackground() {
+    if (!mainImg || !circleLens) return;
+    circleLens.style.backgroundImage = `url("${mainImg.src}")`;
+    const rect = zoomContainer.getBoundingClientRect();
+    circleLens.style.backgroundSize = `${rect.width * ZOOM_LEVEL}px ${rect.height * ZOOM_LEVEL}px`;
+}
+
+function switchProductImage(url, thumbElem) {
+    if (mainImg) {
+        mainImg.src = url;
+        updateLensBackground();
+    }
+    // Update active thumbnail border
+    document.querySelectorAll('.thumb-btn').forEach(btn => btn.classList.remove('active'));
+    if (thumbElem) {
+        thumbElem.classList.add('active');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initCircleZoom);
+</script>
 {% endblock %}

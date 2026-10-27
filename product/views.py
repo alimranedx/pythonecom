@@ -75,8 +75,35 @@ def product_detail(request, pk):
     return render(request, 'product/detail.html', {
         'product': product,
         'related_products': related_products,
-        'reviews': product.reviews.all(),
+        'reviews': product.reviews.select_related('user').all(),
+        'gallery_images': product.images.all(),
     })
+
+
+def product_add_review(request, pk):
+    if not request.user.is_authenticated:
+        from django.contrib import messages
+        messages.info(request, "Please log in to submit a product review.")
+        return redirect('account_login')
+
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        from django.contrib import messages
+        from .models import ProductReview
+        rating = int(request.POST.get('rating', 5))
+        comment = request.POST.get('comment', '').strip()
+        if comment:
+            ProductReview.objects.create(
+                product=product,
+                user=request.user,
+                rating=rating,
+                comment=comment,
+            )
+            messages.success(request, "Thank you! Your product review has been published.")
+        else:
+            messages.error(request, "Please write a comment for your review.")
+
+    return redirect('product_detail', pk=product.pk)
 
 
 def product_quick_view(request, pk):

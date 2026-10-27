@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.db.models import Sum, Count, Q
 from rbac.decorators import require_permission
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
-from product.models import Product, Category, Brand
+from product.models import Product, Category, Brand, ProductImage
 from product.forms import ProductForm, CategoryForm
 from orders.models import Order, OrderItem
 from accounts.models import CustomerProfile
@@ -87,7 +87,10 @@ def admin_product_create(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             p = form.save()
-            messages.success(request, f"Product '{p.name}' created successfully.")
+            gallery_files = request.FILES.getlist('gallery_images')
+            for f in gallery_files:
+                ProductImage.objects.create(product=p, image=f)
+            messages.success(request, f"Product '{p.name}' created with {len(gallery_files)} gallery image(s).")
             return redirect('admin_product_list')
     else:
         form = ProductForm()
@@ -96,16 +99,36 @@ def admin_product_create(request):
 
 @require_permission('catalog.products', 'edit')
 def admin_product_edit(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(Product.objects.prefetch_related('images'), pk=pk)
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            messages.success(request, f"Product '{product.name}' updated successfully.")
-            return redirect('admin_product_list')
+            gallery_files = request.FILES.getlist('gallery_images')
+            for f in gallery_files:
+                ProductImage.objects.create(product=product, image=f)
+            if gallery_files:
+                messages.success(request, f"Added {len(gallery_files)} new gallery image(s).")
+            else:
+                messages.success(request, f"Product '{product.name}' updated successfully.")
+            return redirect('admin_product_edit', pk=product.pk)
     else:
         form = ProductForm(instance=product)
-    return render(request, 'admin_panel/products/form.html', {'form': form, 'title': f"Edit {product.name}", 'product': product})
+    return render(request, 'admin_panel/products/form.html', {
+        'form': form,
+        'title': f"Edit {product.name}",
+        'product': product,
+        'gallery_images': product.images.all()
+    })
+
+
+@require_permission('catalog.products', 'edit')
+def admin_product_image_delete(request, pk):
+    image = get_object_or_404(ProductImage, pk=pk)
+    product_pk = image.product.pk
+    image.delete()
+    messages.success(request, "Gallery image deleted.")
+    return redirect('admin_product_edit', pk=product_pk)
 
 
 @require_permission('catalog.products', 'delete')

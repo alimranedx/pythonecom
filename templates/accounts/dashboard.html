@@ -19,11 +19,20 @@
                 <a href="{% url 'customer_dashboard' %}" class="list-group-item list-group-item-action py-3 active">
                     <i class="bi bi-grid me-2"></i> Dashboard Overview
                 </a>
+                <a href="{% url 'customer_profile_edit' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-person-gear me-2"></i> Edit Profile
+                </a>
                 <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action py-3">
                     <i class="bi bi-receipt me-2"></i> My Orders
                 </a>
-                <a href="{% url 'cart_detail' %}" class="list-group-item list-group-item-action py-3">
-                    <i class="bi bi-cart3 me-2"></i> My Cart
+                <a href="{% url 'wishlist_view' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-heart me-2 text-danger"></i> My Wishlist
+                </a>
+                <a href="{% url 'address_list' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-geo-alt me-2 text-primary"></i> Address Book
+                </a>
+                <a href="{% url 'customer_password_change' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-key me-2"></i> Change Password
                 </a>
                 <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action py-3 text-danger">
                     <i class="bi bi-box-arrow-right me-2"></i> Log Out

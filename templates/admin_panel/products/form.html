@@ -4,7 +4,7 @@
 
 {% block admin_content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-9">
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
                 <h5 class="fw-bold mb-0">{{ title }}</h5>
@@ -21,30 +21,122 @@
 
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+
+                <!-- Basic Info -->
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Product Name <span class="text-danger">*</span></label>
                     {{ form.name }}
                 </div>
 
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Category</label>
+                        {{ form.category }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Brand</label>
+                        {{ form.brand }}
+                    </div>
+                </div>
+
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold">Description</label>
+                    <label class="form-label small fw-semibold">Short Tagline / Catchphrase</label>
+                    {{ form.short_description }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Detailed Description</label>
                     {{ form.description }}
                 </div>
 
+                <!-- Pricing & Stock -->
                 <div class="row g-3 mb-4">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label small fw-semibold">Regular Price ($) <span class="text-danger">*</span></label>
                         {{ form.price }}
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-semibold">Inventory Stock Quantity <span class="text-danger">*</span></label>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Discount / Sale Price ($)</label>
+                        {{ form.discount_price }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Inventory Stock <span class="text-danger">*</span></label>
                         {{ form.stock }}
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2">
+                <!-- Main Thumbnail Image -->
+                <div class="card border rounded-3 p-3 mb-4 bg-light">
+                    <h6 class="fw-bold mb-2">Main Product Thumbnail</h6>
+                    {% if product and product.image %}
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded border" style="width: 80px; height: 80px; object-fit: contain; background: #fff;">
+                            <span class="small text-muted">Current thumbnail: <a href="{{ product.image.url }}" target="_blank">View full size</a></span>
+                        </div>
+                    {% endif %}
+                    <label class="form-label small text-muted">Upload new thumbnail image:</label>
+                    {{ form.image }}
+                </div>
+
+                <!-- Multiple Gallery Images Upload -->
+                <div class="card border rounded-3 p-3 mb-4 bg-light">
+                    <h6 class="fw-bold mb-2">
+                        <i class="bi bi-images text-primary me-1"></i> Additional Gallery Images (Multiple)
+                    </h6>
+                    <p class="small text-muted mb-2">
+                        Select one or more additional product photos. These will appear in the product gallery and enable circular mirror zoom!
+                    </p>
+                    <input type="file" name="gallery_images" multiple accept="image/*" class="form-control mb-3">
+
+                    <!-- Existing Gallery Images Grid -->
+                    {% if gallery_images %}
+                        <label class="small fw-semibold text-muted d-block mb-2">Existing Gallery Photos ({{ gallery_images.count }}):</label>
+                        <div class="row g-2">
+                            {% for gimg in gallery_images %}
+                                <div class="col-auto">
+                                    <div class="position-relative border rounded p-1 bg-white" style="width: 100px; height: 100px;">
+                                        <img src="{{ gimg.image.url }}" alt="Gallery" class="w-100 h-100 rounded" style="object-fit: cover;">
+                                        <a href="{% url 'admin_product_image_delete' gimg.pk %}" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center" style="width: 22px; height: 22px;" title="Delete image" onclick="return confirm('Remove this gallery image?');">
+                                            <i class="bi bi-x fs-6"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Product Status Badges -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            {{ form.is_featured }}
+                            <label class="form-check-label small fw-semibold" for="{{ form.is_featured.id_for_label }}">
+                                Featured Product
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            {{ form.is_flash_sale }}
+                            <label class="form-check-label small fw-semibold" for="{{ form.is_flash_sale.id_for_label }}">
+                                Flash Deal Badge
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label small fw-semibold" for="{{ form.is_active.id_for_label }}">
+                                Active & Visible
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
                     <a href="{% url 'admin_product_list' %}" class="btn btn-light border px-4">Cancel</a>
-                    <button type="submit" class="btn btn-primary px-4">Save Product</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Product</button>
                 </div>
             </form>
         </div>

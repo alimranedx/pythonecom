@@ -72,13 +72,20 @@ This document provides technical documentation covering the system architecture,
 - `GET|POST /orders/checkout/` — One-page checkout with live address validation and payment method selection.
 - `GET /orders/confirmation/<order_number>/` — Order receipt with live visual tracker.
 - `GET /account/dashboard/` — Customer dashboard, order history, and saved addresses.
+- `GET|POST /account/profile/edit/` — Profile update with avatar photo upload.
+- `GET|POST /account/password-change/` — Secure password update form.
+- `GET /account/addresses/` — Address book management (view, add, edit, delete, default).
+- `GET /account/wishlist/` — Wishlist items management with 1-click move to cart.
+- `GET /account/wishlist/toggle/<product_id>/` — AJAX wishlist toggle endpoint.
+- `POST /product/<product_id>/review/` — Customer star rating and review submission.
 
 ### Back-Office Admin Portal
 - `GET|POST /app-admin/login/` — Staff sign-in page with 1-click test credential auto-fill buttons.
 - `GET /app-admin/` — Dashboard KPIs (Settled Revenue, Total Orders, Active Catalog, Low Stock alerts).
 - `GET /app-admin/products/` — Product inventory management with search and action buttons.
-- `GET|POST /app-admin/products/create/` — Add new product to inventory.
-- `GET|POST /app-admin/products/<id>/edit/` — Edit product details and stock.
+- `GET|POST /app-admin/products/create/` — Add new product with primary image + multiple gallery photos.
+- `GET|POST /app-admin/products/<id>/edit/` — Edit product details, upload additional photos, manage existing gallery.
+- `GET /app-admin/products/images/<id>/delete/` — Delete individual gallery image.
 - `GET /app-admin/categories/` — Category taxonomy management.
 - `GET /app-admin/orders/` — Order fulfillment queue filtered by status (`Pending`, `Processing`, `Shipped`, etc.).
 - `GET|POST /app-admin/orders/<id>/` — Manage order status and payment verification.

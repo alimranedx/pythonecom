@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Address | PythonEcom{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white">
+                <div class="rounded-circle bg-danger-subtle text-danger mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                    <i class="bi bi-trash3 fs-2"></i>
+                </div>
+                <h4 class="fw-bold text-danger mb-2">Delete Address?</h4>
+                <p class="text-muted small mb-4">
+                    Are you sure you want to remove <strong>"{{ address.full_name }} — {{ address.street_address }}"</strong> from your address book?
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'address_list' %}" class="btn btn-light border px-4">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-4 fw-semibold">Yes, Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

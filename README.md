@@ -50,6 +50,9 @@ The platform comes pre-configured with dedicated accounts for testing the **Gran
 | **Shopping Cart** | `http://127.0.0.1:8000/cart/` | Off-canvas drawer & full cart page with free delivery indicator |
 | **Checkout** | `http://127.0.0.1:8000/orders/checkout/` | One-page checkout, address selection, payment method choices |
 | **Customer Portal** | `http://127.0.0.1:8000/account/dashboard/` | Customer order history, shipping addresses, live order tracker |
+| **Customer Profile** | `http://127.0.0.1:8000/account/profile/edit/` | Avatar upload, personal info, phone number |
+| **Customer Wishlist** | `http://127.0.0.1:8000/account/wishlist/` | Saved items, live heart badge, move-to-cart in 1-click |
+| **Address Book** | `http://127.0.0.1:8000/account/addresses/` | Manage shipping destinations with default indicator |
 | **Back-Office Portal** | `http://127.0.0.1:8000/app-admin/` | Custom RBAC staff dashboard, revenue KPIs, low-stock warnings |
 | **Role & Permission Manager** | `http://127.0.0.1:8000/app-admin/rbac/roles/` | Interactive matrix of module & submodule capabilities |
 
@@ -99,6 +102,22 @@ Permissions are structured hierarchically: `Module` ➔ `Submodule` ➔ `Action`
   - `rbac.staff.view`, `edit`
 
 Super Administrators can create new roles and assign any combination of module permissions using the back-office checkbox matrix.
+
+---
+
+## ✨ Advanced Production E-Commerce Features
+
+- **Multiple Image Upload**: Back-office product manager allows uploading a primary thumbnail plus multiple gallery photos simultaneously with individual deletion controls.
+- **Circle Mirror Zoom**: Product detail page features a circular magnifying glass loupe (Amazon/Shopify-style) that tracks the cursor with 2.4x high-resolution optical zoom.
+- **Interactive Image Thumbnails**: Hovering or clicking any gallery angle instantaneously switches the main showcase image and syncs the circle mirror zoom background.
+- **User Wishlist Engine**:
+  - Heart icon button on every product card (`Home`, `Catalog`, `Product Detail`) with instant AJAX toggle.
+  - Live navbar heart counter badge (`#navWishlistBadge`).
+  - Dedicated wishlist management page with 1-click **Move to Cart** action.
+- **User Profile & Address Book**:
+  - Avatar image upload, personal information editing, and password change.
+  - Multi-address book management (Add, Edit, Delete, Primary Default Shipping).
+- **Customer Product Reviews**: Star ratings (1-5) and feedback submission.
 
 ---
 

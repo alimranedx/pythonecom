@@ -7,7 +7,7 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             'name', 'category', 'brand', 'short_description', 'description',
-            'price', 'discount_price', 'stock', 'is_featured', 'is_flash_sale', 'is_active'
+            'price', 'discount_price', 'stock', 'image', 'is_featured', 'is_flash_sale', 'is_active'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter product name'}),
@@ -18,6 +18,7 @@ class ProductForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
             'discount_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00 (optional)', 'step': '0.01'}),
             'stock': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Available quantity'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
             'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_flash_sale': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

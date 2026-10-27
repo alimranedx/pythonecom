@@ -34,3 +34,18 @@ class Address(TimeStampedModel):
 
     def __str__(self):
         return f"{self.full_name} - {self.street_address}, {self.city}"
+
+
+class Wishlist(TimeStampedModel):
+    """
+    User wishlist item linking customer to saved products.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist_items')
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE, related_name='wishlisted_by')
+
+    class Meta:
+        unique_together = ('user', 'product')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} ➔ {self.product.name}"

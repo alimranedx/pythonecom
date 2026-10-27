@@ -109,14 +109,28 @@
                     {% for product in products %}
                         <div class="col-md-4 col-6">
                             <div class="card product-card border-0 shadow-sm h-100">
-                                <div class="product-img-wrapper">
+                                <div class="product-img-wrapper position-relative">
                                     {% if product.has_discount %}
                                         <span class="badge-discount">-{{ product.discount_percent }}%</span>
                                     {% endif %}
                                     {% if product.is_flash_sale %}
                                         <span class="badge-new bg-danger">Flash Deal</span>
                                     {% endif %}
-                                    <i class="bi bi-box-seam display-4 text-primary opacity-50"></i>
+
+                                    <!-- Wishlist Heart Button -->
+                                    <button type="button" class="btn btn-sm btn-light rounded-circle position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 5;" onclick="toggleWishlist({{ product.pk }}, this)" title="Save to Wishlist">
+                                        {% if product.pk in user_wishlist_ids %}
+                                            <i class="bi bi-heart-fill text-danger"></i>
+                                        {% else %}
+                                            <i class="bi bi-heart text-secondary"></i>
+                                        {% endif %}
+                                    </button>
+
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%;">
+                                    {% else %}
+                                        <i class="bi bi-box-seam display-4 text-primary opacity-50"></i>
+                                    {% endif %}
                                 </div>
                                 <div class="card-body p-3 d-flex flex-column">
                                     <div class="d-flex justify-content-between small text-muted mb-1">

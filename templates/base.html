@@ -177,7 +177,10 @@
                                     <strong class="text-truncate d-block">{{ request.user.username }}</strong>
                                 </li>
                                 <li><a class="dropdown-item py-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-grid me-2"></i> Dashboard</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'customer_profile_edit' %}"><i class="bi bi-person-gear me-2"></i> Edit Profile</a></li>
                                 <li><a class="dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-receipt me-2"></i> My Orders</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> My Wishlist</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'address_list' %}"><i class="bi bi-geo-alt me-2 text-primary"></i> Address Book</a></li>
                                 {% if request.user.is_staff %}
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item py-2 text-primary" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2 me-2"></i> Back-Office Panel</a></li>
@@ -192,6 +195,15 @@
                             {% endif %}
                         </ul>
                     </div>
+
+                    <!-- Wishlist Trigger -->
+                    <a href="{% url 'wishlist_view' %}" class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2 position-relative" title="My Wishlist">
+                        <i class="bi bi-heart fs-5 text-danger"></i>
+                        <span class="d-none d-lg-inline small fw-semibold">Wishlist</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="navWishlistBadge">
+                            {{ global_wishlist_count|default:0 }}
+                        </span>
+                    </a>
 
                     <!-- Off-Canvas Cart Trigger -->
                     <button class="btn btn-outline-primary rounded-pill px-3 d-flex align-items-center gap-2 position-relative" 
@@ -374,8 +386,67 @@
         </div>
     </footer>
 
+    <!-- Floating Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center text-bg-dark border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">
+                    Action completed.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function showToast(message) {
+        const toastEl = document.getElementById('liveToast');
+        const msgEl = document.getElementById('toastMessage');
+        if (toastEl && msgEl) {
+            msgEl.innerText = message;
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
+    }
+
+    function toggleWishlist(productId, btnElem) {
+        fetch(`/account/wishlist/toggle/${productId}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(res => {
+            if (res.status === 401) {
+                window.location.href = `/account/login/?next=${encodeURIComponent(window.location.pathname)}`;
+                return null;
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
+            if (data.success) {
+                const badge = document.getElementById('navWishlistBadge');
+                if (badge) badge.innerText = data.count;
+
+                if (btnElem) {
+                    const icon = btnElem.querySelector('i');
+                    if (icon) {
+                        if (data.action === 'added') {
+                            icon.className = 'bi bi-heart-fill text-danger';
+                        } else {
+                            icon.className = 'bi bi-heart text-secondary';
+                        }
+                    }
+                }
+                showToast(data.message);
+            }
+        })
+        .catch(err => console.error('Wishlist error:', err));
+    }
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
