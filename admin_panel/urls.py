@@ -1,0 +1,33 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('login/', views.admin_login, name='admin_login'),
+    path('logout/', views.admin_logout, name='admin_logout'),
+    path('', views.admin_dashboard, name='admin_dashboard'),
+
+    # Products
+    path('products/', views.admin_product_list, name='admin_product_list'),
+    path('products/create/', views.admin_product_create, name='admin_product_create'),
+    path('products/<int:pk>/edit/', views.admin_product_edit, name='admin_product_edit'),
+    path('products/<int:pk>/delete/', views.admin_product_delete, name='admin_product_delete'),
+
+    # Categories
+    path('categories/', views.admin_category_list, name='admin_category_list'),
+    path('categories/create/', views.admin_category_create, name='admin_category_create'),
+    path('categories/<int:pk>/edit/', views.admin_category_edit, name='admin_category_edit'),
+    path('categories/<int:pk>/delete/', views.admin_category_delete, name='admin_category_delete'),
+
+    # Orders
+    path('orders/', views.admin_order_list, name='admin_order_list'),
+    path('orders/<int:pk>/', views.admin_order_detail, name='admin_order_detail'),
+
+    # Customers
+    path('customers/', views.admin_customer_list, name='admin_customer_list'),
+
+    # RBAC & Access Control
+    path('rbac/roles/', views.admin_role_list, name='admin_role_list'),
+    path('rbac/roles/create/', views.admin_role_create, name='admin_role_create'),
+    path('rbac/roles/<int:pk>/edit/', views.admin_role_edit, name='admin_role_edit'),
+    path('rbac/staff/', views.admin_staff_list, name='admin_staff_list'),
+]

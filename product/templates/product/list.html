@@ -1,22 +1,176 @@
-<h1>Products</h1>
-<a href="{% url 'product_create' %}">+ Add Product</a>
+{% extends 'base.html' %}
 
-<table border="1">
-  <tr>
-    <th>Name</th><th>Price</th><th>Stock</th><th>Actions</th>
-  </tr>
-  {% for product in products %}
-  <tr>
-    <td>{{ product.name }}</td>
-    <td>{{ product.price }}</td>
-    <td>{{ product.stock }}</td>
-    <td>
-      <a href="{% url 'product_detail' product.pk %}">View</a> |
-      <a href="{% url 'product_update' product.pk %}">Edit</a> |
-      <a href="{% url 'product_delete' product.pk %}">Delete</a>
-    </td>
-  </tr>
-  {% empty %}
-  <tr><td colspan="4">No products found.</td></tr>
-  {% endfor %}
-</table>
+{% block title %}All Products | PythonEcom Marketplace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Catalog</li>
+                    {% if selected_category %}
+                        <li class="breadcrumb-item active" aria-current="page">{{ selected_category.name }}</li>
+                    {% endif %}
+                </ol>
+            </nav>
+            <h2 class="fw-bold mb-0">
+                {% if selected_category %}
+                    {{ selected_category.name }}
+                {% elif query %}
+                    Search results for "{{ query }}"
+                {% else %}
+                    Explore All Products
+                {% endif %}
+            </h2>
+            <small class="text-muted">Showing {{ total_count }} product{{ total_count|pluralize }}</small>
+        </div>
+
+        <!-- Sort Control -->
+        <div class="d-flex align-items-center gap-2 mt-3 mt-md-0">
+            <span class="small text-muted text-nowrap">Sort by:</span>
+            <form method="get" class="d-inline">
+                {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+                {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand.slug }}">{% endif %}
+                <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
+                    <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name: A to Z</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-funnel me-1"></i> Filters</h6>
+                    <a href="{% url 'product_list' %}" class="small text-muted text-decoration-none">Reset All</a>
+                </div>
+
+                <!-- Categories Filter -->
+                <div class="mb-4">
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2">Categories</h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="mb-1">
+                            <a href="{% url 'product_list' %}" class="d-flex justify-content-between align-items-center text-decoration-none py-1 {% if not selected_category %}fw-bold text-primary{% else %}text-secondary{% endif %}">
+                                <span>All Categories</span>
+                            </a>
+                        </li>
+                        {% for cat in categories %}
+                            <li class="mb-1">
+                                <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="d-flex justify-content-between align-items-center text-decoration-none py-1 {% if selected_category.slug == cat.slug %}fw-bold text-primary{% else %}text-secondary{% endif %}">
+                                    <span><i class="bi {{ cat.icon }} me-1"></i> {{ cat.name }}</span>
+                                    <span class="badge bg-light text-muted border">{{ cat.products.count }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Brands Filter -->
+                <div class="mb-4">
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2">Brands</h6>
+                    <ul class="list-unstyled mb-0 small">
+                        {% for brand in brands %}
+                            <li class="mb-1">
+                                <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="d-flex justify-content-between align-items-center text-decoration-none py-1 {% if selected_brand.slug == brand.slug %}fw-bold text-primary{% else %}text-secondary{% endif %}">
+                                    <span>{{ brand.name }}</span>
+                                    <span class="badge bg-light text-muted border">{{ brand.products.count }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Availability Filter -->
+                <div>
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2">Availability</h6>
+                    <div class="form-check small">
+                        <input class="form-check-input" type="checkbox" id="inStockCheck" {% if request.GET.in_stock == '1' %}checked{% endif %} onchange="window.location.href='{% url 'product_list' %}?in_stock=' + (this.checked ? '1' : '0')">
+                        <label class="form-check-label text-secondary" for="inStockCheck">
+                            In Stock Only
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            {% if products %}
+                <div class="row g-3">
+                    {% for product in products %}
+                        <div class="col-md-4 col-6">
+                            <div class="card product-card border-0 shadow-sm h-100">
+                                <div class="product-img-wrapper">
+                                    {% if product.has_discount %}
+                                        <span class="badge-discount">-{{ product.discount_percent }}%</span>
+                                    {% endif %}
+                                    {% if product.is_flash_sale %}
+                                        <span class="badge-new bg-danger">Flash Deal</span>
+                                    {% endif %}
+                                    <i class="bi bi-box-seam display-4 text-primary opacity-50"></i>
+                                </div>
+                                <div class="card-body p-3 d-flex flex-column">
+                                    <div class="d-flex justify-content-between small text-muted mb-1">
+                                        <span>{{ product.category.name|default:"General" }}</span>
+                                        {% if product.stock > 0 %}
+                                            <span class="text-success small"><i class="bi bi-check-circle me-1"></i>{{ product.stock }} left</span>
+                                        {% else %}
+                                            <span class="text-danger small">Out of stock</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <h6 class="fw-bold text-truncate mb-1" title="{{ product.name }}">
+                                        <a href="{% url 'product_detail' product.pk %}" class="text-dark text-decoration-none">
+                                            {{ product.name }}
+                                        </a>
+                                    </h6>
+                                    <p class="small text-muted text-truncate mb-3">{{ product.short_description|default:product.description }}</p>
+
+                                    <div class="d-flex align-items-baseline gap-2 mb-3">
+                                        <span class="fs-5 fw-bold text-primary">${{ product.effective_price }}</span>
+                                        {% if product.has_discount %}
+                                            <span class="text-decoration-line-through text-muted small">${{ product.price }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mt-auto d-flex gap-2">
+                                        <form action="{% url 'add_to_cart' product.pk %}" method="post" class="flex-grow-1">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm fw-semibold" {% if product.stock <= 0 %}disabled{% endif %}>
+                                                <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                            </button>
+                                        </form>
+                                        <a href="{% url 'product_detail' product.pk %}" class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center text-muted">
+                    <i class="bi bi-search display-3 text-secondary mb-3"></i>
+                    <h4 class="fw-bold text-dark">No products found</h4>
+                    <p class="small mb-4">We couldn't find any products matching your current filters or search query.</p>
+                    <div>
+                        <a href="{% url 'product_list' %}" class="btn btn-primary rounded-pill px-4">
+                            Clear Filters & View All
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

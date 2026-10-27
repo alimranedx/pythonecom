@@ -1,0 +1,36 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block page_title %}Create New Role{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h5 class="fw-bold mb-0">Create Role</h5>
+                <a href="{% url 'admin_role_list' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Roles
+                </a>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Role Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" required placeholder="e.g. Marketing Manager, Warehouse Dispatcher">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-semibold">Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Explain the responsibilities and scope of this role"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'admin_role_list' %}" class="btn btn-light border px-4">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Create & Configure Permissions</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

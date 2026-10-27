@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart | PythonEcom{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Shopping Cart</h2>
+            <p class="text-muted small">Review your items before proceeding to checkout</p>
+        </div>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i> Continue Shopping
+        </a>
+    </div>
+
+    {% if cart and cart.items.exists %}
+        <div class="row g-4">
+            <!-- Left: Items Table -->
+            <div class="col-lg-8">
+                <!-- Free Shipping Progress Indicator -->
+                <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-light">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="small fw-semibold">
+                            <i class="bi bi-truck text-primary me-1"></i>
+                            {% if cart.subtotal >= 50 %}
+                                <span class="text-success fw-bold">Congratulations! You have unlocked Free Express Shipping!</span>
+                            {% else %}
+                                Add <strong>${{ 50|add:"-cart.subtotal"|default:"50.00" }}</strong> more to qualify for <strong>FREE Delivery</strong>!
+                            {% endif %}
+                        </span>
+                        <span class="small text-muted">$50 Threshold</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {% if cart.subtotal >= 50 %}100{% else %}{{ cart.subtotal|floatformat:0 }}0{% endif %}%;"></div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light small">
+                                <tr>
+                                    <th scope="col" class="ps-4">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col" class="text-center" style="width: 140px;">Quantity</th>
+                                    <th scope="col">Subtotal</th>
+                                    <th scope="col" class="text-end pe-4">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart.items.all %}
+                                    <tr>
+                                        <td class="ps-4 py-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="rounded bg-light p-2 text-center" style="width: 50px; height: 50px; flex-shrink: 0;">
+                                                    <i class="bi bi-box-seam text-secondary fs-4"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-semibold">
+                                                        <a href="{% url 'product_detail' item.product.pk %}" class="text-dark text-decoration-none">
+                                                            {{ item.product.name }}
+                                                        </a>
+                                                    </h6>
+                                                    <small class="text-muted">{{ item.product.category.name|default:"General" }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold">${{ item.product.effective_price }}</span>
+                                        </td>
+                                        <td>
+                                            <form action="{% url 'update_cart_quantity' item.product.pk %}" method="post" class="d-flex align-items-center justify-content-center">
+                                                {% csrf_token %}
+                                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control form-control-sm text-center me-1" style="width: 65px;">
+                                                <button type="submit" class="btn btn-sm btn-light border" title="Update">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-primary">${{ item.line_total }}</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <a href="{% url 'remove_from_cart' item.product.pk %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Remove Item">
+                                                <i class="bi bi-trash3"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary Sidebar -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px;">
+                    <h5 class="fw-bold mb-3">Order Summary</h5>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Items Subtotal:</span>
+                        <span class="fw-semibold">${{ cart.subtotal }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Delivery Fee:</span>
+                        {% if cart.shipping_cost == 0 %}
+                            <span class="text-success fw-bold">FREE</span>
+                        {% else %}
+                            <span class="fw-semibold">${{ cart.shipping_cost }}</span>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-3">
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fs-5 fw-bold">Total Amount:</span>
+                        <span class="fs-4 fw-bold text-primary">${{ cart.grand_total }}</span>
+                    </div>
+
+                    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">
+                        <i class="bi bi-lock-fill me-1"></i> Proceed to Checkout
+                    </a>
+
+                    <div class="text-center small text-muted">
+                        <i class="bi bi-shield-check text-success me-1"></i> 256-bit Secure Encrypted Checkout
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4">
+            <i class="bi bi-cart-x display-1 text-muted mb-3 d-block"></i>
+            <h3 class="fw-bold">Your Shopping Cart is Empty</h3>
+            <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
+            <div>
+                <a href="{% url 'product_list' %}" class="btn btn-primary rounded-pill px-4">
+                    Explore Catalog
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

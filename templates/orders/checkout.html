@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Secure Checkout | PythonEcom{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1"><i class="bi bi-shield-lock text-primary me-2"></i>Secure Checkout</h2>
+        <p class="text-muted small">Complete your shipping address and choose your payment method</p>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row g-4">
+            <!-- Left: Shipping & Payment Details -->
+            <div class="col-lg-8">
+                <!-- Shipping Address Card -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center">
+                        <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">1</span>
+                        Shipping Information
+                    </h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="full_name" class="form-control" value="{{ initial.full_name|default:'' }}" required placeholder="e.g. John Doe">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" value="{{ initial.email|default:'' }}" required placeholder="e.g. john@example.com">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" name="phone" class="form-control" value="{{ initial.phone|default:'' }}" required placeholder="e.g. +880 1712-345678">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">City <span class="text-danger">*</span></label>
+                            <input type="text" name="city" class="form-control" value="{{ initial.city|default:'Dhaka' }}" required placeholder="e.g. Dhaka">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Street Address <span class="text-danger">*</span></label>
+                            <input type="text" name="street_address" class="form-control" value="{{ initial.street_address|default:'' }}" required placeholder="e.g. House 12, Road 4, Block C">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Postal Code</label>
+                            <input type="text" name="postal_code" class="form-control" value="{{ initial.postal_code|default:'1212' }}" placeholder="e.g. 1212">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Country</label>
+                            <input type="text" name="country" class="form-control" value="{{ initial.country|default:'Bangladesh' }}" readonly>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Order Notes / Delivery Instructions (Optional)</label>
+                            <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Leave package with building security">{{ initial.notes|default:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Card (Strategy Pattern Choice) -->
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center">
+                        <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                        Payment Method
+                    </h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-check p-3 border rounded-3 bg-light h-100">
+                                <input class="form-check-input" type="radio" name="payment_method" id="payCOD" value="cod" checked>
+                                <label class="form-check-label fw-bold d-block" for="payCOD">
+                                    <i class="bi bi-cash-stack text-success fs-5 d-block mb-1"></i>
+                                    Cash On Delivery
+                                    <small class="d-block text-muted fw-normal">Pay with cash when order arrives</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check p-3 border rounded-3 bg-light h-100">
+                                <input class="form-check-input" type="radio" name="payment_method" id="payCard" value="card">
+                                <label class="form-check-label fw-bold d-block" for="payCard">
+                                    <i class="bi bi-credit-card-2-front text-primary fs-5 d-block mb-1"></i>
+                                    Credit / Debit Card
+                                    <small class="d-block text-muted fw-normal">Instant authorization</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check p-3 border rounded-3 bg-light h-100">
+                                <input class="form-check-input" type="radio" name="payment_method" id="payMFS" value="mobile_banking">
+                                <label class="form-check-label fw-bold d-block" for="payMFS">
+                                    <i class="bi bi-phone-fill text-danger fs-5 d-block mb-1"></i>
+                                    Mobile Banking
+                                    <small class="d-block text-muted fw-normal">bKash, Nagad, Rocket</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Sticky Order Summary -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px;">
+                    <h5 class="fw-bold mb-3">Order Items ({{ cart.total_items }})</h5>
+
+                    <div class="mb-3 overflow-auto" style="max-height: 240px;">
+                        {% for item in cart.items.all %}
+                            <div class="d-flex justify-content-between align-items-center mb-2 small pb-2 border-bottom">
+                                <div>
+                                    <strong class="text-truncate d-block" style="max-width: 180px;">{{ item.product.name }}</strong>
+                                    <span class="text-muted">{{ item.quantity }} × ${{ item.product.effective_price }}</span>
+                                </div>
+                                <span class="fw-semibold">${{ item.line_total }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Subtotal:</span>
+                        <span class="fw-semibold">${{ cart.subtotal }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Shipping:</span>
+                        {% if cart.shipping_cost == 0 %}
+                            <span class="text-success fw-bold">FREE</span>
+                        {% else %}
+                            <span class="fw-semibold">${{ cart.shipping_cost }}</span>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-3">
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fs-5 fw-bold">Total Due:</span>
+                        <span class="fs-4 fw-bold text-primary">${{ cart.grand_total }}</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">
+                        <i class="bi bi-check2-circle me-1"></i> Place Order Now
+                    </button>
+
+                    <div class="text-center small text-muted">
+                        By placing your order, you agree to PythonEcom's Terms of Service and Privacy Policy.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

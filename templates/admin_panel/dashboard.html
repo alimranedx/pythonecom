@@ -1,0 +1,152 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load rbac_tags %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block admin_content %}
+{% has_perm request.user 'orders.orders' 'view' as can_view_orders %}
+<!-- Metric KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Total Revenue</span>
+                <div class="rounded-circle bg-success-subtle text-success p-2">
+                    <i class="bi bi-currency-dollar fs-5"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1 text-dark">${{ total_revenue }}</h3>
+            <small class="text-success"><i class="bi bi-arrow-up-right"></i> Settled payments</small>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Total Orders</span>
+                <div class="rounded-circle bg-primary-subtle text-primary p-2">
+                    <i class="bi bi-cart-check fs-5"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1 text-dark">{{ total_orders }}</h3>
+            <small class="text-primary">{{ pending_orders }} pending approval</small>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Active Catalog</span>
+                <div class="rounded-circle bg-info-subtle text-info p-2">
+                    <i class="bi bi-boxes fs-5"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1 text-dark">{{ total_products }}</h3>
+            <small class="text-muted">Total inventory items</small>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-semibold text-uppercase">Customers</span>
+                <div class="rounded-circle bg-warning-subtle text-warning p-2">
+                    <i class="bi bi-people fs-5"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-1 text-dark">{{ total_customers }}</h3>
+            <small class="text-muted">Registered accounts</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Orders Table -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Recent Orders</h5>
+                {% if can_view_orders %}
+                    <a href="{% url 'admin_order_list' %}" class="small text-decoration-none">View All</a>
+                {% endif %}
+            </div>
+
+            {% if recent_orders %}
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order Ref</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                                <tr>
+                                    <td><strong>{{ order.order_number }}</strong></td>
+                                    <td>{{ order.full_name }}</td>
+                                    <td class="fw-bold">${{ order.total_amount }}</td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if order.payment_status == 'paid' %}
+                                            <span class="badge bg-success-subtle text-success">Paid</span>
+                                        {% else %}
+                                            <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'admin_order_detail' order.pk %}" class="btn btn-sm btn-light border">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted small my-3">No orders placed yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Low Stock Inventory Alerts -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Low Stock Alerts</h5>
+                <span class="badge bg-danger">{{ low_stock_count }} items</span>
+            </div>
+
+            {% if low_stock_products %}
+                <div class="list-group list-group-flush">
+                    {% for p in low_stock_products %}
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="small text-dark d-block text-truncate" style="max-width: 170px;">{{ p.name }}</strong>
+                                <small class="text-muted">{{ p.category.name|default:"General" }}</small>
+                            </div>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                {{ p.stock }} units left
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4 text-muted small">
+                    <i class="bi bi-check-circle fs-3 text-success d-block mb-1"></i>
+                    All product inventories are well stocked!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

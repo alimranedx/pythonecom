@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PythonEcom | Modern E-Commerce Marketplace{% endblock %}</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent-color: #f97316;
+            --dark-color: #0f172a;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--light-bg);
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1 0 auto;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+        }
+        .product-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15) !important;
+        }
+        .product-img-wrapper {
+            position: relative;
+            background: #f1f5f9;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .product-img-wrapper img {
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover .product-img-wrapper img {
+            transform: scale(1.05);
+        }
+        .badge-discount {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ef4444;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            z-index: 2;
+        }
+        .badge-new {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            z-index: 2;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        .announcement-bar {
+            background: #0f172a;
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            padding: 6px 0;
+        }
+        .offcanvas-cart {
+            width: 380px !important;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <i class="bi bi-truck me-1 text-warning"></i>
+                <strong>Free Express Shipping</strong> on orders over $50!
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'admin_login' %}" class="text-white text-decoration-none small">
+                    <i class="bi bi-shield-lock me-1"></i> Admin Portal
+                </a>
+                <span class="text-secondary">|</span>
+                <span class="small"><i class="bi bi-telephone me-1"></i> +880 1700-000000</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="bg-white border-bottom sticky-top shadow-sm">
+        <div class="container py-2">
+            <div class="row align-items-center">
+                <!-- Logo -->
+                <div class="col-auto">
+                    <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2">
+                        <i class="bi bi-bag-check-fill fs-3 text-primary"></i>
+                        <span>Python<span class="text-dark">Ecom</span></span>
+                    </a>
+                </div>
+
+                <!-- Live Search Bar -->
+                <div class="col my-2 my-md-0">
+                    <form action="{% url 'product_list' %}" method="get" class="d-flex">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="q" class="form-control bg-light border-start-0" 
+                                   placeholder="Search products, brands, or categories..." 
+                                   value="{{ request.GET.q }}">
+                            <button class="btn btn-primary px-3" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- User & Cart Controls -->
+                <div class="col-auto d-flex align-items-center gap-2">
+                    <!-- User Account Dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle fs-5 text-secondary"></i>
+                            <span class="d-none d-lg-inline small fw-semibold">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.first_name|default:request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                            {% if request.user.is_authenticated %}
+                                <li class="px-3 py-2 border-bottom">
+                                    <small class="text-muted d-block">Signed in as</small>
+                                    <strong class="text-truncate d-block">{{ request.user.username }}</strong>
+                                </li>
+                                <li><a class="dropdown-item py-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-grid me-2"></i> Dashboard</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-receipt me-2"></i> My Orders</a></li>
+                                {% if request.user.is_staff %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item py-2 text-primary" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2 me-2"></i> Back-Office Panel</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2 text-danger" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item py-2" href="{% url 'account_login' %}"><i class="bi bi-box-arrow-in-right me-2"></i> Sign In</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'account_register' %}"><i class="bi bi-person-plus me-2"></i> Create Account</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2 text-muted" href="{% url 'admin_login' %}"><i class="bi bi-shield-lock me-2"></i> Admin Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!-- Off-Canvas Cart Trigger -->
+                    <button class="btn btn-outline-primary rounded-pill px-3 d-flex align-items-center gap-2 position-relative" 
+                            type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                        <i class="bi bi-cart3 fs-5"></i>
+                        <span class="d-none d-lg-inline small fw-semibold">Cart</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="navCartBadge">
+                            {{ global_cart_items_count|default:0 }}
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub Navigation Bar -->
+        <div class="bg-light border-top py-1 d-none d-md-block">
+            <div class="container d-flex align-items-center justify-content-between small">
+                <div class="d-flex align-items-center gap-4">
+                    <a href="{% url 'home' %}" class="text-decoration-none fw-semibold text-dark">Home</a>
+                    <a href="{% url 'product_list' %}" class="text-decoration-none fw-semibold text-dark">All Products</a>
+                    <a href="{% url 'product_list' %}?category=electronics-laptops" class="text-decoration-none text-secondary">Laptops</a>
+                    <a href="{% url 'product_list' %}?category=smartphones-tablets" class="text-decoration-none text-secondary">Smartphones</a>
+                    <a href="{% url 'product_list' %}?category=fashion-apparel" class="text-decoration-none text-secondary">Fashion</a>
+                    <a href="{% url 'product_list' %}?category=audio-headphones" class="text-decoration-none text-secondary">Audio</a>
+                    <a href="{% url 'product_list' %}?category=watches-wearables" class="text-decoration-none text-secondary">Watches</a>
+                </div>
+                <div class="text-muted">
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Flash Sale Active</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Toast & Alert Notification Container -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Block -->
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Interactive Off-Canvas Cart Drawer -->
+    <div class="offcanvas offcanvas-end offcanvas-cart shadow" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+        <div class="offcanvas-header border-bottom bg-light">
+            <h5 class="offcanvas-title fw-bold" id="cartOffcanvasLabel">
+                <i class="bi bi-bag-check text-primary me-2"></i>Shopping Bag ({{ global_cart_items_count|default:0 }})
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-3">
+            {% if global_cart and global_cart.items.exists %}
+                <div class="flex-grow-1 overflow-auto pe-1">
+                    {% for item in global_cart.items.all %}
+                        <div class="d-flex align-items-center gap-3 py-3 border-bottom">
+                            <div class="bg-light rounded p-2 text-center" style="width: 60px; height: 60px; flex-shrink: 0;">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid" style="max-height: 100%;">
+                                {% else %}
+                                    <i class="bi bi-box text-muted fs-3"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 text-truncate" style="max-width: 180px;">
+                                    <a href="{% url 'product_detail' item.product.pk %}" class="text-dark text-decoration-none fw-semibold">
+                                        {{ item.product.name }}
+                                    </a>
+                                </h6>
+                                <div class="text-muted small">
+                                    {{ item.quantity }} × <strong class="text-success">${{ item.product.effective_price }}</strong>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold mb-1">${{ item.line_total }}</div>
+                                <a href="{% url 'remove_from_cart' item.product.pk %}" class="text-danger small text-decoration-none">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Cart Bottom Totals & CTA -->
+                <div class="border-top pt-3 mt-auto">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal:</span>
+                        <span class="fw-bold">${{ global_cart.subtotal }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Estimated Shipping:</span>
+                        {% if global_cart.shipping_cost == 0 %}
+                            <span class="text-success fw-bold">FREE</span>
+                        {% else %}
+                            <span class="fw-bold">${{ global_cart.shipping_cost }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'checkout' %}" class="btn btn-primary py-2 fw-semibold">
+                            <i class="bi bi-credit-card me-1"></i> Proceed to Checkout
+                        </a>
+                        <a href="{% url 'cart_detail' %}" class="btn btn-outline-secondary py-2">
+                            View Full Cart
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center my-auto py-5 text-muted">
+                    <i class="bi bi-cart-x fs-1 text-secondary d-block mb-3"></i>
+                    <h5 class="fw-bold">Your cart is empty</h5>
+                    <p class="small text-muted mb-4">Discover our top products and add items to your cart.</p>
+                    <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm px-4">Start Shopping</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modern Marketplace Footer -->
+    <footer class="bg-dark text-light pt-5 pb-4 mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold text-white mb-3">
+                        <i class="bi bi-bag-check-fill text-primary me-2"></i>PythonEcom
+                    </h5>
+                    <p class="text-secondary small">
+                        Enterprise-ready multi-category e-commerce platform built on Django, featuring role-based back-office security and high-converting storefront design.
+                    </p>
+                    <div class="d-flex gap-3 text-secondary fs-5 mt-3">
+                        <a href="#" class="text-secondary"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-secondary"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-secondary"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-secondary"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6 class="fw-bold text-white mb-3">Quick Links</h6>
+                    <ul class="list-unstyled small text-secondary">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-decoration-none text-secondary">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-secondary">All Products</a></li>
+                        <li class="mb-2"><a href="{% url 'cart_detail' %}" class="text-decoration-none text-secondary">My Cart</a></li>
+                        <li class="mb-2"><a href="{% url 'customer_orders' %}" class="text-decoration-none text-secondary">Track Orders</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6 class="fw-bold text-white mb-3">Staff & Admin</h6>
+                    <ul class="list-unstyled small text-secondary">
+                        <li class="mb-2"><a href="{% url 'admin_login' %}" class="text-decoration-none text-secondary"><i class="bi bi-shield-lock me-1"></i> Admin Portal</a></li>
+                        <li class="mb-2"><a href="{% url 'admin_dashboard' %}" class="text-decoration-none text-secondary">Dashboard</a></li>
+                        <li class="mb-2"><a href="{% url 'account_login' %}" class="text-decoration-none text-secondary">Customer Login</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h6 class="fw-bold text-white mb-3">Newsletter</h6>
+                    <p class="text-secondary small">Subscribe to get special discounts and exclusive product launches.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                    <small class="text-muted d-block">Accepted Payment Gateways:</small>
+                    <div class="d-flex gap-2 mt-2">
+                        <span class="badge bg-secondary">Cash on Delivery</span>
+                        <span class="badge bg-secondary">Credit / Debit Card</span>
+                        <span class="badge bg-secondary">bKash / Nagad</span>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+                <div>&copy; 2026 PythonEcom. Senior Software Engineering Implementation. All rights reserved.</div>
+                <div class="mt-2 mt-md-0">Engineered with Clean Layered Architecture & RBAC Security</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

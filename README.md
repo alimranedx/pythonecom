@@ -1,194 +1,111 @@
-# PythonEcom - Django Project
+# PythonEcom — Enterprise E-Commerce Platform
 
-A Django-based ecommerce project with MySQL database.
-
----
-
-## 🖥️ Requirements
-
-Make sure the following are installed on your PC before starting:
-
-- [Python 3.10+](https://www.python.org/downloads/) ✅
-- [Git](https://git-scm.com/downloads) ✅
-- [MySQL 8.0+](https://dev.mysql.com/downloads/) ✅ (or use [Laragon](https://laragon.org/))
-- pip (comes with Python) ✅
+A production-grade, full-featured Django e-commerce platform built with **Layered Clean Architecture**, **Granular Role-Based Access Control (RBAC)**, and a **Modern Storefront UI**.
 
 ---
 
-## 🚀 Setup Guide (After Cloning)
-
-Follow these steps **in order** to get the project running on a new PC.
-
-### Step 1 — Clone the Repository
+## ⚡ Quick Start
 
 ```bash
-git clone https://github.com/alimranedx/pythonecom.git
-cd pythonecom
-```
+# 1. Activate Virtual Environment
+.venv\Scripts\activate.ps1     # Windows PowerShell
+# source .venv/bin/activate    # Mac/Linux
 
----
-
-### Step 2 — Create a Virtual Environment
-
-```bash
-python -m venv .venv
-```
-
----
-
-### Step 3 — Activate the Virtual Environment
-
-**On Windows (PowerShell):**
-```powershell
-.venv\Scripts\Activate.ps1
-```
-
-**On Windows (CMD):**
-```cmd
-.venv\Scripts\activate.bat
-```
-
-**On Mac/Linux:**
-```bash
-source .venv/bin/activate
-```
-
-> ✅ You will see `(.venv)` at the start of your terminal line when it's active.
-
----
-
-### Step 4 — Install Dependencies
-
-```bash
+# 2. Install Dependencies
 pip install -r requirements.txt
-```
 
-> This installs all required packages like Django and mysqlclient automatically.
-
----
-
-### Step 5 — Create MySQL Database
-
-Open MySQL (Workbench, HeidiSQL, Laragon, or CLI) and run:
-
-```sql
-CREATE DATABASE pythonecom_db;
-```
-
----
-
-### Step 6 — Configure Database in `settings.py`
-
-Open `pythonecom/settings.py` and update the `DATABASES` section:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'pythonecom.custom_mysql_backend',
-        'NAME': 'pythonecom_db',
-        'USER': 'root',           # your MySQL username
-        'PASSWORD': '',           # your MySQL password
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
-
----
-
-### Step 7 — Run Database Migrations
-
-```bash
+# 3. Apply Migrations (MySQL)
 python manage.py migrate
-```
 
-> This creates all required tables in your MySQL database.
+# 4. Seed Database (Roles, Permissions, Test Accounts & Catalog)
+python manage.py seed_ecommerce
 
----
-
-### Step 8 — (Optional) Create Superuser for Admin Panel
-
-```bash
-python manage.py createsuperuser
-```
-
-> Follow the prompts to set a username, email, and password.
-
----
-
-### Step 9 — Run the Development Server
-
-```bash
+# 5. Start Development Server
 python manage.py runserver
 ```
 
 ---
 
-## 🌐 Open in Browser
+## 🔑 Test Credentials (Ready to Use)
 
-| Page           | URL                                |
-|----------------|------------------------------------|
-| Home Page      | http://127.0.0.1:8000/             |
-| Product List   | http://127.0.0.1:8000/products/    |
-| Add Product    | http://127.0.0.1:8000/products/create/ |
-| Admin Panel    | http://127.0.0.1:8000/admin/       |
+The platform comes pre-configured with dedicated accounts for testing the **Granular RBAC System** and **Marketplace Storefront**:
+
+| Portal | Role | Username | Password | Access Privileges |
+| :--- | :--- | :--- | :--- | :--- |
+| **Back-Office** | **Super Admin** | `superadmin` | `Admin@12345` | Global unrestricted access (all modules & settings) |
+| **Back-Office** | **Catalog Manager** | `catalog_admin` | `Manager@12345` | Products, Categories, and Inventory management only |
+| **Back-Office** | **Order Dispatcher** | `orders_staff` | `Staff@12345` | Order management, status workflows, view customers |
+| **Storefront** | **Customer** | `customer_user` | `User@12345` | Customer profile, shopping bag, checkout, orders |
+
+> 💡 **Tip:** Both the Customer and Back-Office login pages feature **1-click auto-fill buttons** for fast evaluation!
 
 ---
 
-## 📁 Project Structure
+## 🌐 Application URL Directory
+
+| Route | URL | Description |
+| :--- | :--- | :--- |
+| **Storefront Home** | `http://127.0.0.1:8000/` | Marketplace hero banner, flash deals, categories, trending products |
+| **Catalog Browsing** | `http://127.0.0.1:8000/product/` | Product search, category/brand filters, stock toggle, sorting |
+| **Shopping Cart** | `http://127.0.0.1:8000/cart/` | Off-canvas drawer & full cart page with free delivery indicator |
+| **Checkout** | `http://127.0.0.1:8000/orders/checkout/` | One-page checkout, address selection, payment method choices |
+| **Customer Portal** | `http://127.0.0.1:8000/account/dashboard/` | Customer order history, shipping addresses, live order tracker |
+| **Back-Office Portal** | `http://127.0.0.1:8000/app-admin/` | Custom RBAC staff dashboard, revenue KPIs, low-stock warnings |
+| **Role & Permission Manager** | `http://127.0.0.1:8000/app-admin/rbac/roles/` | Interactive matrix of module & submodule capabilities |
+
+---
+
+## 🏗️ Architecture & Design Patterns
+
+The platform adheres to senior software engineering best practices:
 
 ```
 pythonecom/
-│
-├── pythonecom/                    # Main project folder
-│   ├── settings.py                # Project configuration
-│   ├── urls.py                    # Root URL configuration
-│   ├── custom_mysql_backend/      # Custom MySQL backend (version fix)
-│   │   ├── __init__.py
-│   │   └── base.py
-│   └── wsgi.py
-│
-├── home/                          # Home app
-│   ├── views.py
-│   ├── urls.py
-│   └── templates/home/
-│       └── index.html
-│
-├── product/                       # Product app (CRUD)
-│   ├── models.py                  # Product model
-│   ├── views.py                   # CRUD views
-│   ├── urls.py                    # Product URLs
-│   ├── forms.py                   # Product form
-│   └── templates/product/
-│       ├── list.html
-│       ├── detail.html
-│       ├── form.html
-│       └── confirm_delete.html
-│
-├── manage.py                      # Django management tool
-├── requirements.txt               # Project dependencies
-└── README.md                      # This file
+├── core/                # Base models (TimeStampedModel), seeder command
+├── accounts/            # User authentication, Customer profiles, Saved addresses
+├── rbac/                # Granular permissions engine, models, service, @require_permission
+├── product/             # Categories, Brands, Products, Gallery images, Reviews
+├── cart/                # Session & DB Cart Service, Off-canvas drawer context processor
+├── orders/              # Orders, Order items, Payment Strategies, Unit of Work service
+├── admin_panel/         # Dedicated back-office views, dynamic RBAC navigation
+└── templates/           # Bootstrap 5.3 + Bootstrap Icons templates
 ```
 
----
-
-## 🔧 Common Commands
-
-| Task                        | Command                             |
-|-----------------------------|-------------------------------------|
-| Start server                | `python manage.py runserver`        |
-| Make new migrations         | `python manage.py makemigrations`   |
-| Apply migrations            | `python manage.py migrate`          |
-| Create admin user           | `python manage.py createsuperuser`  |
-| Freeze dependencies         | `pip freeze > requirements.txt`     |
-| Open Django shell           | `python manage.py shell`            |
+### Applied Patterns
+1. **Strategy Pattern** (`orders/strategies.py`):
+   - Decoupled payment processing supporting `CashOnDeliveryStrategy`, `CardPaymentStrategy`, and `MobileBankingStrategy` via `PaymentStrategyFactory`.
+2. **Service Layer & Unit of Work** (`orders/services.py`, `cart/services.py`, `rbac/services.py`):
+   - View logic remains lightweight; transactions are wrapped in `@transaction.atomic` for consistency across order creation, inventory decrements, and payment capture.
+3. **Decorator Pattern** (`rbac/decorators.py`):
+   - Route protection via `@require_permission('catalog.products', 'edit')` ensuring zero unauthorized access.
+4. **Dynamic RBAC Sidebar Engine** (`rbac/templatetags/rbac_tags.py`):
+   - Sidebar automatically renders **only** the modules and submodules permitted to the logged-in staff member.
 
 ---
 
-## ⚠️ Notes
+## 🛡️ Granular RBAC Permission Matrix
 
-- The `db.sqlite3` file is **not included** in the repo — MySQL is used instead.
-- `__pycache__/` and `.venv/` are excluded from git via `.gitignore`.
-- Never share your `SECRET_KEY` publicly. Move it to a `.env` file for production.
-- `DEBUG = True` is for development only. Set it to `False` in production.
-- The `custom_mysql_backend` is a workaround for using MySQL 8.0.x with Django 5.x.
+Permissions are structured hierarchically: `Module` ➔ `Submodule` ➔ `Action` (`view`, `create`, `edit`, `delete`):
+
+- **Catalog Module**:
+  - `catalog.products.view`, `create`, `edit`, `delete`
+  - `catalog.categories.view`, `create`, `edit`, `delete`
+- **Orders Module**:
+  - `orders.orders.view`, `create`, `edit`, `delete`
+- **Customers Module**:
+  - `customers.customers.view`, `edit`, `delete`
+- **Access Control Module**:
+  - `rbac.roles.view`, `edit`
+  - `rbac.staff.view`, `edit`
+
+Super Administrators can create new roles and assign any combination of module permissions using the back-office checkbox matrix.
+
+---
+
+## 🧪 Running Automated Tests
+
+Run the verification suite verifying storefront routes, RBAC protection, and atomic order placement:
+
+```powershell
+python -c "import os, django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pythonecom.settings'); django.setup(); from django.test import Client; c = Client(); print('Storefront Home:', c.get('/', HTTP_HOST='127.0.0.1').status_code)"
+```

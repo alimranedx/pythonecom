@@ -1,0 +1,93 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block page_title %}Edit Role Permissions: {{ role.name }}{% endblock %}
+
+{% block admin_content %}
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h5 class="fw-bold mb-1">Privilege Matrix: <span class="text-primary">{{ role.name }}</span></h5>
+            <small class="text-muted">Configure module and submodule capabilities for this role</small>
+        </div>
+        <a href="{% url 'admin_role_list' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i> Back to Roles
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="small fw-bold text-uppercase text-muted">Permission Modules & Submodules</span>
+                <div class="small">
+                    <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 me-3" onclick="toggleAll(true)">Select All</button>
+                    <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-muted" onclick="toggleAll(false)">Deselect All</button>
+                </div>
+            </div>
+
+            {% for mod in modules %}
+                <div class="card border rounded-3 mb-4 overflow-hidden">
+                    <div class="card-header bg-light py-3 d-flex align-items-center gap-2">
+                        <i class="bi {{ mod.icon }} text-primary fs-5"></i>
+                        <strong class="text-dark">{{ mod.name }} Module</strong>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 35%;">Submodule</th>
+                                    <th>Permissions Granted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sub in mod.submodules.all %}
+                                    <tr>
+                                        <td>
+                                            <strong class="text-dark">{{ sub.name }}</strong>
+                                            <code class="d-block text-muted" style="font-size: 0.72rem;">{{ sub.code }}</code>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-4">
+                                                {% for perm in sub.permissions.all %}
+                                                    <div class="form-check">
+                                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions" value="{{ perm.id }}" id="perm_{{ perm.id }}" {% if perm.id in assigned_perm_ids %}checked{% endif %}>
+                                                        <label class="form-check-label" for="perm_{{ perm.id }}">
+                                                            {% if perm.action == 'view' %}
+                                                                <span class="badge bg-info-subtle text-info border">View</span>
+                                                            {% elif perm.action == 'create' %}
+                                                                <span class="badge bg-success-subtle text-success border">Create</span>
+                                                            {% elif perm.action == 'edit' %}
+                                                                <span class="badge bg-warning-subtle text-warning border">Edit</span>
+                                                            {% elif perm.action == 'delete' %}
+                                                                <span class="badge bg-danger-subtle text-danger border">Delete</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary">{{ perm.action }}</span>
+                                                            {% endif %}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% url 'admin_role_list' %}" class="btn btn-light border px-4">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Permissions</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleAll(check) {
+    document.querySelectorAll('.perm-checkbox').forEach(cb => cb.checked = check);
+}
+</script>
+{% endblock %}

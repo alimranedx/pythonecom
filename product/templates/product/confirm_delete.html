@@ -1,7 +1,74 @@
-<h1>Delete "{{ product.name }}"?</h1>
-<p>This action cannot be undone!</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Yes, Delete</button>
-  <a href="{% url 'product_list' %}">Cancel</a>
-</form>
+{% extends 'base.html' %}
+
+{% block title %}Delete {{ product.name }} | PythonEcom{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <!-- Breadcrumb navigation -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Delete Product</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 text-center">
+                <div class="rounded-circle bg-danger-subtle text-danger mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                    <i class="bi bi-trash3-fill fs-2"></i>
+                </div>
+
+                <h4 class="fw-bold text-danger mb-2">Delete Product</h4>
+                <p class="text-muted mb-4">
+                    Are you sure you want to permanently delete this product? This action <strong>cannot be undone</strong>.
+                </p>
+
+                <!-- Product Details Box -->
+                <div class="card bg-light border-0 text-start mb-4">
+                    <div class="card-body p-3">
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted small">Product Name:</div>
+                            <div class="col-8 fw-semibold">{{ product.name }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted small">Price:</div>
+                            <div class="col-8 text-success fw-bold">${{ product.price }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted small">Stock:</div>
+                            <div class="col-8">
+                                {% if product.stock > 5 %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">{{ product.stock }} units</span>
+                                {% elif product.stock > 0 %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">{{ product.stock }} units</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Out of stock</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if product.description %}
+                        <div class="row">
+                            <div class="col-4 text-muted small">Description:</div>
+                            <div class="col-8 small text-secondary">{{ product.description|truncatewords:20 }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary px-4">
+                            <i class="bi bi-x-lg me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-trash me-1"></i> Yes, Delete Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
