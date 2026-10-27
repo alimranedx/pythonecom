@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home',
+    'product'
 ]
 
 MIDDLEWARE = [
@@ -75,8 +77,12 @@ WSGI_APPLICATION = 'pythonecom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'pythonecom.custom_mysql_backend',
+        'NAME': 'pythonecom_db',
+        'USER': 'root',
+        'PASSWORD': '',       # Laragon default is empty password
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

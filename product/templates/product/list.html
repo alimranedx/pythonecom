@@ -1,0 +1,22 @@
+<h1>Products</h1>
+<a href="{% url 'product_create' %}">+ Add Product</a>
+
+<table border="1">
+  <tr>
+    <th>Name</th><th>Price</th><th>Stock</th><th>Actions</th>
+  </tr>
+  {% for product in products %}
+  <tr>
+    <td>{{ product.name }}</td>
+    <td>{{ product.price }}</td>
+    <td>{{ product.stock }}</td>
+    <td>
+      <a href="{% url 'product_detail' product.pk %}">View</a> |
+      <a href="{% url 'product_update' product.pk %}">Edit</a> |
+      <a href="{% url 'product_delete' product.pk %}">Delete</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="4">No products found.</td></tr>
+  {% endfor %}
+</table>
