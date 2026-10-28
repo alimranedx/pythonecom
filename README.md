@@ -4,20 +4,111 @@ A production-grade, full-featured Django e-commerce platform built with **Layere
 
 ---
 
-## 🔐 Test Credentials
+## 🚀 Quick Start & Setup Guide
 
-> **Note:** For security, login credentials are not stored in this repository.
-> 
-> After running `python manage.py seed_ecommerce`, use the accounts created
-> by the seeder. Check with your team lead or project documentation for the
-> current test credentials.
+### 1. Prerequisites
+- **Python**: 3.12+ (tested on Python 3.12)
+- **Database**: MySQL 8.0+ / MariaDB (e.g., via Laragon, XAMPP, or native MySQL service)
+- **Git**
 
---- | :--- | :--- | :--- | :--- |
-| **Back-Office** | **Super Admin** | `superadmin` | `[see project docs]` | Global unrestricted access (all modules & settings) |
-| **Back-Office** | **Catalog Manager** | `catalog_admin` | `[see project docs]` | Products, Categories, and Inventory management only |
-| **Back-Office** | **Order Dispatcher** | `orders_staff` | `[see project docs]` | Order management, status workflows, view customers |
-| **Storefront** | **Customer** | `customer_user` | `[see project docs]` | Customer profile, shopping bag, checkout, orders |
+---
 
+### 2. Initial Setup (First Time Clone)
+
+#### Step 1: Clone the Repository
+```bash
+git clone <repository-url>
+cd pythonecom
+```
+
+#### Step 2: Database Preparation
+1. Ensure your local MySQL server is running (e.g., click **Start All** in **Laragon**, or start the **MySQL** module in **XAMPP Control Panel**).
+2. Create the project database:
+   ```sql
+   CREATE DATABASE IF NOT EXISTS pythonecom_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+   > **Note:** The default connection settings in `pythonecom/settings.py` point to `localhost:3306`, database `pythonecom_db`, user `root`, and an empty password (`''`). If your local MySQL setup requires a password or different host/port, update `DATABASES` in `pythonecom/settings.py`.
+
+#### Step 3: Create & Activate Virtual Environment
+- **Windows (PowerShell):**
+  ```powershell
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  ```
+- **Windows (CMD):**
+  ```cmd
+  python -m venv .venv
+  .venv\Scripts\activate.bat
+  ```
+- **macOS / Linux:**
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  ```
+
+#### Step 4: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+#### Step 5: Apply Database Migrations
+```bash
+python manage.py migrate
+```
+
+#### Step 6: Seed RBAC Roles, Demo Accounts & Catalog
+Populates system roles, granular permissions, demo products, categories, sample shipping addresses, and test credentials:
+```bash
+python manage.py seed_ecommerce
+```
+
+#### Step 7: Run Development Server
+```bash
+python manage.py runserver
+```
+The application will be live at `http://127.0.0.1:8000/`.
+
+---
+
+### 🔄 Post-`git pull` Workflow
+
+Whenever you pull updates from the repository, run this quick sequence to keep your environment and database synchronized:
+
+```powershell
+# 1. Pull the latest code
+git pull
+
+# 2. Activate virtual environment (if not already active)
+.\.venv\Scripts\Activate.ps1
+
+# 3. Synchronize any newly added dependencies
+pip install -r requirements.txt
+
+# 4. Apply new database migrations
+python manage.py migrate
+
+# 5. Synchronize RBAC permissions & seed data (safe to re-run; uses update_or_create)
+python manage.py seed_ecommerce
+
+# 6. Start the server
+python manage.py runserver
+```
+
+---
+
+## 🔐 Test Credentials & Access Matrix
+
+After running `python manage.py seed_ecommerce`, the following pre-configured accounts are available:
+
+| Portal | Role | Username | Password | Scope & Capabilities |
+| :--- | :--- | :--- | :--- | :--- |
+| **Back-Office** | **Super Admin** | `superadmin` | `Admin@12345` | Global unrestricted access (all modules & settings) |
+| **Back-Office** | **Catalog Manager** | `catalog_admin` | `Manager@12345` | Products, Categories, and Inventory management only |
+| **Back-Office** | **Order Dispatcher** | `orders_staff` | `Staff@12345` | Order management, status workflows, view customers |
+| **Storefront** | **Customer** | `customer_user` | `User@12345` | Customer profile, shopping bag, checkout, orders |
+| **Native Admin** | **Superuser** | `superadmin` | `Admin@12345` | Standard Django admin interface (`/admin/`) |
+
+> **Note:** For security, change these credentials before deploying to a production environment.
 
 ---
 
@@ -35,6 +126,7 @@ A production-grade, full-featured Django e-commerce platform built with **Layere
 | **Address Book** | `http://127.0.0.1:8000/account/addresses/` | Manage shipping destinations with default indicator |
 | **Back-Office Portal** | `http://127.0.0.1:8000/app-admin/` | Custom RBAC staff dashboard, revenue KPIs, low-stock warnings |
 | **Role & Permission Manager** | `http://127.0.0.1:8000/app-admin/rbac/roles/` | Interactive matrix of module & submodule capabilities |
+| **Django Admin** | `http://127.0.0.1:8000/admin/` | Default Django superuser admin portal |
 
 ---
 
@@ -116,9 +208,9 @@ The platform underwent a full security audit and implements defense-in-depth mit
 
 ---
 
-## 🧪 Running Automated Tests
+## 🧪 Running Automated Tests & Sanity Checks
 
-Run the verification suite verifying storefront routes, RBAC protection, and atomic order placement:
+Run the verification command to verify storefront routes, RBAC protection, and Django system health:
 
 ```powershell
 python -c "import os, django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pythonecom.settings'); django.setup(); from django.test import Client; c = Client(); print('Storefront Home:', c.get('/', HTTP_HOST='127.0.0.1').status_code)"
