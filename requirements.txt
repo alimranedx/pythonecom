@@ -1,11 +1,7 @@
-# Core Framework
-Django==5.1.1
 asgiref==3.8.1
+Django==5.1.1
+djangorestframework==3.18.3
+mysqlclient==2.3.0
+pillow==13.0.0
 sqlparse==0.5.1
 tzdata==2024.1
-
-# Database Connector
-mysqlclient==2.3.0
-
-# Image Processing & Media Validation
-Pillow==13.0.0
