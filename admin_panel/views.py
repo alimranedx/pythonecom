@@ -103,7 +103,8 @@ def admin_product_create(request):
                     ProductImage.objects.create(product=p, image=f)
                     valid_count += 1
                 except ValidationError as e:
-                    messages.warning(request, f"Skipped file '{f.name}': {e.message}")
+                    msg = e.messages[0] if hasattr(e, 'messages') else str(e)
+                    messages.warning(request, f"Skipped file '{f.name}': {msg}")
             messages.success(request, f"Product '{p.name}' created with {valid_count} gallery image(s).")
             return redirect('admin_product_list')
     else:
@@ -126,7 +127,8 @@ def admin_product_edit(request, pk):
                     ProductImage.objects.create(product=product, image=f)
                     valid_count += 1
                 except ValidationError as e:
-                    messages.warning(request, f"Skipped file '{f.name}': {e.message}")
+                    msg = e.messages[0] if hasattr(e, 'messages') else str(e)
+                    messages.warning(request, f"Skipped file '{f.name}': {msg}")
             if valid_count > 0:
                 messages.success(request, f"Added {valid_count} new gallery image(s).")
             else:

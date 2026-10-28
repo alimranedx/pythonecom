@@ -50,9 +50,10 @@ def customer_register(request):
             phone = form.cleaned_data.get('phone', '')
             CustomerProfile.objects.create(user=user, phone=phone)
 
+            guest_session_key = request.session.session_key
             login(request, user)
-            if request.session.session_key:
-                CartService.merge_guest_cart(request.session.session_key, user)
+            if guest_session_key:
+                CartService.merge_guest_cart(guest_session_key, user)
 
             messages.success(request, f"Welcome to PythonEcom, {user.first_name or user.username}!")
             return redirect('customer_dashboard')
@@ -77,9 +78,10 @@ def customer_login(request):
         form = CustomerLoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            guest_session_key = request.session.session_key
             login(request, user)
-            if request.session.session_key:
-                CartService.merge_guest_cart(request.session.session_key, user)
+            if guest_session_key:
+                CartService.merge_guest_cart(guest_session_key, user)
             messages.success(request, f"Welcome back, {user.username}!")
             if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
                 return redirect(next_url)

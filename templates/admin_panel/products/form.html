@@ -15,7 +15,14 @@
 
             {% if form.errors %}
                 <div class="alert alert-danger small py-2 mb-3">
-                    Please correct the errors indicated below.
+                    <strong class="d-block mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Please correct the following errors:</strong>
+                    <ul class="mb-0 ps-3">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
                 </div>
             {% endif %}
 
@@ -26,27 +33,42 @@
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Product Name <span class="text-danger">*</span></label>
                     {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-semibold">Category</label>
                         {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-semibold">Brand</label>
                         {{ form.brand }}
+                        {% if form.brand.errors %}
+                            <div class="text-danger small mt-1">{{ form.brand.errors.0 }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Short Tagline / Catchphrase</label>
                     {{ form.short_description }}
+                    {% if form.short_description.errors %}
+                        <div class="text-danger small mt-1">{{ form.short_description.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Detailed Description</label>
                     {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <!-- Pricing & Stock -->
@@ -54,14 +76,23 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-semibold">Regular Price ($) <span class="text-danger">*</span></label>
                         {{ form.price }}
+                        {% if form.price.errors %}
+                            <div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-semibold">Discount / Sale Price ($)</label>
                         {{ form.discount_price }}
+                        {% if form.discount_price.errors %}
+                            <div class="text-danger small mt-1">{{ form.discount_price.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-semibold">Inventory Stock <span class="text-danger">*</span></label>
                         {{ form.stock }}
+                        {% if form.stock.errors %}
+                            <div class="text-danger small mt-1">{{ form.stock.errors.0 }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -74,8 +105,13 @@
                             <span class="small text-muted">Current thumbnail: <a href="{{ product.image.url }}" target="_blank">View full size</a></span>
                         </div>
                     {% endif %}
-                    <label class="form-label small text-muted">Upload new thumbnail image:</label>
-                    {{ form.image }}
+                    <label class="form-label small text-muted">Upload product image (JPG, PNG, WebP, GIF - up to 10MB):</label>
+                    <input type="file" name="image" id="id_image" class="form-control" accept="image/*">
+                    {% if form.image.errors %}
+                        <div class="text-danger small mt-2">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ form.image.errors.0 }}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <!-- Multiple Gallery Images Upload -->
@@ -96,12 +132,13 @@
                                 <div class="col-auto">
                                     <div class="position-relative border rounded p-1 bg-white" style="width: 100px; height: 100px;">
                                         <img src="{{ gimg.image.url }}" alt="Gallery" class="w-100 h-100 rounded" style="object-fit: cover;">
-                                        <form action="{% url 'admin_product_image_delete' gimg.pk %}" method="post" class="position-absolute top-0 end-0 m-1" onsubmit="return confirm('Remove this gallery image?');">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger btn-sm p-0 rounded-circle d-flex align-items-center justify-content-center" style="width: 22px; height: 22px;" title="Delete image">
-                                                <i class="bi bi-x fs-6"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" 
+                                                onclick="deleteGalleryImage('{% url 'admin_product_image_delete' gimg.pk %}')"
+                                                class="btn btn-danger btn-sm p-0 rounded-circle position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center" 
+                                                style="width: 22px; height: 22px;" 
+                                                title="Delete image">
+                                            <i class="bi bi-x fs-6"></i>
+                                        </button>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -145,4 +182,19 @@
         </div>
     </div>
 </div>
+
+<!-- Standalone form for gallery image removal (avoids invalid HTML nested form tags) -->
+<form id="galleryImageDeleteForm" method="post" style="display:none;">
+    {% csrf_token %}
+</form>
+
+<script>
+function deleteGalleryImage(actionUrl) {
+    if (confirm('Are you sure you want to remove this gallery image?')) {
+        const form = document.getElementById('galleryImageDeleteForm');
+        form.action = actionUrl;
+        form.submit();
+    }
+}
+</script>
 {% endblock %}

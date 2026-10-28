@@ -8,7 +8,7 @@ def cart_processor(request):
         cart = CartService.get_or_create_cart(request)
         return {
             'global_cart': cart,
-            'global_cart_items_count': cart.total_items,
+            'global_cart_items_count': cart.total_items if cart else 0,
         }
     except Exception:
         return {

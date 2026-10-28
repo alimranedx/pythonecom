@@ -8,16 +8,20 @@ class CartService:
     """
     Service Layer encapsulating shopping cart management for both
     guest sessions and authenticated customer profiles.
+    Staff sessions on storefront routes are automatically freed/logged out.
     """
 
     @classmethod
-    def get_or_create_cart(cls, request: HttpRequest) -> Cart:
-        if request.user.is_authenticated and not request.user.is_staff:
-            cart, _ = Cart.objects.get_or_create(user=request.user)
-            # If guest session has items before login, merge them
-            if request.session.session_key:
-                cls.merge_guest_cart(request.session.session_key, request.user)
-            return cart
+    def get_or_create_cart(cls, request: HttpRequest):
+        if request.user.is_authenticated:
+            if request.user.is_staff:
+                from django.contrib.auth import logout
+                logout(request)
+            else:
+                cart, _ = Cart.objects.get_or_create(user=request.user)
+                if request.session.session_key:
+                    cls.merge_guest_cart(request.session.session_key, request.user)
+                return cart
 
         if not request.session.session_key:
             request.session.create()
@@ -27,6 +31,8 @@ class CartService:
 
     @classmethod
     def add_to_cart(cls, cart: Cart, product: Product, quantity: int = 1) -> CartItem:
+        if cart is None:
+            return None
         if quantity <= 0:
             quantity = 1
         item, created = CartItem.objects.get_or_create(cart=cart, product=product)
@@ -39,6 +45,8 @@ class CartService:
 
     @classmethod
     def update_quantity(cls, cart: Cart, product_id: int, quantity: int):
+        if cart is None:
+            return
         if quantity <= 0:
             CartItem.objects.filter(cart=cart, product_id=product_id).delete()
         else:
@@ -46,10 +54,14 @@ class CartService:
 
     @classmethod
     def remove_item(cls, cart: Cart, product_id: int):
+        if cart is None:
+            return
         CartItem.objects.filter(cart=cart, product_id=product_id).delete()
 
     @classmethod
     def clear_cart(cls, cart: Cart):
+        if cart is None:
+            return
         cart.items.all().delete()
 
     @classmethod

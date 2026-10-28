@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.views.decorators.http import require_POST, require_http_methods
 from core.validators import get_safe_redirect_url
 from product.models import Product
@@ -8,14 +9,42 @@ from .services import CartService
 from .models import CartItem
 
 
+def staff_block_check(request):
+    """
+    If a staff/admin user is in the session when accessing cart routes,
+    clear the staff session immediately so the user can freely shop as a guest.
+    """
+    if request.user.is_authenticated and request.user.is_staff:
+        logout(request)
+    return None
+
+
 def cart_detail(request):
+    staff_block_check(request)
     cart = CartService.get_or_create_cart(request)
     return render(request, 'cart/cart_detail.html', {'cart': cart})
 
 
+def cart_drawer(request):
+    staff_block_check(request)
+    cart = CartService.get_or_create_cart(request)
+    return render(request, 'cart/_drawer_body.html', {'global_cart': cart})
+
+
 def add_to_cart(request, product_id):
+    staff_block_check(request)
+
     product = get_object_or_404(Product, pk=product_id, is_active=True)
     cart = CartService.get_or_create_cart(request)
+    if cart is None:
+        return redirect('home')
+
+    if product.stock <= 0:
+        msg = "This product is currently out of stock."
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': msg}, status=400)
+        messages.error(request, msg)
+        return redirect(get_safe_redirect_url(request, request.META.get('HTTP_REFERER'), 'product_list'))
 
     # Sanitize and clamp quantity to prevent DoS integer overflows / negative quantities
     try:
@@ -34,12 +63,17 @@ def add_to_cart(request, product_id):
         messages.error(request, f"Sorry, {msg}")
         return redirect(get_safe_redirect_url(request, request.META.get('HTTP_REFERER'), 'product_list'))
 
-    CartService.add_to_cart(cart, product, quantity)
+    cart_item = CartService.add_to_cart(cart, product, quantity)
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        action_msg = (
+            f"Added '{product.name}' to cart!"
+            if cart_item.quantity == quantity
+            else f"Increased '{product.name}' quantity to {cart_item.quantity} in cart."
+        )
         return JsonResponse({
             'success': True,
-            'message': f"Added '{product.name}' to cart!",
+            'message': action_msg,
             'total_items': cart.total_items,
             'subtotal': str(cart.subtotal),
             'grand_total': str(cart.grand_total),
@@ -51,7 +85,12 @@ def add_to_cart(request, product_id):
 
 @require_POST
 def update_cart_quantity(request, product_id):
+    staff_block_check(request)
+
     cart = CartService.get_or_create_cart(request)
+    if cart is None:
+        return redirect('home')
+
     product = get_object_or_404(Product, pk=product_id)
 
     try:
@@ -61,9 +100,20 @@ def update_cart_quantity(request, product_id):
         quantity = 1
 
     if quantity > product.stock:
-        messages.error(request, f"Only {product.stock} units available in inventory.")
+        msg = f"Only {product.stock} units available in inventory."
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': msg}, status=400)
+        messages.error(request, msg)
     else:
         CartService.update_quantity(cart, product_id, quantity)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': 'Cart updated.' if quantity > 0 else 'Item removed from cart.',
+                'total_items': cart.total_items,
+                'subtotal': str(cart.subtotal),
+                'grand_total': str(cart.grand_total),
+            })
         messages.success(request, "Cart updated.")
 
     return redirect('cart_detail')
@@ -71,7 +121,20 @@ def update_cart_quantity(request, product_id):
 
 @require_http_methods(["GET", "POST"])
 def remove_from_cart(request, product_id):
+    staff_block_check(request)
+
     cart = CartService.get_or_create_cart(request)
+    if cart is None:
+        return redirect('home')
+
     CartService.remove_item(cart, product_id)
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message': 'Item removed from cart.',
+            'total_items': cart.total_items,
+            'subtotal': str(cart.subtotal),
+            'grand_total': str(cart.grand_total),
+        })
     messages.info(request, "Item removed from cart.")
     return redirect('cart_detail')

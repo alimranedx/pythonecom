@@ -9,8 +9,8 @@ from .services import OrderService
 
 def checkout(request):
     if request.user.is_authenticated and request.user.is_staff:
-        messages.warning(request, "Staff accounts cannot place customer orders.")
-        return redirect('admin_dashboard')
+        from django.contrib.auth import logout
+        logout(request)
 
     cart = CartService.get_or_create_cart(request)
     if cart.total_items == 0:

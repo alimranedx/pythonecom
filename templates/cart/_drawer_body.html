@@ -1,0 +1,75 @@
+{% if global_cart and global_cart.items.exists %}
+    <div class="flex-grow-1 overflow-auto pe-1">
+        {% for item in global_cart.items.all %}
+            <div class="d-flex align-items-center gap-3 py-3 border-bottom cart-drawer-item">
+                <div class="bg-light rounded p-2 text-center" style="width: 60px; height: 60px; flex-shrink: 0;">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid" style="max-height: 100%;">
+                    {% else %}
+                        <i class="bi bi-box text-muted fs-3"></i>
+                    {% endif %}
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1 text-truncate" style="max-width: 170px;">
+                        <a href="{% url 'product_detail' item.product.pk %}" class="text-dark text-decoration-none fw-semibold">
+                            {{ item.product.name }}
+                        </a>
+                    </h6>
+                    <div class="text-muted small mb-2">
+                        <strong class="text-success">${{ item.product.effective_price }}</strong> each
+                    </div>
+                    <!-- Inline Quantity Controls in Drawer -->
+                    <div class="d-flex align-items-center gap-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 drawer-qty-btn" 
+                                data-product-id="{{ item.product.pk }}" data-new-qty="{{ item.quantity|add:'-1' }}" title="Decrease">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <span class="small fw-bold px-2">{{ item.quantity }}</span>
+                        <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 drawer-qty-btn" 
+                                data-product-id="{{ item.product.pk }}" data-new-qty="{{ item.quantity|add:'1' }}" 
+                                {% if item.quantity >= item.product.stock %}disabled{% endif %} title="Increase">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold mb-2">${{ item.line_total }}</div>
+                    <a href="{% url 'remove_from_cart' item.product.pk %}" class="text-danger small text-decoration-none offcanvas-remove-btn" data-product-id="{{ item.product.pk }}" title="Remove item">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Cart Bottom Totals & CTA -->
+    <div class="border-top pt-3 mt-auto">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Subtotal ({{ global_cart.total_items }} item{{ global_cart.total_items|pluralize }}):</span>
+            <span class="fw-bold">${{ global_cart.subtotal }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+            <span class="text-muted">Estimated Shipping:</span>
+            {% if global_cart.shipping_cost == 0 %}
+                <span class="text-success fw-bold">FREE</span>
+            {% else %}
+                <span class="fw-bold">${{ global_cart.shipping_cost }}</span>
+            {% endif %}
+        </div>
+        <div class="d-grid gap-2">
+            <a href="{% url 'checkout' %}" class="btn btn-primary py-2 fw-semibold">
+                <i class="bi bi-credit-card me-1"></i> Proceed to Checkout
+            </a>
+            <a href="{% url 'cart_detail' %}" class="btn btn-outline-secondary py-2">
+                View Full Cart
+            </a>
+        </div>
+    </div>
+{% else %}
+    <div class="text-center my-auto py-5 text-muted">
+        <i class="bi bi-cart-x fs-1 text-secondary d-block mb-3"></i>
+        <h5 class="fw-bold">Your cart is empty</h5>
+        <p class="small text-muted mb-4">Discover our top products and add items to your cart.</p>
+        <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm px-4">Start Shopping</a>
+    </div>
+{% endif %}
