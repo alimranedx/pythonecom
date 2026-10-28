@@ -12,7 +12,7 @@ class CartService:
 
     @classmethod
     def get_or_create_cart(cls, request: HttpRequest) -> Cart:
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and not request.user.is_staff:
             cart, _ = Cart.objects.get_or_create(user=request.user)
             # If guest session has items before login, merge them
             if request.session.session_key:

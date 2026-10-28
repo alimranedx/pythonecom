@@ -18,9 +18,14 @@ from accounts.models import CustomerProfile
 def admin_login(request):
     """
     Dedicated back-office staff authentication portal.
+    If the currently logged-in user is not a staff member (e.g. customer),
+    clear all existing session and cookies so they can cleanly sign in as staff.
     """
-    if request.user.is_authenticated and request.user.is_staff:
-        return redirect('admin_dashboard')
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('admin_dashboard')
+        else:
+            logout(request)
 
     if request.method == 'POST':
         u = request.POST.get('username', '').strip()

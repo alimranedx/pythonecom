@@ -4,40 +4,20 @@ A production-grade, full-featured Django e-commerce platform built with **Layere
 
 ---
 
-## ⚡ Quick Start
+## 🔐 Test Credentials
 
-```bash
-# 1. Activate Virtual Environment
-.venv\Scripts\activate.ps1     # Windows PowerShell
-# source .venv/bin/activate    # Mac/Linux
+> **Note:** For security, login credentials are not stored in this repository.
+> 
+> After running `python manage.py seed_ecommerce`, use the accounts created
+> by the seeder. Check with your team lead or project documentation for the
+> current test credentials.
 
-# 2. Install Dependencies
-pip install -r requirements.txt
+--- | :--- | :--- | :--- | :--- |
+| **Back-Office** | **Super Admin** | `superadmin` | `[see project docs]` | Global unrestricted access (all modules & settings) |
+| **Back-Office** | **Catalog Manager** | `catalog_admin` | `[see project docs]` | Products, Categories, and Inventory management only |
+| **Back-Office** | **Order Dispatcher** | `orders_staff` | `[see project docs]` | Order management, status workflows, view customers |
+| **Storefront** | **Customer** | `customer_user` | `[see project docs]` | Customer profile, shopping bag, checkout, orders |
 
-# 3. Apply Migrations (MySQL)
-python manage.py migrate
-
-# 4. Seed Database (Roles, Permissions, Test Accounts & Catalog)
-python manage.py seed_ecommerce
-
-# 5. Start Development Server
-python manage.py runserver
-```
-
----
-
-## 🔑 Test Credentials (Ready to Use)
-
-The platform comes pre-configured with dedicated accounts for testing the **Granular RBAC System** and **Marketplace Storefront**:
-
-| Portal | Role | Username | Password | Access Privileges |
-| :--- | :--- | :--- | :--- | :--- |
-| **Back-Office** | **Super Admin** | `superadmin` | `Admin@12345` | Global unrestricted access (all modules & settings) |
-| **Back-Office** | **Catalog Manager** | `catalog_admin` | `Manager@12345` | Products, Categories, and Inventory management only |
-| **Back-Office** | **Order Dispatcher** | `orders_staff` | `Staff@12345` | Order management, status workflows, view customers |
-| **Storefront** | **Customer** | `customer_user` | `User@12345` | Customer profile, shopping bag, checkout, orders |
-
-> 💡 **Tip:** Both the Customer and Back-Office login pages feature **1-click auto-fill buttons** for fast evaluation!
 
 ---
 

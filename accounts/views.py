@@ -1,8 +1,8 @@
+from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.http import url_has_allowed_host_and_scheme
 from core.validators import get_safe_redirect_url
@@ -13,9 +13,32 @@ from product.models import Product
 from cart.services import CartService
 
 
+def customer_required(view_func):
+    """
+    Enforces strict panel isolation:
+    Storefront account areas are exclusively for customers (is_staff=False).
+    If a staff/admin user attempts to access customer account sections,
+    they are redirected to their dedicated Back-Office Admin Panel.
+    """
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('account_login')
+        if request.user.is_staff:
+            messages.info(request, "Staff accounts access the Back-Office Admin Panel, not customer areas.")
+            return redirect('admin_dashboard')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
 def customer_register(request):
+    # If logged in user is not a customer (e.g. staff/admin),
+    # clear all session and cookies so they can cleanly register as a customer.
     if request.user.is_authenticated:
-        return redirect('customer_dashboard')
+        if request.user.is_staff:
+            logout(request)
+        else:
+            return redirect('customer_dashboard')
 
     if request.method == 'POST':
         form = CustomerRegistrationForm(request.POST)
@@ -40,8 +63,13 @@ def customer_register(request):
 
 
 def customer_login(request):
+    # If logged in user is not a customer (e.g. staff/admin),
+    # clear all session and cookies so they can cleanly sign in as a customer.
     if request.user.is_authenticated:
-        return redirect('customer_dashboard')
+        if request.user.is_staff:
+            logout(request)
+        else:
+            return redirect('customer_dashboard')
 
     next_url = request.GET.get('next', '') or request.POST.get('next', '')
 
@@ -70,7 +98,7 @@ def customer_logout(request):
     return redirect('home')
 
 
-@login_required
+@customer_required
 def customer_dashboard(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')[:5]
     addresses = Address.objects.filter(user=request.user)
@@ -84,7 +112,7 @@ def customer_dashboard(request):
     })
 
 
-@login_required
+@customer_required
 def customer_profile_edit(request):
     profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
@@ -98,7 +126,7 @@ def customer_profile_edit(request):
     return render(request, 'accounts/profile_edit.html', {'form': form, 'profile': profile})
 
 
-@login_required
+@customer_required
 def customer_password_change(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -112,26 +140,26 @@ def customer_password_change(request):
     return render(request, 'accounts/password_change.html', {'form': form})
 
 
-@login_required
+@customer_required
 def customer_orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'accounts/orders.html', {'orders': orders})
 
 
-@login_required
+@customer_required
 def customer_order_detail(request, order_number):
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
     return render(request, 'accounts/order_detail.html', {'order': order})
 
 
 # ---------------- ADDRESS BOOK ----------------
-@login_required
+@customer_required
 def address_list(request):
     addresses = Address.objects.filter(user=request.user)
     return render(request, 'accounts/addresses.html', {'addresses': addresses})
 
 
-@login_required
+@customer_required
 def address_create(request):
     if request.method == 'POST':
         form = AddressForm(request.POST)
@@ -146,7 +174,7 @@ def address_create(request):
     return render(request, 'accounts/address_form.html', {'form': form, 'title': 'Add New Address'})
 
 
-@login_required
+@customer_required
 def address_edit(request, pk):
     addr = get_object_or_404(Address, pk=pk, user=request.user)
     if request.method == 'POST':
@@ -160,7 +188,7 @@ def address_edit(request, pk):
     return render(request, 'accounts/address_form.html', {'form': form, 'title': 'Edit Address', 'address': addr})
 
 
-@login_required
+@customer_required
 def address_delete(request, pk):
     addr = get_object_or_404(Address, pk=pk, user=request.user)
     if request.method == 'POST':
@@ -171,7 +199,7 @@ def address_delete(request, pk):
 
 
 # ---------------- USER WISHLIST ----------------
-@login_required
+@customer_required
 def wishlist_view(request):
     wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product', 'product__category')
     return render(request, 'accounts/wishlist.html', {'wishlist_items': wishlist_items})
@@ -187,6 +215,12 @@ def wishlist_toggle(request, product_id):
             return JsonResponse({'success': False, 'login_required': True, 'redirect_url': '/account/login/'}, status=401)
         messages.info(request, "Please log in to save items to your wishlist.")
         return redirect('account_login')
+
+    if request.user.is_staff:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Staff members cannot maintain customer wishlists.'}, status=403)
+        messages.info(request, "Staff accounts access the Back-Office Admin Panel.")
+        return redirect('admin_dashboard')
 
     product = get_object_or_404(Product, pk=product_id)
     wishlist_item = Wishlist.objects.filter(user=request.user, product=product).first()
@@ -214,7 +248,7 @@ def wishlist_toggle(request, product_id):
     return redirect(get_safe_redirect_url(request, request.META.get('HTTP_REFERER'), 'wishlist_view'))
 
 
-@login_required
+@customer_required
 def wishlist_move_to_cart(request, product_id):
     """
     Moves an item from Wishlist into Cart in one click.
