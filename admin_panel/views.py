@@ -7,7 +7,8 @@ from django.contrib import messages
 from django.db.models import Sum, Count, Q
 from django.core.exceptions import ValidationError
 from core.validators import validate_image_file
-from rbac.decorators import require_permission
+from rbac.decorators import require_permission, require_superuser
+from .forms import StaffUserCreateForm, StaffUserEditForm
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
 from product.models import Product, Category, Brand, ProductImage
 from product.forms import ProductForm, CategoryForm
@@ -253,15 +254,23 @@ def admin_customer_list(request):
     return render(request, 'admin_panel/customers/list.html', {'customers': customers})
 
 
-# ---------------- ACCESS CONTROL MODULE (RBAC) ----------------
-@require_permission('rbac.roles', 'view')
+# ---------------- ACCESS CONTROL & USER MANAGEMENT (SUPERUSER ONLY) ----------------
+@require_superuser
 def admin_role_list(request):
+    """
+    Lists all roles with assigned user counts.
+    Strictly restricted to Super Administrators.
+    """
     roles = Role.objects.annotate(users_count=Count('user_roles')).all()
     return render(request, 'admin_panel/rbac/roles.html', {'roles': roles})
 
 
-@require_permission('rbac.roles', 'create')
+@require_superuser
 def admin_role_create(request):
+    """
+    Creates a new custom role.
+    Strictly restricted to Super Administrators.
+    """
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         description = request.POST.get('description', '').strip()
@@ -276,14 +285,19 @@ def admin_role_create(request):
     return render(request, 'admin_panel/rbac/role_create.html')
 
 
-@require_permission('rbac.roles', 'edit')
+@require_superuser
 def admin_role_edit(request, pk):
+    """
+    Configures module/submodule permission matrix for a role.
+    Excludes the 'rbac' module so only Super Admin maintains access control.
+    Strictly restricted to Super Administrators.
+    """
     role = get_object_or_404(Role, pk=pk)
-    modules = Module.objects.prefetch_related('submodules__permissions').all()
+    modules = Module.objects.exclude(code='rbac').prefetch_related('submodules__permissions').all()
 
     if request.method == 'POST':
         perm_ids = request.POST.getlist('permissions')
-        selected_perms = Permission.objects.filter(id__in=perm_ids)
+        selected_perms = Permission.objects.filter(id__in=perm_ids).exclude(submodule__module__code='rbac')
 
         RolePermission.objects.filter(role=role).delete()
         RolePermission.objects.bulk_create([
@@ -300,33 +314,142 @@ def admin_role_edit(request, pk):
     })
 
 
-@require_permission('rbac.staff', 'view')
+@require_superuser
+def admin_role_delete(request, pk):
+    """
+    Deletes a custom role if not in use.
+    Strictly restricted to Super Administrators.
+    """
+    role = get_object_or_404(Role, pk=pk)
+    if role.is_system_role:
+        messages.error(request, f"Cannot delete '{role.name}': System roles are protected.")
+        return redirect('admin_role_list')
+
+    assigned_count = role.user_roles.count()
+    if assigned_count > 0:
+        messages.error(request, f"Cannot delete '{role.name}': Currently assigned to {assigned_count} staff user(s).")
+        return redirect('admin_role_list')
+
+    role_name = role.name
+    role.delete()
+    messages.success(request, f"Role '{role_name}' deleted successfully.")
+    return redirect('admin_role_list')
+
+
+# ---------------- ADMIN USER MANAGEMENT (SUPERUSER ONLY) ----------------
+@require_superuser
 def admin_staff_list(request):
-    staff_users = User.objects.filter(is_staff=True).prefetch_related('user_roles__role').order_by('username')
+    """
+    Lists all administrative staff users with role badges, active status,
+    and search capabilities.
+    Strictly restricted to Super Administrators.
+    """
+    q = request.GET.get('q', '').strip()
+    staff_users = User.objects.filter(is_staff=True).prefetch_related('user_roles__role').order_by('-is_superuser', 'username')
+    if q:
+        staff_users = staff_users.filter(
+            Q(username__icontains=q) | Q(email__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q)
+        )
     roles = Role.objects.all()
-
-    if request.method == 'POST':
-        from rbac.services import RBACService
-        if not RBACService.user_has_permission(request.user, 'rbac.staff', 'edit'):
-            messages.error(request, "Permission denied: Cannot modify staff roles.")
-            return redirect('admin_staff_list')
-
-        user_id = request.POST.get('user_id')
-        role_id = request.POST.get('role_id')
-        staff_user = get_object_or_404(User, id=user_id, is_staff=True)
-
-        if role_id:
-            role = get_object_or_404(Role, id=role_id)
-            UserRole.objects.filter(user=staff_user).delete()
-            UserRole.objects.create(user=staff_user, role=role)
-            messages.success(request, f"Assigned role '{role.name}' to {staff_user.username}.")
-        else:
-            UserRole.objects.filter(user=staff_user).delete()
-            messages.info(request, f"Removed roles from {staff_user.username}.")
-
-        return redirect('admin_staff_list')
 
     return render(request, 'admin_panel/rbac/staff.html', {
         'staff_users': staff_users,
         'roles': roles,
+        'q': q,
     })
+
+
+@require_superuser
+def admin_staff_create(request):
+    """
+    Creates a new administrative staff user with designated role and credentials.
+    Strictly restricted to Super Administrators.
+    """
+    if request.method == 'POST':
+        form = StaffUserCreateForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = True
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+
+            role = form.cleaned_data.get('role')
+            if role:
+                UserRole.objects.create(user=user, role=role)
+
+            messages.success(request, f"Admin user '{user.username}' created successfully!")
+            return redirect('admin_staff_list')
+    else:
+        form = StaffUserCreateForm()
+
+    return render(request, 'admin_panel/rbac/staff_form.html', {
+        'form': form,
+        'title': 'Create Admin User',
+    })
+
+
+@require_superuser
+def admin_staff_edit(request, pk):
+    """
+    Edits an existing staff user's details, role assignment, active status,
+    and optional password reset.
+    Strictly restricted to Super Administrators.
+    """
+    staff_user = get_object_or_404(User, pk=pk, is_staff=True)
+
+    if request.method == 'POST':
+        form = StaffUserEditForm(request.POST, instance=staff_user)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = True
+
+            # Safety: Cannot remove own superuser status
+            if request.user.pk == staff_user.pk and not form.cleaned_data.get('is_superuser'):
+                user.is_superuser = True
+                messages.warning(request, "You cannot remove superuser privileges from your own account.")
+
+            # Safety: Cannot deactivate own account
+            if request.user.pk == staff_user.pk and not form.cleaned_data.get('is_active'):
+                user.is_active = True
+                messages.warning(request, "You cannot deactivate your own account.")
+
+            new_password = form.cleaned_data.get('new_password')
+            if new_password:
+                user.set_password(new_password)
+
+            user.save()
+
+            # Update assigned role
+            role = form.cleaned_data.get('role')
+            UserRole.objects.filter(user=user).delete()
+            if role:
+                UserRole.objects.create(user=user, role=role)
+
+            messages.success(request, f"Admin user '{user.username}' updated successfully.")
+            return redirect('admin_staff_list')
+    else:
+        form = StaffUserEditForm(instance=staff_user)
+
+    return render(request, 'admin_panel/rbac/staff_form.html', {
+        'form': form,
+        'title': f'Edit Admin User: {staff_user.username}',
+        'staff_user': staff_user,
+    })
+
+
+@require_superuser
+def admin_staff_delete(request, pk):
+    """
+    Deletes an administrative user.
+    Strictly restricted to Super Administrators (self-deletion blocked).
+    """
+    staff_user = get_object_or_404(User, pk=pk, is_staff=True)
+
+    if request.user.pk == staff_user.pk:
+        messages.error(request, "Security protection: You cannot delete your own Super Administrator account.")
+        return redirect('admin_staff_list')
+
+    username = staff_user.username
+    staff_user.delete()
+    messages.success(request, f"Admin user '{username}' deleted successfully.")
+    return redirect('admin_staff_list')

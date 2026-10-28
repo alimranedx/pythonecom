@@ -1,52 +1,67 @@
 {% extends 'admin_panel/base_admin.html' %}
-{% load rbac_tags %}
 
-{% block page_title %}Roles & Permissions{% endblock %}
+{% block page_title %}Role & Permission Management{% endblock %}
 
 {% block admin_content %}
-{% has_perm request.user 'rbac.roles' 'edit' as can_edit %}
-
 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
         <div>
-            <h5 class="fw-bold mb-0">Role-Based Access Control (RBAC)</h5>
-            <small class="text-muted">Define granular module, submodule, and action-level privileges for staff roles</small>
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-shield-check text-primary me-2"></i>Role & Permission Management
+            </h5>
+            <small class="text-muted">Define granular module, submodule, and action-level capabilities (view, create, edit, delete) for administrative roles</small>
         </div>
-        {% has_perm request.user 'rbac.roles' 'create' as can_create_role %}
-        {% if can_create_role %}
-            <a href="{% url 'admin_role_create' %}" class="btn btn-primary btn-sm rounded-pill px-3">
-                <i class="bi bi-plus-lg me-1"></i> Create Role
+        <div class="d-flex align-items-center gap-2">
+            <a href="{% url 'admin_role_create' %}" class="btn btn-primary rounded-pill px-3 fw-semibold">
+                <i class="bi bi-plus-lg me-1"></i> Create New Role
             </a>
-        {% endif %}
+        </div>
     </div>
 
+    <!-- Role Cards Grid -->
     <div class="row g-4">
         {% for role in roles %}
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-6 col-lg-4">
                 <div class="card h-100 border rounded-4 p-4 d-flex flex-column bg-light shadow-sm">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="rounded-circle bg-primary-subtle text-primary p-2">
-                            <i class="bi bi-shield-check fs-4"></i>
+                        <div class="rounded-circle {% if role.is_system_role %}bg-danger-subtle text-danger{% else %}bg-primary-subtle text-primary{% endif %} p-2">
+                            <i class="bi {% if role.is_system_role %}bi-star-fill{% else %}bi-shield-shaded{% endif %} fs-4"></i>
                         </div>
                         {% if role.is_system_role %}
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">System Role</span>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                <i class="bi bi-lock-fill me-1"></i> System Role
+                            </span>
                         {% else %}
-                            <span class="badge bg-secondary-subtle text-secondary">Custom</span>
+                            <span class="badge bg-secondary-subtle text-secondary border">Custom Role</span>
                         {% endif %}
                     </div>
 
                     <h5 class="fw-bold text-dark mb-1">{{ role.name }}</h5>
-                    <p class="text-muted small mb-3 flex-grow-1">{{ role.description|default:"Standard administrative role." }}</p>
+                    <p class="text-muted small mb-3 flex-grow-1">{{ role.description|default:"Custom administrative role for PythonEcom back-office." }}</p>
 
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto small">
-                        <span class="text-muted"><i class="bi bi-people me-1"></i> {{ role.users_count }} staff</span>
-                        {% if can_edit %}
-                            <a href="{% url 'admin_role_edit' role.pk %}" class="btn btn-sm btn-primary rounded-pill px-3">
+                        <span class="text-muted">
+                            <i class="bi bi-people-fill me-1"></i> <strong>{{ role.users_count }}</strong> staff member{{ role.users_count|pluralize }}
+                        </span>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'admin_role_edit' role.pk %}" class="btn btn-primary rounded-pill px-3">
                                 <i class="bi bi-sliders me-1"></i> Permissions
                             </a>
-                        {% endif %}
+                            {% if not role.is_system_role and role.users_count == 0 %}
+                                <a href="{% url 'admin_role_delete' role.pk %}" class="btn btn-outline-danger rounded-pill px-2 ms-1"
+                                   onclick="return confirm('Are you sure you want to delete role '{{ role.name }}'?');" title="Delete Role">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="bi bi-shield-x fs-1 d-block mb-2 text-secondary"></i>
+                No roles defined. Click "Create New Role" above to get started.
             </div>
         {% endfor %}
     </div>

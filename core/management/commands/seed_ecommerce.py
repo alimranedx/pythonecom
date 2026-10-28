@@ -53,13 +53,13 @@ class Command(BaseCommand):
                 ]
             },
             {
-                'name': 'Access Control',
+                'name': 'User & Role Management',
                 'code': 'rbac',
-                'icon': 'bi-shield-lock',
+                'icon': 'bi-shield-lock-fill',
                 'order': 4,
                 'submodules': [
-                    {'name': 'Roles & Permissions', 'code': 'rbac.roles', 'url_name': 'admin_role_list', 'order': 1},
-                    {'name': 'Staff Management', 'code': 'rbac.staff', 'url_name': 'admin_staff_list', 'order': 2},
+                    {'name': 'User Management', 'code': 'rbac.staff', 'url_name': 'admin_staff_list', 'order': 1},
+                    {'name': 'Role & Permission Management', 'code': 'rbac.roles', 'url_name': 'admin_role_list', 'order': 2},
                 ]
             },
         ]

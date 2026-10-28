@@ -26,9 +26,16 @@ urlpatterns = [
     # Customers
     path('customers/', views.admin_customer_list, name='admin_customer_list'),
 
-    # RBAC & Access Control
+    # RBAC: User Management (Super Admin Only)
+    path('rbac/users/', views.admin_staff_list, name='admin_staff_list'),
+    path('rbac/users/create/', views.admin_staff_create, name='admin_staff_create'),
+    path('rbac/users/<int:pk>/edit/', views.admin_staff_edit, name='admin_staff_edit'),
+    path('rbac/users/<int:pk>/delete/', views.admin_staff_delete, name='admin_staff_delete'),
+    path('rbac/staff/', views.admin_staff_list),  # Backward compatibility alias
+
+    # RBAC: Role & Permission Management (Super Admin Only)
     path('rbac/roles/', views.admin_role_list, name='admin_role_list'),
     path('rbac/roles/create/', views.admin_role_create, name='admin_role_create'),
     path('rbac/roles/<int:pk>/edit/', views.admin_role_edit, name='admin_role_edit'),
-    path('rbac/staff/', views.admin_staff_list, name='admin_staff_list'),
+    path('rbac/roles/<int:pk>/delete/', views.admin_role_delete, name='admin_role_delete'),
 ]

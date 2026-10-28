@@ -1,28 +1,52 @@
 {% extends 'admin_panel/base_admin.html' %}
-{% load rbac_tags %}
 
-{% block page_title %}Staff Role Management{% endblock %}
+{% block page_title %}Admin User Management{% endblock %}
 
 {% block admin_content %}
-{% has_perm request.user 'rbac.staff' 'edit' as can_edit %}
-
 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Header with Action -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
         <div>
-            <h5 class="fw-bold mb-0">Staff Role Assignments</h5>
-            <small class="text-muted">Assign staff members to RBAC roles to determine their administrative privileges</small>
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-people-fill text-primary me-2"></i>Admin User Management
+            </h5>
+            <small class="text-muted">Manage back-office staff accounts, roles, access credentials, and superuser privileges</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{% url 'admin_staff_create' %}" class="btn btn-primary rounded-pill px-3 fw-semibold">
+                <i class="bi bi-person-plus-fill me-1"></i> Add Admin User
+            </a>
         </div>
     </div>
 
+    <!-- Search Filter Bar -->
+    <div class="mb-4">
+        <form method="get" class="d-flex gap-2" style="max-width: 420px;">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="q" class="form-control bg-light border-start-0" 
+                       placeholder="Search by username, name, or email..." value="{{ q }}">
+            </div>
+            <button type="submit" class="btn btn-dark px-3">Search</button>
+            {% if q %}
+                <a href="{% url 'admin_staff_list' %}" class="btn btn-outline-secondary">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Staff Users Table -->
     <div class="table-responsive">
-        <table class="table align-middle mb-0 small">
+        <table class="table align-middle mb-0 small table-hover">
             <thead class="table-light">
                 <tr>
-                    <th class="ps-3">Staff Member</th>
-                    <th>Email</th>
-                    <th>Superuser</th>
+                    <th class="ps-3">Admin Member</th>
+                    <th>Email Address</th>
+                    <th>Privilege Level</th>
                     <th>Assigned Role</th>
-                    {% if can_edit %}<th class="text-end pe-3">Change Role</th>{% endif %}
+                    <th>Status</th>
+                    <th class="text-end pe-3">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,51 +54,76 @@
                     <tr>
                         <td class="ps-3">
                             <div class="d-flex align-items-center gap-2">
-                                <div class="rounded-circle bg-dark text-white p-2 text-center" style="width: 36px; height: 36px;">
-                                    <i class="bi bi-person-fill"></i>
+                                <div class="rounded-circle {% if staff.is_superuser %}bg-danger{% else %}bg-primary{% endif %} text-white p-2 text-center d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                    <i class="bi {% if staff.is_superuser %}bi-shield-shaded{% else %}bi-person-fill{% endif %} fs-6"></i>
                                 </div>
                                 <div>
-                                    <strong class="text-dark">{{ staff.get_full_name|default:staff.username }}</strong>
-                                    <code class="d-block text-muted" style="font-size: 0.72rem;">@{{ staff.username }}</code>
+                                    <strong class="text-dark d-block">{{ staff.get_full_name|default:staff.username }}</strong>
+                                    <code class="text-muted" style="font-size: 0.75rem;">@{{ staff.username }}</code>
                                 </div>
                             </div>
                         </td>
-                        <td>{{ staff.email }}</td>
                         <td>
-                            {% if staff.is_superuser %}
-                                <span class="badge bg-danger"><i class="bi bi-star-fill me-1"></i> Superuser</span>
-                            {% else %}
-                                <span class="badge bg-light text-muted border">Standard Staff</span>
-                            {% endif %}
+                            <span class="text-dark">{{ staff.email|default:"-- No email --" }}</span>
                         </td>
                         <td>
                             {% if staff.is_superuser %}
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Unrestricted Access</span>
-                            {% elif staff.user_roles.exists %}
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                    {{ staff.user_roles.first.role.name }}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                    <i class="bi bi-star-fill me-1"></i> Super Admin
                                 </span>
                             {% else %}
-                                <span class="badge bg-secondary-subtle text-secondary">No Role Assigned</span>
+                                <span class="badge bg-light text-secondary border px-2 py-1">
+                                    Standard Staff
+                                </span>
                             {% endif %}
                         </td>
-                        {% if can_edit %}
-                            <td class="text-end pe-3">
-                                <form method="post" class="d-inline-flex align-items-center gap-1 justify-content-end">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="user_id" value="{{ staff.id }}">
-                                    <select name="role_id" class="form-select form-select-sm" style="width: 160px;">
-                                        <option value="">-- No Role --</option>
-                                        {% for role in roles %}
-                                            <option value="{{ role.id }}" {% if staff.user_roles.first.role.id == role.id %}selected{% endif %}>
-                                                {{ role.name }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                                </form>
-                            </td>
-                        {% endif %}
+                        <td>
+                            {% if staff.is_superuser %}
+                                <span class="badge bg-danger text-white">Full System Access</span>
+                            {% elif staff.user_roles.exists %}
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                                    <i class="bi bi-person-badge me-1"></i>{{ staff.user_roles.first.role.name }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary px-2 py-1">No Role</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff.is_active %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Active
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Inactive
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-3">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'admin_staff_edit' staff.pk %}" class="btn btn-outline-primary" title="Edit Admin User">
+                                    <i class="bi bi-pencil-square me-1"></i> Edit
+                                </a>
+                                {% if staff.pk != request.user.pk %}
+                                    <a href="{% url 'admin_staff_delete' staff.pk %}" class="btn btn-outline-danger" 
+                                       onclick="return confirm('Are you sure you want to delete admin user '{{ staff.username }}'? This cannot be undone.');" 
+                                       title="Delete Admin User">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-outline-secondary disabled" title="Current Logged In User" disabled>
+                                        <i class="bi bi-lock-fill"></i> You
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="bi bi-people fs-1 d-block mb-2 text-secondary"></i>
+                            No administrative staff users found.
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

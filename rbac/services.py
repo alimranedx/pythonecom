@@ -47,6 +47,10 @@ class RBACService:
         if user.is_superuser:
             return True
 
+        # Non-superusers can NEVER possess RBAC or User Management permissions
+        if submodule_code.startswith('rbac'):
+            return False
+
         target_code = f"{submodule_code}.{action}"
         user_perms = cls.get_user_permission_codes(user)
         return target_code in user_perms
@@ -56,6 +60,7 @@ class RBACService:
         """
         Builds the navigation hierarchy (Module -> Submodules) filtered
         exclusively by the submodules the user has 'view' permissions for.
+        Access Control / User & Role Management is strictly visible to Super Administrators only.
         """
         if not user.is_authenticated or not user.is_staff:
             return []
@@ -67,8 +72,14 @@ class RBACService:
         menu_tree = []
 
         for module in modules:
+            # Access Control / User & Role Management is strictly for Superusers only
+            if module.code == 'rbac' and not user.is_superuser:
+                continue
+
             allowed_submodules = []
             for sub in module.submodules.all():
+                if sub.code.startswith('rbac.') and not user.is_superuser:
+                    continue
                 view_perm_code = f"{sub.code}.view"
                 if user.is_superuser or view_perm_code in user_perms:
                     allowed_submodules.append(sub)
