@@ -98,6 +98,23 @@
             background-color: var(--primary-hover);
             border-color: var(--primary-hover);
         }
+        .floating-cart-widget {
+            position: fixed;
+            right: 24px;
+            bottom: 28px;
+            z-index: 1040;
+            background-color: #0f172a;
+            border: 2px solid #38bdf8;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4);
+        }
+        .floating-cart-widget:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 30px -5px rgba(15, 23, 42, 0.6);
+            background-color: #1e293b;
+        }
         .announcement-bar {
             background: #0f172a;
             color: #cbd5e1;
@@ -258,6 +275,22 @@
             {% include 'cart/_drawer_body.html' %}
         </div>
     </div>
+
+    <!-- Chaldal-Style Sticky Floating Shopping Bag Widget -->
+    <div id="floatingCartWidget" class="floating-cart-widget shadow-lg" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" style="{% if not global_cart or global_cart.total_items == 0 %}display: none;{% endif %}">
+        <div class="d-flex align-items-center gap-2 p-2 px-3">
+            <div class="position-relative">
+                <i class="bi bi-bag-heart-fill fs-4 text-warning"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="floatingCartCount" style="font-size: 0.65rem;">
+                    {{ global_cart.total_items|default:0 }}
+                </span>
+            </div>
+            <div class="text-white text-start lh-1 ps-1">
+                <div class="small fw-bold" id="floatingCartItemsText">{{ global_cart.total_items|default:0 }} Item{{ global_cart.total_items|pluralize }}</div>
+                <div class="fw-bold text-warning small" id="floatingCartTotal">৳{{ global_cart.grand_total|default:'0.00' }}</div>
+            </div>
+        </div>
+    </div>
         <!-- Modern Marketplace Footer -->
     <footer class="bg-dark text-light pt-5 pb-4 mt-auto">
         <div class="container">
@@ -357,11 +390,30 @@
         }
     }
 
-    function updateCartBadges(count) {
+    function updateCartBadges(count, grandTotal) {
         const navBadge = document.getElementById('navCartBadge');
-        if (navBadge) navBadge.textContent = count;
+        if (navBadge) {
+            navBadge.textContent = count;
+            navBadge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
         const offBadge = document.getElementById('offcanvasCartBadge');
         if (offBadge) offBadge.textContent = count;
+
+        const floatingWidget = document.getElementById('floatingCartWidget');
+        const floatingCount = document.getElementById('floatingCartCount');
+        const floatingItemsText = document.getElementById('floatingCartItemsText');
+        const floatingTotal = document.getElementById('floatingCartTotal');
+
+        if (floatingWidget) {
+            if (count > 0) {
+                floatingWidget.style.display = 'block';
+                if (floatingCount) floatingCount.innerText = count;
+                if (floatingItemsText) floatingItemsText.innerText = `${count} Item${count === 1 ? '' : 's'}`;
+                if (floatingTotal && grandTotal) floatingTotal.innerText = `৳${grandTotal}`;
+            } else {
+                floatingWidget.style.display = 'none';
+            }
+        }
     }
 
     function refreshCartDrawer() {
@@ -421,7 +473,7 @@
                 }
 
                 // Update badge counts silently
-                updateCartBadges(data.total_items);
+                updateCartBadges(data.total_items, data.grand_total);
 
                 // Refresh cart offcanvas drawer silently
                 refreshCartDrawer();
@@ -485,7 +537,7 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                updateCartBadges(data.total_items);
+                updateCartBadges(data.total_items, data.grand_total);
                 refreshCartDrawer();
                 showToast(data.message);
             } else {
@@ -516,7 +568,7 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                updateCartBadges(data.total_items);
+                updateCartBadges(data.total_items, data.grand_total);
                 refreshCartDrawer();
                 showToast(data.message);
             }

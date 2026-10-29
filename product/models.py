@@ -57,6 +57,7 @@ class Product(TimeStampedModel):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     stock = models.IntegerField(default=0)
+    unit = models.CharField(max_length=50, default='1 pc', help_text='e.g. 1 kg, 500 gm, 1 ltr, 12 pcs, 1 pc')
     image = models.ImageField(upload_to='products/', blank=True, null=True, validators=[validate_image_file])
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)

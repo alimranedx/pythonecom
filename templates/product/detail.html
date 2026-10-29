@@ -173,10 +173,11 @@
                 <!-- Price Box -->
                 <div class="p-3 bg-light rounded-3 mb-4">
                     <div class="d-flex align-items-baseline gap-3">
-                        <span class="display-6 fw-bold text-primary">${{ product.effective_price }}</span>
+                        <span class="display-6 fw-bold text-primary">৳{{ product.effective_price }}</span>
+                        {% if product.unit %}<span class="badge bg-white text-dark border fs-6">{{ product.unit }}</span>{% endif %}
                         {% if product.has_discount %}
-                            <span class="fs-4 text-decoration-line-through text-muted">${{ product.price }}</span>
-                            <span class="badge bg-danger">Discount Active</span>
+                            <span class="fs-4 text-decoration-line-through text-muted">৳{{ product.price }}</span>
+                            <span class="badge bg-danger">Save ৳{{ product.price|add:"-product.discount_price"|default:"Discount" }}</span>
                         {% endif %}
                     </div>
                     <small class="text-muted d-block mt-1">Tax included. Free Express delivery on orders over $50.</small>

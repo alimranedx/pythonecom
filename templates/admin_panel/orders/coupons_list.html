@@ -1,0 +1,146 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block page_title %}Coupon &amp; Promo Code Management{% endblock %}
+
+{% block admin_content %}
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h5 class="fw-bold mb-0">Coupons &amp; Promotional Vouchers</h5>
+            <small class="text-muted">Manage campaign discount codes, percentage rates, min order amounts, and redemption limits</small>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-primary rounded-pill px-4 fw-semibold" data-bs-toggle="collapse" data-bs-target="#createCouponCollapse">
+                <i class="bi bi-plus-lg me-1"></i> Create New Coupon
+            </button>
+            <a href="{% url 'admin_delivery_slots_list' %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-clock-history me-1"></i> Delivery Slots
+            </a>
+        </div>
+    </div>
+
+    <!-- Create Coupon Collapsible Card -->
+    <div class="collapse mb-4" id="createCouponCollapse">
+        <div class="card border border-primary-subtle rounded-3 p-4 bg-light">
+            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-tag-fill text-primary me-2"></i>Create New Promotional Coupon</h6>
+            <form method="post" action="{% url 'admin_coupon_create' %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-uppercase">Coupon Code <span class="text-danger">*</span></label>
+                        <input type="text" name="code" class="form-control form-control-sm text-uppercase" placeholder="e.g. SUMMER25" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-uppercase">Discount Type</label>
+                        <select name="discount_type" class="form-select form-select-sm">
+                            <option value="percent">Percentage (%)</option>
+                            <option value="fixed">Fixed Amount (৳)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-uppercase">Discount Value <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" name="discount_value" class="form-control form-control-sm" placeholder="e.g. 15 or 50" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-uppercase">Min Order Amount (৳)</label>
+                        <input type="number" step="0.01" name="min_order_amount" class="form-control form-control-sm" value="0.00">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-uppercase">Max Discount Cap (৳)</label>
+                        <input type="number" step="0.01" name="max_discount_amount" class="form-control form-control-sm" placeholder="Leave blank for no cap">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-uppercase">Validity (Days)</label>
+                        <input type="number" name="valid_days" class="form-control form-control-sm" value="30">
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success btn-sm rounded-pill px-4 fw-semibold me-2">
+                            <i class="bi bi-check2-circle me-1"></i> Save &amp; Publish Coupon
+                        </button>
+                        <button type="button" class="btn btn-light border btn-sm rounded-pill px-3" data-bs-toggle="collapse" data-bs-target="#createCouponCollapse">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Coupons Table -->
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3">Coupon Code</th>
+                    <th>Benefit</th>
+                    <th>Min. Spend</th>
+                    <th>Max. Cap</th>
+                    <th>Valid Through</th>
+                    <th>Redemptions</th>
+                    <th>Status</th>
+                    <th class="text-end pe-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for coupon in coupons %}
+                    <tr>
+                        <td class="ps-3">
+                            <span class="badge bg-primary rounded-pill font-monospace fs-6 px-3 py-1">
+                                <i class="bi bi-tag-fill me-1"></i>{{ coupon.code }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if coupon.discount_type == 'percent' %}
+                                <strong class="text-success">{{ coupon.discount_value|floatformat:0 }}% OFF</strong>
+                            {% else %}
+                                <strong class="text-success">৳{{ coupon.discount_value }} Flat OFF</strong>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if coupon.min_order_amount > 0 %}
+                                ৳{{ coupon.min_order_amount }}
+                            {% else %}
+                                <span class="text-muted">No Minimum</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if coupon.max_discount_amount %}
+                                ৳{{ coupon.max_discount_amount }}
+                            {% else %}
+                                <span class="text-muted">Unlimited</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ coupon.valid_to|date:"M d, Y" }}</td>
+                        <td>
+                            <strong>{{ coupon.used_count }}</strong>
+                            {% if coupon.usage_limit %} / {{ coupon.usage_limit }}{% endif %}
+                        </td>
+                        <td>
+                            {% if coupon.is_active %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary border">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-3">
+                            <a href="{% url 'admin_coupon_toggle' coupon.pk %}" class="btn btn-sm {% if coupon.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %} rounded-pill px-2 me-1" title="Toggle Status">
+                                {% if coupon.is_active %}<i class="bi bi-pause"></i>{% else %}<i class="bi bi-play"></i>{% endif %}
+                            </a>
+                            <a href="{% url 'admin_coupon_delete' coupon.pk %}" class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="return confirm('Are you sure you want to delete coupon {{ coupon.code }}?')" title="Delete Coupon">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            No coupons created yet. Click "Create New Coupon" to publish promotional vouchers.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

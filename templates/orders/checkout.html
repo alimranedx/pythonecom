@@ -2,52 +2,112 @@
 
 {% block title %}Secure Checkout | PythonEcom{% endblock %}
 
+{% block extra_head %}
+<style>
+    .slot-card {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        border: 2px solid #e2e8f0;
+    }
+    .slot-card:hover {
+        border-color: #93c5fd;
+        background-color: #f8fafc;
+    }
+    .slot-card.selected {
+        border-color: #0284c7;
+        background-color: #f0f9ff;
+    }
+    .date-pill-btn {
+        transition: all 0.2s ease;
+        border: 1px solid #cbd5e1;
+    }
+    .date-pill-btn.active {
+        background-color: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+    .area-badge-btn {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="container py-3">
+    <!-- Header -->
     <div class="mb-4">
-        <h2 class="fw-bold mb-1"><i class="bi bi-shield-lock text-primary me-2"></i>Secure Checkout</h2>
-        <p class="text-muted small">Complete your shipping address and choose your payment method</p>
+        <h3 class="fw-bold mb-1"><i class="bi bi-bag-check-fill text-primary me-2"></i>Express Checkout</h3>
+        <p class="text-muted small">Select your delivery area, schedule your convenient time slot, and confirm payment</p>
     </div>
 
-    <form method="post" novalidate>
+    <form method="post" id="checkoutForm" novalidate>
         {% csrf_token %}
         <div class="row g-4">
-            <!-- Left: Shipping & Payment Details -->
+            <!-- Left: Delivery Area, Address, Slots & Payment -->
             <div class="col-lg-8">
-                <!-- Shipping Address Card -->
+                <!-- 1. Area & Shipping Information -->
                 <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                    <h5 class="fw-bold mb-3 d-flex align-items-center">
-                        <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">1</span>
-                        Shipping Information
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 d-flex align-items-center">
+                            <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">1</span>
+                            Delivery Location &amp; Contact
+                        </h5>
+                        <span class="badge bg-light text-muted border small">Hyperlocal Bangladesh Logistics</span>
+                    </div>
+
+                    <!-- Area Selector -->
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">Select Delivery Zone:</label>
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <label class="w-100 p-2 border rounded-3 bg-white d-flex align-items-center gap-2 area-badge-btn" for="areaDhaka" style="cursor: pointer;">
+                                    <input class="form-check-input" type="radio" name="delivery_area" id="areaDhaka" value="Inside Dhaka" {% if initial.delivery_area != 'Outside Dhaka' %}checked{% endif %}>
+                                    <div>
+                                        <strong class="d-block small text-dark">Inside Dhaka City</strong>
+                                        <small class="text-muted" style="font-size: 0.72rem;">Gulshan, Banani, Dhanmondi, Uttara, Mirpur (৳49)</small>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="w-100 p-2 border rounded-3 bg-white d-flex align-items-center gap-2 area-badge-btn" for="areaOutside" style="cursor: pointer;">
+                                    <input class="form-check-input" type="radio" name="delivery_area" id="areaOutside" value="Outside Dhaka" {% if initial.delivery_area == 'Outside Dhaka' %}checked{% endif %}>
+                                    <div>
+                                        <strong class="d-block small text-dark">Outside Dhaka / Nationwide</strong>
+                                        <small class="text-muted" style="font-size: 0.72rem;">All 64 Districts Courier Delivery (৳99)</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>
-                            <input type="text" name="full_name" class="form-control" value="{{ initial.full_name|default:'' }}" required placeholder="e.g. John Doe">
+                            <input type="text" name="full_name" class="form-control" value="{{ initial.full_name|default:'' }}" required placeholder="e.g. Tanvir Ahmed">
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control" value="{{ initial.email|default:'' }}" required placeholder="e.g. john@example.com">
-                        </div>
-
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold">Phone Number <span class="text-danger">*</span></label>
                             <input type="tel" name="phone" class="form-control" value="{{ initial.phone|default:'' }}" required placeholder="e.g. +880 1712-345678">
                         </div>
+
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">City <span class="text-danger">*</span></label>
-                            <input type="text" name="city" class="form-control" value="{{ initial.city|default:'Dhaka' }}" required placeholder="e.g. Dhaka">
+                            <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" value="{{ initial.email|default:'' }}" required placeholder="e.g. tanvir@example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">City / District <span class="text-danger">*</span></label>
+                            <input type="text" name="city" id="inputCity" class="form-control" value="{{ initial.city|default:'Dhaka' }}" required placeholder="e.g. Dhaka">
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label small fw-semibold">Street Address <span class="text-danger">*</span></label>
-                            <input type="text" name="street_address" class="form-control" value="{{ initial.street_address|default:'' }}" required placeholder="e.g. House 12, Road 4, Block C">
+                            <label class="form-label small fw-semibold">Delivery Address (House, Road, Area) <span class="text-danger">*</span></label>
+                            <input type="text" name="street_address" class="form-control" value="{{ initial.street_address|default:'' }}" required placeholder="e.g. House 42, Road 11, Block D, Banani">
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold">Postal Code</label>
-                            <input type="text" name="postal_code" class="form-control" value="{{ initial.postal_code|default:'1212' }}" placeholder="e.g. 1212">
+                            <input type="text" name="postal_code" class="form-control" value="{{ initial.postal_code|default:'1213' }}" placeholder="e.g. 1213">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold">Country</label>
@@ -55,16 +115,72 @@
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label small fw-semibold">Order Notes / Delivery Instructions (Optional)</label>
-                            <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Leave package with building security">{{ initial.notes|default:'' }}</textarea>
+                            <label class="form-label small fw-semibold">Delivery Instructions / Landmarks (Optional)</label>
+                            <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Flat 4B, opposite to Mosque, please call before arriving">{{ initial.notes|default:'' }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- Payment Method Card (Strategy Pattern Choice) -->
+                <!-- 2. Delivery Slot Scheduler (Chaldal Benchmark Feature) -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 d-flex align-items-center">
+                            <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                            Schedule Delivery Slot
+                        </h5>
+                        <span class="badge bg-success-subtle text-success small"><i class="bi bi-clock-history me-1"></i>Guaranteed On-Time</span>
+                    </div>
+
+                    <!-- Date Selection Pills -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">Preferred Delivery Date:</label>
+                        <input type="hidden" name="delivery_date" id="selectedDeliveryDate" value="{{ initial.delivery_date }}">
+                        <div class="d-flex flex-wrap gap-2" id="datePillsGroup">
+                            {% for d in available_dates %}
+                                <button type="button" class="btn btn-sm rounded-3 px-3 py-2 text-start date-pill-btn {% if initial.delivery_date == d.value %}active{% endif %}" data-date-value="{{ d.value }}">
+                                    <strong class="d-block small">{{ d.label }}</strong>
+                                    <small style="font-size: 0.72rem;">{{ d.sublabel }}</small>
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Time Slots Selection -->
+                    <div>
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">Select Preferred Time Window:</label>
+                        <input type="hidden" name="delivery_slot" id="selectedDeliverySlot" value="{{ initial.delivery_slot|default:'' }}">
+                        <div class="row g-2">
+                            {% for slot in delivery_slots %}
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-3 slot-card {% if initial.delivery_slot == slot.pk %}selected{% endif %}" data-slot-id="{{ slot.pk }}">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong class="d-block text-dark small">{{ slot.title }}</strong>
+                                                <small class="text-muted" style="font-size: 0.75rem;">
+                                                    <i class="bi bi-clock me-1"></i>{{ slot.start_time|time:"h:i A" }} - {{ slot.end_time|time:"h:i A" }}
+                                                </small>
+                                            </div>
+                                            {% if slot.is_express %}
+                                                <span class="badge bg-danger rounded-pill small">+৳{{ slot.extra_fee }}</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-secondary border small">Standard</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="col-12">
+                                    <p class="text-muted small mb-0">Standard daytime delivery will be scheduled for your location.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Payment Method Choice -->
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     <h5 class="fw-bold mb-3 d-flex align-items-center">
-                        <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                        <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">3</span>
                         Payment Method
                     </h5>
 
@@ -74,8 +190,19 @@
                                 <input class="form-check-input" type="radio" name="payment_method" id="payCOD" value="cod" checked>
                                 <label class="form-check-label fw-bold d-block" for="payCOD">
                                     <i class="bi bi-cash-stack text-success fs-5 d-block mb-1"></i>
-                                    Cash On Delivery
-                                    <small class="d-block text-muted fw-normal">Pay with cash when order arrives</small>
+                                    Cash On Delivery (COD)
+                                    <small class="d-block text-muted fw-normal">Pay in cash when order arrives at your door</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check p-3 border rounded-3 bg-light h-100">
+                                <input class="form-check-input" type="radio" name="payment_method" id="payMFS" value="mobile_banking">
+                                <label class="form-check-label fw-bold d-block" for="payMFS">
+                                    <i class="bi bi-phone-fill text-danger fs-5 d-block mb-1"></i>
+                                    Mobile Banking (MFS)
+                                    <small class="d-block text-muted fw-normal">bKash, Nagad, Rocket instant settlement</small>
                                 </label>
                             </div>
                         </div>
@@ -86,18 +213,7 @@
                                 <label class="form-check-label fw-bold d-block" for="payCard">
                                     <i class="bi bi-credit-card-2-front text-primary fs-5 d-block mb-1"></i>
                                     Credit / Debit Card
-                                    <small class="d-block text-muted fw-normal">Instant authorization</small>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-check p-3 border rounded-3 bg-light h-100">
-                                <input class="form-check-input" type="radio" name="payment_method" id="payMFS" value="mobile_banking">
-                                <label class="form-check-label fw-bold d-block" for="payMFS">
-                                    <i class="bi bi-phone-fill text-danger fs-5 d-block mb-1"></i>
-                                    Mobile Banking
-                                    <small class="d-block text-muted fw-normal">bKash, Nagad, Rocket</small>
+                                    <small class="d-block text-muted fw-normal">Visa, Mastercard, Amex secured gateway</small>
                                 </label>
                             </div>
                         </div>
@@ -105,54 +221,217 @@
                 </div>
             </div>
 
-            <!-- Right: Sticky Order Summary -->
+            <!-- Right: Sticky Order Summary & Coupon Box -->
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px;">
-                    <h5 class="fw-bold mb-3">Order Items ({{ cart.total_items }})</h5>
+                    <!-- Items Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Order Bag ({{ cart.total_items }})</h5>
+                        <a href="{% url 'cart_detail' %}" class="small text-decoration-none">Edit Bag</a>
+                    </div>
 
-                    <div class="mb-3 overflow-auto" style="max-height: 240px;">
+                    <!-- Items Scrollable List -->
+                    <div class="mb-3 overflow-auto pe-1" style="max-height: 220px;">
                         {% for item in cart.items.all %}
                             <div class="d-flex justify-content-between align-items-center mb-2 small pb-2 border-bottom">
                                 <div>
-                                    <strong class="text-truncate d-block" style="max-width: 180px;">{{ item.product.name }}</strong>
-                                    <span class="text-muted">{{ item.quantity }} × ${{ item.product.effective_price }}</span>
+                                    <strong class="text-truncate d-block" style="max-width: 170px;">{{ item.product.name }}</strong>
+                                    <span class="text-muted" style="font-size: 0.75rem;">
+                                        {{ item.quantity }} × ৳{{ item.product.effective_price }}
+                                        {% if item.product.unit %}<span class="badge bg-light text-dark border ms-1">{{ item.product.unit }}</span>{% endif %}
+                                    </span>
                                 </div>
-                                <span class="fw-semibold">${{ item.line_total }}</span>
+                                <span class="fw-semibold">৳{{ item.line_total }}</span>
                             </div>
                         {% endfor %}
                     </div>
 
-                    <div class="d-flex justify-content-between mb-2 small">
-                        <span class="text-muted">Subtotal:</span>
-                        <span class="fw-semibold">${{ cart.subtotal }}</span>
+                    <!-- Promo Code / Voucher Box -->
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-1">Promo / Coupon Code</label>
+                        {% if cart.coupon %}
+                            <div class="d-flex justify-content-between align-items-center bg-white p-2 rounded border border-success">
+                                <div>
+                                    <span class="badge bg-success rounded-pill me-1"><i class="bi bi-tag-fill me-1"></i>{{ cart.coupon.code }}</span>
+                                    <small class="text-success fw-bold">-৳{{ cart.discount_amount }}</small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="removeCouponBtn" title="Remove coupon">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        {% else %}
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="couponCodeInput" class="form-control text-uppercase" placeholder="e.g. WELCOME50, CHALDAL10">
+                                <button class="btn btn-primary" type="button" id="applyCouponBtn">Apply</button>
+                            </div>
+                            <div id="couponMessage" class="small mt-1" style="display: none;"></div>
+                        {% endif %}
                     </div>
 
+                    <!-- Free Delivery Progress Bar -->
+                    <div class="p-2 bg-light rounded-3 mb-3 border">
+                        {% if cart.amount_to_free_shipping > 0 %}
+                            <div class="d-flex justify-content-between align-items-center mb-1 small">
+                                <span>Add <strong class="text-primary">৳{{ cart.amount_to_free_shipping }}</strong> for <strong>FREE Delivery!</strong></span>
+                                <span class="text-muted">{{ cart.free_shipping_progress_percent }}%</span>
+                            </div>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ cart.free_shipping_progress_percent }}%;"></div>
+                            </div>
+                        {% else %}
+                            <div class="text-success small fw-bold d-flex align-items-center gap-1">
+                                <i class="bi bi-check-circle-fill"></i> You unlocked <strong>FREE Delivery!</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Financial Summary Breakdown -->
                     <div class="d-flex justify-content-between mb-2 small">
-                        <span class="text-muted">Shipping:</span>
+                        <span class="text-muted">Subtotal:</span>
+                        <span class="fw-semibold">৳{{ cart.subtotal }}</span>
+                    </div>
+
+                    {% if cart.discount_amount > 0 %}
+                    <div class="d-flex justify-content-between mb-2 small text-success">
+                        <span>Coupon Savings:</span>
+                        <span class="fw-bold">-৳{{ cart.discount_amount }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Delivery Fee:</span>
                         {% if cart.shipping_cost == 0 %}
                             <span class="text-success fw-bold">FREE</span>
                         {% else %}
-                            <span class="fw-semibold">${{ cart.shipping_cost }}</span>
+                            <span class="fw-semibold">৳{{ cart.shipping_cost }}</span>
                         {% endif %}
                     </div>
 
                     <hr class="my-3">
 
-                    <div class="d-flex justify-content-between mb-4">
-                        <span class="fs-5 fw-bold">Total Due:</span>
-                        <span class="fs-4 fw-bold text-primary">${{ cart.grand_total }}</span>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fs-5 fw-bold">Grand Total:</span>
+                        <span class="fs-4 fw-bold text-primary">৳{{ cart.grand_total }}</span>
                     </div>
 
+                    <!-- Place Order Button -->
                     <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">
-                        <i class="bi bi-check2-circle me-1"></i> Place Order Now
+                        <i class="bi bi-check2-circle me-1"></i> Confirm &amp; Place Order
                     </button>
 
                     <div class="text-center small text-muted">
-                        By placing your order, you agree to PythonEcom's Terms of Service and Privacy Policy.
+                        <i class="bi bi-shield-check text-success me-1"></i> 100% Genuine Products • Hassle-Free Return Guarantee
                     </div>
                 </div>
             </div>
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Delivery Date Pills
+    const datePills = document.querySelectorAll('.date-pill-btn');
+    const selectedDateInput = document.getElementById('selectedDeliveryDate');
+    datePills.forEach(btn => {
+        btn.addEventListener('click', function() {
+            datePills.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedDateInput.value = this.getAttribute('data-date-value');
+        });
+    });
+
+    // 2. Delivery Slot Cards
+    const slotCards = document.querySelectorAll('.slot-card');
+    const selectedSlotInput = document.getElementById('selectedDeliverySlot');
+    slotCards.forEach(card => {
+        card.addEventListener('click', function() {
+            slotCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedSlotInput.value = this.getAttribute('data-slot-id');
+        });
+    });
+
+    // 3. Area Selector
+    const areaDhaka = document.getElementById('areaDhaka');
+    const areaOutside = document.getElementById('areaOutside');
+    const inputCity = document.getElementById('inputCity');
+
+    if (areaDhaka && areaOutside) {
+        areaDhaka.addEventListener('change', function() {
+            if (this.checked && (!inputCity.value || inputCity.value === 'Outside Dhaka')) {
+                inputCity.value = 'Dhaka';
+            }
+        });
+        areaOutside.addEventListener('change', function() {
+            if (this.checked && inputCity.value === 'Dhaka') {
+                inputCity.value = '';
+                inputCity.placeholder = 'Enter district/city (e.g. Chittagong, Sylhet)';
+            }
+        });
+    }
+
+    // 4. Coupon Application via AJAX
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponInput = document.getElementById('couponCodeInput');
+    const couponMsg = document.getElementById('couponMessage');
+    const removeCouponBtn = document.getElementById('removeCouponBtn');
+
+    if (applyCouponBtn && couponInput) {
+        applyCouponBtn.addEventListener('click', function() {
+            const code = couponInput.value.trim();
+            if (!code) {
+                couponMsg.textContent = 'Please enter a coupon code.';
+                couponMsg.className = 'small mt-1 text-danger';
+                couponMsg.style.display = 'block';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('coupon_code', code);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'apply_coupon' %}", {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    couponMsg.textContent = data.message || 'Failed to apply coupon.';
+                    couponMsg.className = 'small mt-1 text-danger';
+                    couponMsg.style.display = 'block';
+                }
+            })
+            .catch(err => {
+                couponMsg.textContent = 'Error communicating with server.';
+                couponMsg.className = 'small mt-1 text-danger';
+                couponMsg.style.display = 'block';
+            });
+        });
+    }
+
+    if (removeCouponBtn) {
+        removeCouponBtn.addEventListener('click', function() {
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'remove_coupon' %}", {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                window.location.reload();
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

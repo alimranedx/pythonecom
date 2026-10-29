@@ -296,11 +296,11 @@
 
                             <!-- Price Block -->
                             <div class="d-flex align-items-baseline gap-3 mb-4">
-                                <span class="hero-price-current">${{ item.product.effective_price }}</span>
+                                <span class="hero-price-current">৳{{ item.product.effective_price }}</span>
                                 {% if item.product.has_discount %}
-                                    <span class="hero-price-old">${{ item.product.price }}</span>
+                                    <span class="hero-price-old">৳{{ item.product.price }}</span>
                                     <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-bold rounded-pill">
-                                        Save ${{ item.savings|floatformat:2 }}
+                                        Save ৳{{ item.savings|floatformat:2 }}
                                     </span>
                                 {% endif %}
                             </div>
@@ -551,10 +551,11 @@
                                 </a>
                             </h6>
                             <div class="d-flex align-items-baseline gap-2 mb-3">
-                                <span class="fs-5 fw-bold text-danger">${{ product.effective_price }}</span>
+                                <span class="fs-5 fw-bold text-danger">৳{{ product.effective_price }}</span>
                                 {% if product.has_discount %}
-                                    <span class="text-decoration-line-through text-muted small">${{ product.price }}</span>
+                                    <span class="text-decoration-line-through text-muted small">৳{{ product.price }}</span>
                                 {% endif %}
+                                {% if product.unit %}<span class="badge bg-light text-dark border small ms-auto">{{ product.unit }}</span>{% endif %}
                             </div>
                             <div class="mt-auto">
                                 <form action="{% url 'add_to_cart' product.pk %}" method="post">
@@ -625,10 +626,11 @@
                             <p class="small text-muted text-truncate mb-3">{{ product.short_description }}</p>
                             
                             <div class="d-flex align-items-baseline gap-2 mb-3">
-                                <span class="fs-5 fw-bold text-primary">${{ product.effective_price }}</span>
+                                <span class="fs-5 fw-bold text-primary">৳{{ product.effective_price }}</span>
                                 {% if product.has_discount %}
-                                    <span class="text-decoration-line-through text-muted small">${{ product.price }}</span>
+                                    <span class="text-decoration-line-through text-muted small">৳{{ product.price }}</span>
                                 {% endif %}
+                                {% if product.unit %}<span class="badge bg-light text-dark border small ms-auto">{{ product.unit }}</span>{% endif %}
                             </div>
 
                             <div class="mt-auto d-flex gap-2">

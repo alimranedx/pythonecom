@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
@@ -15,7 +15,7 @@ from .forms import StaffUserCreateForm, StaffUserEditForm
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
 from product.models import Product, Category, Brand, ProductImage, ProductReview
 from product.forms import ProductForm, CategoryForm, BrandForm
-from orders.models import Order, OrderItem
+from orders.models import Order, OrderItem, DeliverySlot, Coupon
 from accounts.models import CustomerProfile, Address
 
 
@@ -883,3 +883,79 @@ def admin_staff_delete(request, pk):
     staff_user.delete()
     messages.success(request, f"Admin user '{username}' deleted successfully.")
     return redirect('admin_staff_list')
+
+
+# ==========================================
+# Delivery Slots & Coupon Management (Chaldal Style)
+# ==========================================
+
+@require_permission('orders.orders', 'view')
+def admin_delivery_slots_list(request):
+    slots = DeliverySlot.objects.all().order_by('order', 'start_time')
+    return render(request, 'admin_panel/orders/delivery_slots.html', {'slots': slots})
+
+
+@require_permission('orders.orders', 'edit')
+def admin_delivery_slot_toggle(request, pk):
+    slot = get_object_or_404(DeliverySlot, pk=pk)
+    slot.is_active = not slot.is_active
+    slot.save(update_fields=['is_active'])
+    status_str = "activated" if slot.is_active else "deactivated"
+    messages.success(request, f"Delivery slot '{slot.title}' has been {status_str}.")
+    return redirect('admin_delivery_slots_list')
+
+
+@require_permission('orders.orders', 'view')
+def admin_coupon_list(request):
+    coupons = Coupon.objects.all().order_by('-created_at')
+    return render(request, 'admin_panel/orders/coupons_list.html', {'coupons': coupons})
+
+
+@require_permission('orders.orders', 'create')
+def admin_coupon_create(request):
+    if request.method == 'POST':
+        code = request.POST.get('code', '').strip().upper()
+        discount_type = request.POST.get('discount_type', 'percent')
+        discount_value = request.POST.get('discount_value', '0').strip()
+        min_order_amount = request.POST.get('min_order_amount', '0').strip()
+        max_discount_amount = request.POST.get('max_discount_amount', '').strip() or None
+        valid_days = int(request.POST.get('valid_days', '30'))
+
+        if not code or not discount_value:
+            messages.error(request, "Code and Discount Value are required.")
+            return redirect('admin_coupon_list')
+
+        now = timezone.now()
+        Coupon.objects.create(
+            code=code,
+            discount_type=discount_type,
+            discount_value=Decimal(discount_value),
+            min_order_amount=Decimal(min_order_amount or '0.00'),
+            max_discount_amount=Decimal(max_discount_amount) if max_discount_amount else None,
+            valid_from=now,
+            valid_to=now + timedelta(days=valid_days),
+            is_active=True,
+        )
+        messages.success(request, f"Coupon '{code}' created successfully.")
+        return redirect('admin_coupon_list')
+
+    return redirect('admin_coupon_list')
+
+
+@require_permission('orders.orders', 'edit')
+def admin_coupon_toggle(request, pk):
+    coupon = get_object_or_404(Coupon, pk=pk)
+    coupon.is_active = not coupon.is_active
+    coupon.save(update_fields=['is_active'])
+    status_str = "activated" if coupon.is_active else "deactivated"
+    messages.success(request, f"Coupon '{coupon.code}' has been {status_str}.")
+    return redirect('admin_coupon_list')
+
+
+@require_permission('orders.orders', 'delete')
+def admin_coupon_delete(request, pk):
+    coupon = get_object_or_404(Coupon, pk=pk)
+    code = coupon.code
+    coupon.delete()
+    messages.success(request, f"Coupon '{code}' was deleted successfully.")
+    return redirect('admin_coupon_list')

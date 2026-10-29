@@ -29,10 +29,16 @@ urlpatterns = [
     path('reviews/', views.admin_review_list, name='admin_review_list'),
     path('reviews/<int:pk>/delete/', views.admin_review_delete, name='admin_review_delete'),
 
-    # Orders
+    # Orders & Logistics (Chaldal Standard)
     path('orders/', views.admin_order_list, name='admin_order_list'),
     path('orders/<int:pk>/', views.admin_order_detail, name='admin_order_detail'),
     path('orders/<int:pk>/invoice/', views.admin_order_invoice, name='admin_order_invoice'),
+    path('orders/delivery-slots/', views.admin_delivery_slots_list, name='admin_delivery_slots_list'),
+    path('orders/delivery-slots/<int:pk>/toggle/', views.admin_delivery_slot_toggle, name='admin_delivery_slot_toggle'),
+    path('orders/coupons/', views.admin_coupon_list, name='admin_coupon_list'),
+    path('orders/coupons/create/', views.admin_coupon_create, name='admin_coupon_create'),
+    path('orders/coupons/<int:pk>/toggle/', views.admin_coupon_toggle, name='admin_coupon_toggle'),
+    path('orders/coupons/<int:pk>/delete/', views.admin_coupon_delete, name='admin_coupon_delete'),
 
     # Customers
     path('customers/', views.admin_customer_list, name='admin_customer_list'),

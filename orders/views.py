@@ -1,9 +1,11 @@
+from datetime import timedelta
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from cart.services import CartService
 from accounts.models import Address
-from .models import Order
+from .models import Order, DeliverySlot
 from .services import OrderService
 
 
@@ -17,8 +19,27 @@ def checkout(request):
         messages.warning(request, "Your shopping cart is empty. Add products before proceeding to checkout.")
         return redirect('product_list')
 
+    # Available Delivery Slots & Dates
+    delivery_slots = DeliverySlot.objects.filter(is_active=True).order_by('order', 'start_time')
+    today = timezone.localdate()
+    available_dates = [
+        {'label': 'Today', 'sublabel': today.strftime('%a, %d %b'), 'value': today.strftime('%Y-%m-%d')},
+        {'label': 'Tomorrow', 'sublabel': (today + timedelta(days=1)).strftime('%a, %d %b'), 'value': (today + timedelta(days=1)).strftime('%Y-%m-%d')},
+        {'label': (today + timedelta(days=2)).strftime('%A'), 'sublabel': (today + timedelta(days=2)).strftime('%d %b'), 'value': (today + timedelta(days=2)).strftime('%Y-%m-%d')},
+    ]
+
     # Pre-fill address if authenticated
-    initial_data = {}
+    initial_data = {
+        'delivery_area': 'Inside Dhaka',
+        'delivery_date': available_dates[0]['value'],
+        'city': 'Dhaka',
+        'country': 'Bangladesh',
+    }
+
+    first_slot = delivery_slots.first()
+    if first_slot:
+        initial_data['delivery_slot'] = first_slot.pk
+
     if request.user.is_authenticated:
         initial_data['email'] = request.user.email
         initial_data['full_name'] = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
@@ -26,9 +47,9 @@ def checkout(request):
         if default_addr:
             initial_data['phone'] = default_addr.phone
             initial_data['street_address'] = default_addr.street_address
-            initial_data['city'] = default_addr.city
+            initial_data['city'] = default_addr.city or 'Dhaka'
             initial_data['postal_code'] = default_addr.postal_code
-            initial_data['country'] = default_addr.country
+            initial_data['country'] = default_addr.country or 'Bangladesh'
 
     if request.method == 'POST':
         shipping_data = {
@@ -40,6 +61,9 @@ def checkout(request):
             'postal_code': request.POST.get('postal_code', '').strip()[:20],
             'country': request.POST.get('country', 'Bangladesh').strip()[:100],
             'notes': request.POST.get('notes', '').strip()[:500],
+            'delivery_area': request.POST.get('delivery_area', 'Inside Dhaka').strip()[:100],
+            'delivery_date': request.POST.get('delivery_date', available_dates[0]['value']).strip()[:20],
+            'delivery_slot': request.POST.get('delivery_slot', '').strip(),
             'payment_method': request.POST.get('payment_method', 'cod'),
         }
 
@@ -48,7 +72,12 @@ def checkout(request):
         missing = [f for f in required_fields if not shipping_data.get(f)]
         if missing:
             messages.error(request, "Please fill in all required shipping fields.")
-            return render(request, 'orders/checkout.html', {'cart': cart, 'initial': shipping_data})
+            return render(request, 'orders/checkout.html', {
+                'cart': cart,
+                'initial': shipping_data,
+                'delivery_slots': delivery_slots,
+                'available_dates': available_dates,
+            })
 
         try:
             order = OrderService.create_order_from_cart(
@@ -61,18 +90,32 @@ def checkout(request):
             return redirect('order_confirmation', order_number=order.order_number)
         except ValidationError as e:
             messages.error(request, str(e.message if hasattr(e, 'message') else e))
-            return render(request, 'orders/checkout.html', {'cart': cart, 'initial': shipping_data})
+            return render(request, 'orders/checkout.html', {
+                'cart': cart,
+                'initial': shipping_data,
+                'delivery_slots': delivery_slots,
+                'available_dates': available_dates,
+            })
         except Exception as e:
             messages.error(request, f"An unexpected error occurred during checkout: {e}")
-            return render(request, 'orders/checkout.html', {'cart': cart, 'initial': shipping_data})
+            return render(request, 'orders/checkout.html', {
+                'cart': cart,
+                'initial': shipping_data,
+                'delivery_slots': delivery_slots,
+                'available_dates': available_dates,
+            })
 
-    return render(request, 'orders/checkout.html', {'cart': cart, 'initial': initial_data})
+    return render(request, 'orders/checkout.html', {
+        'cart': cart,
+        'initial': initial_data,
+        'delivery_slots': delivery_slots,
+        'available_dates': available_dates,
+    })
 
 
 def order_confirmation(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
     # IDOR Protection: Restrict viewing customer receipts only to the order owner, authorized session, or staff members
-    from django.core.exceptions import PermissionDenied
     if order.user:
         if order.user != request.user and not (request.user.is_authenticated and request.user.is_staff):
             raise PermissionDenied("You do not have permission to view this order confirmation.")

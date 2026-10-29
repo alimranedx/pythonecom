@@ -1,6 +1,9 @@
 # PythonEcom — Enterprise E-Commerce Platform
 
-A production-grade, full-featured Django e-commerce platform built with **Layered Clean Architecture**, **Granular Role-Based Access Control (RBAC)**, and a **Modern Storefront UI**.
+A production-grade, full-featured Django e-commerce platform built with **Layered Clean Architecture**, **Granular Role-Based Access Control (RBAC)**, and a **Modern Storefront UI** benchmarked against **Chaldal.com** (Bangladesh market standard).
+
+> 📖 **Complete Software Operations Manual:**  
+> For full documentation of all storefront and back-office features (delivery time slots, promotional coupon engine, visual 4-stage order tracking, adjustable multi-criteria order filters, floating bag launcher, and staff RBAC), see the [Software Features & Operations Guide](docs/SOFTWARE_FEATURES_GUIDE.md).
 
 ---
 

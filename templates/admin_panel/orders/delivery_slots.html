@@ -1,0 +1,89 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block page_title %}Delivery Slots Management{% endblock %}
+
+{% block admin_content %}
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h5 class="fw-bold mb-0">Delivery Slots &amp; Logistics Windows</h5>
+            <small class="text-muted">Manage scheduled delivery windows, daily order quotas, and express tiers</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_order_list' %}" class="btn btn-sm btn-light border rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Customer Orders
+            </a>
+            <a href="{% url 'admin_coupon_list' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                <i class="bi bi-tag-fill me-1"></i> Coupons &amp; Discounts
+            </a>
+        </div>
+    </div>
+
+    <!-- Slots Table -->
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3">Order #</th>
+                    <th>Slot Window Title</th>
+                    <th>Operating Hours</th>
+                    <th>Service Type</th>
+                    <th>Extra Surcharge</th>
+                    <th>Daily Quota</th>
+                    <th>Status</th>
+                    <th class="text-end pe-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in slots %}
+                    <tr>
+                        <td class="ps-3 fw-bold text-muted">{{ slot.order }}</td>
+                        <td>
+                            <strong class="text-dark">{{ slot.title }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                <i class="bi bi-clock me-1 text-primary"></i>{{ slot.start_time|time:"h:i A" }} - {{ slot.end_time|time:"h:i A" }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if slot.is_express %}
+                                <span class="badge bg-danger rounded-pill"><i class="bi bi-lightning-charge-fill me-1"></i>Express (60 Min)</span>
+                            {% else %}
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">Standard Scheduled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if slot.extra_fee > 0 %}
+                                <strong class="text-danger">+৳{{ slot.extra_fee }}</strong>
+                            {% else %}
+                                <span class="text-muted">৳0.00</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ slot.order_limit_per_day }} orders / day</td>
+                        <td>
+                            {% if slot.is_active %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary border">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-3">
+                            <a href="{% url 'admin_delivery_slot_toggle' slot.pk %}" class="btn btn-sm {% if slot.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} rounded-pill px-3">
+                                {% if slot.is_active %}<i class="bi bi-pause-circle me-1"></i> Deactivate{% else %}<i class="bi bi-play-circle me-1"></i> Activate{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            No delivery slots found.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
