@@ -234,6 +234,64 @@ class AdminPanelOrderManagementTests(TestCase):
         self.assertIn('Sony Headphones', content)
         self.assertIn('$400.00', content)
 
+    def test_order_filters_multi_criteria_and_date_range(self):
+        # Create second order with different status, payment method, customer
+        order2 = Order.objects.create(
+            full_name='Alice Smith',
+            email='alice@example.com',
+            phone='+1234567890',
+            street_address='456 Elm St',
+            city='New York',
+            postal_code='10001',
+            subtotal=Decimal('150.00'),
+            shipping_fee=Decimal('10.00'),
+            total_amount=Decimal('160.00'),
+            status='delivered',
+            payment_status='paid',
+            payment_method='cod'
+        )
+
+        # 1. Filter by order_id
+        res_oid = self.client.get(f'/app-admin/orders/?order_id={self.order.order_number}')
+        self.assertEqual(res_oid.status_code, 200)
+        self.assertIn(self.order.order_number, res_oid.content.decode('utf-8'))
+        self.assertNotIn(order2.order_number, res_oid.content.decode('utf-8'))
+
+        # 2. Filter by customer
+        res_cust = self.client.get('/app-admin/orders/?customer=Alice')
+        self.assertEqual(res_cust.status_code, 200)
+        self.assertIn(order2.order_number, res_cust.content.decode('utf-8'))
+        self.assertNotIn(self.order.order_number, res_cust.content.decode('utf-8'))
+
+        # 3. Filter by payment_status
+        res_paid = self.client.get('/app-admin/orders/?payment_status=paid')
+        self.assertEqual(res_paid.status_code, 200)
+        self.assertIn(order2.order_number, res_paid.content.decode('utf-8'))
+        self.assertNotIn(self.order.order_number, res_paid.content.decode('utf-8'))
+
+        # 4. Filter by amount range
+        res_amt = self.client.get('/app-admin/orders/?min_amount=200&max_amount=500')
+        self.assertEqual(res_amt.status_code, 200)
+        self.assertIn(self.order.order_number, res_amt.content.decode('utf-8'))
+        self.assertNotIn(order2.order_number, res_amt.content.decode('utf-8'))
+
+        # 5. Filter by combined date_range string
+        today_str = self.order.created_at.strftime('%Y/%m/%d')
+        res_dr = self.client.get(f'/app-admin/orders/?date_range={today_str}+00:00:00+-+{today_str}+23:59:59')
+        self.assertEqual(res_dr.status_code, 200)
+        self.assertIn(self.order.order_number, res_dr.content.decode('utf-8'))
+        self.assertIn(order2.order_number, res_dr.content.decode('utf-8'))
+
+    def test_order_export_csv(self):
+        res = self.client.get('/app-admin/orders/?export=csv')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res['Content-Type'], 'text/csv; charset=utf-8')
+        self.assertIn('attachment; filename=', res['Content-Disposition'])
+        csv_content = res.content.decode('utf-8')
+        self.assertIn('Order Number', csv_content)
+        self.assertIn(self.order.order_number, csv_content)
+        self.assertIn('Test Customer', csv_content)
+
 
 class AdminPanelCustomer360Tests(TestCase):
     def setUp(self):

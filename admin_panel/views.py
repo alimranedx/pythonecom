@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.utils import timezone
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
@@ -370,12 +372,72 @@ def admin_review_delete(request, pk):
 @require_permission('orders.orders', 'view')
 def admin_order_list(request):
     status_filter = request.GET.get('status', '').strip()
+    payment_status_filter = request.GET.get('payment_status', '').strip()
+    payment_method_filter = request.GET.get('payment_method', '').strip()
+    order_id_filter = request.GET.get('order_id', '').strip()
+    customer_filter = request.GET.get('customer', '').strip()
     q = request.GET.get('q', '').strip()
+
+    date_from_str = request.GET.get('date_from', '').strip()
+    date_to_str = request.GET.get('date_to', '').strip()
+    date_range_str = request.GET.get('date_range', '').strip()
+
+    min_amount = request.GET.get('min_amount', '').strip()
+    max_amount = request.GET.get('max_amount', '').strip()
 
     orders = Order.objects.select_related('user').all()
 
+    # Parse combined date_range string (e.g. '2026/10/28 00:00:00 - 2026/10/29 23:59:59')
+    if date_range_str and (not date_from_str or not date_to_str):
+        parts = date_range_str.split(' - ') if ' - ' in date_range_str else date_range_str.split(' to ')
+        if len(parts) == 2:
+            date_from_str = parts[0].strip()
+            date_to_str = parts[1].strip()
+
+    def parse_dt(val, is_end=False):
+        if not val:
+            return None
+        clean_val = val.strip().replace('/', '-')
+        formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M', '%Y-%m-%d']
+        for fmt in formats:
+            try:
+                dt = datetime.strptime(clean_val, fmt)
+                if fmt == '%Y-%m-%d' and is_end:
+                    dt = dt.replace(hour=23, minute=59, second=59)
+                if timezone.is_naive(dt):
+                    dt = timezone.make_aware(dt, timezone.get_current_timezone())
+                return dt
+            except ValueError:
+                pass
+        return None
+
+    dt_from = parse_dt(date_from_str, is_end=False)
+    dt_to = parse_dt(date_to_str, is_end=True)
+
+    if dt_from:
+        orders = orders.filter(created_at__gte=dt_from)
+    if dt_to:
+        orders = orders.filter(created_at__lte=dt_to)
+
     if status_filter:
         orders = orders.filter(status=status_filter)
+
+    if payment_status_filter:
+        orders = orders.filter(payment_status=payment_status_filter)
+
+    if payment_method_filter:
+        orders = orders.filter(payment_method=payment_method_filter)
+
+    if order_id_filter:
+        orders = orders.filter(order_number__icontains=order_id_filter)
+
+    if customer_filter:
+        orders = orders.filter(
+            Q(full_name__icontains=customer_filter) |
+            Q(email__icontains=customer_filter) |
+            Q(phone__icontains=customer_filter) |
+            Q(user__username__icontains=customer_filter)
+        )
 
     if q:
         orders = orders.filter(
@@ -385,15 +447,99 @@ def admin_order_list(request):
             Q(phone__icontains=q)
         )
 
+    if min_amount:
+        try:
+            orders = orders.filter(total_amount__gte=Decimal(min_amount))
+        except (ValueError, TypeError):
+            pass
+
+    if max_amount:
+        try:
+            orders = orders.filter(total_amount__lte=Decimal(max_amount))
+        except (ValueError, TypeError):
+            pass
+
+    # Count active non-empty filters
+    active_filters_count = sum([
+        bool(status_filter),
+        bool(payment_status_filter),
+        bool(payment_method_filter),
+        bool(order_id_filter),
+        bool(customer_filter),
+        bool(q),
+        bool(dt_from or dt_to),
+        bool(min_amount),
+        bool(max_amount),
+    ])
+
+    # Check for CSV Export
+    if request.GET.get('export') == 'csv':
+        import csv
+        from django.http import HttpResponse
+
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="orders_report_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Order Number', 'Date (UTC)', 'Customer Name', 'Email', 'Phone',
+            'Shipping Address', 'City', 'Country',
+            'Subtotal', 'Shipping Fee', 'Total Amount',
+            'Order Status', 'Payment Status', 'Payment Method'
+        ])
+
+        for o in orders:
+            writer.writerow([
+                o.order_number,
+                o.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                o.full_name,
+                o.email,
+                o.phone,
+                o.street_address,
+                o.city,
+                o.country,
+                o.subtotal,
+                o.shipping_fee,
+                o.total_amount,
+                o.get_status_display(),
+                o.get_payment_status_display(),
+                o.get_payment_method_display(),
+            ])
+        return response
+
+    total_filtered_orders = orders.count()
+    total_filtered_revenue = orders.filter(payment_status='paid').aggregate(t=Sum('total_amount'))['t'] or Decimal('0.00')
+
     paginator = Paginator(orders, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    # Clean query string for pagination links
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        del query_params['page']
+    querystring = query_params.urlencode()
 
     return render(request, 'admin_panel/orders/list.html', {
         'orders': page_obj,
         'page_obj': page_obj,
         'status_filter': status_filter,
+        'payment_status_filter': payment_status_filter,
+        'payment_method_filter': payment_method_filter,
+        'order_id_filter': order_id_filter,
+        'customer_filter': customer_filter,
+        'date_range': date_range_str,
+        'date_from': date_from_str,
+        'date_to': date_to_str,
+        'min_amount': min_amount,
+        'max_amount': max_amount,
+        'active_filters_count': active_filters_count,
+        'total_filtered_orders': total_filtered_orders,
+        'total_filtered_revenue': total_filtered_revenue,
         'statuses': Order.STATUS_CHOICES,
+        'payment_statuses': Order.PAYMENT_STATUS_CHOICES,
+        'payment_methods': Order.PAYMENT_METHOD_CHOICES,
+        'querystring': querystring,
         'q': q,
     })
 
