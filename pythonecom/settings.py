@@ -93,6 +93,12 @@ DATABASES = {
         'PASSWORD': '',       # Laragon default is empty password
         'HOST': 'localhost',
         'PORT': '3306',
+        'CONN_MAX_AGE': 600,   # Keep database connections open for 10 mins to eliminate connection churn
+        'CONN_HEALTH_CHECKS': True,  # Automatically ping and reconnect if MySQL server dropped the connection
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES', wait_timeout=28800, interactive_timeout=28800",
+            'charset': 'utf8mb4',
+        }
     }
 }
 

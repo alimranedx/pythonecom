@@ -1,6 +1,8 @@
+from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Product, Category, Brand
 from .forms import ProductForm
@@ -8,7 +10,7 @@ from .forms import ProductForm
 
 def product_list(request):
     """
-    Storefront catalog view with comprehensive filtering, searching, and sorting.
+    Storefront catalog view with comprehensive filtering, searching, sorting, and pagination.
     """
     products = Product.objects.filter(is_active=True).select_related('category', 'brand')
 
@@ -38,8 +40,23 @@ def product_list(request):
         products = products.filter(brand=selected_brand)
 
     # In Stock Filter
-    if request.GET.get('in_stock') == '1':
+    in_stock = request.GET.get('in_stock', '').strip()
+    if in_stock == '1':
         products = products.filter(stock__gt=0)
+
+    # Price Range Filter
+    min_price = request.GET.get('min_price', '').strip()
+    max_price = request.GET.get('max_price', '').strip()
+    if min_price:
+        try:
+            products = products.filter(price__gte=Decimal(min_price))
+        except (ValueError, TypeError):
+            pass
+    if max_price:
+        try:
+            products = products.filter(price__lte=Decimal(max_price))
+        except (ValueError, TypeError):
+            pass
 
     # Sorting
     sort = request.GET.get('sort', 'newest')
@@ -52,18 +69,61 @@ def product_list(request):
     else:
         products = products.order_by('-created_at')
 
+    # Pagination & Per Page limits
+    per_page_raw = request.GET.get('per_page', '12').strip()
+    try:
+        per_page = int(per_page_raw)
+        if per_page not in [9, 12, 18, 24, 36, 48]:
+            per_page = 12
+    except (ValueError, TypeError):
+        per_page = 12
+
+    paginator = Paginator(products, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    try:
+        elided_page_range = paginator.get_elided_page_range(
+            page_obj.number, on_each_side=2, on_ends=1
+        )
+    except Exception:
+        elided_page_range = paginator.page_range
+
+    # Build clean querystring preserving existing filters
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        del query_params['page']
+    query_params['per_page'] = per_page
+    querystring = query_params.urlencode()
+
     categories = Category.objects.all()
     brands = Brand.objects.all()
 
+    user_wishlist_ids = set()
+    if request.user.is_authenticated:
+        from accounts.models import Wishlist
+        user_wishlist_ids = set(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+
     return render(request, 'product/list.html', {
-        'products': products,
+        'products': page_obj,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'elided_page_range': elided_page_range,
+        'ellipsis': getattr(paginator, 'ELLIPSIS', '…'),
+        'per_page': per_page,
+        'per_page_options': [9, 12, 18, 24, 36],
         'categories': categories,
         'brands': brands,
         'query': query,
         'selected_category': selected_category,
         'selected_brand': selected_brand,
+        'in_stock': in_stock,
+        'min_price': min_price,
+        'max_price': max_price,
         'sort': sort,
-        'total_count': products.count(),
+        'total_count': paginator.count,
+        'querystring': querystring,
+        'user_wishlist_ids': user_wishlist_ids,
     })
 
 
