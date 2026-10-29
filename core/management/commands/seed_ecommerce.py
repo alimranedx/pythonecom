@@ -32,6 +32,8 @@ class Command(BaseCommand):
                 'submodules': [
                     {'name': 'Products', 'code': 'catalog.products', 'url_name': 'admin_product_list', 'order': 1},
                     {'name': 'Categories', 'code': 'catalog.categories', 'url_name': 'admin_category_list', 'order': 2},
+                    {'name': 'Brands', 'code': 'catalog.brands', 'url_name': 'admin_brand_list', 'order': 3},
+                    {'name': 'Customer Reviews', 'code': 'catalog.reviews', 'url_name': 'admin_review_list', 'order': 4},
                 ]
             },
             {

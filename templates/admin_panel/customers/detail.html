@@ -1,0 +1,170 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load rbac_tags %}
+
+{% block page_title %}Customer Profile: {{ customer.get_full_name|default:customer.username }}{% endblock %}
+
+{% block admin_content %}
+{% has_perm request.user 'customers.customers' 'edit' as can_edit %}
+{% has_perm request.user 'orders.orders' 'view' as can_view_orders %}
+
+<div class="row g-4">
+    <!-- Left Column: Customer Profile & Order History -->
+    <div class="col-lg-8">
+        <!-- Customer Details Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    {% if customer.profile and customer.profile.avatar %}
+                        <img src="{{ customer.profile.avatar.url }}" alt="{{ customer.username }}" class="rounded-circle border" style="width: 56px; height: 56px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fs-4" style="width: 56px; height: 56px;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h5 class="fw-bold mb-1">{{ customer.get_full_name|default:customer.username }}</h5>
+                        <div class="text-muted small">
+                            <span>@{{ customer.username }}</span> &bull; 
+                            <span>Member since {{ customer.date_joined|date:"F Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    {% if can_edit %}
+                        <form method="post" action="{% url 'admin_customer_toggle_status' customer.pk %}">
+                            {% csrf_token %}
+                            {% if customer.is_active %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Suspend this customer account?');">
+                                    <i class="bi bi-pause-circle me-1"></i> Suspend Account
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">
+                                    <i class="bi bi-play-circle me-1"></i> Activate Account
+                                </button>
+                            {% endif %}
+                        </form>
+                    {% endif %}
+                    <a href="{% url 'admin_customer_list' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Customers
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-3 small">
+                <div class="col-md-4">
+                    <span class="text-muted d-block">Email Address:</span>
+                    <strong class="text-dark">{{ customer.email }}</strong>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted d-block">Phone Number:</span>
+                    <strong class="text-dark">{{ customer.profile.phone|default:"Not provided" }}</strong>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted d-block">Account Status:</span>
+                    {% if customer.is_active %}
+                        <span class="badge bg-success-subtle text-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger-subtle text-danger">Suspended</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Order History -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold mb-3">Order History</h5>
+            {% if orders %}
+                <div class="table-responsive">
+                    <table class="table align-middle small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order Ref</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td><strong class="font-monospace text-primary">{{ order.order_number }}</strong></td>
+                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td class="fw-bold">${{ order.total_amount }}</td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if order.payment_status == 'paid' %}
+                                            <span class="badge bg-success-subtle text-success">Paid</span>
+                                        {% else %}
+                                            <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        {% if can_view_orders %}
+                                            <a href="{% url 'admin_order_detail' order.pk %}" class="btn btn-sm btn-light border">
+                                                View Order
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted small my-2">No orders placed by this customer yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Spend KPIs & Saved Addresses -->
+    <div class="col-lg-4">
+        <!-- Customer KPIs -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <h5 class="fw-bold mb-3">Lifetime Value</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <span class="text-muted small">Total Orders:</span>
+                <span class="fw-bold fs-6 text-dark">{{ total_orders }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <span class="text-muted small">Total Settled Spend:</span>
+                <span class="fw-bold fs-5 text-success">${{ total_spent }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Average Order Value:</span>
+                <span class="fw-bold fs-6 text-dark">${{ aov }}</span>
+            </div>
+        </div>
+
+        <!-- Saved Addresses -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold mb-3">Saved Addresses</h5>
+            {% if addresses %}
+                <div class="list-group list-group-flush">
+                    {% for addr in addresses %}
+                        <div class="list-group-item px-0 py-2 small">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="text-dark">{{ addr.full_name }}</strong>
+                                {% if addr.is_default %}
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem;">Default</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-muted">{{ addr.street_address }}{% if addr.apartment %}, {{ addr.apartment }}{% endif %}</div>
+                            <div class="text-muted">{{ addr.city }}, {{ addr.postal_code }} &bull; {{ addr.country }}</div>
+                            <div class="text-muted mt-1"><i class="bi bi-telephone me-1"></i> {{ addr.phone }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted small my-2">No addresses saved in customer address book.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -6,14 +6,15 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Sum, Count, Q
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from core.validators import validate_image_file
 from rbac.decorators import require_permission, require_superuser
 from .forms import StaffUserCreateForm, StaffUserEditForm
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
-from product.models import Product, Category, Brand, ProductImage
-from product.forms import ProductForm, CategoryForm
+from product.models import Product, Category, Brand, ProductImage, ProductReview
+from product.forms import ProductForm, CategoryForm, BrandForm
 from orders.models import Order, OrderItem
-from accounts.models import CustomerProfile
+from accounts.models import CustomerProfile, Address
 
 
 def admin_login(request):
@@ -45,25 +46,38 @@ def admin_login(request):
     return render(request, 'admin_panel/login.html')
 
 
-@login_required
+@login_required(login_url='admin_login')
 def admin_logout(request):
     logout(request)
     messages.info(request, "Successfully logged out from admin portal.")
     return redirect('admin_login')
 
 
-@login_required
+@login_required(login_url='admin_login')
 def admin_dashboard(request):
     if not request.user.is_staff:
         messages.error(request, "Staff credentials required.")
         return redirect('home')
 
-    total_revenue = Order.objects.filter(payment_status='paid').aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    paid_orders = Order.objects.filter(payment_status='paid')
+    total_revenue = paid_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    paid_count = paid_orders.count()
+    aov = (total_revenue / paid_count).quantize(Decimal('0.01')) if paid_count > 0 else Decimal('0.00')
+
     total_orders = Order.objects.count()
     pending_orders = Order.objects.filter(status='pending').count()
     total_products = Product.objects.count()
     low_stock_products = Product.objects.filter(stock__lte=5)
     total_customers = User.objects.filter(is_staff=False).count()
+
+    # Fulfillment status breakdown
+    status_counts = {
+        'pending': pending_orders,
+        'processing': Order.objects.filter(status='processing').count(),
+        'shipped': Order.objects.filter(status='shipped').count(),
+        'delivered': Order.objects.filter(status='delivered').count(),
+        'cancelled': Order.objects.filter(status='cancelled').count(),
+    }
 
     recent_orders = Order.objects.select_related('user').order_by('-created_at')[:8]
 
@@ -71,22 +85,52 @@ def admin_dashboard(request):
         'total_revenue': total_revenue,
         'total_orders': total_orders,
         'pending_orders': pending_orders,
+        'aov': aov,
         'total_products': total_products,
         'low_stock_count': low_stock_products.count(),
         'low_stock_products': low_stock_products[:5],
         'total_customers': total_customers,
+        'status_counts': status_counts,
         'recent_orders': recent_orders,
     })
 
 
-# ---------------- CATALOG MODULE ----------------
+# ---------------- CATALOG: PRODUCTS ----------------
 @require_permission('catalog.products', 'view')
 def admin_product_list(request):
     q = request.GET.get('q', '').strip()
-    products = Product.objects.select_related('category', 'brand').all()
+    category_id = request.GET.get('category', '').strip()
+    stock_status = request.GET.get('stock', '').strip()
+
+    products = Product.objects.select_related('category', 'brand').order_by('-created_at')
+
     if q:
         products = products.filter(Q(name__icontains=q) | Q(sku__icontains=q))
-    return render(request, 'admin_panel/products/list.html', {'products': products, 'q': q})
+
+    if category_id:
+        products = products.filter(category_id=category_id)
+
+    if stock_status == 'in_stock':
+        products = products.filter(stock__gt=5)
+    elif stock_status == 'low_stock':
+        products = products.filter(stock__gt=0, stock__lte=5)
+    elif stock_status == 'out_of_stock':
+        products = products.filter(stock=0)
+
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    categories = Category.objects.all()
+
+    return render(request, 'admin_panel/products/list.html', {
+        'products': page_obj,
+        'page_obj': page_obj,
+        'categories': categories,
+        'category_id': category_id,
+        'stock_status': stock_status,
+        'q': q,
+    })
 
 
 @require_permission('catalog.products', 'create')
@@ -167,6 +211,7 @@ def admin_product_delete(request, pk):
     return render(request, 'admin_panel/products/delete.html', {'product': product})
 
 
+# ---------------- CATALOG: CATEGORIES ----------------
 @require_permission('catalog.categories', 'view')
 def admin_category_list(request):
     categories = Category.objects.annotate(product_count=Count('products')).all()
@@ -211,17 +256,145 @@ def admin_category_delete(request, pk):
     return render(request, 'admin_panel/categories/delete.html', {'category': cat})
 
 
+# ---------------- CATALOG: BRANDS ----------------
+@require_permission('catalog.brands', 'view')
+def admin_brand_list(request):
+    q = request.GET.get('q', '').strip()
+    brands = Brand.objects.annotate(product_count=Count('products')).order_by('name')
+    if q:
+        brands = brands.filter(Q(name__icontains=q) | Q(slug__icontains=q))
+
+    paginator = Paginator(brands, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'admin_panel/brands/list.html', {
+        'brands': page_obj,
+        'page_obj': page_obj,
+        'q': q,
+    })
+
+
+@require_permission('catalog.brands', 'create')
+def admin_brand_create(request):
+    if request.method == 'POST':
+        form = BrandForm(request.POST, request.FILES)
+        if form.is_valid():
+            brand = form.save(commit=False)
+            if 'logo' in request.FILES:
+                try:
+                    validate_image_file(request.FILES['logo'])
+                except ValidationError as e:
+                    form.add_error('logo', e.messages[0] if hasattr(e, 'messages') else str(e))
+                    return render(request, 'admin_panel/brands/form.html', {'form': form, 'title': 'Create Brand'})
+            brand.save()
+            messages.success(request, f"Brand '{brand.name}' created successfully.")
+            return redirect('admin_brand_list')
+    else:
+        form = BrandForm()
+    return render(request, 'admin_panel/brands/form.html', {'form': form, 'title': 'Create Brand'})
+
+
+@require_permission('catalog.brands', 'edit')
+def admin_brand_edit(request, pk):
+    brand = get_object_or_404(Brand, pk=pk)
+    if request.method == 'POST':
+        form = BrandForm(request.POST, request.FILES, instance=brand)
+        if form.is_valid():
+            brand = form.save(commit=False)
+            if 'logo' in request.FILES:
+                try:
+                    validate_image_file(request.FILES['logo'])
+                except ValidationError as e:
+                    form.add_error('logo', e.messages[0] if hasattr(e, 'messages') else str(e))
+                    return render(request, 'admin_panel/brands/form.html', {'form': form, 'title': f"Edit {brand.name}", 'brand': brand})
+            brand.save()
+            messages.success(request, f"Brand '{brand.name}' updated successfully.")
+            return redirect('admin_brand_list')
+    else:
+        form = BrandForm(instance=brand)
+    return render(request, 'admin_panel/brands/form.html', {'form': form, 'title': f"Edit {brand.name}", 'brand': brand})
+
+
+@require_permission('catalog.brands', 'delete')
+def admin_brand_delete(request, pk):
+    brand = get_object_or_404(Brand, pk=pk)
+    if request.method == 'POST':
+        name = brand.name
+        brand.delete()
+        messages.success(request, f"Brand '{name}' was deleted.")
+        return redirect('admin_brand_list')
+    return render(request, 'admin_panel/brands/delete.html', {'brand': brand})
+
+
+# ---------------- CATALOG: CUSTOMER REVIEWS ----------------
+@require_permission('catalog.reviews', 'view')
+def admin_review_list(request):
+    q = request.GET.get('q', '').strip()
+    rating = request.GET.get('rating', '').strip()
+
+    reviews = ProductReview.objects.select_related('product', 'user').order_by('-created_at')
+    if q:
+        reviews = reviews.filter(
+            Q(product__name__icontains=q) |
+            Q(user__username__icontains=q) |
+            Q(comment__icontains=q)
+        )
+    if rating.isdigit():
+        reviews = reviews.filter(rating=int(rating))
+
+    paginator = Paginator(reviews, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'admin_panel/reviews/list.html', {
+        'reviews': page_obj,
+        'page_obj': page_obj,
+        'q': q,
+        'rating_filter': rating,
+    })
+
+
+@require_permission('catalog.reviews', 'delete')
+def admin_review_delete(request, pk):
+    review = get_object_or_404(ProductReview, pk=pk)
+    if request.method == 'POST':
+        review.delete()
+        messages.success(request, "Review deleted successfully.")
+    else:
+        messages.error(request, "Invalid request method.")
+    return redirect('admin_review_list')
+
+
 # ---------------- ORDERS MODULE ----------------
 @require_permission('orders.orders', 'view')
 def admin_order_list(request):
-    status_filter = request.GET.get('status')
+    status_filter = request.GET.get('status', '').strip()
+    q = request.GET.get('q', '').strip()
+
     orders = Order.objects.select_related('user').all()
+
     if status_filter:
         orders = orders.filter(status=status_filter)
+
+    if q:
+        orders = orders.filter(
+            Q(order_number__icontains=q) |
+            Q(full_name__icontains=q) |
+            Q(email__icontains=q) |
+            Q(phone__icontains=q)
+        )
+
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'admin_panel/orders/list.html', {
-        'orders': orders,
+        'orders': page_obj,
+        'page_obj': page_obj,
         'status_filter': status_filter,
         'statuses': Order.STATUS_CHOICES,
+        'q': q,
     })
 
 
@@ -230,30 +403,118 @@ def admin_order_detail(request, pk):
     order = get_object_or_404(Order.objects.prefetch_related('items__product'), pk=pk)
 
     if request.method == 'POST':
-        # Check edit permission
         from rbac.services import RBACService
         if not RBACService.user_has_permission(request.user, 'orders.orders', 'edit'):
             messages.error(request, "You do not have permission to modify orders.")
             return redirect('admin_order_detail', pk=order.pk)
 
+        old_status = order.status
         new_status = request.POST.get('status')
         new_payment_status = request.POST.get('payment_status')
+
         if new_status in dict(Order.STATUS_CHOICES):
+            # Auto-restore or adjust inventory on order status transitions
+            if new_status == 'cancelled' and old_status != 'cancelled':
+                for item in order.items.all():
+                    if item.product:
+                        item.product.stock += item.quantity
+                        item.product.save(update_fields=['stock'])
+                messages.info(request, "Restored inventory stock for cancelled order items.")
+            elif old_status == 'cancelled' and new_status != 'cancelled':
+                for item in order.items.all():
+                    if item.product:
+                        item.product.stock = max(0, item.product.stock - item.quantity)
+                        item.product.save(update_fields=['stock'])
+                messages.info(request, "Deducted stock for reopened order items.")
+
             order.status = new_status
+
         if new_payment_status in dict(Order.PAYMENT_STATUS_CHOICES):
             order.payment_status = new_payment_status
+
         order.save()
-        messages.success(request, f"Order {order.order_number} status updated.")
+        messages.success(request, f"Order {order.order_number} status updated successfully.")
         return redirect('admin_order_detail', pk=order.pk)
 
     return render(request, 'admin_panel/orders/detail.html', {'order': order})
 
 
+@require_permission('orders.orders', 'view')
+def admin_order_invoice(request, pk):
+    """
+    Renders a print-ready, professional order invoice / packing slip
+    suitable for browser printing (window.print()) or PDF export.
+    """
+    order = get_object_or_404(Order.objects.prefetch_related('items__product'), pk=pk)
+    return render(request, 'admin_panel/orders/invoice.html', {'order': order})
+
+
 # ---------------- CUSTOMERS MODULE ----------------
 @require_permission('customers.customers', 'view')
 def admin_customer_list(request):
-    customers = User.objects.filter(is_staff=False).annotate(orders_count=Count('orders')).order_by('-date_joined')
-    return render(request, 'admin_panel/customers/list.html', {'customers': customers})
+    q = request.GET.get('q', '').strip()
+    customers = User.objects.filter(is_staff=False).annotate(
+        orders_count=Count('orders'),
+        total_spent=Sum('orders__total_amount')
+    ).order_by('-date_joined')
+
+    if q:
+        customers = customers.filter(
+            Q(username__icontains=q) |
+            Q(email__icontains=q) |
+            Q(first_name__icontains=q) |
+            Q(last_name__icontains=q)
+        )
+
+    paginator = Paginator(customers, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'admin_panel/customers/list.html', {
+        'customers': page_obj,
+        'page_obj': page_obj,
+        'q': q,
+    })
+
+
+@require_permission('customers.customers', 'view')
+def admin_customer_detail(request, pk):
+    """
+    Full 360 Customer Profile:
+    Personal info, lifetime spend, order history, and saved address book.
+    """
+    customer = get_object_or_404(User, pk=pk, is_staff=False)
+    orders = Order.objects.filter(user=customer).order_by('-created_at')
+
+    total_orders = orders.count()
+    settled_orders = orders.filter(payment_status='paid')
+    total_spent = settled_orders.aggregate(t=Sum('total_amount'))['t'] or Decimal('0.00')
+    aov = (total_spent / settled_orders.count()).quantize(Decimal('0.01')) if settled_orders.count() > 0 else Decimal('0.00')
+
+    addresses = Address.objects.filter(user=customer)
+
+    return render(request, 'admin_panel/customers/detail.html', {
+        'customer': customer,
+        'orders': orders,
+        'total_orders': total_orders,
+        'total_spent': total_spent,
+        'aov': aov,
+        'addresses': addresses,
+    })
+
+
+@require_permission('customers.customers', 'edit')
+def admin_customer_toggle_status(request, pk):
+    """
+    Toggles customer account active/suspended state.
+    """
+    customer = get_object_or_404(User, pk=pk, is_staff=False)
+    if request.method == 'POST':
+        customer.is_active = not customer.is_active
+        customer.save(update_fields=['is_active'])
+        state = "activated" if customer.is_active else "suspended"
+        messages.success(request, f"Customer account '{customer.username}' has been {state}.")
+    return redirect('admin_customer_detail', pk=customer.pk)
 
 
 # ---------------- ACCESS CONTROL & USER MANAGEMENT (SUPERUSER ONLY) ----------------

@@ -19,12 +19,25 @@ urlpatterns = [
     path('categories/<int:pk>/edit/', views.admin_category_edit, name='admin_category_edit'),
     path('categories/<int:pk>/delete/', views.admin_category_delete, name='admin_category_delete'),
 
+    # Brands
+    path('brands/', views.admin_brand_list, name='admin_brand_list'),
+    path('brands/create/', views.admin_brand_create, name='admin_brand_create'),
+    path('brands/<int:pk>/edit/', views.admin_brand_edit, name='admin_brand_edit'),
+    path('brands/<int:pk>/delete/', views.admin_brand_delete, name='admin_brand_delete'),
+
+    # Customer Reviews Moderation
+    path('reviews/', views.admin_review_list, name='admin_review_list'),
+    path('reviews/<int:pk>/delete/', views.admin_review_delete, name='admin_review_delete'),
+
     # Orders
     path('orders/', views.admin_order_list, name='admin_order_list'),
     path('orders/<int:pk>/', views.admin_order_detail, name='admin_order_detail'),
+    path('orders/<int:pk>/invoice/', views.admin_order_invoice, name='admin_order_invoice'),
 
     # Customers
     path('customers/', views.admin_customer_list, name='admin_customer_list'),
+    path('customers/<int:pk>/', views.admin_customer_detail, name='admin_customer_detail'),
+    path('customers/<int:pk>/toggle-status/', views.admin_customer_toggle_status, name='admin_customer_toggle_status'),
 
     # RBAC: User Management (Super Admin Only)
     path('rbac/users/', views.admin_staff_list, name='admin_staff_list'),

@@ -23,14 +23,17 @@ class SessionRoleIsolationMiddleware:
     def __call__(self, request):
         path = request.path_info
 
-        # Skip static assets and media files
-        if not path.startswith('/static/') and not path.startswith('/media/'):
+        # Skip static assets, media files, and browser metadata requests
+        ignored_prefixes = ('/static/', '/media/', '/favicon.ico', '/robots.txt', '/apple-touch-icon')
+        if not any(path.startswith(prefix) for prefix in ignored_prefixes):
             is_admin_route = path.startswith('/app-admin/') or path.startswith('/admin/')
 
             if request.user.is_authenticated:
                 if not is_admin_route and request.user.is_staff:
-                    # Staff user accessed storefront route -> clear staff session, free root panel
-                    logout(request)
+                    # Clear staff session when directly navigating customer/storefront routes
+                    storefront_routes = ('/cart/', '/orders/checkout', '/account/')
+                    if path == '/' or path.startswith('/product/') or any(path.startswith(p) for p in storefront_routes):
+                        logout(request)
                 elif is_admin_route and not request.user.is_staff:
                     # Customer user accessed admin route -> clear customer session
                     logout(request)

@@ -5,6 +5,8 @@
 
 {% block admin_content %}
 {% has_perm request.user 'orders.orders' 'view' as can_view_orders %}
+{% has_perm request.user 'catalog.products' 'edit' as can_edit_products %}
+
 <!-- Metric KPI Cards -->
 <div class="row g-3 mb-4">
     <div class="col-xl-3 col-md-6">
@@ -36,13 +38,13 @@
     <div class="col-xl-3 col-md-6">
         <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted small fw-semibold text-uppercase">Active Catalog</span>
+                <span class="text-muted small fw-semibold text-uppercase">Avg Order Value (AOV)</span>
                 <div class="rounded-circle bg-info-subtle text-info p-2">
-                    <i class="bi bi-boxes fs-5"></i>
+                    <i class="bi bi-graph-up-arrow fs-5"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1 text-dark">{{ total_products }}</h3>
-            <small class="text-muted">Total inventory items</small>
+            <h3 class="fw-bold mb-1 text-dark">${{ aov }}</h3>
+            <small class="text-muted">Per settled transaction</small>
         </div>
     </div>
 
@@ -60,6 +62,32 @@
     </div>
 </div>
 
+<!-- Order Fulfillment Workflow Pills -->
+{% if can_view_orders %}
+<div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <span class="fw-bold small text-muted text-uppercase">Fulfillment Quick Filter:</span>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'admin_order_list' %}?status=pending" class="badge rounded-pill bg-warning-subtle text-warning text-decoration-none border border-warning-subtle p-2 px-3">
+                <i class="bi bi-clock me-1"></i> Pending Approval ({{ status_counts.pending }})
+            </a>
+            <a href="{% url 'admin_order_list' %}?status=processing" class="badge rounded-pill bg-primary-subtle text-primary text-decoration-none border border-primary-subtle p-2 px-3">
+                <i class="bi bi-gear me-1"></i> Processing ({{ status_counts.processing }})
+            </a>
+            <a href="{% url 'admin_order_list' %}?status=shipped" class="badge rounded-pill bg-info-subtle text-info text-decoration-none border border-info-subtle p-2 px-3">
+                <i class="bi bi-truck me-1"></i> Shipped ({{ status_counts.shipped }})
+            </a>
+            <a href="{% url 'admin_order_list' %}?status=delivered" class="badge rounded-pill bg-success-subtle text-success text-decoration-none border border-success-subtle p-2 px-3">
+                <i class="bi bi-check2-circle me-1"></i> Delivered ({{ status_counts.delivered }})
+            </a>
+            <a href="{% url 'admin_order_list' %}?status=cancelled" class="badge rounded-pill bg-secondary-subtle text-secondary text-decoration-none border border-secondary-subtle p-2 px-3">
+                <i class="bi bi-x-circle me-1"></i> Cancelled ({{ status_counts.cancelled }})
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="row g-4">
     <!-- Recent Orders Table -->
     <div class="col-lg-8">
@@ -67,7 +95,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold mb-0">Recent Orders</h5>
                 {% if can_view_orders %}
-                    <a href="{% url 'admin_order_list' %}" class="small text-decoration-none">View All</a>
+                    <a href="{% url 'admin_order_list' %}" class="small text-decoration-none fw-semibold">View All Orders &rarr;</a>
                 {% endif %}
             </div>
 
@@ -81,13 +109,13 @@
                                 <th>Amount</th>
                                 <th>Status</th>
                                 <th>Payment</th>
-                                <th class="text-end">Action</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for order in recent_orders %}
                                 <tr>
-                                    <td><strong>{{ order.order_number }}</strong></td>
+                                    <td><strong class="font-monospace text-primary">{{ order.order_number }}</strong></td>
                                     <td>{{ order.full_name }}</td>
                                     <td class="fw-bold">${{ order.total_amount }}</td>
                                     <td>
@@ -103,9 +131,14 @@
                                         {% endif %}
                                     </td>
                                     <td class="text-end">
-                                        <a href="{% url 'admin_order_detail' order.pk %}" class="btn btn-sm btn-light border">
-                                            View
-                                        </a>
+                                        {% if can_view_orders %}
+                                            <a href="{% url 'admin_order_detail' order.pk %}" class="btn btn-sm btn-light border" title="Manage Order">
+                                                View
+                                            </a>
+                                            <a href="{% url 'admin_order_invoice' order.pk %}" target="_blank" class="btn btn-sm btn-light border text-secondary" title="Print Invoice">
+                                                <i class="bi bi-printer"></i>
+                                            </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -123,7 +156,7 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold mb-0">Low Stock Alerts</h5>
-                <span class="badge bg-danger">{{ low_stock_count }} items</span>
+                <span class="badge {% if low_stock_count > 0 %}bg-danger{% else %}bg-success{% endif %}">{{ low_stock_count }} items</span>
             </div>
 
             {% if low_stock_products %}
@@ -134,9 +167,16 @@
                                 <strong class="small text-dark d-block text-truncate" style="max-width: 170px;">{{ p.name }}</strong>
                                 <small class="text-muted">{{ p.category.name|default:"General" }}</small>
                             </div>
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
-                                {{ p.stock }} units left
-                            </span>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                    {{ p.stock }} left
+                                </span>
+                                {% if can_edit_products %}
+                                    <a href="{% url 'admin_product_edit' p.pk %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Update Stock">
+                                        <i class="bi bi-pencil small"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
                     {% endfor %}
                 </div>

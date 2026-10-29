@@ -10,17 +10,33 @@
             <small class="text-muted">Track fulfillment, payments, and shipments</small>
         </div>
 
-        <!-- Status Filter Tabs -->
-        <div class="d-flex gap-2">
-            <a href="{% url 'admin_order_list' %}" class="btn btn-sm {% if not status_filter %}btn-dark{% else %}btn-light border{% endif %}">
-                All
-            </a>
-            {% for code, label in statuses %}
-                <a href="{% url 'admin_order_list' %}?status={{ code }}" class="btn btn-sm {% if status_filter == code %}btn-dark{% else %}btn-light border{% endif %}">
-                    {{ label }}
+        <!-- Search Box -->
+        <form method="get" class="d-flex align-items-center gap-2">
+            {% if status_filter %}
+                <input type="hidden" name="status" value="{{ status_filter }}">
+            {% endif %}
+            <div class="input-group input-group-sm">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search order ref, customer, phone...">
+                <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+            </div>
+            {% if q or status_filter %}
+                <a href="{% url 'admin_order_list' %}" class="btn btn-sm btn-light border text-danger" title="Clear Filters">
+                    <i class="bi bi-x-lg"></i>
                 </a>
-            {% endfor %}
-        </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Status Filter Tabs -->
+    <div class="d-flex flex-wrap gap-2 mb-4 pb-2 border-bottom">
+        <a href="{% url 'admin_order_list' %}{% if q %}?q={{ q }}{% endif %}" class="btn btn-sm rounded-pill {% if not status_filter %}btn-dark{% else %}btn-light border{% endif %}">
+            All Orders
+        </a>
+        {% for code, label in statuses %}
+            <a href="{% url 'admin_order_list' %}?status={{ code }}{% if q %}&q={{ q }}{% endif %}" class="btn btn-sm rounded-pill {% if status_filter == code %}btn-dark{% else %}btn-light border{% endif %}">
+                {{ label }}
+            </a>
+        {% endfor %}
     </div>
 
     <div class="table-responsive">
@@ -58,18 +74,51 @@
                         </td>
                         <td><span class="badge bg-light text-dark border">{{ order.get_payment_method_display }}</span></td>
                         <td class="text-end pe-3">
-                            <a href="{% url 'admin_order_detail' order.pk %}" class="btn btn-sm btn-outline-primary">
+                            <a href="{% url 'admin_order_detail' order.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Manage Order">
                                 Manage
+                            </a>
+                            <a href="{% url 'admin_order_invoice' order.pk %}" target="_blank" class="btn btn-sm btn-light border text-secondary" title="Print Invoice">
+                                <i class="bi bi-printer"></i>
                             </a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="8" class="text-center py-4 text-muted">No orders found.</td>
+                        <td colspan="8" class="text-center py-4 text-muted">No orders found matching your search.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Controls -->
+    {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <small class="text-muted">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} ({{ page_obj.paginator.count }} total orders)</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">&laquo;</a>
+                        </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">&raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

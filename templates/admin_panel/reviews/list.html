@@ -1,0 +1,126 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load rbac_tags %}
+
+{% block page_title %}Customer Reviews Moderation{% endblock %}
+
+{% block admin_content %}
+{% has_perm request.user 'catalog.reviews' 'delete' as can_delete %}
+
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h5 class="fw-bold mb-0">Customer Reviews & Ratings</h5>
+            <small class="text-muted">Moderate customer feedback, review ratings, and filter inappropriate comments</small>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <form method="get" class="d-flex align-items-center gap-2">
+            <select name="rating" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Ratings</option>
+                <option value="5" {% if rating_filter == '5' %}selected{% endif %}>5 Stars (&#9733;&#9733;&#9733;&#9733;&#9733;)</option>
+                <option value="4" {% if rating_filter == '4' %}selected{% endif %}>4 Stars (&#9733;&#9733;&#9733;&#9733;)</option>
+                <option value="3" {% if rating_filter == '3' %}selected{% endif %}>3 Stars (&#9733;&#9733;&#9733;)</option>
+                <option value="2" {% if rating_filter == '2' %}selected{% endif %}>2 Stars (&#9733;&#9733;)</option>
+                <option value="1" {% if rating_filter == '1' %}selected{% endif %}>1 Star (&#9733;)</option>
+            </select>
+
+            <div class="input-group input-group-sm">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search reviews...">
+                <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+            </div>
+            {% if q or rating_filter %}
+                <a href="{% url 'admin_review_list' %}" class="btn btn-sm btn-light border text-danger" title="Clear Filters">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3">Product</th>
+                    <th>Customer</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <th class="text-end pe-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reviews %}
+                    <tr>
+                        <td class="ps-3">
+                            <strong class="text-dark">{{ r.product.name }}</strong>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark">{{ r.user.get_full_name|default:r.user.username }}</div>
+                            <small class="text-muted">@{{ r.user.username }}</small>
+                        </td>
+                        <td>
+                            <span class="text-warning">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= r.rating %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-muted opacity-50"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="fw-bold ms-1 text-dark">{{ r.rating }}/5</span>
+                        </td>
+                        <td style="max-width: 320px;">
+                            <div class="text-truncate">{{ r.comment }}</div>
+                        </td>
+                        <td class="text-muted">{{ r.created_at|date:"M d, Y" }}</td>
+                        <td class="text-end pe-3">
+                            {% if can_delete %}
+                                <form method="post" action="{% url 'admin_review_delete' r.pk %}" class="d-inline" onsubmit="return confirm('Delete this review permanently?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Review">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No customer reviews found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <small class="text-muted">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}">&laquo;</a>
+                        </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}">&raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

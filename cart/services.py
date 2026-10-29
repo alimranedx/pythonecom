@@ -13,15 +13,11 @@ class CartService:
 
     @classmethod
     def get_or_create_cart(cls, request: HttpRequest):
-        if request.user.is_authenticated:
-            if request.user.is_staff:
-                from django.contrib.auth import logout
-                logout(request)
-            else:
-                cart, _ = Cart.objects.get_or_create(user=request.user)
-                if request.session.session_key:
-                    cls.merge_guest_cart(request.session.session_key, request.user)
-                return cart
+        if request.user.is_authenticated and not request.user.is_staff:
+            cart, _ = Cart.objects.get_or_create(user=request.user)
+            if request.session.session_key:
+                cls.merge_guest_cart(request.session.session_key, request.user)
+            return cart
 
         if not request.session.session_key:
             request.session.create()

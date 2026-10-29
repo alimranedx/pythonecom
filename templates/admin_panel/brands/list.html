@@ -1,0 +1,120 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load rbac_tags %}
+
+{% block page_title %}Brands Management{% endblock %}
+
+{% block admin_content %}
+{% has_perm request.user 'catalog.brands' 'create' as can_create %}
+{% has_perm request.user 'catalog.brands' 'edit' as can_edit %}
+{% has_perm request.user 'catalog.brands' 'delete' as can_delete %}
+
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h5 class="fw-bold mb-0">Brand Directory</h5>
+            <small class="text-muted">Manage marketplace product manufacturers and official brand logos</small>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <form method="get" class="d-flex align-items-center gap-1">
+                <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Search brand...">
+                <button type="submit" class="btn btn-sm btn-light border"><i class="bi bi-search"></i></button>
+                {% if q %}
+                    <a href="{% url 'admin_brand_list' %}" class="btn btn-sm btn-light border text-danger"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+            </form>
+
+            {% if can_create %}
+                <a href="{% url 'admin_brand_create' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+                    <i class="bi bi-plus-lg me-1"></i> Add Brand
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3" style="width: 80px;">Logo</th>
+                    <th>Brand Name</th>
+                    <th>Slug</th>
+                    <th>Associated Products</th>
+                    <th class="text-end pe-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in brands %}
+                    <tr>
+                        <td class="ps-3">
+                            {% if b.logo %}
+                                <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="rounded border p-1" style="width: 44px; height: 44px; object-fit: contain;">
+                            {% else %}
+                                <div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                    <i class="bi bi-tag fs-5"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong class="text-dark">{{ b.name }}</strong>
+                        </td>
+                        <td><code class="text-muted">{{ b.slug }}</code></td>
+                        <td>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                {{ b.product_count }} products
+                            </span>
+                        </td>
+                        <td class="text-end pe-3">
+                            {% if can_edit %}
+                                <a href="{% url 'admin_brand_edit' b.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            {% endif %}
+                            {% if can_delete %}
+                                <a href="{% url 'admin_brand_delete' b.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No brands found.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <small class="text-muted">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">&laquo;</a>
+                        </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">&raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -16,11 +16,6 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <form method="get" class="d-flex">
-                <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Search product or SKU...">
-                <button type="submit" class="btn btn-sm btn-light border ms-1"><i class="bi bi-search"></i></button>
-            </form>
-
             {% if can_create %}
                 <a href="{% url 'admin_product_create' %}" class="btn btn-primary btn-sm rounded-pill px-3">
                     <i class="bi bi-plus-lg me-1"></i> Add Product
@@ -28,6 +23,44 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Filters & Search Toolbar -->
+    <form method="get" class="row g-2 mb-4 align-items-center bg-light p-3 rounded-3">
+        <div class="col-md-4">
+            <div class="input-group input-group-sm">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search by name or SKU...">
+                <button type="submit" class="btn btn-dark"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if category_id == cat.id|stringformat:"s" %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select name="stock" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Stock Statuses</option>
+                <option value="in_stock" {% if stock_status == 'in_stock' %}selected{% endif %}>In Stock (> 5)</option>
+                <option value="low_stock" {% if stock_status == 'low_stock' %}selected{% endif %}>Low Stock (1-5)</option>
+                <option value="out_of_stock" {% if stock_status == 'out_of_stock' %}selected{% endif %}>Out of Stock (0)</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 text-md-end">
+            {% if q or category_id or stock_status %}
+                <a href="{% url 'admin_product_list' %}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-x-circle me-1"></i> Reset
+                </a>
+            {% endif %}
+        </div>
+    </form>
 
     <div class="table-responsive">
         <table class="table align-middle mb-0 small">
@@ -39,7 +72,7 @@
                     <th>Brand</th>
                     <th>Price</th>
                     <th>Stock</th>
-                    <th>Badges</th>
+                    <th>Status</th>
                     <th class="text-end pe-3">Actions</th>
                 </tr>
             </thead>
@@ -70,6 +103,11 @@
                             {% endif %}
                         </td>
                         <td>
+                            {% if p.is_active %}
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                            {% endif %}
                             {% if p.is_flash_sale %}
                                 <span class="badge bg-danger">Flash</span>
                             {% endif %}
@@ -78,6 +116,9 @@
                             {% endif %}
                         </td>
                         <td class="text-end pe-3">
+                            <a href="{% url 'product_detail' p.pk %}" target="_blank" class="btn btn-sm btn-light border me-1" title="View in Store">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
                             {% if can_edit %}
                                 <a href="{% url 'admin_product_edit' p.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
                                     <i class="bi bi-pencil"></i>
@@ -93,12 +134,42 @@
                 {% empty %}
                     <tr>
                         <td colspan="8" class="text-center py-4 text-muted">
-                            No products found matching your search.
+                            No products found matching your filter criteria.
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Controls -->
+    {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <small class="text-muted">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} ({{ page_obj.paginator.count }} total products)</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}{% if stock_status %}&stock={{ stock_status }}{% endif %}">&laquo;</a>
+                        </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}{% if stock_status %}&stock={{ stock_status }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}{% if stock_status %}&stock={{ stock_status }}{% endif %}">&raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

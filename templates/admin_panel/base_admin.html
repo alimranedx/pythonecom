@@ -114,7 +114,7 @@
                 </div>
                 {% for sub in item.submodules %}
                     {% if sub.url_name %}
-                        <a href="{% url sub.url_name %}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name %}active{% endif %}">
+                        <a href="{% url sub.url_name %}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name or request.resolver_match.url_name|slice:':12' == sub.url_name|slice:':12' %}active{% endif %}">
                             <i class="bi bi-chevron-right me-2 small"></i> {{ sub.name }}
                         </a>
                     {% endif %}
