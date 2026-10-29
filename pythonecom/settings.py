@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'core.middleware.SessionRoleIsolationMiddleware',
+    'core.middleware.LanguageRoutingMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -74,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.cart_processor',
                 'accounts.context_processors.wishlist_processor',
+                'core.context_processors.language_processor',
             ],
         },
     },

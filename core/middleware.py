@@ -40,3 +40,41 @@ class SessionRoleIsolationMiddleware:
 
         response = self.get_response(request)
         return response
+
+
+class LanguageRoutingMiddleware:
+    """
+    Enforces bilingual language routing (English & Bangla) for root/storefront routes,
+    while guaranteeing that the administrative portal (/app-admin/, /admin/)
+    always strictly remains in English.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        path = request.path_info
+        is_admin_route = path.startswith('/app-admin/') or path.startswith('/admin/')
+
+        if is_admin_route:
+            # Force English strictly for all administrative routes
+            lang = 'en'
+        else:
+            # For storefront routes, read language preference from session or cookie
+            lang = request.session.get('site_language')
+            if not lang:
+                lang = request.COOKIES.get('site_language', 'en')
+            if lang not in ('en', 'bn'):
+                lang = 'en'
+
+        request.LANGUAGE_CODE = lang
+        request.CURRENT_LANGUAGE = lang
+        request.IS_BANGLA = (lang == 'bn')
+
+        response = self.get_response(request)
+
+        # Synchronize cookie for storefront responses
+        if not is_admin_route and request.COOKIES.get('site_language') != lang:
+            response.set_cookie('site_language', lang, max_age=365 * 24 * 60 * 60, samesite='Lax')
+
+        return response

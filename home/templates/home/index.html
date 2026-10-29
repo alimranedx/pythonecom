@@ -289,9 +289,9 @@
 
                             <!-- Trust & Delivery Highlights -->
                             <div class="d-flex flex-wrap gap-3 text-white-50 small mb-4">
-                                <span><i class="bi bi-shield-check text-success me-1"></i> Authentic Guarantee</span>
-                                <span><i class="bi bi-truck text-warning me-1"></i> Free Express Delivery</span>
-                                <span><i class="bi bi-arrow-repeat text-info me-1"></i> 30-Day Hassle-Free Returns</span>
+                                <span><i class="bi bi-shield-check text-success me-1"></i> {{ tr.authentic_guarantee }}</span>
+                                <span><i class="bi bi-truck text-warning me-1"></i> {{ tr.free_express_delivery }}</span>
+                                <span><i class="bi bi-arrow-repeat text-info me-1"></i> {{ tr.returns_guarantee }}</span>
                             </div>
 
                             <!-- Price Block -->
@@ -308,13 +308,13 @@
                             <!-- Call-to-Actions -->
                             <div class="d-flex flex-wrap align-items-center gap-3">
                                 <a href="{% url 'product_detail' item.product.pk %}" class="btn btn-primary btn-lg px-4 rounded-pill fw-bold shadow hero-cta-btn">
-                                    <i class="bi bi-bag-check-fill me-2"></i> Shop Deal Now
+                                    <i class="bi bi-bag-check-fill me-2"></i> {{ tr.shop_deal_now }}
                                 </a>
 
                                 <form action="{% url 'add_to_cart' item.product.pk %}" method="post" class="d-inline-block m-0">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold" {% if item.product.stock <= 0 %}disabled{% endif %}>
-                                        <i class="bi bi-cart-plus me-1"></i> Quick Add
+                                        <i class="bi bi-cart-plus me-1"></i> {{ tr.quick_add }}
                                     </button>
                                 </form>
 
@@ -450,29 +450,29 @@
         <div class="col-md-3 col-6">
             <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
                 <i class="bi bi-truck fs-2 text-primary mb-2"></i>
-                <h6 class="fw-bold mb-1">Free Shipping</h6>
-                <small class="text-muted">On orders over ৳500</small>
+                <h6 class="fw-bold mb-1">{{ tr.free_shipping }}</h6>
+                <small class="text-muted">{{ tr.orders_over_500 }}</small>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
                 <i class="bi bi-shield-check fs-2 text-success mb-2"></i>
-                <h6 class="fw-bold mb-1">100% Authentic</h6>
-                <small class="text-muted">Direct brand warranty</small>
+                <h6 class="fw-bold mb-1">{{ tr.authentic }}</h6>
+                <small class="text-muted">{{ tr.brand_warranty }}</small>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
                 <i class="bi bi-arrow-repeat fs-2 text-warning mb-2"></i>
-                <h6 class="fw-bold mb-1">30 Days Return</h6>
-                <small class="text-muted">Easy hassle-free returns</small>
+                <h6 class="fw-bold mb-1">{{ tr.days_return }}</h6>
+                <small class="text-muted">{{ tr.hassle_free_returns }}</small>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
                 <i class="bi bi-headset fs-2 text-info mb-2"></i>
-                <h6 class="fw-bold mb-1">24/7 VIP Support</h6>
-                <small class="text-muted">Dedicated expert team</small>
+                <h6 class="fw-bold mb-1">{{ tr.vip_support }}</h6>
+                <small class="text-muted">{{ tr.dedicated_team }}</small>
             </div>
         </div>
     </div>
@@ -481,11 +481,11 @@
     <div class="mb-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h3 class="fw-bold mb-0">Shop by Category</h3>
-                <p class="text-muted small">Explore our extensive curated catalog</p>
+                <h3 class="fw-bold mb-0">{{ tr.shop_by_category }}</h3>
+                <p class="text-muted small">{{ tr.shop_by_category_sub }}</p>
             </div>
             <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                View All <i class="bi bi-arrow-right ms-1"></i>
+                {{ tr.view_all }} <i class="bi bi-arrow-right ms-1"></i>
             </a>
         </div>
         <div class="row g-3">
@@ -513,12 +513,12 @@
                     <i class="bi bi-lightning-charge-fill fs-4"></i>
                 </div>
                 <div>
-                    <h3 class="fw-bold text-dark mb-0">Flash Deals</h3>
-                    <small class="text-muted">Limited time special promotional prices</small>
+                    <h3 class="fw-bold text-dark mb-0">{{ tr.flash_deals }}</h3>
+                    <small class="text-muted">{{ tr.flash_deals_sub }}</small>
                 </div>
             </div>
             <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill">
-                <i class="bi bi-clock-history me-1"></i> Ends Soon!
+                <i class="bi bi-clock-history me-1"></i> {{ tr.ends_soon }}
             </span>
         </div>
 
@@ -561,7 +561,7 @@
                                 <form action="{% url 'add_to_cart' product.pk %}" method="post">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-danger w-100 rounded-pill btn-sm fw-semibold">
-                                        <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                        <i class="bi bi-cart-plus me-1"></i> {{ tr.add_to_cart }}
                                     </button>
                                 </form>
                             </div>
@@ -577,11 +577,11 @@
     <div class="mb-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h3 class="fw-bold mb-0">Trending Products</h3>
-                <p class="text-muted small">Top rated customer picks</p>
+                <h3 class="fw-bold mb-0">{{ tr.trending_products }}</h3>
+                <p class="text-muted small">{{ tr.trending_products_sub }}</p>
             </div>
             <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm rounded-pill px-3">
-                Shop All <i class="bi bi-arrow-right ms-1"></i>
+                {{ tr.shop_all }} <i class="bi bi-arrow-right ms-1"></i>
             </a>
         </div>
 
@@ -613,9 +613,9 @@
                             <div class="d-flex justify-content-between small text-muted mb-1">
                                 <span>{{ product.brand.name|default:"Official" }}</span>
                                 {% if product.stock > 0 %}
-                                    <span class="text-success"><i class="bi bi-check-circle me-1"></i>In Stock</span>
+                                    <span class="text-success"><i class="bi bi-check-circle me-1"></i>{{ tr.in_stock }}</span>
                                 {% else %}
-                                    <span class="text-danger">Out of Stock</span>
+                                    <span class="text-danger">{{ tr.out_of_stock }}</span>
                                 {% endif %}
                             </div>
                             <h6 class="fw-bold text-truncate mb-2" title="{{ product.name }}">
@@ -637,7 +637,7 @@
                                 <form action="{% url 'add_to_cart' product.pk %}" method="post" class="flex-grow-1">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm fw-semibold" {% if product.stock <= 0 %}disabled{% endif %}>
-                                        <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                        <i class="bi bi-cart-plus me-1"></i> {{ tr.add_to_cart }}
                                     </button>
                                 </form>
                                 <a href="{% url 'product_detail' product.pk %}" class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="View Details">
