@@ -11,33 +11,33 @@
                     <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
                         <i class="bi bi-person-fill fs-3"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">Customer Sign In</h3>
-                    <p class="text-muted small">Access your order history and saved addresses</p>
+                    <h3 class="fw-bold mb-1">{{ tr.customer_signin }}</h3>
+                    <p class="text-muted small">{{ tr.customer_signin_sub }}</p>
                 </div>
 
                 <form method="post" novalidate>
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold">Username or Email</label>
+                        <label class="form-label small fw-semibold">{{ tr.username_or_email }}</label>
                         {{ form.username }}
                     </div>
 
                     <div class="mb-4">
                         <div class="d-flex justify-content-between">
-                            <label class="form-label small fw-semibold">Password</label>
+                            <label class="form-label small fw-semibold">{{ tr.password }}</label>
                         </div>
                         {{ form.password }}
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">
-                        Sign In
+                        {{ tr.sign_in }}
                     </button>
                 </form>
 
 
                 <div class="text-center small text-muted">
-                    Don't have an account yet? 
-                    <a href="{% url 'account_register' %}" class="fw-bold text-primary text-decoration-none">Create Account</a>
+                    {{ tr.no_account_yet }} 
+                    <a href="{% url 'account_register' %}" class="fw-bold text-primary text-decoration-none">{{ tr.create_account }}</a>
                 </div>
             </div>
         </div>

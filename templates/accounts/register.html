@@ -11,8 +11,8 @@
                     <div class="rounded-circle bg-success-subtle text-success mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
                         <i class="bi bi-person-plus-fill fs-3"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">Create Account</h3>
-                    <p class="text-muted small">Join PythonEcom for fast checkout and exclusive offers</p>
+                    <h3 class="fw-bold mb-1">{{ tr.create_account }}</h3>
+                    <p class="text-muted small">{{ tr.join_offers_sub }}</p>
                 </div>
 
                 {% if form.errors %}
@@ -25,52 +25,52 @@
                     {% csrf_token %}
                     <div class="row g-3 mb-3">
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">First Name</label>
+                            <label class="form-label small fw-semibold">{{ tr.first_name }}</label>
                             {{ form.first_name }}
                         </div>
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">Last Name</label>
+                            <label class="form-label small fw-semibold">{{ tr.last_name }}</label>
                             {{ form.last_name }}
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold">Username <span class="text-danger">*</span></label>
+                        <label class="form-label small fw-semibold">{{ tr.username_or_email }} <span class="text-danger">*</span></label>
                         {{ form.username }}
                         {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                        <label class="form-label small fw-semibold">{{ tr.email_address }} <span class="text-danger">*</span></label>
                         {{ form.email }}
                         {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold">Phone Number</label>
+                        <label class="form-label small fw-semibold">{{ tr.phone_number }}</label>
                         {{ form.phone }}
                     </div>
 
                     <div class="row g-3 mb-4">
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">Password <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">{{ tr.password }} <span class="text-danger">*</span></label>
                             {{ form.password }}
                         </div>
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">{{ tr.confirm_password }} <span class="text-danger">*</span></label>
                             {{ form.confirm_password }}
                         </div>
                         {% if form.confirm_password.errors %}<div class="text-danger small px-2">{{ form.confirm_password.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">
-                        Create Account
+                        {{ tr.create_account }}
                     </button>
                 </form>
 
                 <div class="text-center small text-muted">
-                    Already registered? 
-                    <a href="{% url 'account_login' %}" class="fw-bold text-primary text-decoration-none">Sign In</a>
+                    {{ tr.already_registered }} 
+                    <a href="{% url 'account_login' %}" class="fw-bold text-primary text-decoration-none">{{ tr.sign_in }}</a>
                 </div>
             </div>
         </div>

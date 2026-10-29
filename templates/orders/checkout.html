@@ -37,8 +37,8 @@
 <div class="container py-3">
     <!-- Header -->
     <div class="mb-4">
-        <h3 class="fw-bold mb-1"><i class="bi bi-bag-check-fill text-primary me-2"></i>Express Checkout</h3>
-        <p class="text-muted small">Select your delivery area, schedule your convenient time slot, and confirm payment</p>
+        <h3 class="fw-bold mb-1"><i class="bi bi-bag-check-fill text-primary me-2"></i>{{ tr.express_checkout }}</h3>
+        <p class="text-muted small">{{ tr.checkout_sub }}</p>
     </div>
 
     <form method="post" id="checkoutForm" novalidate>
@@ -51,21 +51,21 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0 d-flex align-items-center">
                             <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">1</span>
-                            Delivery Location &amp; Contact
+                            {{ tr.delivery_location }}
                         </h5>
                         <span class="badge bg-light text-muted border small">Hyperlocal Bangladesh Logistics</span>
                     </div>
 
                     <!-- Area Selector -->
                     <div class="mb-3 p-3 bg-light rounded-3 border">
-                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">Select Delivery Zone:</label>
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">{{ tr.delivery_zone }}</label>
                         <div class="row g-2">
                             <div class="col-sm-6">
                                 <label class="w-100 p-2 border rounded-3 bg-white d-flex align-items-center gap-2 area-badge-btn" for="areaDhaka" style="cursor: pointer;">
                                     <input class="form-check-input" type="radio" name="delivery_area" id="areaDhaka" value="Inside Dhaka" {% if initial.delivery_area != 'Outside Dhaka' %}checked{% endif %}>
                                     <div>
-                                        <strong class="d-block small text-dark">Inside Dhaka City</strong>
-                                        <small class="text-muted" style="font-size: 0.72rem;">Gulshan, Banani, Dhanmondi, Uttara, Mirpur (৳49)</small>
+                                        <strong class="d-block small text-dark">{{ tr.inside_dhaka }}</strong>
+                                        <small class="text-muted" style="font-size: 0.72rem;">{{ tr.inside_dhaka_sub }}</small>
                                     </div>
                                 </label>
                             </div>
@@ -73,8 +73,8 @@
                                 <label class="w-100 p-2 border rounded-3 bg-white d-flex align-items-center gap-2 area-badge-btn" for="areaOutside" style="cursor: pointer;">
                                     <input class="form-check-input" type="radio" name="delivery_area" id="areaOutside" value="Outside Dhaka" {% if initial.delivery_area == 'Outside Dhaka' %}checked{% endif %}>
                                     <div>
-                                        <strong class="d-block small text-dark">Outside Dhaka / Nationwide</strong>
-                                        <small class="text-muted" style="font-size: 0.72rem;">All 64 Districts Courier Delivery (৳99)</small>
+                                        <strong class="d-block small text-dark">{{ tr.outside_dhaka }}</strong>
+                                        <small class="text-muted" style="font-size: 0.72rem;">{{ tr.outside_dhaka_sub }}</small>
                                     </div>
                                 </label>
                             </div>
@@ -83,39 +83,39 @@
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">{{ tr.full_name }} <span class="text-danger">*</span></label>
                             <input type="text" name="full_name" class="form-control" value="{{ initial.full_name|default:'' }}" required placeholder="e.g. Tanvir Ahmed">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">{{ tr.phone_number }} <span class="text-danger">*</span></label>
                             <input type="tel" name="phone" class="form-control" value="{{ initial.phone|default:'' }}" required placeholder="e.g. +880 1712-345678">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">{{ tr.email_address }} <span class="text-danger">*</span></label>
                             <input type="email" name="email" class="form-control" value="{{ initial.email|default:'' }}" required placeholder="e.g. tanvir@example.com">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">City / District <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">{{ tr.city_district }} <span class="text-danger">*</span></label>
                             <input type="text" name="city" id="inputCity" class="form-control" value="{{ initial.city|default:'Dhaka' }}" required placeholder="e.g. Dhaka">
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label small fw-semibold">Delivery Address (House, Road, Area) <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">{{ tr.delivery_address }} <span class="text-danger">*</span></label>
                             <input type="text" name="street_address" class="form-control" value="{{ initial.street_address|default:'' }}" required placeholder="e.g. House 42, Road 11, Block D, Banani">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Postal Code</label>
+                            <label class="form-label small fw-semibold">{{ tr.postal_code }}</label>
                             <input type="text" name="postal_code" class="form-control" value="{{ initial.postal_code|default:'1213' }}" placeholder="e.g. 1213">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Country</label>
+                            <label class="form-label small fw-semibold">{{ tr.country }}</label>
                             <input type="text" name="country" class="form-control" value="{{ initial.country|default:'Bangladesh' }}" readonly>
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label small fw-semibold">Delivery Instructions / Landmarks (Optional)</label>
+                            <label class="form-label small fw-semibold">{{ tr.delivery_notes }}</label>
                             <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Flat 4B, opposite to Mosque, please call before arriving">{{ initial.notes|default:'' }}</textarea>
                         </div>
                     </div>
@@ -126,14 +126,14 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0 d-flex align-items-center">
                             <span class="badge bg-primary rounded-circle me-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">2</span>
-                            Schedule Delivery Slot
+                            {{ tr.schedule_slot }}
                         </h5>
                         <span class="badge bg-success-subtle text-success small"><i class="bi bi-clock-history me-1"></i>Guaranteed On-Time</span>
                     </div>
 
                     <!-- Date Selection Pills -->
                     <div class="mb-3">
-                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">Preferred Delivery Date:</label>
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">{{ tr.preferred_date }}</label>
                         <input type="hidden" name="delivery_date" id="selectedDeliveryDate" value="{{ initial.delivery_date }}">
                         <div class="d-flex flex-wrap gap-2" id="datePillsGroup">
                             {% for d in available_dates %}
@@ -147,7 +147,7 @@
 
                     <!-- Time Slots Selection -->
                     <div>
-                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">Select Preferred Time Window:</label>
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">{{ tr.preferred_time }}</label>
                         <input type="hidden" name="delivery_slot" id="selectedDeliverySlot" value="{{ initial.delivery_slot|default:'' }}">
                         <div class="row g-2">
                             {% for slot in delivery_slots %}
@@ -226,8 +226,8 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px;">
                     <!-- Items Header -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Order Bag ({{ cart.total_items }})</h5>
-                        <a href="{% url 'cart_detail' %}" class="small text-decoration-none">Edit Bag</a>
+                        <h5 class="fw-bold mb-0">{{ tr.shopping_bag }} ({{ cart.total_items }})</h5>
+                        <a href="{% url 'cart_detail' %}" class="small text-decoration-none">{% if IS_BANGLA %}ব্যাগ দেখুন{% else %}Edit Bag{% endif %}</a>
                     </div>
 
                     <!-- Items Scrollable List -->
@@ -262,7 +262,7 @@
                         {% else %}
                             <div class="input-group input-group-sm">
                                 <input type="text" id="couponCodeInput" class="form-control text-uppercase" placeholder="e.g. WELCOME50, CHALDAL10">
-                                <button class="btn btn-primary" type="button" id="applyCouponBtn">Apply</button>
+                                <button class="btn btn-primary" type="button" id="applyCouponBtn">{% if IS_BANGLA %}যোগ করুন{% else %}Apply{% endif %}</button>
                             </div>
                             <div id="couponMessage" class="small mt-1" style="display: none;"></div>
                         {% endif %}
@@ -272,7 +272,7 @@
                     <div class="p-2 bg-light rounded-3 mb-3 border">
                         {% if cart.amount_to_free_shipping > 0 %}
                             <div class="d-flex justify-content-between align-items-center mb-1 small">
-                                <span>Add <strong class="text-primary">৳{{ cart.amount_to_free_shipping }}</strong> for <strong>FREE Delivery!</strong></span>
+                                <span>{{ tr.add_more_prefix }} <strong class="text-primary">৳{{ cart.amount_to_free_shipping }}</strong> {{ tr.for_free_delivery }}</span>
                                 <span class="text-muted">{{ cart.free_shipping_progress_percent }}%</span>
                             </div>
                             <div class="progress" style="height: 5px;">
@@ -287,7 +287,7 @@
 
                     <!-- Financial Summary Breakdown -->
                     <div class="d-flex justify-content-between mb-2 small">
-                        <span class="text-muted">Subtotal:</span>
+                        <span class="text-muted">{{ tr.subtotal }}:</span>
                         <span class="fw-semibold">৳{{ cart.subtotal }}</span>
                     </div>
 
@@ -299,9 +299,9 @@
                     {% endif %}
 
                     <div class="d-flex justify-content-between mb-2 small">
-                        <span class="text-muted">Delivery Fee:</span>
+                        <span class="text-muted">{{ tr.delivery_fee }}:</span>
                         {% if cart.shipping_cost == 0 %}
-                            <span class="text-success fw-bold">FREE</span>
+                            <span class="text-success fw-bold">{{ tr.free }}</span>
                         {% else %}
                             <span class="fw-semibold">৳{{ cart.shipping_cost }}</span>
                         {% endif %}
@@ -310,13 +310,13 @@
                     <hr class="my-3">
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="fs-5 fw-bold">Grand Total:</span>
+                        <span class="fs-5 fw-bold">{{ tr.grand_total }}:</span>
                         <span class="fs-4 fw-bold text-primary">৳{{ cart.grand_total }}</span>
                     </div>
 
                     <!-- Place Order Button -->
                     <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">
-                        <i class="bi bi-check2-circle me-1"></i> Confirm &amp; Place Order
+                        <i class="bi bi-check2-circle me-1"></i> {{ tr.confirm_order }}
                     </button>
 
                     <div class="text-center small text-muted">

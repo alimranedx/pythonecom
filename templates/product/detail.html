@@ -70,8 +70,8 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb small">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">{{ tr.home }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none">{{ tr.all_products }}</a></li>
             {% if product.category %}
                 <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="text-decoration-none">{{ product.category.name }}</a></li>
             {% endif %}
@@ -156,15 +156,15 @@
                     <div>
                         {% if product.stock > 5 %}
                             <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                <i class="bi bi-check-circle me-1"></i> In Stock ({{ product.stock }})
+                                <i class="bi bi-check-circle me-1"></i> {{ tr.in_stock }} ({{ product.stock }})
                             </span>
                         {% elif product.stock > 0 %}
                             <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
-                                <i class="bi bi-exclamation-triangle me-1"></i> Low Stock ({{ product.stock }} left)
+                                <i class="bi bi-exclamation-triangle me-1"></i> {{ tr.low_stock }} ({{ product.stock }})
                             </span>
                         {% else %}
                             <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
-                                <i class="bi bi-x-circle me-1"></i> Out of Stock
+                                <i class="bi bi-x-circle me-1"></i> {{ tr.out_of_stock }}
                             </span>
                         {% endif %}
                     </div>
@@ -180,7 +180,7 @@
                             <span class="badge bg-danger">Save ৳{{ product.price|add:"-product.discount_price"|default:"Discount" }}</span>
                         {% endif %}
                     </div>
-                    <small class="text-muted d-block mt-1">Tax included. Free Express delivery on orders over ৳500.</small>
+                    <small class="text-muted d-block mt-1">{{ tr.tax_included_notice }}</small>
                 </div>
 
                 <!-- Short Summary -->
@@ -191,13 +191,13 @@
                     {% csrf_token %}
                     <div class="row g-3 align-items-center mb-3">
                         <div class="col-auto">
-                            <label class="small fw-bold text-muted d-block mb-1">Quantity:</label>
+                            <label class="small fw-bold text-muted d-block mb-1">{{ tr.quantity }}</label>
                             <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control text-center" style="width: 90px;" {% if product.stock <= 0 %}disabled{% endif %}>
                         </div>
                         <div class="col">
                             <label class="small fw-bold text-muted d-block mb-1">&nbsp;</label>
                             <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm" {% if product.stock <= 0 %}disabled{% endif %}>
-                                <i class="bi bi-cart-plus me-2"></i> Add to Shopping Bag
+                                <i class="bi bi-cart-plus me-2"></i> {{ tr.add_to_bag_btn }}
                             </button>
                         </div>
                     </div>
@@ -206,10 +206,10 @@
                 <!-- Value Proposition Highlights -->
                 <div class="row g-2 pt-3 border-top mt-2 small text-muted">
                     <div class="col-6">
-                        <i class="bi bi-truck text-primary me-1"></i> Fast Shipping within 24-48h
+                        <i class="bi bi-truck text-primary me-1"></i> {{ tr.fast_shipping_highlight }}
                     </div>
                     <div class="col-6">
-                        <i class="bi bi-shield-check text-success me-1"></i> 100% Genuine Brand Product
+                        <i class="bi bi-shield-check text-success me-1"></i> {{ tr.genuine_product_highlight }}
                     </div>
                 </div>
             </div>
@@ -220,13 +220,13 @@
     <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
         <ul class="nav nav-pills mb-4 border-bottom pb-3" id="productTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-semibold" id="desc-tab" data-bs-toggle="pill" data-bs-target="#desc" type="button" role="tab">Detailed Description</button>
+                <button class="nav-link active fw-semibold" id="desc-tab" data-bs-toggle="pill" data-bs-target="#desc" type="button" role="tab">{{ tr.detailed_description }}</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link fw-semibold" id="specs-tab" data-bs-toggle="pill" data-bs-target="#specs" type="button" role="tab">Specifications</button>
+                <button class="nav-link fw-semibold" id="specs-tab" data-bs-toggle="pill" data-bs-target="#specs" type="button" role="tab">{{ tr.specifications }}</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link fw-semibold" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews" type="button" role="tab">Customer Reviews ({{ reviews.count }})</button>
+                <button class="nav-link fw-semibold" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews" type="button" role="tab">{{ tr.customer_reviews }} ({{ reviews.count }})</button>
             </li>
         </ul>
 

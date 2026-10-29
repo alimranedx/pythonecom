@@ -11,8 +11,8 @@
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">{{ tr.home }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none">{{ tr.all_products }}</a></li>
                     {% if selected_category %}
                         <li class="breadcrumb-item active" aria-current="page">{{ selected_category.name }}</li>
                     {% elif query %}
@@ -28,7 +28,7 @@
                 {% elif selected_brand %}
                     {{ selected_brand.name }} Collection
                 {% else %}
-                    Explore All Products
+                    {{ tr.all_products }}
                 {% endif %}
             </h2>
             <small class="text-muted">
@@ -41,7 +41,7 @@
         <div class="d-flex flex-wrap align-items-center gap-3">
             <!-- Per-Page Selector -->
             <div class="d-flex align-items-center gap-1">
-                <label for="perPageTopSelect" class="small text-muted text-nowrap mb-0">Show:</label>
+                <label for="perPageTopSelect" class="small text-muted text-nowrap mb-0">{{ tr.show }}</label>
                 <select id="perPageTopSelect" class="form-select form-select-sm py-0 px-2" style="width: auto; height: 31px; font-size: 0.82rem;" onchange="updateCatalogParam('per_page', this.value)">
                     {% for opt in per_page_options %}
                         <option value="{{ opt }}" {% if per_page == opt %}selected{% endif %}>{{ opt }} per page</option>
@@ -51,12 +51,12 @@
 
             <!-- Sort Selector -->
             <div class="d-flex align-items-center gap-1">
-                <label for="catalogSortSelect" class="small text-muted text-nowrap mb-0">Sort:</label>
+                <label for="catalogSortSelect" class="small text-muted text-nowrap mb-0">{{ tr.sort }}</label>
                 <select id="catalogSortSelect" class="form-select form-select-sm py-0 px-2" style="width: auto; height: 31px; font-size: 0.82rem;" onchange="updateCatalogParam('sort', this.value)">
-                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
-                    <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
-                    <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
-                    <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name: A to Z</option>
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{{ tr.newest_arrivals }}</option>
+                    <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>{{ tr.price_low_high }}</option>
+                    <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>{{ tr.price_high_low }}</option>
+                    <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>{{ tr.name_a_z }}</option>
                 </select>
             </div>
         </div>
@@ -65,7 +65,7 @@
     <!-- Active Filter Chips / Pills -->
     {% if selected_category or selected_brand or query or in_stock == '1' or min_price or max_price %}
     <div class="d-flex flex-wrap align-items-center gap-2 mb-3 p-2 bg-light rounded-3 border">
-        <span class="small text-muted fw-semibold me-1"><i class="bi bi-funnel-fill text-primary"></i> Active Filters:</span>
+        <span class="small text-muted fw-semibold me-1"><i class="bi bi-funnel-fill text-primary"></i> {{ tr.active_filters }}</span>
         {% if selected_category %}
             <span class="badge bg-white text-dark border rounded-pill py-1 px-2 d-flex align-items-center gap-1">
                 Category: <strong>{{ selected_category.name }}</strong>
@@ -97,7 +97,7 @@
             </span>
         {% endif %}
         <a href="{% url 'product_list' %}" class="small text-danger text-decoration-none ms-auto fw-semibold">
-            <i class="bi bi-arrow-counterclockwise"></i> Clear All
+            <i class="bi bi-arrow-counterclockwise"></i> {{ tr.clear_all }}
         </a>
     </div>
     {% endif %}
@@ -107,16 +107,16 @@
         <div class="col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-funnel me-1 text-primary"></i> Filters</h6>
-                    <a href="{% url 'product_list' %}" class="small text-muted text-decoration-none">Reset All</a>
+                    <h6 class="fw-bold mb-0"><i class="bi bi-funnel me-1 text-primary"></i> {{ tr.filters }}</h6>
+                    <a href="{% url 'product_list' %}" class="small text-muted text-decoration-none">{{ tr.reset_all }}</a>
                 </div>
 
                 <!-- Categories Filter -->
                 <div class="mb-4">
-                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">Categories</h6>
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.categories }}</h6>
                     <div class="list-group list-group-flush small" style="max-height: 260px; overflow-y: auto;">
                         <a href="javascript:void(0)" onclick="removeCatalogParam('category')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if not selected_category %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
-                            <span>All Categories</span>
+                            <span>{{ tr.all_categories }}</span>
                         </a>
                         {% for cat in categories %}
                             <a href="javascript:void(0)" onclick="updateCatalogParam('category', '{{ cat.slug }}')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if selected_category.slug == cat.slug %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
@@ -129,10 +129,10 @@
 
                 <!-- Brands Filter -->
                 <div class="mb-4">
-                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">Brands</h6>
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.brands }}</h6>
                     <div class="list-group list-group-flush small" style="max-height: 220px; overflow-y: auto;">
                         <a href="javascript:void(0)" onclick="removeCatalogParam('brand')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if not selected_brand %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
-                            <span>All Brands</span>
+                            <span>{{ tr.all_brands }}</span>
                         </a>
                         {% for brand in brands %}
                             <a href="javascript:void(0)" onclick="updateCatalogParam('brand', '{{ brand.slug }}')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if selected_brand.slug == brand.slug %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
@@ -145,7 +145,7 @@
 
                 <!-- Price Range Filter -->
                 <div class="mb-4">
-                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">Price Range (৳)</h6>
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.price_range }}</h6>
                     <form method="get" id="priceFilterForm" class="d-flex flex-column gap-2">
                         {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
                         {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
@@ -160,18 +160,18 @@
                             <input type="number" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max ৳" min="0">
                         </div>
                         <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-semibold">
-                            Apply Price
+                            {{ tr.apply_price }}
                         </button>
                     </form>
                 </div>
 
                 <!-- Availability Filter -->
                 <div>
-                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">Availability</h6>
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.availability }}</h6>
                     <div class="form-check small">
                         <input class="form-check-input" type="checkbox" id="inStockCheck" {% if in_stock == '1' %}checked{% endif %} onchange="updateCatalogParam('in_stock', this.checked ? '1' : '')">
                         <label class="form-check-label text-secondary" for="inStockCheck">
-                            In Stock Only
+                            {{ tr.in_stock_only }}
                         </label>
                     </div>
                 </div>
@@ -230,7 +230,7 @@
                                         {% if product.stock > 0 %}
                                             <span class="text-success small" style="font-size: 0.75rem;"><i class="bi bi-check-circle me-1"></i>{{ product.stock }} in stock</span>
                                         {% else %}
-                                            <span class="text-danger small" style="font-size: 0.75rem;"><i class="bi bi-x-circle me-1"></i>Out of stock</span>
+                                            <span class="text-danger small" style="font-size: 0.75rem;"><i class="bi bi-x-circle me-1"></i>{{ tr.out_of_stock }}</span>
                                         {% endif %}
                                     </div>
 
@@ -247,7 +247,7 @@
                                         <form action="{% url 'add_to_cart' product.pk %}" method="post" class="flex-grow-1">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm fw-semibold" {% if product.stock <= 0 %}disabled{% endif %}>
-                                                <i class="bi bi-cart-plus me-1"></i> Add to Bag
+                                                <i class="bi bi-cart-plus me-1"></i> {{ tr.add_to_cart }}
                                             </button>
                                         </form>
                                         <a href="{% url 'product_detail' product.pk %}" class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="View Details">
@@ -295,10 +295,10 @@
                             <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
                                 {% if page_obj.has_previous %}
                                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Previous">
-                                        &lsaquo; Prev
+                                        &lsaquo; {{ tr.prev }}
                                     </a>
                                 {% else %}
-                                    <span class="page-link text-muted" aria-hidden="true">&lsaquo; Prev</span>
+                                    <span class="page-link text-muted" aria-hidden="true">&lsaquo; {{ tr.prev }}</span>
                                 {% endif %}
                             </li>
 
@@ -319,10 +319,10 @@
                             <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
                                 {% if page_obj.has_next %}
                                     <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Next">
-                                        Next &rsaquo;
+                                        {{ tr.next }} &rsaquo;
                                     </a>
                                 {% else %}
-                                    <span class="page-link text-muted" aria-hidden="true">Next &rsaquo;</span>
+                                    <span class="page-link text-muted" aria-hidden="true">{{ tr.next }} &rsaquo;</span>
                                 {% endif %}
                             </li>
 

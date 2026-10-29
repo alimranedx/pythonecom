@@ -6,11 +6,11 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold mb-0">My Orders</h2>
-            <p class="text-muted small">Track and view your past purchases</p>
+            <h2 class="fw-bold mb-0">{{ tr.my_orders }}</h2>
+            <p class="text-muted small">{{ tr.orders_track_sub }}</p>
         </div>
         <a href="{% url 'customer_dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
-            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            <i class="bi bi-arrow-left me-1"></i> {{ tr.back_to_dashboard }}
         </a>
     </div>
 
@@ -20,13 +20,13 @@
                 <table class="table align-middle mb-0">
                     <thead class="table-light small">
                         <tr>
-                            <th class="ps-4">Order Reference</th>
-                            <th>Date</th>
-                            <th>Items Count</th>
-                            <th>Total</th>
-                            <th>Order Status</th>
-                            <th>Payment</th>
-                            <th class="text-end pe-4">Action</th>
+                            <th class="ps-4">{{ tr.order_reference }}</th>
+                            <th>{{ tr.date }}</th>
+                            <th>{{ tr.items_count }}</th>
+                            <th>{{ tr.grand_total }}</th>
+                            <th>{{ tr.order_status }}</th>
+                            <th>{{ tr.payment }}</th>
+                            <th class="text-end pe-4">{{ tr.action }}</th>
                         </tr>
                     </thead>
                     <tbody>

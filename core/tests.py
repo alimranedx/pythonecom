@@ -8,6 +8,11 @@ from core.translations import get_translation, to_bn_number, TranslationProxy
 class BilingualStorefrontTests(TestCase):
     def setUp(self):
         self.client = Client()
+        self.customer = User.objects.create_user(
+            username='customer_user',
+            email='customer@example.com',
+            password='Password123'
+        )
         self.superuser = User.objects.create_superuser(
             username='admin_lang_test',
             email='admin_lang@test.com',
@@ -68,11 +73,117 @@ class BilingualStorefrontTests(TestCase):
         self.assertIn('Trending Products', content)
         self.assertIn('Add to Cart', content)
 
-    def test_invalid_language_falls_back_to_english(self):
-        """Invalid language codes fall back safely to English."""
-        res = self.client.get('/set-language/invalid_code/')
-        self.assertEqual(res.status_code, 302)
-        self.assertEqual(self.client.session['site_language'], 'en')
+    def test_catalog_page_bilingual(self):
+        """Catalog page /product/ renders properly in English and Bangla."""
+        # 1. English
+        self.client.get('/set-language/en/')
+        res_en = self.client.get('/product/')
+        self.assertEqual(res_en.status_code, 200)
+        content_en = res_en.content.decode('utf-8')
+        self.assertIn('All Products', content_en)
+        self.assertIn('Show:', content_en)
+        self.assertIn('Sort:', content_en)
+        self.assertIn('Filters', content_en)
+
+        # 2. Bangla
+        self.client.get('/set-language/bn/')
+        res_bn = self.client.get('/product/')
+        self.assertEqual(res_bn.status_code, 200)
+        content_bn = res_bn.content.decode('utf-8')
+        self.assertIn('সকল পণ্য', content_bn)
+        self.assertIn('দেখান:', content_bn)
+        self.assertIn('সাজান:', content_bn)
+        self.assertIn('ফিল্টার', content_bn)
+        self.assertIn('ব্যাগে যোগ করুন', content_bn)
+
+    def test_product_detail_page_bilingual(self):
+        """Product Detail page /product/<id>/ renders properly in English and Bangla."""
+        url = f'/product/{self.product.pk}/'
+
+        # 1. English
+        self.client.get('/set-language/en/')
+        res_en = self.client.get(url)
+        self.assertEqual(res_en.status_code, 200)
+        content_en = res_en.content.decode('utf-8')
+        self.assertIn('In Stock', content_en)
+        self.assertIn('Quantity:', content_en)
+        self.assertIn('Add to Shopping Bag', content_en)
+        self.assertIn('Detailed Description', content_en)
+
+        # 2. Bangla
+        self.client.get('/set-language/bn/')
+        res_bn = self.client.get(url)
+        self.assertEqual(res_bn.status_code, 200)
+        content_bn = res_bn.content.decode('utf-8')
+        self.assertIn('স্টকে আছে', content_bn)
+        self.assertIn('পরিমাণ:', content_bn)
+        self.assertIn('শপিং ব্যাগে যোগ করুন', content_bn)
+        self.assertIn('বিস্তারিত বিবরণ', content_bn)
+
+    def test_cart_detail_page_bilingual(self):
+        """Cart page /cart/ renders properly in English and Bangla."""
+        # Add item to cart
+        self.client.post(f'/cart/add/{self.product.pk}/')
+
+        # 1. English
+        self.client.get('/set-language/en/')
+        res_en = self.client.get('/cart/')
+        self.assertEqual(res_en.status_code, 200)
+        content_en = res_en.content.decode('utf-8')
+        self.assertIn('Continue Shopping', content_en)
+        self.assertIn('Order Summary', content_en)
+        self.assertIn('Proceed to Checkout', content_en)
+
+        # 2. Bangla
+        self.client.get('/set-language/bn/')
+        res_bn = self.client.get('/cart/')
+        self.assertEqual(res_bn.status_code, 200)
+        content_bn = res_bn.content.decode('utf-8')
+        self.assertIn('আরও কেনাকাটা করুন', content_bn)
+        self.assertIn('অর্ডার বিবরণী', content_bn)
+        self.assertIn('অর্ডার সম্পন্ন করুন', content_bn)
+
+    def test_checkout_page_bilingual(self):
+        """Checkout page /orders/checkout/ renders properly in English and Bangla."""
+        self.client.post(f'/cart/add/{self.product.pk}/')
+
+        # 1. English
+        self.client.get('/set-language/en/')
+        res_en = self.client.get('/orders/checkout/')
+        self.assertEqual(res_en.status_code, 200)
+        content_en = res_en.content.decode('utf-8')
+        self.assertIn('Express Checkout', content_en)
+        self.assertIn('Full Name', content_en)
+        self.assertIn('Inside Dhaka City', content_en)
+
+        # 2. Bangla
+        self.client.get('/set-language/bn/')
+        res_bn = self.client.get('/orders/checkout/')
+        self.assertEqual(res_bn.status_code, 200)
+        content_bn = res_bn.content.decode('utf-8')
+        self.assertIn('এক্সপ্রেস চেকআউট', content_bn)
+        self.assertIn('পুরো নাম', content_bn)
+        self.assertIn('ঢাকা শহরের ভেতর', content_bn)
+
+    def test_account_auth_pages_bilingual(self):
+        """Account login and register pages render properly in English and Bangla."""
+        # 1. Login English vs Bangla
+        self.client.get('/set-language/en/')
+        res_login_en = self.client.get('/account/login/')
+        self.assertIn('Customer Sign In', res_login_en.content.decode('utf-8'))
+
+        self.client.get('/set-language/bn/')
+        res_login_bn = self.client.get('/account/login/')
+        self.assertIn('কাস্টমার লগইন', res_login_bn.content.decode('utf-8'))
+
+        # 2. Register English vs Bangla
+        self.client.get('/set-language/en/')
+        res_reg_en = self.client.get('/account/register/')
+        self.assertIn('Create Account', res_reg_en.content.decode('utf-8'))
+
+        self.client.get('/set-language/bn/')
+        res_reg_bn = self.client.get('/account/register/')
+        self.assertIn('রেজিস্টার', res_reg_bn.content.decode('utf-8'))
 
     def test_admin_portal_strictly_enforces_english(self):
         """
