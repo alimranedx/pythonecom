@@ -104,7 +104,7 @@
 
     <div class="row g-4">
         <!-- Filter Sidebar -->
-        <div class="col-lg-3">
+        <div class="col-lg-3 d-none d-lg-block">
             <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="fw-bold mb-0"><i class="bi bi-funnel me-1 text-primary"></i> {{ tr.filters }}</h6>
@@ -176,6 +176,18 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Products Grid & Pagination -->
+        <!-- Mobile Filter Trigger Button (Screens < 992px) -->
+        <div class="col-12 d-lg-none mb-2">
+            <button class="btn btn-primary w-100 rounded-pill py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#catalogFilterOffcanvas">
+                <i class="bi bi-funnel-fill"></i>
+                <span>{{ tr.filters }}</span>
+                {% if selected_category or selected_brand or in_stock == '1' or min_price or max_price %}
+                    <span class="badge bg-warning text-dark rounded-pill">Active</span>
+                {% endif %}
+            </button>
         </div>
 
         <!-- Products Grid & Pagination -->
@@ -384,4 +396,90 @@ function removeCatalogPriceParams() {
     window.location.href = url.toString();
 }
 </script>
+
+<!-- Mobile Catalog Filter Offcanvas Drawer -->
+<div class="offcanvas offcanvas-start shadow d-lg-none" tabindex="-1" id="catalogFilterOffcanvas" aria-labelledby="catalogFilterLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold" id="catalogFilterLabel">
+            <i class="bi bi-funnel text-primary me-2"></i>{{ tr.filters }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-3">
+        <!-- Categories Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.categories }}</h6>
+            <div class="list-group list-group-flush small" style="max-height: 240px; overflow-y: auto;">
+                <a href="javascript:void(0)" onclick="removeCatalogParam('category')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if not selected_category %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
+                    <span>{{ tr.all_categories }}</span>
+                </a>
+                {% for cat in categories %}
+                    <a href="javascript:void(0)" onclick="updateCatalogParam('category', '{{ cat.slug }}')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if selected_category.slug == cat.slug %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
+                        <span class="text-truncate"><i class="bi {{ cat.icon }} me-1"></i> {{ cat.name }}</span>
+                        <span class="badge bg-light text-muted border ms-1">{{ cat.products.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Brands Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.brands }}</h6>
+            <div class="list-group list-group-flush small" style="max-height: 200px; overflow-y: auto;">
+                <a href="javascript:void(0)" onclick="removeCatalogParam('brand')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if not selected_brand %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
+                    <span>{{ tr.all_brands }}</span>
+                </a>
+                {% for brand in brands %}
+                    <a href="javascript:void(0)" onclick="updateCatalogParam('brand', '{{ brand.slug }}')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if selected_brand.slug == brand.slug %}fw-bold text-primary bg-primary-subtle{% else %}text-secondary{% endif %}">
+                        <span class="text-truncate">{{ brand.name }}</span>
+                        <span class="badge bg-light text-muted border ms-1">{{ brand.products.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Price Range Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.price_range }}</h6>
+            <form method="get" class="d-flex flex-column gap-2">
+                {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+                {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand.slug }}">{% endif %}
+                {% if in_stock == '1' %}<input type="hidden" name="in_stock" value="1">{% endif %}
+                {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                <input type="hidden" name="per_page" value="{{ per_page }}">
+
+                <div class="input-group input-group-sm">
+                    <input type="number" name="min_price" value="{{ min_price }}" class="form-control" placeholder="Min ৳" min="0">
+                    <span class="input-group-text bg-light">-</span>
+                    <input type="number" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max ৳" min="0">
+                </div>
+                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-semibold">
+                    {{ tr.apply_price }}
+                </button>
+            </form>
+        </div>
+
+        <!-- Availability Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ tr.availability }}</h6>
+            <div class="form-check small">
+                <input class="form-check-input" type="checkbox" id="inStockCheckMobile" {% if in_stock == '1' %}checked{% endif %} onchange="updateCatalogParam('in_stock', this.checked ? '1' : '')">
+                <label class="form-check-label text-secondary" for="inStockCheckMobile">
+                    {{ tr.in_stock_only }}
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-3 border-top d-flex gap-2">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary flex-grow-1 rounded-pill">
+                {{ tr.reset_all }}
+            </a>
+            <button type="button" class="btn btn-primary flex-grow-1 rounded-pill" data-bs-dismiss="offcanvas">
+                {{ tr.close }}
+            </button>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

@@ -1,9 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ CURRENT_LANGUAGE|default:'en' }}" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PythonEcom | Modern E-Commerce Marketplace{% endblock %}</title>
+
+    <!-- Early execution to prevent Flash of Unstyled Content (FOUC) in Dark Mode -->
+    <script>
+        (function() {
+            try {
+                var storedTheme = localStorage.getItem('pythonecom_theme');
+                if (storedTheme === 'dark' || storedTheme === 'light') {
+                    document.documentElement.setAttribute('data-bs-theme', storedTheme);
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+        window.__IS_BANGLA = {% if IS_BANGLA %}true{% else %}false{% endif %};
+    </script>
 
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,23 +37,57 @@
             --dark-color: #0f172a;
             --light-bg: #f8fafc;
             --border-color: #e2e8f0;
+            --surface-card: #ffffff;
+            --surface-muted: #f1f5f9;
+            --text-main: #334155;
+            --text-muted: #64748b;
         }
+
+        [data-bs-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-hover: #60a5fa;
+            --accent-color: #fb923c;
+            --dark-color: #f8fafc;
+            --light-bg: #0b1120;
+            --border-color: #334155;
+            --surface-card: #1e293b;
+            --surface-muted: #162032;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--light-bg);
-            color: #334155;
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            overflow-x: hidden;
         }
+
         main {
             flex: 1 0 auto;
         }
+
+        /* Responsive Mobile Safe Paddings */
+        @media (max-width: 767.98px) {
+            body {
+                padding-bottom: 68px; /* Safe space for fixed mobile bottom navigation */
+            }
+            .floating-cart-widget {
+                bottom: 78px !important;
+                right: 14px !important;
+            }
+        }
+
         .navbar-brand {
             font-weight: 800;
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             letter-spacing: -0.5px;
         }
+
         .product-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             border-radius: 12px;
@@ -123,6 +172,166 @@
         }
         .offcanvas-cart {
             width: 380px !important;
+            max-width: 90vw !important;
+        }
+
+        /* Mobile Bottom App Navigation */
+        .mobile-bottom-nav {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        .mobile-nav-link {
+            padding: 6px 0;
+            color: #64748b;
+            transition: color 0.15s ease;
+        }
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            color: var(--primary-color);
+        }
+
+        /* Comprehensive Storefront Dark Theme Overrides */
+        [data-bs-theme="dark"] body {
+            background-color: #0b1120 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] header.bg-white {
+            background-color: #0f172a !important;
+            border-color: #1e293b !important;
+        }
+        [data-bs-theme="dark"] .bg-white {
+            background-color: #1e293b !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #162032 !important;
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .text-dark,
+        [data-bs-theme="dark"] .brand-dark {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .text-secondary,
+        [data-bs-theme="dark"] .text-muted {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .card {
+            background-color: #1e293b;
+            border-color: #334155 !important;
+            color: #e2e8f0;
+        }
+        [data-bs-theme="dark"] .product-card {
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+        }
+        [data-bs-theme="dark"] .product-img-wrapper {
+            background: #0f172a !important;
+        }
+        [data-bs-theme="dark"] .border,
+        [data-bs-theme="dark"] .border-top,
+        [data-bs-theme="dark"] .border-bottom,
+        [data-bs-theme="dark"] .border-start,
+        [data-bs-theme="dark"] .border-end {
+            border-color: #334155 !important;
+        }
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .form-control:focus,
+        [data-bs-theme="dark"] .form-select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25) !important;
+        }
+        [data-bs-theme="dark"] .input-group-text {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .dropdown-menu {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .dropdown-item {
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+        }
+        [data-bs-theme="dark"] .offcanvas {
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .offcanvas-header {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        [data-bs-theme="dark"] .list-group-item {
+            background-color: transparent !important;
+            color: #cbd5e1 !important;
+            border-color: #334155 !important;
+        }
+        [data-bs-theme="dark"] .list-group-item-action:hover {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .btn-light {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .btn-light:hover {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+        }
+        [data-bs-theme="dark"] .table {
+            --bs-table-bg: transparent;
+            --bs-table-color: #e2e8f0;
+            --bs-table-border-color: #334155;
+        }
+        [data-bs-theme="dark"] .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        [data-bs-theme="dark"] .mobile-bottom-nav {
+            background-color: rgba(15, 23, 42, 0.95);
+            border-color: #334155 !important;
+        }
+        [data-bs-theme="dark"] .mobile-nav-link {
+            color: #94a3b8;
+        }
+        [data-bs-theme="dark"] .mobile-nav-link.text-secondary {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .flash-deals-banner {
+            background: linear-gradient(135deg, #2a1215 0%, #1a0f12 100%) !important;
+            border: 1px solid #7f1d1d !important;
+        }
+        [data-bs-theme="dark"] .slot-card {
+            border-color: #334155 !important;
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .slot-card:hover {
+            border-color: #3b82f6 !important;
+        }
+        [data-bs-theme="dark"] .slot-card.selected {
+            border-color: #38bdf8 !important;
+            background-color: #0c4a6e !important;
+        }
+        [data-bs-theme="dark"] .date-pill-btn {
+            border-color: #475569 !important;
+            color: #cbd5e1 !important;
+            background-color: #1e293b !important;
+        }
+        [data-bs-theme="dark"] .date-pill-btn.active {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
         }
     </style>
     {% block extra_head %}{% endblock %}
@@ -132,16 +341,23 @@
     <!-- Top Announcement Bar -->
     <div class="announcement-bar">
         <div class="container d-flex justify-content-between align-items-center">
-            <div>
+            <div class="text-truncate me-2">
                 <i class="bi bi-truck me-1 text-warning"></i>
                 {% if IS_BANGLA %}<strong>ফ্রি এক্সপ্রেস ডেলিভারি</strong> ৳৫০০ এর বেশি অর্ডারে!{% else %}<strong>Free Express Shipping</strong> on orders over ৳500!{% endif %}
             </div>
-            <div class="d-flex align-items-center gap-2 gap-md-3">
+            <div class="d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
                 <span class="small text-white d-none d-sm-inline"><i class="bi bi-headset me-1 text-warning"></i> {{ tr.customer_care }}</span>
                 <span class="text-secondary d-none d-sm-inline">|</span>
                 <span class="small d-none d-md-inline"><i class="bi bi-telephone me-1"></i> +880 1700-000000</span>
                 <span class="text-secondary d-none d-md-inline">|</span>
-                <!-- Bilingual Storefront Switcher (Root & Public Storefront only) -->
+
+                <!-- Theme Toggle Button (Announcement Bar) -->
+                <button type="button" class="btn btn-xs btn-outline-light text-white theme-toggle-btn py-0 px-2 rounded-pill" onclick="toggleTheme()" title="Toggle Dark/Light Mode" style="font-size: 0.72rem; line-height: 1.6;">
+                    <i class="bi bi-moon-stars-fill theme-icon"></i>
+                    <span class="d-none d-sm-inline ms-1 theme-text">Dark</span>
+                </button>
+
+                <!-- Bilingual Storefront Switcher -->
                 <div class="btn-group btn-group-sm lang-toggle-pill" role="group" aria-label="Language Selector">
                     <a href="{% url 'set_language' 'en' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}btn-primary active fw-bold text-white{% else %}btn-outline-light text-white-50{% endif %} py-0 px-2 rounded-start-pill" style="font-size: 0.72rem; line-height: 1.6;" title="Switch to English">
                         EN
@@ -157,17 +373,20 @@
     <!-- Main Navigation Header -->
     <header class="bg-white border-bottom sticky-top shadow-sm">
         <div class="container py-2">
-            <div class="row align-items-center">
-                <!-- Logo -->
-                <div class="col-auto">
+            <div class="row align-items-center g-2">
+                <!-- Left: Mobile Menu Trigger & Logo -->
+                <div class="col-auto d-flex align-items-center gap-2">
+                    <button class="btn btn-light rounded-pill p-2 d-md-none border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas" aria-label="Open Navigation Menu">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
                     <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2">
                         <i class="bi bi-bag-check-fill fs-3 text-primary"></i>
-                        <span>Python<span class="text-dark">Ecom</span></span>
+                        <span>Python<span class="text-dark brand-dark">Ecom</span></span>
                     </a>
                 </div>
 
-                <!-- Live Search Bar -->
-                <div class="col my-2 my-md-0">
+                <!-- Live Search Bar: Full-width row on mobile (order-3), inline on desktop (order-md-2) -->
+                <div class="col-12 col-md my-1 my-md-0 order-3 order-md-2">
                     <form action="{% url 'product_list' %}" method="get" class="d-flex">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0 text-muted">
@@ -181,10 +400,16 @@
                     </form>
                 </div>
 
-                <!-- User & Cart Controls -->
-                <div class="col-auto d-flex align-items-center gap-2">
-                    <!-- User Account Dropdown -->
-                    <div class="dropdown">
+                <!-- Right Controls: Theme Toggle, User, Wishlist, Cart -->
+                <div class="col-auto ms-auto d-flex align-items-center gap-2 order-2 order-md-3">
+                    <!-- Theme Toggle in Header -->
+                    <button type="button" class="btn btn-light rounded-pill px-2 px-sm-3 d-flex align-items-center gap-1 theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                        <i class="bi bi-moon-stars-fill theme-icon fs-6"></i>
+                        <span class="d-none d-lg-inline small fw-semibold theme-text">Dark</span>
+                    </button>
+
+                    <!-- User Account Dropdown (Desktop) -->
+                    <div class="dropdown d-none d-sm-block">
                         <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle fs-5 text-secondary"></i>
                             <span class="d-none d-lg-inline small fw-semibold">
@@ -216,7 +441,7 @@
                     </div>
 
                     <!-- Wishlist Trigger -->
-                    <a href="{% url 'wishlist_view' %}" class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2 position-relative" title="{{ tr.wishlist }}">
+                    <a href="{% url 'wishlist_view' %}" class="btn btn-light rounded-pill px-2 px-sm-3 d-flex align-items-center gap-2 position-relative" title="{{ tr.wishlist }}">
                         <i class="bi bi-heart fs-5 text-danger"></i>
                         <span class="d-none d-lg-inline small fw-semibold">{{ tr.wishlist }}</span>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="navWishlistBadge">
@@ -225,7 +450,7 @@
                     </a>
 
                     <!-- Off-Canvas Cart Trigger -->
-                    <button class="btn btn-outline-primary rounded-pill px-3 d-flex align-items-center gap-2 position-relative" 
+                    <button class="btn btn-outline-primary rounded-pill px-2 px-sm-3 d-flex align-items-center gap-2 position-relative" 
                             type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
                         <i class="bi bi-cart3 fs-5"></i>
                         <span class="d-none d-lg-inline small fw-semibold">{{ tr.cart }}</span>
@@ -237,7 +462,7 @@
             </div>
         </div>
 
-        <!-- Sub Navigation Bar -->
+        <!-- Sub Navigation Bar (Desktop) -->
         <div class="bg-light border-top py-1 d-none d-md-block">
             <div class="container d-flex align-items-center justify-content-between small">
                 <div class="d-flex align-items-center gap-4">
@@ -273,7 +498,181 @@
         {% block content %}{% endblock %}
     </main>
 
-        <!-- Interactive Off-Canvas Cart Drawer -->
+    <!-- Mobile Offcanvas Menu Drawer -->
+    <div class="offcanvas offcanvas-start shadow" tabindex="-1" id="mobileMenuOffcanvas" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header border-bottom">
+            <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2">
+                <i class="bi bi-bag-check-fill fs-4 text-primary"></i>
+                <span class="fw-bold">Python<span class="brand-dark">Ecom</span></span>
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-0">
+            <!-- Customer Greeting / Auth Banner -->
+            <div class="p-3 bg-light border-bottom">
+                {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                            <i class="bi bi-person-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">{{ tr.signed_in_as }}</small>
+                            <strong class="d-block text-truncate" style="max-width: 180px;">{{ request.user.get_full_name|default:request.user.username }}</strong>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm flex-grow-1 rounded-pill">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> {{ tr.sign_in }}
+                        </a>
+                        <a href="{% url 'account_register' %}" class="btn btn-outline-secondary btn-sm flex-grow-1 rounded-pill">
+                            <i class="bi bi-person-plus me-1"></i> {{ tr.create_account }}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Quick Settings: Theme & Language Bar in Drawer -->
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="small fw-semibold"><i class="bi bi-palette me-1 text-primary"></i> {{ tr.theme }}:</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme">
+                        <i class="bi bi-moon-stars-fill theme-icon me-1"></i>
+                        <span class="theme-text">Dark</span>
+                    </button>
+                </div>
+                <div class="btn-group btn-group-sm lang-toggle-pill" role="group">
+                    <a href="{% url 'set_language' 'en' %}" class="btn btn-sm {% if CURRENT_LANGUAGE == 'en' %}btn-primary active fw-bold text-white{% else %}btn-outline-secondary{% endif %}">EN</a>
+                    <a href="{% url 'set_language' 'bn' %}" class="btn btn-sm {% if CURRENT_LANGUAGE == 'bn' %}btn-primary active fw-bold text-white{% else %}btn-outline-secondary{% endif %}">বাংলা</a>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="p-3 flex-grow-1 overflow-auto">
+                <h6 class="small fw-bold text-uppercase text-muted mb-2">{{ tr.explore }}</h6>
+                <div class="list-group list-group-flush mb-4">
+                    <a href="{% url 'home' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-house-door text-primary"></i> {{ tr.home }}
+                    </a>
+                    <a href="{% url 'product_list' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-grid text-primary"></i> {{ tr.all_products }}
+                    </a>
+                    <a href="{% url 'product_list' %}?in_stock=1" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle text-success"></i> {{ tr.in_stock_only }}
+                    </a>
+                </div>
+
+                <h6 class="small fw-bold text-uppercase text-muted mb-2">{{ tr.categories }}</h6>
+                <div class="list-group list-group-flush mb-4">
+                    <a href="{% url 'product_list' %}?category=electronics-laptops" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-laptop text-secondary"></i> {{ tr.laptops }}
+                    </a>
+                    <a href="{% url 'product_list' %}?category=smartphones-tablets" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-phone text-secondary"></i> {{ tr.smartphones }}
+                    </a>
+                    <a href="{% url 'product_list' %}?category=fashion-apparel" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-handbag text-secondary"></i> {{ tr.fashion }}
+                    </a>
+                    <a href="{% url 'product_list' %}?category=audio-headphones" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-headphones text-secondary"></i> {{ tr.audio }}
+                    </a>
+                    <a href="{% url 'product_list' %}?category=watches-wearables" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                        <i class="bi bi-smartwatch text-secondary"></i> {{ tr.watches }}
+                    </a>
+                </div>
+
+                {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <h6 class="small fw-bold text-uppercase text-muted mb-2">{{ tr.account }}</h6>
+                    <div class="list-group list-group-flush mb-3">
+                        <a href="{% url 'customer_dashboard' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                            <i class="bi bi-grid-fill text-primary"></i> {{ tr.dashboard }}
+                        </a>
+                        <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                            <i class="bi bi-receipt text-primary"></i> {{ tr.my_orders }}
+                        </a>
+                        <a href="{% url 'wishlist_view' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                            <i class="bi bi-heart-fill text-danger"></i> {{ tr.wishlist }}
+                        </a>
+                        <a href="{% url 'customer_profile_edit' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                            <i class="bi bi-person-gear text-secondary"></i> {{ tr.edit_profile }}
+                        </a>
+                        <a href="{% url 'address_list' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                            <i class="bi bi-geo-alt text-secondary"></i> {{ tr.address_book }}
+                        </a>
+                        <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2 text-danger">
+                            <i class="bi bi-box-arrow-right"></i> {{ tr.logout }}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="p-3 bg-light border-top small text-muted">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="bi bi-headset text-warning"></i> <span>{{ tr.customer_care }}: +880 1700-000000</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-truck text-success"></i> <span>{{ tr.free_shipping_bar }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar (Screens < 768px) -->
+    <nav class="mobile-bottom-nav d-md-none position-fixed bottom-0 start-0 end-0 bg-white border-top shadow-lg" style="z-index: 1040; height: 60px;">
+        <div class="container h-100 px-2">
+            <div class="row h-100 g-0 text-center align-items-center">
+                <div class="col">
+                    <a href="{% url 'home' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center {% if request.path == '/' %}text-primary fw-bold active{% else %}text-secondary{% endif %}">
+                        <i class="bi bi-house-door fs-5 lh-1"></i>
+                        <span style="font-size: 0.68rem; margin-top: 3px;">{{ tr.home }}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center {% if '/product/' in request.path and request.path != '/' %}text-primary fw-bold active{% else %}text-secondary{% endif %}">
+                        <i class="bi bi-grid fs-5 lh-1"></i>
+                        <span style="font-size: 0.68rem; margin-top: 3px;">{{ tr.all_products }}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-link mobile-nav-link text-decoration-none d-flex flex-column align-items-center p-0 w-100 text-secondary position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                        <div class="position-relative">
+                            <i class="bi bi-bag fs-5 lh-1"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mobileBottomCartBadge" style="font-size: 0.6rem; padding: 2px 5px; {% if not global_cart_items_count or global_cart_items_count == 0 %}display:none;{% endif %}">
+                                {{ global_cart_items_count|default:0 }}
+                            </span>
+                        </div>
+                        <span style="font-size: 0.68rem; margin-top: 3px;">{{ tr.cart }}</span>
+                    </button>
+                </div>
+                <div class="col">
+                    <a href="{% url 'wishlist_view' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center text-secondary position-relative">
+                        <div class="position-relative">
+                            <i class="bi bi-heart fs-5 lh-1 text-danger"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mobileBottomWishlistBadge" style="font-size: 0.6rem; padding: 2px 5px; {% if not global_wishlist_count or global_wishlist_count == 0 %}display:none;{% endif %}">
+                                {{ global_wishlist_count|default:0 }}
+                            </span>
+                        </div>
+                        <span style="font-size: 0.68rem; margin-top: 3px;">{{ tr.wishlist }}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    {% if request.user.is_authenticated and not request.user.is_staff %}
+                        <a href="{% url 'customer_dashboard' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center {% if '/account/' in request.path %}text-primary fw-bold active{% else %}text-secondary{% endif %}">
+                            <i class="bi bi-person-circle fs-5 lh-1 text-primary"></i>
+                            <span style="font-size: 0.68rem; margin-top: 3px;">{{ tr.account }}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center text-secondary">
+                            <i class="bi bi-person fs-5 lh-1"></i>
+                            <span style="font-size: 0.68rem; margin-top: 3px;">{{ tr.sign_in }}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Interactive Off-Canvas Cart Drawer -->
     <div class="offcanvas offcanvas-end offcanvas-cart shadow" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
         <div class="offcanvas-header border-bottom bg-light">
             <h5 class="offcanvas-title fw-bold" id="cartOffcanvasLabel">
@@ -286,7 +685,7 @@
         </div>
     </div>
 
-    <!-- Chaldal-Style Sticky Floating Shopping Bag Widget -->
+    <!-- Sticky Floating Shopping Bag Widget -->
     <div id="floatingCartWidget" class="floating-cart-widget shadow-lg" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" style="{% if not global_cart or global_cart.total_items == 0 %}display: none;{% endif %}">
         <div class="d-flex align-items-center gap-2 p-2 px-3">
             <div class="position-relative">
@@ -301,7 +700,8 @@
             </div>
         </div>
     </div>
-        <!-- Modern Marketplace Footer -->
+
+    <!-- Modern Marketplace Footer -->
     <footer class="bg-dark text-light pt-5 pb-4 mt-auto">
         <div class="container">
             <div class="row g-4">
@@ -375,6 +775,53 @@
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    /* Theme Toggle & State Management */
+    function updateThemeUI(theme) {
+        var isDark = theme === 'dark';
+        var toggleBtns = document.querySelectorAll('.theme-toggle-btn');
+        toggleBtns.forEach(function(btn) {
+            var icon = btn.querySelector('.theme-icon');
+            var text = btn.querySelector('.theme-text');
+            if (icon) {
+                if (isDark) {
+                    icon.className = 'bi bi-sun-fill text-warning theme-icon';
+                } else {
+                    icon.className = 'bi bi-moon-stars-fill theme-icon';
+                }
+            }
+            if (text) {
+                if (isDark) {
+                    text.textContent = window.__IS_BANGLA ? 'লাইট মোড' : 'Light';
+                } else {
+                    text.textContent = window.__IS_BANGLA ? 'ডার্ক মোড' : 'Dark';
+                }
+            }
+            var tooltipTitle = isDark 
+                ? (window.__IS_BANGLA ? 'লাইট মোডে পরিবর্তন করুন' : 'Switch to Light Mode')
+                : (window.__IS_BANGLA ? 'ডার্ক মোডে পরিবর্তন করুন' : 'Switch to Dark Mode');
+            btn.setAttribute('title', tooltipTitle);
+            btn.setAttribute('aria-label', tooltipTitle);
+        });
+    }
+
+    function toggleTheme() {
+        var currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        var nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-bs-theme', nextTheme);
+        try {
+            localStorage.setItem('pythonecom_theme', nextTheme);
+            document.cookie = 'site_theme=' + nextTheme + ';path=/;max-age=31536000;SameSite=Lax';
+        } catch (e) {}
+        updateThemeUI(nextTheme);
+        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: nextTheme } }));
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        updateThemeUI(currentTheme);
+    });
+
+    /* CSRF Cookie Helper */
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -390,6 +837,7 @@
         return cookieValue;
     }
 
+    /* Toast Notification */
     function showToast(message) {
         const toastEl = document.getElementById('liveToast');
         const msgEl = document.getElementById('toastMessage');
@@ -400,6 +848,7 @@
         }
     }
 
+    /* Cart & Wishlist Badge Synchronizer */
     function updateCartBadges(count, grandTotal) {
         const navBadge = document.getElementById('navCartBadge');
         if (navBadge) {
@@ -408,6 +857,12 @@
         }
         const offBadge = document.getElementById('offcanvasCartBadge');
         if (offBadge) offBadge.textContent = count;
+
+        const mobileBottomBadge = document.getElementById('mobileBottomCartBadge');
+        if (mobileBottomBadge) {
+            mobileBottomBadge.textContent = count;
+            mobileBottomBadge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
 
         const floatingWidget = document.getElementById('floatingCartWidget');
         const floatingCount = document.getElementById('floatingCartCount');
@@ -418,8 +873,8 @@
             if (count > 0) {
                 floatingWidget.style.display = 'block';
                 if (floatingCount) floatingCount.innerText = count;
-                if (floatingItemsText) floatingItemsText.innerText = `${count} Item${count === 1 ? '' : 's'}`;
-                if (floatingTotal && grandTotal) floatingTotal.innerText = `৳${grandTotal}`;
+                if (floatingItemsText) floatingItemsText.innerText = count + ' ' + (window.__IS_BANGLA ? 'টি পণ্য' : (count === 1 ? 'Item' : 'Items'));
+                if (floatingTotal && grandTotal) floatingTotal.innerText = '৳' + grandTotal;
             } else {
                 floatingWidget.style.display = 'none';
             }
@@ -447,7 +902,6 @@
         if (actionUrl.includes('/cart/add/')) {
             e.preventDefault();
 
-            // Prevent rapid double-clicks / concurrent duplicate requests
             if (form.dataset.submitting === 'true') return;
             form.dataset.submitting = 'true';
 
@@ -482,16 +936,10 @@
                     return;
                 }
 
-                // Update badge counts silently
                 updateCartBadges(data.total_items, data.grand_total);
-
-                // Refresh cart offcanvas drawer silently
                 refreshCartDrawer();
-
-                // Show success toast
                 showToast(data.message);
 
-                // Give immediate visual feedback on the button
                 if (submitBtn) {
                     const hadBtnPrimary = submitBtn.classList.contains('btn-primary');
                     const hadBtnOutline = submitBtn.classList.contains('btn-outline-danger');
@@ -612,7 +1060,15 @@
             if (!data) return;
             if (data.success) {
                 const badge = document.getElementById('navWishlistBadge');
-                if (badge) badge.innerText = data.count;
+                if (badge) {
+                    badge.innerText = data.count;
+                    badge.style.display = data.count > 0 ? 'inline-block' : 'none';
+                }
+                const mobileWishBadge = document.getElementById('mobileBottomWishlistBadge');
+                if (mobileWishBadge) {
+                    mobileWishBadge.innerText = data.count;
+                    mobileWishBadge.style.display = data.count > 0 ? 'inline-block' : 'none';
+                }
 
                 if (btnElem) {
                     const icon = btnElem.querySelector('i');

@@ -27,6 +27,14 @@ TRANSLATIONS = {
         'address_book': 'Address Book',
         'logout': 'Logout',
         'signed_in_as': 'Signed in as',
+        'dark_mode': 'Dark Mode',
+        'light_mode': 'Light Mode',
+        'theme': 'Theme',
+        'toggle_theme': 'Toggle Dark/Light Mode',
+        'menu': 'Menu',
+        'apply_filters': 'Apply Filters',
+        'filter_and_sort': 'Filter & Sort',
+        'explore': 'Explore',
 
         # Announcement Bar
         'free_shipping_bar': 'Free Express Shipping on orders over ৳500!',
@@ -220,6 +228,14 @@ TRANSLATIONS = {
         'address_book': 'ঠিকানা বই',
         'logout': 'লগআউট',
         'signed_in_as': 'লগইন আছেন',
+        'dark_mode': 'ডার্ক মোড',
+        'light_mode': 'লাইট মোড',
+        'theme': 'থিম',
+        'toggle_theme': 'ডার্ক/লাইট থিম পরিবর্তন',
+        'menu': 'মেনু',
+        'apply_filters': 'ফিল্টার প্রয়োগ করুন',
+        'filter_and_sort': 'ফিল্টার ও সাজান',
+        'explore': 'এক্সপ্লোর',
 
         # Announcement Bar
         'free_shipping_bar': '৳৫০০ এর বেশি অর্ডারে ফ্রি এক্সপ্রেস ডেলিভারি!',

@@ -226,3 +226,49 @@ class BilingualStorefrontTests(TestCase):
 
         # Fallback for unknown keys
         self.assertEqual(proxy_bn.unknown_key_123, 'unknown_key_123')
+
+    def test_storefront_dark_and_light_theme_support(self):
+        """Storefront pages provide dark and light theme infrastructure."""
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+
+        # Check theme attributes and early script
+        self.assertIn('data-bs-theme="light"', content)
+        self.assertIn('pythonecom_theme', content)
+        self.assertIn('theme-toggle-btn', content)
+        self.assertIn('toggleTheme()', content)
+
+    def test_storefront_mobile_responsive_elements(self):
+        """Storefront provides full mobile responsive UI (bottom nav, drawer, viewport)."""
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+
+        # Mobile viewport
+        self.assertIn('<meta name="viewport" content="width=device-width, initial-scale=1.0">', content)
+        # Mobile bottom navigation bar
+        self.assertIn('mobile-bottom-nav', content)
+        # Mobile left offcanvas menu drawer
+        self.assertIn('id="mobileMenuOffcanvas"', content)
+
+        # Catalog mobile filter drawer
+        res_cat = self.client.get('/product/')
+        self.assertEqual(res_cat.status_code, 200)
+        content_cat = res_cat.content.decode('utf-8')
+        self.assertIn('id="catalogFilterOffcanvas"', content_cat)
+
+    def test_admin_portal_strictly_isolated_from_dark_theme(self):
+        """Admin portal must strictly remain light-themed and isolate from customer mobile nav."""
+        self.client.force_login(self.superuser)
+        res_admin = self.client.get('/app-admin/')
+        self.assertEqual(res_admin.status_code, 200)
+        content = res_admin.content.decode('utf-8')
+
+        # Explicitly light theme locked
+        self.assertIn('data-bs-theme="light"', content)
+        # No customer theme toggle or customer mobile bottom nav
+        self.assertNotIn('theme-toggle-btn', content)
+        self.assertNotIn('mobile-bottom-nav', content)
+        self.assertNotIn('id="mobileMenuOffcanvas"', content)
+
