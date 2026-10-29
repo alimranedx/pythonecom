@@ -32,12 +32,16 @@
         #sidebar {
             width: var(--sidebar-width);
             background-color: var(--sidebar-bg);
-            min-height: 100vh;
+            height: 100vh;
+            max-height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1000;
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         #content-wrapper {
             margin-left: var(--sidebar-width);
@@ -51,6 +55,28 @@
             font-weight: 800;
             font-size: 1.25rem;
             border-bottom: 1px solid #1e293b;
+            flex-shrink: 0;
+        }
+        .sidebar-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 3.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: #334155 #0f172a;
+        }
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar-content::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
         .nav-header {
             color: #64748b;
@@ -162,7 +188,7 @@
             <span class="badge bg-primary-subtle text-primary border border-primary-subtle small" style="font-size: 0.65rem;">RBAC</span>
         </div>
 
-        <div class="py-2">
+        <div class="sidebar-content py-2">
             <!-- Core Dashboard Link -->
             <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
                 <i class="bi bi-speedometer2 me-2 fs-5"></i> Dashboard

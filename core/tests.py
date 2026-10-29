@@ -273,6 +273,9 @@ class BilingualStorefrontTests(TestCase):
         self.assertNotIn('theme-toggle-btn', content)
         self.assertNotIn('mobile-bottom-nav', content)
         self.assertNotIn('id="mobileMenuOffcanvas"', content)
+        # Admin sidebar scrollbar container and scroll styling
+        self.assertIn('sidebar-content', content)
+        self.assertIn('overflow-y: auto;', content)
 
 
     def test_site_setting_singleton_and_helpers(self):
