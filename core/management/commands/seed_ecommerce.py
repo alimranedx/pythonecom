@@ -64,6 +64,15 @@ class Command(BaseCommand):
                     {'name': 'Role & Permission Management', 'code': 'rbac.roles', 'url_name': 'admin_role_list', 'order': 2},
                 ]
             },
+            {
+                'name': 'Settings',
+                'code': 'settings',
+                'icon': 'bi-gear-fill',
+                'order': 5,
+                'submodules': [
+                    {'name': 'Store & Brand Settings', 'code': 'settings.site_settings', 'url_name': 'admin_site_settings', 'order': 1},
+                ]
+            },
         ]
 
         actions = ['view', 'create', 'edit', 'delete']

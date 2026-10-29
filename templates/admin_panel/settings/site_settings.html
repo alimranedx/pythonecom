@@ -1,0 +1,321 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block title %}Store & Brand Settings | Back-Office{% endblock %}
+{% block page_title %}Store & Brand Settings{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-0">
+    <!-- Header with Breadcrumb and Actions -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Store & Brand Settings</li>
+                </ol>
+            </nav>
+            <h4 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-gear-wide-connected text-primary me-2"></i>Store & Brand Settings
+            </h4>
+            <small class="text-muted">Manage marketplace brand identity, top announcement bar, contacts, and footer information.</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge {% if can_edit %}bg-success-subtle text-success border-success-subtle{% else %}bg-secondary-subtle text-secondary border-secondary-subtle{% endif %} border px-3 py-2 rounded-pill small">
+                <i class="bi {% if can_edit %}bi-shield-check{% else %}bi-eye{% endif %} me-1"></i>
+                {% if can_edit %}Edit Access Granted{% else %}Read-Only Access{% endif %}
+            </span>
+            <a href="{% url 'home' %}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Live Storefront
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Settings Form -->
+    <form method="post" enctype="multipart/form-data" id="siteSettingsForm">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-3 mb-4" role="alert">
+                <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i>Please resolve the following errors:</div>
+                <ul class="mb-0 small ps-3">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <!-- Tabbed Navigation -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-white border-bottom p-0">
+                <ul class="nav nav-tabs border-0 px-3 pt-2" id="settingsTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-semibold text-dark py-3 px-4 border-0 border-bottom border-3 border-primary" id="brand-tab" data-bs-toggle="tab" data-bs-target="#brand-panel" type="button" role="tab" aria-controls="brand-panel" aria-selected="true">
+                            <i class="bi bi-patch-check text-primary me-2"></i>Brand Identity
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-semibold text-secondary py-3 px-4 border-0" id="header-tab" data-bs-toggle="tab" data-bs-target="#header-panel" type="button" role="tab" aria-controls="header-panel" aria-selected="false">
+                            <i class="bi bi-megaphone text-warning me-2"></i>Header & Announcement
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-semibold text-secondary py-3 px-4 border-0" id="footer-tab" data-bs-toggle="tab" data-bs-target="#footer-panel" type="button" role="tab" aria-controls="footer-panel" aria-selected="false">
+                            <i class="bi bi-layout-text-window-reverse text-info me-2"></i>Footer & Social Links
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-semibold text-secondary py-3 px-4 border-0" id="newsletter-tab" data-bs-toggle="tab" data-bs-target="#newsletter-panel" type="button" role="tab" aria-controls="newsletter-panel" aria-selected="false">
+                            <i class="bi bi-envelope-paper text-success me-2"></i>Newsletter & Notices
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-4 bg-light-subtle">
+                <div class="tab-content" id="settingsTabContent">
+                    <!-- Tab 1: Brand Identity -->
+                    <div class="tab-pane fade show active" id="brand-panel" role="tabpanel" aria-labelledby="brand-tab">
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="card border rounded-3 p-4 bg-white h-100 shadow-sm">
+                                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-badge-ad me-2 text-primary"></i>Brand Name & Slogan</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Brand / Store Name <span class="text-danger">*</span></label>
+                                        {{ form.site_name }}
+                                        <small class="text-muted d-block mt-1">Displayed in the header navbar, mobile drawer, footer, and emails.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Brand Tagline</label>
+                                        {{ form.site_tagline }}
+                                        <small class="text-muted d-block mt-1">Appears in metadata title tags and search engine previews.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card border rounded-3 p-4 bg-white h-100 shadow-sm">
+                                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-image me-2 text-primary"></i>Logo & Favicon</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Brand Logo Image</label>
+                                        {{ form.brand_logo }}
+                                        <small class="text-muted d-block mt-1">Optional. If empty, the stylized text logo "PythonEcom" is rendered.</small>
+                                        {% if setting.brand_logo %}
+                                            <div class="mt-2 p-2 bg-light rounded d-inline-block border">
+                                                <small class="text-muted d-block mb-1">Current Logo:</small>
+                                                <img src="{{ setting.brand_logo.url }}" alt="Logo Preview" style="max-height: 48px; max-width: 180px;">
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Browser Tab Favicon</label>
+                                        {{ form.brand_favicon }}
+                                        {% if setting.brand_favicon %}
+                                            <div class="mt-2 p-2 bg-light rounded d-inline-block border">
+                                                <small class="text-muted d-block mb-1">Current Favicon:</small>
+                                                <img src="{{ setting.brand_favicon.url }}" alt="Favicon Preview" style="width: 24px; height: 24px;">
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Header & Announcement -->
+                    <div class="tab-pane fade" id="header-panel" role="tabpanel" aria-labelledby="header-tab">
+                        <div class="row g-4">
+                            <div class="col-lg-7">
+                                <div class="card border rounded-3 p-4 bg-white shadow-sm h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-megaphone me-2 text-warning"></i>Top Announcement Banner</h6>
+                                        <div class="form-check form-switch mb-0">
+                                            {{ form.announcement_enabled }}
+                                            <label class="form-check-label small fw-bold" for="announcementEnabledCheck">Enable Banner</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Announcement Text (English) <span class="text-danger">*</span></label>
+                                        {{ form.announcement_text_en }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Announcement Text (বাংলা) <span class="text-danger">*</span></label>
+                                        {{ form.announcement_text_bn }}
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">Customer Care Label (EN)</label>
+                                            {{ form.customer_care_text_en }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">Customer Care Label (বাংলা)</label>
+                                            {{ form.customer_care_text_bn }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-5">
+                                <div class="card border rounded-3 p-4 bg-white shadow-sm h-100">
+                                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-telephone-inbound me-2 text-primary"></i>Customer Support & Contacts</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Support Phone Number <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                                            {{ form.contact_phone }}
+                                        </div>
+                                        <small class="text-muted d-block mt-1">Displayed in the announcement bar, mobile drawer, and checkout footer.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Customer Service Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                            {{ form.contact_email }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Office / Hub Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
+                                            {{ form.contact_address }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Footer & Social Links -->
+                    <div class="tab-pane fade" id="footer-panel" role="tabpanel" aria-labelledby="footer-tab">
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="card border rounded-3 p-4 bg-white shadow-sm h-100">
+                                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-card-text me-2 text-primary"></i>About Brand Description</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">About Text (English) <span class="text-danger">*</span></label>
+                                        {{ form.about_text_en }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">About Text (বাংলা) <span class="text-danger">*</span></label>
+                                        {{ form.about_text_bn }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card border rounded-3 p-4 bg-white shadow-sm h-100">
+                                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-share me-2 text-primary"></i>Social Media Channel Links</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold text-muted">Facebook URL</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light"><i class="bi bi-facebook text-primary"></i></span>
+                                            {{ form.social_facebook }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold text-muted">Twitter / X URL</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light"><i class="bi bi-twitter-x"></i></span>
+                                            {{ form.social_twitter }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold text-muted">Instagram URL</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light"><i class="bi bi-instagram text-danger"></i></span>
+                                            {{ form.social_instagram }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold text-muted">GitHub URL</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light"><i class="bi bi-github"></i></span>
+                                            {{ form.social_github }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold text-muted">LinkedIn URL</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light"><i class="bi bi-linkedin text-info"></i></span>
+                                            {{ form.social_linkedin }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Newsletter & Notices -->
+                    <div class="tab-pane fade" id="newsletter-panel" role="tabpanel" aria-labelledby="newsletter-tab">
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="card border rounded-3 p-4 bg-white shadow-sm h-100">
+                                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-envelope-paper me-2 text-success"></i>Newsletter Section</h6>
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">Newsletter Title (EN)</label>
+                                            {{ form.newsletter_title_en }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">Newsletter Title (বাংলা)</label>
+                                            {{ form.newsletter_title_bn }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Newsletter Subtext (EN)</label>
+                                        {{ form.newsletter_text_en }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Newsletter Subtext (বাংলা)</label>
+                                        {{ form.newsletter_text_bn }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card border rounded-3 p-4 bg-white shadow-sm h-100">
+                                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-c-circle me-2 text-primary"></i>Copyright & Payment Badges</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Accepted Payment Gateways Text</label>
+                                        {{ form.accepted_payments_text }}
+                                        <small class="text-muted d-block mt-1">Comma-separated payment labels shown in the footer.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Copyright Notice</label>
+                                        {{ form.copyright_text }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Sub-Footer Tagline / Security Notice</label>
+                                        {{ form.subfooter_notice }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sticky Save Bar -->
+            <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i> Changes take effect immediately across all storefront headers and footers.
+                </div>
+                <div>
+                    {% if can_edit %}
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                            <i class="bi bi-check-lg me-1"></i> Save Settings
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-secondary rounded-pill px-4 fw-semibold" disabled title="You have read-only access">
+                            <i class="bi bi-lock me-1"></i> Save Disabled (Read-Only)
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

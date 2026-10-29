@@ -20,6 +20,9 @@
         window.__IS_BANGLA = {% if IS_BANGLA %}true{% else %}false{% endif %};
     </script>
 
+    {% if site_settings.brand_favicon %}
+        <link rel="icon" type="image/x-icon" href="{{ site_settings.brand_favicon.url }}">
+    {% endif %}
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -339,16 +342,26 @@
 <body>
 
     <!-- Top Announcement Bar -->
+    {% if site_settings.announcement_enabled %}
     <div class="announcement-bar">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="text-truncate me-2">
                 <i class="bi bi-truck me-1 text-warning"></i>
-                {% if IS_BANGLA %}<strong>ফ্রি এক্সপ্রেস ডেলিভারি</strong> ৳৫০০ এর বেশি অর্ডারে!{% else %}<strong>Free Express Shipping</strong> on orders over ৳500!{% endif %}
+                {% if IS_BANGLA %}
+                    {{ site_settings.announcement_text_bn|default:'ফ্রি এক্সপ্রেস ডেলিভারি ৳৫০০ এর বেশি অর্ডারে!' }}
+                {% else %}
+                    {{ site_settings.announcement_text_en|default:'Free Express Shipping on orders over ৳500!' }}
+                {% endif %}
             </div>
             <div class="d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
-                <span class="small text-white d-none d-sm-inline"><i class="bi bi-headset me-1 text-warning"></i> {{ tr.customer_care }}</span>
+                <span class="small text-white d-none d-sm-inline">
+                    <i class="bi bi-headset me-1 text-warning"></i>
+                    {% if IS_BANGLA %}{{ site_settings.customer_care_text_bn|default:tr.customer_care }}{% else %}{{ site_settings.customer_care_text_en|default:tr.customer_care }}{% endif %}
+                </span>
                 <span class="text-secondary d-none d-sm-inline">|</span>
-                <span class="small d-none d-md-inline"><i class="bi bi-telephone me-1"></i> +880 1700-000000</span>
+                <span class="small d-none d-md-inline">
+                    <i class="bi bi-telephone me-1"></i> {{ site_settings.contact_phone|default:'+880 1700-000000' }}
+                </span>
                 <span class="text-secondary d-none d-md-inline">|</span>
 
                 <!-- Theme Toggle Button (Announcement Bar) -->
@@ -369,6 +382,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <!-- Main Navigation Header -->
     <header class="bg-white border-bottom sticky-top shadow-sm">
@@ -380,8 +394,12 @@
                         <i class="bi bi-list fs-5"></i>
                     </button>
                     <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2">
-                        <i class="bi bi-bag-check-fill fs-3 text-primary"></i>
-                        <span>Python<span class="text-dark brand-dark">Ecom</span></span>
+                        {% if site_settings.brand_logo %}
+                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 38px; width: auto; object-fit: contain;">
+                        {% else %}
+                            <i class="bi bi-bag-check-fill fs-3 text-primary"></i>
+                            <span>{{ site_settings.site_name|default:'PythonEcom' }}</span>
+                        {% endif %}
                     </a>
                 </div>
 
@@ -502,8 +520,12 @@
     <div class="offcanvas offcanvas-start shadow" tabindex="-1" id="mobileMenuOffcanvas" aria-labelledby="mobileMenuLabel">
         <div class="offcanvas-header border-bottom">
             <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2">
-                <i class="bi bi-bag-check-fill fs-4 text-primary"></i>
-                <span class="fw-bold">Python<span class="brand-dark">Ecom</span></span>
+                {% if site_settings.brand_logo %}
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 32px; width: auto; object-fit: contain;">
+                {% else %}
+                    <i class="bi bi-bag-check-fill fs-4 text-primary"></i>
+                    <span class="fw-bold">{{ site_settings.site_name|default:'PythonEcom' }}</span>
+                {% endif %}
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -608,11 +630,13 @@
 
             <div class="p-3 bg-light border-top small text-muted">
                 <div class="d-flex align-items-center gap-2 mb-1">
-                    <i class="bi bi-headset text-warning"></i> <span>{{ tr.customer_care }}: +880 1700-000000</span>
+                    <i class="bi bi-headset text-warning"></i> <span>{% if IS_BANGLA %}{{ site_settings.customer_care_text_bn|default:tr.customer_care }}{% else %}{{ site_settings.customer_care_text_en|default:tr.customer_care }}{% endif %}: {{ site_settings.contact_phone|default:'+880 1700-000000' }}</span>
                 </div>
+                {% if site_settings.announcement_enabled %}
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-truck text-success"></i> <span>{{ tr.free_shipping_bar }}</span>
+                    <i class="bi bi-truck text-success"></i> <span>{% if IS_BANGLA %}{{ site_settings.announcement_text_bn }}{% else %}{{ site_settings.announcement_text_en }}{% endif %}</span>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -706,17 +730,37 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
-                    <h5 class="fw-bold text-white mb-3">
-                        <i class="bi bi-bag-check-fill text-primary me-2"></i>PythonEcom
+                    <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                        {% if site_settings.brand_logo %}
+                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 36px; width: auto; filter: brightness(1.1);">
+                        {% else %}
+                            <i class="bi bi-bag-check-fill text-primary"></i>
+                            <span>{{ site_settings.site_name|default:'PythonEcom' }}</span>
+                        {% endif %}
                     </h5>
                     <p class="text-secondary small">
-                        Enterprise-ready multi-category e-commerce platform built on Django, featuring role-based back-office security and high-converting storefront design.
+                        {% if IS_BANGLA %}
+                            {{ site_settings.about_text_bn|default:site_settings.about_text_en }}
+                        {% else %}
+                            {{ site_settings.about_text_en }}
+                        {% endif %}
                     </p>
                     <div class="d-flex gap-3 text-secondary fs-5 mt-3">
-                        <a href="#" class="text-secondary"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-secondary"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" class="text-secondary"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-secondary"><i class="bi bi-github"></i></a>
+                        {% if site_settings.social_facebook %}
+                            <a href="{{ site_settings.social_facebook }}" target="_blank" rel="noopener" class="text-secondary" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_twitter %}
+                            <a href="{{ site_settings.social_twitter }}" target="_blank" rel="noopener" class="text-secondary" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_instagram %}
+                            <a href="{{ site_settings.social_instagram }}" target="_blank" rel="noopener" class="text-secondary" title="Instagram"><i class="bi bi-instagram"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_github %}
+                            <a href="{{ site_settings.social_github }}" target="_blank" rel="noopener" class="text-secondary" title="GitHub"><i class="bi bi-github"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_linkedin %}
+                            <a href="{{ site_settings.social_linkedin }}" target="_blank" rel="noopener" class="text-secondary" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
@@ -735,27 +779,41 @@
                         <li class="mb-2"><a href="{% url 'customer_orders' %}" class="text-decoration-none text-secondary">{{ tr.order_history }}</a></li>
                         <li class="mb-2"><a href="{% url 'wishlist_view' %}" class="text-decoration-none text-secondary">{{ tr.wishlist }}</a></li>
                         <li class="mb-2"><a href="{% url 'cart_detail' %}" class="text-decoration-none text-secondary">{{ tr.cart_checkout }}</a></li>
+                        {% if site_settings.contact_phone %}
+                            <li class="mt-3 text-white-50"><i class="bi bi-telephone text-primary me-1"></i> {{ site_settings.contact_phone }}</li>
+                        {% endif %}
+                        {% if site_settings.contact_email %}
+                            <li class="text-white-50"><i class="bi bi-envelope text-primary me-1"></i> {{ site_settings.contact_email }}</li>
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="col-lg-4 col-md-12">
-                    <h6 class="fw-bold text-white mb-3">Newsletter</h6>
-                    <p class="text-secondary small">Subscribe to get special discounts and exclusive product launches.</p>
+                    <h6 class="fw-bold text-white mb-3">
+                        {% if IS_BANGLA %}{{ site_settings.newsletter_title_bn|default:'নিউজলেটার' }}{% else %}{{ site_settings.newsletter_title_en|default:'Newsletter' }}{% endif %}
+                    </h6>
+                    <p class="text-secondary small">
+                        {% if IS_BANGLA %}
+                            {{ site_settings.newsletter_text_bn|default:'বিশেষ মূল্যছাড় ও নতুন পণ্যের আপডেট পেতে ইমেইল সাবস্ক্রাইব করুন।' }}
+                        {% else %}
+                            {{ site_settings.newsletter_text_en|default:'Subscribe to get special discounts and exclusive product launches.' }}
+                        {% endif %}
+                    </p>
                     <div class="input-group mb-3">
                         <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email">
                         <button class="btn btn-primary" type="button">Subscribe</button>
                     </div>
-                    <small class="text-muted d-block">Accepted Payment Gateways:</small>
-                    <div class="d-flex gap-2 mt-2">
-                        <span class="badge bg-secondary">Cash on Delivery</span>
-                        <span class="badge bg-secondary">Credit / Debit Card</span>
-                        <span class="badge bg-secondary">bKash / Nagad</span>
-                    </div>
+                    {% if site_settings.accepted_payments_text %}
+                        <small class="text-muted d-block">Accepted Payment Gateways:</small>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <span class="badge bg-secondary">{{ site_settings.accepted_payments_text }}</span>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <hr class="border-secondary my-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
-                <div>&copy; 2026 PythonEcom. Senior Software Engineering Implementation. All rights reserved.</div>
-                <div class="mt-2 mt-md-0">Engineered with Clean Layered Architecture & RBAC Security</div>
+                <div>{{ site_settings.copyright_text }}</div>
+                <div class="mt-2 mt-md-0">{{ site_settings.subfooter_notice }}</div>
             </div>
         </div>
     </footer>

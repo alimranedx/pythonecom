@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from decimal import Decimal
 from product.models import Product, Category
+from core.models import SiteSetting
+from rbac.models import Module, Submodule, Permission, Role, UserRole, RolePermission
 from core.translations import get_translation, to_bn_number, TranslationProxy
 
 
@@ -272,3 +274,139 @@ class BilingualStorefrontTests(TestCase):
         self.assertNotIn('mobile-bottom-nav', content)
         self.assertNotIn('id="mobileMenuOffcanvas"', content)
 
+
+    def test_site_setting_singleton_and_helpers(self):
+        """SiteSetting model provides singleton access, defaults, and multi-language helpers."""
+        setting = SiteSetting.get_settings()
+        self.assertIsNotNone(setting)
+        self.assertEqual(setting.site_name, 'PythonEcom')
+        self.assertEqual(setting.contact_phone, '+880 1700-000000')
+
+        # Multi-language helpers
+        self.assertEqual(setting.get_announcement_text(is_bangla=False), setting.announcement_text_en)
+        self.assertEqual(setting.get_announcement_text(is_bangla=True), setting.announcement_text_bn)
+        self.assertEqual(setting.get_customer_care_text(is_bangla=False), setting.customer_care_text_en)
+        self.assertEqual(setting.get_customer_care_text(is_bangla=True), setting.customer_care_text_bn)
+        self.assertEqual(setting.get_about_text(is_bangla=False), setting.about_text_en)
+        self.assertEqual(setting.get_about_text(is_bangla=True), setting.about_text_bn)
+
+    def test_site_settings_rendered_dynamically_on_storefront(self):
+        """Storefront root '/' dynamically renders branding, contacts, and notices from SiteSetting."""
+        setting = SiteSetting.get_settings()
+        setting.contact_phone = '+880 1999-888777'
+        setting.site_name = 'MegaStore BD'
+        setting.copyright_text = '© 2026 MegaStore BD Custom Copyright'
+        setting.save()
+
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+
+        self.assertIn('+880 1999-888777', content)
+        self.assertIn('MegaStore BD', content)
+        self.assertIn('© 2026 MegaStore BD Custom Copyright', content)
+
+    def test_admin_site_settings_view_and_update(self):
+        """Admin with permission can view and update Store & Brand Settings."""
+        self.client.force_login(self.superuser)
+
+        # 1. GET settings page
+        res = self.client.get('/app-admin/settings/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+        self.assertIn('Store & Brand Settings', content)
+        self.assertIn('Brand Identity', content)
+        self.assertIn('Header & Announcement', content)
+
+        # 2. POST update settings
+        post_data = {
+            'site_name': 'UpdatedBrandEcom',
+            'site_tagline': 'Best Online Shopping in BD',
+            'announcement_enabled': 'on',
+            'announcement_text_en': 'Super Sale: Free Delivery on All Orders!',
+            'announcement_text_bn': 'ধামাকা অফার: সব অর্ডারে ফ্রি ডেলিভারি!',
+            'customer_care_text_en': '24/7 VIP Care',
+            'customer_care_text_bn': '২৪/৭ ভিআইপি কেয়ার',
+            'contact_phone': '+880 1888-000111',
+            'contact_email': 'info@updatedbrand.com',
+            'contact_address': 'Gulshan-2, Dhaka',
+            'about_text_en': 'Top notch e-commerce experience.',
+            'about_text_bn': 'সেরা অনলাইন শপিং অভিজ্ঞতা।',
+            'social_facebook': 'https://facebook.com/updatedbrand',
+            'social_twitter': 'https://twitter.com/updatedbrand',
+            'social_instagram': 'https://instagram.com/updatedbrand',
+            'social_github': 'https://github.com/updatedbrand',
+            'social_linkedin': 'https://linkedin.com/company/updatedbrand',
+            'newsletter_title_en': 'Exclusive Newsletter',
+            'newsletter_title_bn': 'এক্সক্লুসিভ নিউজলেটার',
+            'newsletter_text_en': 'Get daily coupons and discounts.',
+            'newsletter_text_bn': 'প্রতিদিনের কুপন ও অফার পান।',
+            'accepted_payments_text': 'Cash on Delivery, bKash, Nagad, Visa',
+            'copyright_text': '© 2026 UpdatedBrandEcom All Rights Reserved',
+            'subfooter_notice': 'Secured with Django RBAC',
+        }
+        res_post = self.client.post('/app-admin/settings/', post_data, follow=True)
+        self.assertEqual(res_post.status_code, 200)
+
+        # Verify DB updated
+        setting = SiteSetting.get_settings()
+        self.assertEqual(setting.site_name, 'UpdatedBrandEcom')
+        self.assertEqual(setting.contact_phone, '+880 1888-000111')
+
+        # Verify Storefront reflects the updated brand & phone
+        res_store = self.client.get('/')
+        content_store = res_store.content.decode('utf-8')
+        self.assertIn('UpdatedBrandEcom', content_store)
+        self.assertIn('+880 1888-000111', content_store)
+        self.assertIn('Super Sale: Free Delivery on All Orders!', content_store)
+
+    def test_admin_site_settings_rbac_permission_guards(self):
+        """Staff members require explicit 'settings.site_settings' view/edit permissions."""
+        # Ensure module and submodule exist
+        mod, _ = Module.objects.update_or_create(code='settings', defaults={'name': 'Settings', 'order': 5})
+        sub, _ = Submodule.objects.update_or_create(code='settings.site_settings', defaults={'module': mod, 'name': 'Store & Brand Settings', 'url_name': 'admin_site_settings'})
+        p_view, _ = Permission.objects.update_or_create(code='settings.site_settings.view', defaults={'submodule': sub, 'action': 'view', 'name': 'View Settings'})
+        p_edit, _ = Permission.objects.update_or_create(code='settings.site_settings.edit', defaults={'submodule': sub, 'action': 'edit', 'name': 'Edit Settings'})
+
+        # Staff user without permissions
+        staff_user = User.objects.create_user(username='staff_noperm', email='noperm@test.com', password='Password123', is_staff=True)
+        self.client.force_login(staff_user)
+
+        # Without 'view' permission: 403 Forbidden
+        res_blocked = self.client.get('/app-admin/settings/')
+        self.assertEqual(res_blocked.status_code, 403)
+
+        # Grant 'view' permission via role
+        role_viewer = Role.objects.create(name='Settings Viewer')
+        RolePermission.objects.create(role=role_viewer, permission=p_view)
+        UserRole.objects.create(user=staff_user, role=role_viewer)
+        delattr(staff_user, '_cached_rbac_perms') if hasattr(staff_user, '_cached_rbac_perms') else None
+
+        # Now can view
+        res_view = self.client.get('/app-admin/settings/')
+        self.assertEqual(res_view.status_code, 200)
+        self.assertIn('Read-Only Access', res_view.content.decode('utf-8'))
+
+        # But POST without 'edit' permission is blocked with error message
+        res_post_denied = self.client.post('/app-admin/settings/', {'site_name': 'HackedName'}, follow=True)
+        self.assertEqual(res_post_denied.status_code, 200)
+        self.assertIn('Permission Denied', res_post_denied.content.decode('utf-8'))
+        # DB must NOT change to HackedName
+        self.assertNotEqual(SiteSetting.get_settings().site_name, 'HackedName')
+
+        # Now grant 'edit' permission
+        RolePermission.objects.create(role=role_viewer, permission=p_edit)
+        delattr(staff_user, '_cached_rbac_perms') if hasattr(staff_user, '_cached_rbac_perms') else None
+
+        # POST with edit permission succeeds
+        res_post_allowed = self.client.post('/app-admin/settings/', {
+            'site_name': 'StaffApprovedBrand',
+            'announcement_text_en': 'Approved Announcement',
+            'announcement_text_bn': 'অনুমোদিত ঘোষণা',
+            'contact_phone': '+880 1234-567890',
+            'about_text_en': 'Approved About',
+            'about_text_bn': 'অনুমোদিত বিবরণ',
+            'copyright_text': '© 2026 StaffApprovedBrand',
+        }, follow=True)
+        self.assertEqual(res_post_allowed.status_code, 200)
+        self.assertEqual(SiteSetting.get_settings().site_name, 'StaffApprovedBrand')

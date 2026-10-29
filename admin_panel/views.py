@@ -11,7 +11,9 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from core.validators import validate_image_file
 from rbac.decorators import require_permission, require_superuser
-from .forms import StaffUserCreateForm, StaffUserEditForm
+from .forms import StaffUserCreateForm, StaffUserEditForm, SiteSettingForm
+from core.models import SiteSetting
+from rbac.services import RBACService
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
 from product.models import Product, Category, Brand, ProductImage, ProductReview
 from product.forms import ProductForm, CategoryForm, BrandForm
@@ -983,3 +985,35 @@ def admin_coupon_delete(request, pk):
     coupon.delete()
     messages.success(request, f"Coupon '{code}' was deleted successfully.")
     return redirect('admin_coupon_list')
+
+
+@require_permission('settings.site_settings', 'view')
+def admin_site_settings(request):
+    """
+    Manage Storefront Branding, Top Header Announcements, Contact Information,
+    and Footer Details with granular RBAC permissions.
+    """
+    setting = SiteSetting.get_settings()
+    can_edit = request.user.is_superuser or RBACService.user_has_permission(request.user, 'settings.site_settings', 'edit')
+
+    if request.method == 'POST':
+        if not can_edit:
+            messages.error(request, 'Permission Denied: You do not have permission to edit store settings.')
+            return redirect('admin_site_settings')
+
+        form = SiteSettingForm(request.POST, request.FILES, instance=setting)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Store & Brand Settings updated successfully!')
+            return redirect('admin_site_settings')
+        else:
+            messages.error(request, 'Please check the form for errors.')
+    else:
+        form = SiteSettingForm(instance=setting)
+
+    context = {
+        'form': form,
+        'setting': setting,
+        'can_edit': can_edit,
+    }
+    return render(request, 'admin_panel/settings/site_settings.html', context)

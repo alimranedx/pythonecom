@@ -1,4 +1,5 @@
 from core.translations import TranslationProxy, to_bn_number
+from core.models import SiteSetting
 
 def language_processor(request):
     """
@@ -14,4 +15,14 @@ def language_processor(request):
         'CURRENT_LANGUAGE': lang,
         'IS_BANGLA': is_bangla,
         'tr': TranslationProxy(lang),
+    }
+
+
+def site_settings_processor(request):
+    """
+    Exposes dynamic store branding, header announcements, contact information,
+    and footer details globally to all storefront templates.
+    """
+    return {
+        'site_settings': SiteSetting.get_settings(),
     }

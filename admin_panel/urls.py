@@ -57,4 +57,7 @@ urlpatterns = [
     path('rbac/roles/create/', views.admin_role_create, name='admin_role_create'),
     path('rbac/roles/<int:pk>/edit/', views.admin_role_edit, name='admin_role_edit'),
     path('rbac/roles/<int:pk>/delete/', views.admin_role_delete, name='admin_role_delete'),
+
+    # Site & Brand Settings (Header, Footer, Announcements, Contacts)
+    path('settings/', views.admin_site_settings, name='admin_site_settings'),
 ]
