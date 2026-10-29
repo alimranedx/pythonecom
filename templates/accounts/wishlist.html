@@ -58,9 +58,9 @@
                             </h6>
 
                             <div class="d-flex align-items-baseline gap-2 mb-3">
-                                <span class="fs-5 fw-bold text-primary">${{ item.product.effective_price }}</span>
+                                <span class="fs-5 fw-bold text-primary">৳{{ item.product.effective_price }}</span>
                                 {% if item.product.has_discount %}
-                                    <span class="text-decoration-line-through text-muted small">${{ item.product.price }}</span>
+                                    <span class="text-decoration-line-through text-muted small">৳{{ item.product.price }}</span>
                                 {% endif %}
                             </div>
 

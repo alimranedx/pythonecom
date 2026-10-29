@@ -71,27 +71,34 @@
                     {% endif %}
                 </div>
 
-                <!-- Pricing & Stock -->
+                <!-- Pricing, Stock & Packaging Unit -->
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <label class="form-label small fw-semibold">Regular Price ($) <span class="text-danger">*</span></label>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Regular Price (৳) <span class="text-danger">*</span></label>
                         {{ form.price }}
                         {% if form.price.errors %}
                             <div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label small fw-semibold">Discount / Sale Price ($)</label>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Discount / Sale Price (৳)</label>
                         {{ form.discount_price }}
                         {% if form.discount_price.errors %}
                             <div class="text-danger small mt-1">{{ form.discount_price.errors.0 }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label small fw-semibold">Inventory Stock <span class="text-danger">*</span></label>
                         {{ form.stock }}
                         {% if form.stock.errors %}
                             <div class="text-danger small mt-1">{{ form.stock.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Packaging Unit</label>
+                        {{ form.unit }}
+                        {% if form.unit.errors %}
+                            <div class="text-danger small mt-1">{{ form.unit.errors.0 }}</div>
                         {% endif %}
                     </div>
                 </div>

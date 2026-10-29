@@ -232,7 +232,7 @@ class AdminPanelOrderManagementTests(TestCase):
         self.assertIn('INVOICE', content)
         self.assertIn(self.order.order_number, content)
         self.assertIn('Sony Headphones', content)
-        self.assertIn('$400.00', content)
+        self.assertIn('৳400.00', content)
 
     def test_order_filters_multi_criteria_and_date_range(self):
         # Create second order with different status, payment method, customer
@@ -482,7 +482,7 @@ class AdminPanelCustomer360Tests(TestCase):
         self.assertEqual(res.status_code, 200)
         content = res.content.decode('utf-8')
         self.assertIn('Alice Wonder', content)
-        self.assertIn('$150.00', content)
+        self.assertIn('৳150.00', content)
 
     def test_customer_detail_360_view(self):
         res = self.client.get(f'/app-admin/customers/{self.customer.pk}/')
@@ -490,7 +490,7 @@ class AdminPanelCustomer360Tests(TestCase):
         content = res.content.decode('utf-8')
         self.assertIn('Alice Wonder', content)
         self.assertIn('+8801811223344', content)
-        self.assertIn('$150.00', content)
+        self.assertIn('৳150.00', content)
         self.assertIn('Road 5, House 12', content)
 
     def test_customer_toggle_status(self):
@@ -529,6 +529,6 @@ class AdminPanelDashboardAnalyticsTests(TestCase):
         res = self.client.get('/app-admin/')
         self.assertEqual(res.status_code, 200)
         content = res.content.decode('utf-8')
-        self.assertIn('$500.00', content)
+        self.assertIn('৳500.00', content)
         self.assertIn('Avg Order Value (AOV)', content)
         self.assertIn('Processing', content)

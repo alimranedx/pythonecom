@@ -180,7 +180,7 @@
                             <span class="badge bg-danger">Save ৳{{ product.price|add:"-product.discount_price"|default:"Discount" }}</span>
                         {% endif %}
                     </div>
-                    <small class="text-muted d-block mt-1">Tax included. Free Express delivery on orders over $50.</small>
+                    <small class="text-muted d-block mt-1">Tax included. Free Express delivery on orders over ৳500.</small>
                 </div>
 
                 <!-- Short Summary -->
@@ -356,7 +356,7 @@
                                         {{ item.name }}
                                     </a>
                                 </h6>
-                                <div class="fs-5 fw-bold text-primary mb-3">${{ item.effective_price }}</div>
+                                <div class="fs-5 fw-bold text-primary mb-3">৳{{ item.effective_price }}</div>
                                 <a href="{% url 'product_detail' item.pk %}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto">
                                     View Product
                                 </a>

@@ -7,8 +7,8 @@ class StaffUserCreateForm(forms.ModelForm):
     role = forms.ModelChoiceField(
         queryset=Role.objects.all(),
         required=False,
-        empty_label="-- No Role Assigned --",
-        widget=forms.Select(attrs={'class': 'form-select'}),
+        empty_label="Please Select Role (Optional)",
+        widget=forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Role (Optional)'}),
         help_text="Assign an administrative RBAC role to grant module permissions."
     )
     password = forms.CharField(
@@ -59,8 +59,8 @@ class StaffUserEditForm(forms.ModelForm):
     role = forms.ModelChoiceField(
         queryset=Role.objects.all(),
         required=False,
-        empty_label="-- No Role Assigned --",
-        widget=forms.Select(attrs={'class': 'form-select'}),
+        empty_label="Please Select Role (Optional)",
+        widget=forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Role (Optional)'}),
         help_text="Assign an administrative RBAC role to grant module permissions."
     )
     new_password = forms.CharField(

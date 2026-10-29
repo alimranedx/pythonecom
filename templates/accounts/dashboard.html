@@ -88,7 +88,7 @@
                                     <tr>
                                         <td><strong>{{ order.order_number }}</strong></td>
                                         <td>{{ order.created_at|date:"M d, Y" }}</td>
-                                        <td class="fw-bold text-primary">${{ order.total_amount }}</td>
+                                        <td class="fw-bold text-primary">৳{{ order.total_amount }}</td>
                                         <td>
                                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
                                                 {{ order.get_status_display }}

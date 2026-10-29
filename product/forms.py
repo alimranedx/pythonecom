@@ -11,8 +11,8 @@ class ProductForm(forms.ModelForm):
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter product name'}),
-            'category': forms.Select(attrs={'class': 'form-select'}),
-            'brand': forms.Select(attrs={'class': 'form-select'}),
+            'category': forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Category'}),
+            'brand': forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Brand'}),
             'short_description': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Brief tagline/catchphrase'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Detailed product description'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
@@ -25,6 +25,13 @@ class ProductForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'category' in self.fields:
+            self.fields['category'].empty_label = "Please Select Category"
+        if 'brand' in self.fields:
+            self.fields['brand'].empty_label = "Please Select Brand"
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -34,10 +41,15 @@ class CategoryForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category Name'}),
             'slug': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'leave-blank-for-auto-slug'}),
             'icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. bi-laptop, bi-phone, bi-tag'}),
-            'parent': forms.Select(attrs={'class': 'form-select'}),
+            'parent': forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Parent Category (None - Top Level)'}),
             'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'order': forms.NumberInput(attrs={'class': 'form-control', 'value': 0}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'parent' in self.fields:
+            self.fields['parent'].empty_label = "Please Select Parent Category (None - Top Level)"
 
 
 class BrandForm(forms.ModelForm):

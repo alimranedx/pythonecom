@@ -85,6 +85,68 @@
             border-bottom: 1px solid #e2e8f0;
             padding: 0 1.5rem;
         }
+        /* Searchable Select Component */
+        .searchable-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .searchable-select-btn {
+            width: 100%;
+            text-align: left;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+            min-height: 38px;
+        }
+        .searchable-select-btn:focus {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+        .searchable-select-menu {
+            width: 100%;
+            min-width: 260px;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            z-index: 1055;
+            padding: 0.4rem;
+        }
+        .searchable-options-container {
+            max-height: 240px;
+            overflow-y: auto;
+        }
+        .searchable-option-item {
+            padding: 0.45rem 0.65rem;
+            font-size: 0.84rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            color: #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.15s ease-in-out;
+        }
+        .searchable-option-item:hover, .searchable-option-item.highlighted {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        .searchable-option-item.selected {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+        }
+        .searchable-search-box {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+            z-index: 2;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -186,6 +248,190 @@
 
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Universal Searchable Select Component for Admin Panel
+    function initSearchableSelects() {
+        document.querySelectorAll('select.searchable-select').forEach(function(select) {
+            if (select.dataset.searchableInit === 'true') return;
+            select.dataset.searchableInit = 'true';
+
+            const placeholder = select.getAttribute('data-placeholder') || 'Please Select';
+
+            // Create wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'dropdown searchable-select-wrapper';
+            select.parentNode.insertBefore(wrapper, select);
+            wrapper.appendChild(select);
+
+            // Hide original select visually but keep in DOM for form serialization
+            select.style.position = 'absolute';
+            select.style.opacity = '0';
+            select.style.pointerEvents = 'none';
+            select.style.height = '0';
+            select.style.width = '0';
+            select.tabIndex = -1;
+
+            // Create trigger button
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'form-select searchable-select-btn';
+            btn.setAttribute('data-bs-toggle', 'dropdown');
+            btn.setAttribute('data-bs-auto-close', 'outside');
+            btn.setAttribute('aria-expanded', 'false');
+
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'text-truncate selected-label-text';
+            btn.appendChild(labelSpan);
+
+            // Create dropdown menu
+            const menu = document.createElement('div');
+            menu.className = 'dropdown-menu searchable-select-menu shadow-sm';
+
+            // Search input header
+            const searchBox = document.createElement('div');
+            searchBox.className = 'searchable-search-box border-bottom mb-1 pb-2';
+            searchBox.innerHTML = `
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted" style="font-size: 0.75rem;"></i></span>
+                    <input type="text" class="form-control form-control-sm border-start-0 select-search-input" placeholder="Type to search..." autocomplete="off">
+                </div>
+            `;
+            menu.appendChild(searchBox);
+
+            // Options container
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'searchable-options-container';
+            menu.appendChild(optionsContainer);
+
+            // No results indicator
+            const noResults = document.createElement('div');
+            noResults.className = 'text-muted small text-center py-3 d-none no-results-msg';
+            noResults.innerHTML = '<i class="bi bi-search me-1"></i> No matching options';
+            menu.appendChild(noResults);
+
+            wrapper.appendChild(btn);
+            wrapper.appendChild(menu);
+
+            const searchInput = searchBox.querySelector('.select-search-input');
+
+            // Populate options from native select
+            function populateOptions() {
+                optionsContainer.innerHTML = '';
+                const currentVal = select.value;
+
+                Array.from(select.options).forEach(function(opt) {
+                    const item = document.createElement('div');
+                    item.className = 'searchable-option-item';
+                    item.setAttribute('data-value', opt.value);
+                    item.setAttribute('data-text', opt.text);
+
+                    const isSelected = opt.value === currentVal;
+                    if (isSelected && opt.value !== '') {
+                        item.classList.add('selected');
+                    }
+
+                    let displayText = opt.text;
+                    if (displayText === '---------') {
+                        displayText = placeholder;
+                    }
+
+                    item.innerHTML = `
+                        <span class="text-truncate">${displayText}</span>
+                        ${isSelected && opt.value !== '' ? '<i class="bi bi-check2 text-primary fw-bold"></i>' : ''}
+                    `;
+
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        select.value = opt.value;
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
+                        updateButtonLabel();
+                        const bsDropdown = bootstrap.Dropdown.getInstance(btn);
+                        if (bsDropdown) bsDropdown.hide();
+                    });
+
+                    optionsContainer.appendChild(item);
+                });
+            }
+
+            function updateButtonLabel() {
+                const selectedOpt = select.selectedOptions[0];
+                if (selectedOpt && selectedOpt.value !== '') {
+                    labelSpan.textContent = selectedOpt.text;
+                    labelSpan.classList.remove('text-muted');
+                    labelSpan.classList.add('text-dark', 'fw-medium');
+                } else {
+                    labelSpan.textContent = placeholder;
+                    labelSpan.classList.add('text-muted');
+                    labelSpan.classList.remove('text-dark', 'fw-medium');
+                }
+                populateOptions();
+            }
+
+            // Keyboard navigation (ArrowDown, ArrowUp, Enter)
+            searchInput.addEventListener('keydown', function(e) {
+                const visibleItems = Array.from(optionsContainer.querySelectorAll('.searchable-option-item:not(.d-none)'));
+                if (visibleItems.length === 0) return;
+
+                let highlighted = optionsContainer.querySelector('.searchable-option-item.highlighted:not(.d-none)');
+                let currentIndex = highlighted ? visibleItems.indexOf(highlighted) : -1;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (highlighted) highlighted.classList.remove('highlighted');
+                    currentIndex = (currentIndex + 1) % visibleItems.length;
+                    visibleItems[currentIndex].classList.add('highlighted');
+                    visibleItems[currentIndex].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (highlighted) highlighted.classList.remove('highlighted');
+                    currentIndex = (currentIndex - 1 + visibleItems.length) % visibleItems.length;
+                    visibleItems[currentIndex].classList.add('highlighted');
+                    visibleItems[currentIndex].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const target = highlighted || visibleItems[0];
+                    if (target) target.click();
+                }
+            });
+
+            // Real-time filtering
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim().toLowerCase();
+                let matchCount = 0;
+                optionsContainer.querySelectorAll('.searchable-option-item').forEach(function(item) {
+                    const text = (item.getAttribute('data-text') || '').toLowerCase();
+                    if (!query || text.includes(query)) {
+                        item.classList.remove('d-none');
+                        matchCount++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+                if (matchCount === 0) {
+                    noResults.classList.remove('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                }
+            });
+
+            // Focus search input when dropdown opens
+            wrapper.addEventListener('shown.bs.dropdown', function() {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+                searchInput.focus();
+            });
+
+            // Listen to programmatic changes on native select
+            select.addEventListener('change', updateButtonLabel);
+
+            // Initial render
+            updateButtonLabel();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initSearchableSelects);
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

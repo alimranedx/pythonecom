@@ -54,7 +54,7 @@
                         <td>{{ c.date_joined|date:"M d, Y" }}</td>
                         <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle">{{ c.orders_count }} orders</span></td>
                         <td>
-                            <strong class="text-success">${{ c.total_spent|default:"0.00" }}</strong>
+                            <strong class="text-success">৳{{ c.total_spent|default:"0.00" }}</strong>
                         </td>
                         <td>
                             {% if c.is_active %}

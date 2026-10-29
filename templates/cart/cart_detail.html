@@ -23,16 +23,16 @@
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="small fw-semibold">
                             <i class="bi bi-truck text-primary me-1"></i>
-                            {% if cart.subtotal >= 50 %}
-                                <span class="text-success fw-bold">Congratulations! You have unlocked Free Express Shipping!</span>
+                            {% if cart.subtotal >= cart.FREE_SHIPPING_THRESHOLD %}
+                                <span class="text-success fw-bold">Congratulations! You have unlocked Free Express Delivery!</span>
                             {% else %}
-                                Add <strong>${{ 50|add:"-cart.subtotal"|default:"50.00" }}</strong> more to qualify for <strong>FREE Delivery</strong>!
+                                Add <strong>৳{{ cart.amount_to_free_shipping }}</strong> more to qualify for <strong>FREE Delivery</strong>!
                             {% endif %}
                         </span>
-                        <span class="small text-muted">$50 Threshold</span>
+                        <span class="small text-muted">৳500 Threshold</span>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {% if cart.subtotal >= 50 %}100{% else %}{{ cart.subtotal|floatformat:0 }}0{% endif %}%;"></div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ cart.free_shipping_progress_percent }}%;"></div>
                     </div>
                 </div>
 
@@ -67,7 +67,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="fw-semibold">${{ item.product.effective_price }}</span>
+                                            <span class="fw-semibold">৳{{ item.product.effective_price }}</span>
                                         </td>
                                         <td>
                                             <form action="{% url 'update_cart_quantity' item.product.pk %}" method="post" class="d-flex align-items-center justify-content-center">
@@ -79,7 +79,7 @@
                                             </form>
                                         </td>
                                         <td>
-                                            <span class="fw-bold text-primary">${{ item.line_total }}</span>
+                                            <span class="fw-bold text-primary">৳{{ item.line_total }}</span>
                                         </td>
                                         <td class="text-end pe-4">
                                             <a href="{% url 'remove_from_cart' item.product.pk %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Remove Item">
@@ -101,7 +101,7 @@
 
                     <div class="d-flex justify-content-between mb-2 small">
                         <span class="text-muted">Items Subtotal:</span>
-                        <span class="fw-semibold">${{ cart.subtotal }}</span>
+                        <span class="fw-semibold">৳{{ cart.subtotal }}</span>
                     </div>
 
                     <div class="d-flex justify-content-between mb-2 small">
@@ -109,7 +109,7 @@
                         {% if cart.shipping_cost == 0 %}
                             <span class="text-success fw-bold">FREE</span>
                         {% else %}
-                            <span class="fw-semibold">${{ cart.shipping_cost }}</span>
+                            <span class="fw-semibold">৳{{ cart.shipping_cost }}</span>
                         {% endif %}
                     </div>
 
@@ -117,7 +117,7 @@
 
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fs-5 fw-bold">Total Amount:</span>
-                        <span class="fs-4 fw-bold text-primary">${{ cart.grand_total }}</span>
+                        <span class="fs-4 fw-bold text-primary">৳{{ cart.grand_total }}</span>
                     </div>
 
                     <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">

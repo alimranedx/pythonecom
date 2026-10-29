@@ -88,9 +88,9 @@
                         </td>
                         <td>{{ p.brand.name|default:"-" }}</td>
                         <td>
-                            <span class="fw-bold text-success">${{ p.effective_price }}</span>
+                            <span class="fw-bold text-success">৳{{ p.effective_price }}</span>
                             {% if p.has_discount %}
-                                <span class="text-decoration-line-through text-muted small ms-1">${{ p.price }}</span>
+                                <span class="text-decoration-line-through text-muted small ms-1">৳{{ p.price }}</span>
                             {% endif %}
                         </td>
                         <td>
