@@ -2,53 +2,448 @@
 
 {% block title %}PythonEcom | Modern E-Commerce Marketplace{% endblock %}
 
-{% block content %}
-<div class="container">
+{% block extra_head %}
+<style>
+    /* Full-width flush hero section */
+    main.py-4 {
+        padding-top: 0 !important;
+    }
 
-    <!-- Hero Promotional Banner -->
-    <div class="card border-0 text-white rounded-4 overflow-hidden mb-5 shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
-        <div class="card-body p-4 p-md-5">
-            <div class="row align-items-center">
-                <div class="col-lg-7">
-                    <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold text-uppercase mb-3">
-                        <i class="bi bi-stars me-1"></i> Mega Season Sale 2026
-                    </span>
-                    <h1 class="display-4 fw-extrabold mb-3" style="font-weight: 800; letter-spacing: -1px;">
-                        Next-Gen Tech & Premium Lifestyle
-                    </h1>
-                    <p class="lead text-slate-300 mb-4 opacity-75">
-                        Upgrade your everyday gear with top brand laptops, flagship smartphones, luxury audio, and fashion essentials. Up to 40% OFF this week!
-                    </p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg px-4 rounded-pill fw-semibold shadow">
-                            <i class="bi bi-bag-check me-2"></i> Shop Collection
-                        </a>
-                        <a href="{% url 'product_list' %}?category=electronics-laptops" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold">
-                            Browse Laptops
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-5 text-center mt-4 mt-lg-0">
-                    <div class="p-4 bg-white bg-opacity-10 rounded-4 backdrop-blur">
-                        <i class="bi bi-laptop-fill display-1 text-warning mb-2 d-block"></i>
-                        <h4 class="fw-bold mb-1">MacBook Pro M3 Max</h4>
-                        <div class="text-warning mb-3">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <span class="text-white ms-1 small">(4.9/5)</span>
+    body > .container.mt-3:empty,
+    .container.mt-3:empty {
+        display: none !important;
+        margin: 0 !important;
+    }
+
+    /* Hero Carousel Full-Width Styling */
+    .hero-slider-container {
+        position: relative;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        border-radius: 0;
+        overflow: hidden;
+        box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.4);
+    }
+
+    .hero-slide-item {
+        min-height: 540px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    /* Ambient Glow Behind Slide */
+    .hero-ambient-glow {
+        position: absolute;
+        width: 550px;
+        height: 550px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 70%);
+        pointer-events: none;
+        top: 50%;
+        right: 15%;
+        transform: translateY(-50%);
+        filter: blur(50px);
+    }
+
+    .hero-slide-title {
+        font-size: 3rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1.15;
+    }
+
+    @media (max-width: 991.98px) {
+        .hero-slide-item {
+            min-height: auto;
+            padding-top: 2.5rem;
+            padding-bottom: 4rem;
+        }
+        .hero-slide-title {
+            font-size: 2.1rem;
+        }
+    }
+
+    .hero-pill-badge {
+        font-size: 0.8rem;
+        padding: 6px 14px;
+        border-radius: 50rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    /* Glass Badge with Guaranteed Contrast */
+    .hero-glass-pill {
+        background-color: rgba(255, 255, 255, 0.16) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* Glass Showcase Card */
+    .hero-glass-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 20px;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .hero-glass-card:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-img-box {
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .hero-product-img {
+        max-height: 220px;
+        max-width: 85%;
+        object-fit: contain;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 10px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+    }
+
+    .hero-glass-card:hover .hero-product-img {
+        transform: scale(1.05) translateY(-4px);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Pricing Elements */
+    .hero-price-current {
+        font-size: 2.6rem;
+        font-weight: 800;
+        line-height: 1;
+        color: #ffffff;
+    }
+
+    .hero-price-old {
+        font-size: 1.4rem;
+        text-decoration: line-through;
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* Carousel Custom Controls */
+    .hero-carousel-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.85;
+        transition: all 0.25s ease;
+        z-index: 10;
+    }
+
+    .hero-carousel-btn:hover {
+        background: #ffffff;
+        color: #0f172a;
+        opacity: 1;
+        transform: translateY(-50%) scale(1.08);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .carousel-control-prev.hero-carousel-btn {
+        left: 24px;
+    }
+
+    .carousel-control-next.hero-carousel-btn {
+        right: 24px;
+    }
+
+    /* Modern Indicators */
+    .hero-indicators {
+        bottom: 18px;
+        margin-bottom: 0;
+        z-index: 10;
+        gap: 8px;
+    }
+
+    .hero-indicators button {
+        width: 32px;
+        height: 6px;
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.45);
+        border: none;
+        transition: width 0.35s ease, background-color 0.35s ease;
+        opacity: 0.7;
+    }
+
+    .hero-indicators button.active {
+        width: 56px;
+        background-color: #ffffff;
+        opacity: 1;
+    }
+
+    /* Action Buttons Animation */
+    .hero-cta-btn {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hero-cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.4) !important;
+    }
+
+    .hero-wishlist-btn {
+        width: 48px;
+        height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .hero-wishlist-btn:hover {
+        transform: scale(1.08);
+        background-color: rgba(255, 255, 255, 0.25) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Full-Width Hero Promotional Slider (Edge-to-Edge) -->
+{% if slider_items %}
+<div id="heroPromotionSlider" class="carousel slide carousel-fade mb-5 hero-slider-container w-100" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="hover">
+    <!-- Slide Indicators -->
+    <div class="carousel-indicators hero-indicators">
+        {% for item in slider_items %}
+            <button type="button" data-bs-target="#heroPromotionSlider" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
+        {% endfor %}
+    </div>
+
+    <!-- Slider Header Pill (Top Right) -->
+    <div class="position-absolute top-0 end-0 m-3 m-md-4 d-none d-sm-flex align-items-center gap-2 bg-black bg-opacity-45 backdrop-blur px-3 py-1 rounded-pill text-white small" style="z-index: 10; border: 1px solid rgba(255,255,255,0.18);">
+        <i class="bi bi-fire text-warning"></i>
+        <span class="fw-semibold">Top Deals & Best Products</span>
+    </div>
+
+    <div class="carousel-inner">
+        {% for item in slider_items %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}" style="background: {{ item.theme.gradient }};">
+            <div class="hero-slide-item">
+                <div class="hero-ambient-glow"></div>
+                <!-- Content centered within container grid -->
+                <div class="container py-4 py-lg-5">
+                    <div class="row align-items-center g-4">
+                        <!-- Left Column: Deal Details & CTAs -->
+                        <div class="col-lg-7 col-md-7 text-white">
+                            <!-- Badges Row -->
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                <span class="hero-pill-badge {{ item.theme.badge_class }}">
+                                    <i class="bi {{ item.theme.icon }}"></i> {{ item.theme.badge }}
+                                </span>
+                                {% if item.product.category %}
+                                    <span class="hero-pill-badge hero-glass-pill">
+                                        <i class="bi {{ item.product.category.icon|default:'bi-tag' }}"></i> {{ item.product.category.name }}
+                                    </span>
+                                {% endif %}
+                                {% if item.product.has_discount %}
+                                    <span class="hero-pill-badge bg-danger text-white">
+                                        <i class="bi bi-percent"></i> {{ item.product.discount_percent }}% OFF
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Title -->
+                            <h1 class="hero-slide-title text-white mb-2">
+                                {{ item.product.name }}
+                            </h1>
+
+                            <!-- Tagline / Hook -->
+                            <p class="fw-semibold mb-3 small text-uppercase" style="color: {{ item.theme.accent }}; letter-spacing: 0.5px;">
+                                <i class="bi bi-stars me-1"></i> {{ item.theme.tagline }}
+                            </p>
+
+                            <!-- Short Description -->
+                            <p class="lead text-white-50 mb-4" style="font-size: 1.05rem; max-width: 580px;">
+                                {{ item.product.short_description|default:item.product.description|truncatewords:24 }}
+                            </p>
+
+                            <!-- Trust & Delivery Highlights -->
+                            <div class="d-flex flex-wrap gap-3 text-white-50 small mb-4">
+                                <span><i class="bi bi-shield-check text-success me-1"></i> Authentic Guarantee</span>
+                                <span><i class="bi bi-truck text-warning me-1"></i> Free Express Delivery</span>
+                                <span><i class="bi bi-arrow-repeat text-info me-1"></i> 30-Day Hassle-Free Returns</span>
+                            </div>
+
+                            <!-- Price Block -->
+                            <div class="d-flex align-items-baseline gap-3 mb-4">
+                                <span class="hero-price-current">${{ item.product.effective_price }}</span>
+                                {% if item.product.has_discount %}
+                                    <span class="hero-price-old">${{ item.product.price }}</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-bold rounded-pill">
+                                        Save ${{ item.savings|floatformat:2 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Call-to-Actions -->
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <a href="{% url 'product_detail' item.product.pk %}" class="btn btn-primary btn-lg px-4 rounded-pill fw-bold shadow hero-cta-btn">
+                                    <i class="bi bi-bag-check-fill me-2"></i> Shop Deal Now
+                                </a>
+
+                                <form action="{% url 'add_to_cart' item.product.pk %}" method="post" class="d-inline-block m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold" {% if item.product.stock <= 0 %}disabled{% endif %}>
+                                        <i class="bi bi-cart-plus me-1"></i> Quick Add
+                                    </button>
+                                </form>
+
+                                <button type="button" class="btn btn-outline-light btn-lg rounded-circle p-0 hero-wishlist-btn" onclick="toggleWishlist({{ item.product.pk }}, this)" title="Save to Wishlist">
+                                    {% if item.product.pk in user_wishlist_ids %}
+                                        <i class="bi bi-heart-fill text-danger fs-5"></i>
+                                    {% else %}
+                                        <i class="bi bi-heart fs-5"></i>
+                                    {% endif %}
+                                </button>
+                            </div>
                         </div>
-                        <div class="d-flex justify-content-center align-items-center gap-3">
-                            <span class="text-decoration-line-through text-white-50 fs-5">$2,499</span>
-                            <span class="fs-2 fw-bold text-success">$2,299</span>
+
+                        <!-- Right Column: Product Showcase Glass Card -->
+                        <div class="col-lg-5 col-md-5">
+                            <div class="hero-glass-card p-4 text-center">
+                                <!-- Card Header: Brand & Star Rating -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge hero-glass-pill rounded-pill px-3 py-1 fw-medium">
+                                        {{ item.product.brand.name|default:"Official Store" }}
+                                    </span>
+                                    <div class="text-warning small d-flex align-items-center gap-1">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <span class="text-white ms-1 fw-bold">({{ item.rating }})</span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Image Presentation -->
+                                <div class="hero-img-box my-3">
+                                    <a href="{% url 'product_detail' item.product.pk %}" class="d-block w-100 h-100 d-flex align-items-center justify-content-center">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="hero-product-img img-fluid">
+                                        {% else %}
+                                            <i class="bi bi-laptop display-1 text-warning"></i>
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <!-- Product Title & Stock Status -->
+                                <h5 class="fw-bold text-white mb-2 text-truncate" title="{{ item.product.name }}">
+                                    {{ item.product.name }}
+                                </h5>
+
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white border-opacity-15 mt-3">
+                                    <div>
+                                        {% if item.product.stock > 5 %}
+                                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-2 py-1 rounded-pill small">
+                                                <i class="bi bi-check-circle-fill me-1"></i> In Stock ({{ item.product.stock }})
+                                            </span>
+                                        {% elif item.product.stock > 0 %}
+                                            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-2 py-1 rounded-pill small">
+                                                <i class="bi bi-exclamation-circle-fill me-1"></i> Only {{ item.product.stock }} Left
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-2 py-1 rounded-pill small">
+                                                <i class="bi bi-x-circle-fill me-1"></i> Out of Stock
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <a href="{% url 'product_detail' item.product.pk %}" class="text-white-50 text-decoration-none small hover-white d-inline-flex align-items-center gap-1">
+                                        Full Specs <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
+
+    <!-- Slider Navigation Arrows -->
+    <button class="carousel-control-prev hero-carousel-btn" type="button" data-bs-target="#heroPromotionSlider" data-bs-slide="prev" aria-label="Previous Deal">
+        <i class="bi bi-chevron-left fs-5"></i>
+    </button>
+    <button class="carousel-control-next hero-carousel-btn" type="button" data-bs-target="#heroPromotionSlider" data-bs-slide="next" aria-label="Next Deal">
+        <i class="bi bi-chevron-right fs-5"></i>
+    </button>
+</div>
+{% else %}
+<!-- Fallback Full-Width Hero Banner -->
+<div class="hero-slider-container w-100 mb-5 text-white" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold text-uppercase mb-3">
+                    <i class="bi bi-stars me-1"></i> Mega Season Sale 2026
+                </span>
+                <h1 class="display-4 fw-extrabold mb-3" style="font-weight: 800; letter-spacing: -1px;">
+                    Next-Gen Tech & Premium Lifestyle
+                </h1>
+                <p class="lead text-slate-300 mb-4 opacity-75">
+                    Upgrade your everyday gear with top brand laptops, flagship smartphones, luxury audio, and fashion essentials. Up to 40% OFF this week!
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg px-4 rounded-pill fw-semibold shadow">
+                        <i class="bi bi-bag-check me-2"></i> Shop Collection
+                    </a>
+                    <a href="{% url 'product_list' %}?category=electronics-laptops" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold">
+                        Browse Laptops
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 text-center mt-4 mt-lg-0">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 backdrop-blur">
+                    <i class="bi bi-laptop-fill display-1 text-warning mb-2 d-block"></i>
+                    <h4 class="fw-bold mb-1">MacBook Pro M3 Max</h4>
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-white ms-1 small">(4.9/5)</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center gap-3">
+                        <span class="text-decoration-line-through text-white-50 fs-5">$2,499</span>
+                        <span class="fs-2 fw-bold text-success">$2,299</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Rest of page content wrapped in standard container -->
+<div class="container">
 
     <!-- Value Proposition Badges -->
     <div class="row g-3 mb-5">
