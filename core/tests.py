@@ -348,8 +348,15 @@ class BilingualStorefrontTests(TestCase):
             'copyright_text': '© 2026 UpdatedBrandEcom All Rights Reserved',
             'subfooter_notice': 'Secured with Django RBAC',
         }
-        res_post = self.client.post('/app-admin/settings/', post_data, follow=True)
+        # Verify tab anchor preservation on POST
+        post_data['active_tab'] = 'newsletter-panel'
+        res_post_redirect = self.client.post('/app-admin/settings/', post_data, follow=False)
+        self.assertEqual(res_post_redirect.status_code, 302)
+        self.assertEqual(res_post_redirect.url, '/app-admin/settings/#newsletter-panel')
+
+        res_post = self.client.get('/app-admin/settings/')
         self.assertEqual(res_post.status_code, 200)
+        self.assertIn('settings-nav-tabs', res_post.content.decode('utf-8'))
 
         # Verify DB updated
         setting = SiteSetting.get_settings()

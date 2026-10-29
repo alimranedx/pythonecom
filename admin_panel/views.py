@@ -1,3 +1,4 @@
+from django.urls import reverse
 from datetime import datetime, timedelta
 from django.utils import timezone
 from decimal import Decimal
@@ -1001,11 +1002,16 @@ def admin_site_settings(request):
             messages.error(request, 'Permission Denied: You do not have permission to edit store settings.')
             return redirect('admin_site_settings')
 
+        active_tab = request.POST.get('active_tab', '').strip()
+        redirect_url = reverse('admin_site_settings')
+        if active_tab:
+            redirect_url += f'#{active_tab}'
+
         form = SiteSettingForm(request.POST, request.FILES, instance=setting)
         if form.is_valid():
             form.save()
             messages.success(request, 'Store & Brand Settings updated successfully!')
-            return redirect('admin_site_settings')
+            return redirect(redirect_url)
         else:
             messages.error(request, 'Please check the form for errors.')
     else:
