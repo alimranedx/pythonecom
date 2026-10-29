@@ -338,6 +338,102 @@ class AdminPanelOrderManagementTests(TestCase):
         self.assertEqual(len(res_default.context['orders']), 10)
         self.assertEqual(res_default.context['page_obj'].paginator.num_pages, 2)
 
+    def test_order_list_multiselect_status_and_payment_status(self):
+        # Create test orders across multiple statuses
+        order_proc = Order.objects.create(
+            full_name='Processing Customer',
+            email='proc@test.com',
+            phone='+8801711111111',
+            street_address='Proc Street',
+            city='Dhaka',
+            total_amount=Decimal('250.00'),
+            status='processing',
+            payment_status='paid',
+            payment_method='bkash'
+        )
+        order_ship = Order.objects.create(
+            full_name='Shipped Customer',
+            email='ship@test.com',
+            phone='+8801722222222',
+            street_address='Ship Street',
+            city='Chittagong',
+            total_amount=Decimal('450.00'),
+            status='shipped',
+            payment_status='paid',
+            payment_method='nagad'
+        )
+        order_canc = Order.objects.create(
+            full_name='Cancelled Customer',
+            email='canc@test.com',
+            phone='+8801733333333',
+            street_address='Canc Street',
+            city='Sylhet',
+            total_amount=Decimal('150.00'),
+            status='cancelled',
+            payment_status='refunded',
+            payment_method='cod'
+        )
+
+        # 1. Repeated parameter multiselect: ?status=processing&status=shipped
+        res_multi = self.client.get('/app-admin/orders/?status=processing&status=shipped')
+        self.assertEqual(res_multi.status_code, 200)
+        self.assertEqual(res_multi.context['status_filters'], ['processing', 'shipped'])
+        html_multi = res_multi.content.decode('utf-8')
+        self.assertIn(order_proc.order_number, html_multi)
+        self.assertIn(order_ship.order_number, html_multi)
+        self.assertNotIn(order_canc.order_number, html_multi)
+        self.assertNotIn(self.order.order_number, html_multi)
+
+        # 2. Comma-separated multiselect: ?status=processing,shipped
+        res_comma = self.client.get('/app-admin/orders/?status=processing,shipped')
+        self.assertEqual(res_comma.status_code, 200)
+        self.assertEqual(res_comma.context['status_filters'], ['processing', 'shipped'])
+        html_comma = res_comma.content.decode('utf-8')
+        self.assertIn(order_proc.order_number, html_comma)
+        self.assertIn(order_ship.order_number, html_comma)
+        self.assertNotIn(order_canc.order_number, html_comma)
+
+        # 3. Multiselect payment status: ?payment_status=paid&payment_status=refunded
+        res_pay = self.client.get('/app-admin/orders/?payment_status=paid&payment_status=refunded')
+        self.assertEqual(res_pay.status_code, 200)
+        self.assertEqual(res_pay.context['payment_status_filters'], ['paid', 'refunded'])
+        html_pay = res_pay.content.decode('utf-8')
+        self.assertIn(order_proc.order_number, html_pay)
+        self.assertIn(order_ship.order_number, html_pay)
+        self.assertIn(order_canc.order_number, html_pay)
+        self.assertNotIn(self.order.order_number, html_pay)  # self.order has pending payment
+
+        # 4. Combined multiselect with pagination retention
+        # Create 4 additional processing/paid orders so we have 6 matching orders
+        for idx in range(4):
+            Order.objects.create(
+                full_name=f'Extra Paid Customer {idx}',
+                email=f'extra{idx}@test.com',
+                phone='+8801700000099',
+                street_address='Street',
+                city='Dhaka',
+                total_amount=Decimal('100.00'),
+                status='processing',
+                payment_status='paid',
+                payment_method='bkash'
+            )
+        # With 6 matching orders and per_page=5, it produces 2 pages (6 / 5 = 2)
+        res_combo = self.client.get('/app-admin/orders/?status=processing&status=shipped&payment_status=paid&per_page=5')
+        self.assertEqual(res_combo.status_code, 200)
+        self.assertEqual(res_combo.context['page_obj'].paginator.num_pages, 2)
+        html_combo = res_combo.content.decode('utf-8')
+        self.assertIn('page=2', html_combo)
+        self.assertIn('status=processing', html_combo)
+        self.assertIn('status=shipped', html_combo)
+        self.assertIn('payment_status=paid', html_combo)
+
+        # 5. Exact route requested by user
+        req_url = '/app-admin/orders/?per_page=10&date_range=2026%2F10%2F28+00%3A00%3A00+-+2026%2F10%2F28+23%3A59%3A59&date_from=2026%2F10%2F28+00%3A00%3A00&date_to=2026%2F10%2F28+23%3A59%3A59&order_id=&customer=&payment_method=&status=processing&payment_status=&min_amount=&max_amount='
+        res_req = self.client.get(req_url)
+        self.assertEqual(res_req.status_code, 200)
+        self.assertEqual(res_req.context['status_filters'], ['processing'])
+        self.assertEqual(res_req.context['payment_status_filters'], [])
+
 
 class AdminPanelCustomer360Tests(TestCase):
     def setUp(self):

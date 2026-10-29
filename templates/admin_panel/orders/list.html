@@ -113,6 +113,30 @@
         border-color: #4f46e5;
         color: #ffffff;
     }
+    .multiselect-dropdown .form-select {
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-right: 2rem;
+        box-shadow: none;
+    }
+    .multiselect-dropdown .dropdown-item:hover,
+    .multiselect-dropdown .dropdown-item:focus {
+        background-color: #f1f5f9;
+    }
+    .multiselect-dropdown .dropdown-item:active {
+        background-color: #e2e8f0;
+        color: inherit;
+    }
+    .multiselect-count-badge {
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 0.2em 0.55em;
+    }
+    .multiselect-display-text {
+        max-width: calc(100% - 32px);
+    }
 </style>
 {% endblock %}
 
@@ -136,11 +160,11 @@
 
         <!-- Quick Status Pills -->
         <div class="d-flex flex-wrap gap-2">
-            <a href="{% url 'admin_order_list' %}?per_page={{ per_page }}" class="btn btn-sm rounded-pill {% if not status_filter %}btn-dark{% else %}btn-light border{% endif %}">
+            <a href="{% url 'admin_order_list' %}?per_page={{ per_page }}" class="btn btn-sm rounded-pill {% if not status_filters %}btn-dark{% else %}btn-light border{% endif %}">
                 All Orders
             </a>
             {% for code, label in statuses %}
-                <a href="{% url 'admin_order_list' %}?status={{ code }}&per_page={{ per_page }}" class="btn btn-sm rounded-pill {% if status_filter == code %}btn-dark{% else %}btn-light border{% endif %}">
+                <a href="{% url 'admin_order_list' %}?status={{ code }}&per_page={{ per_page }}" class="btn btn-sm rounded-pill {% if code in status_filters %}btn-dark{% else %}btn-light border{% endif %}">
                     {{ label }}
                 </a>
             {% endfor %}
@@ -327,35 +351,83 @@
                             </select>
                         </div>
 
-                        <!-- 5. STATUS / FULFILLMENT -->
+                        <!-- 5. STATUS / FULFILLMENT (MULTISELECT) -->
                         <div class="col-lg-3 col-md-6">
                             <label class="form-label filter-label fw-bold text-uppercase text-muted mb-1">Fulfillment Status</label>
-                            <select name="status" class="form-select form-select-sm">
-                                <option value="">All Fulfillment Statuses</option>
-                                {% for code, label in statuses %}
-                                    <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>{{ label }}</option>
-                                {% endfor %}
-                            </select>
+                            <div class="dropdown multiselect-dropdown" id="statusMultiselectContainer">
+                                <button class="form-select form-select-sm text-start d-flex justify-content-between align-items-center py-1 bg-white" 
+                                        type="button" 
+                                        id="statusDropdownBtn" 
+                                        data-bs-toggle="dropdown" 
+                                        data-bs-auto-close="outside" 
+                                        aria-expanded="false"
+                                        style="height: 31px; cursor: pointer;">
+                                    <span class="text-truncate multiselect-display-text text-muted" id="statusDisplayText">All Fulfillment Statuses</span>
+                                    <span class="badge bg-primary rounded-pill multiselect-count-badge d-none ms-1" id="statusCountBadge">0</span>
+                                </button>
+                                <div class="dropdown-menu p-2 shadow-sm border w-100 multiselect-menu" aria-labelledby="statusDropdownBtn" style="min-width: 240px; max-height: 280px; overflow-y: auto;">
+                                    <div class="d-flex justify-content-between align-items-center pb-2 mb-1 border-bottom px-1">
+                                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">Fulfillment Status</span>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-link btn-xs p-0 text-decoration-none text-primary fw-semibold multiselect-select-all" data-target="status" style="font-size: 0.72rem;">Select All</button>
+                                            <span class="text-muted small">|</span>
+                                            <button type="button" class="btn btn-link btn-xs p-0 text-decoration-none text-secondary multiselect-clear-all" data-target="status" style="font-size: 0.72rem;">Clear</button>
+                                        </div>
+                                    </div>
+                                    <div class="multiselect-items-list">
+                                        {% for code, label in statuses %}
+                                        <label class="dropdown-item py-1 px-2 d-flex align-items-center gap-2 rounded multiselect-option-label" style="cursor: pointer; font-size: 0.8125rem;">
+                                            <input type="checkbox" name="status" value="{{ code }}" class="form-check-input mt-0 multiselect-checkbox status-checkbox" {% if code in status_filters %}checked{% endif %} data-label="{{ label }}">
+                                            <span class="multiselect-option-text">{{ label }}</span>
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- 6. PAYMENT STATUS -->
+                        <!-- 6. PAYMENT STATUS (MULTISELECT) -->
                         <div class="col-lg-3 col-md-6">
                             <label class="form-label filter-label fw-bold text-uppercase text-muted mb-1">Payment Status</label>
-                            <select name="payment_status" class="form-select form-select-sm">
-                                <option value="">All Payment Statuses</option>
-                                {% for code, label in payment_statuses %}
-                                    <option value="{{ code }}" {% if payment_status_filter == code %}selected{% endif %}>{{ label }}</option>
-                                {% endfor %}
-                            </select>
+                            <div class="dropdown multiselect-dropdown" id="paymentStatusMultiselectContainer">
+                                <button class="form-select form-select-sm text-start d-flex justify-content-between align-items-center py-1 bg-white" 
+                                        type="button" 
+                                        id="paymentStatusDropdownBtn" 
+                                        data-bs-toggle="dropdown" 
+                                        data-bs-auto-close="outside" 
+                                        aria-expanded="false"
+                                        style="height: 31px; cursor: pointer;">
+                                    <span class="text-truncate multiselect-display-text text-muted" id="paymentStatusDisplayText">All Payment Statuses</span>
+                                    <span class="badge bg-primary rounded-pill multiselect-count-badge d-none ms-1" id="paymentStatusCountBadge">0</span>
+                                </button>
+                                <div class="dropdown-menu p-2 shadow-sm border w-100 multiselect-menu" aria-labelledby="paymentStatusDropdownBtn" style="min-width: 220px; max-height: 280px; overflow-y: auto;">
+                                    <div class="d-flex justify-content-between align-items-center pb-2 mb-1 border-bottom px-1">
+                                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">Payment Status</span>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-link btn-xs p-0 text-decoration-none text-primary fw-semibold multiselect-select-all" data-target="payment_status" style="font-size: 0.72rem;">Select All</button>
+                                            <span class="text-muted small">|</span>
+                                            <button type="button" class="btn btn-link btn-xs p-0 text-decoration-none text-secondary multiselect-clear-all" data-target="payment_status" style="font-size: 0.72rem;">Clear</button>
+                                        </div>
+                                    </div>
+                                    <div class="multiselect-items-list">
+                                        {% for code, label in payment_statuses %}
+                                        <label class="dropdown-item py-1 px-2 d-flex align-items-center gap-2 rounded multiselect-option-label" style="cursor: pointer; font-size: 0.8125rem;">
+                                            <input type="checkbox" name="payment_status" value="{{ code }}" class="form-check-input mt-0 multiselect-checkbox payment-status-checkbox" {% if code in payment_status_filters %}checked{% endif %} data-label="{{ label }}">
+                                            <span class="multiselect-option-text">{{ label }}</span>
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 7. AMOUNT RANGE -->
                         <div class="col-lg-3 col-md-6">
-                            <label class="form-label filter-label fw-bold text-uppercase text-muted mb-1">Amount Range ($)</label>
+                            <label class="form-label filter-label fw-bold text-uppercase text-muted mb-1">Amount Range (৳)</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" step="0.01" name="min_amount" value="{{ min_amount }}" class="form-control form-control-sm" placeholder="Min $">
+                                <input type="number" step="0.01" name="min_amount" value="{{ min_amount }}" class="form-control form-control-sm" placeholder="Min ৳">
                                 <span class="input-group-text bg-light">-</span>
-                                <input type="number" step="0.01" name="max_amount" value="{{ max_amount }}" class="form-control form-control-sm" placeholder="Max $">
+                                <input type="number" step="0.01" name="max_amount" value="{{ max_amount }}" class="form-control form-control-sm" placeholder="Max ৳">
                             </div>
                         </div>
                     </div>
@@ -397,7 +469,7 @@
 
         <div class="d-flex flex-wrap align-items-center gap-3">
             <span class="text-dark">
-                Settled Revenue: <strong class="text-success">${{ total_filtered_revenue }}</strong>
+                Settled Revenue: <strong class="text-success">৳{{ total_filtered_revenue }}</strong>
             </span>
             <div class="d-flex align-items-center gap-1 border-start ps-3">
                 <label for="perPageTopSelect" class="text-muted text-nowrap mb-0" style="font-size: 0.8rem;">Show</label>
@@ -432,7 +504,7 @@
                         <td class="ps-3"><strong class="font-monospace text-primary">{{ order.order_number }}</strong></td>
                         <td>{{ order.created_at|date:"M d, Y h:i A" }}</td>
                         <td>{{ order.full_name }}</td>
-                        <td class="fw-bold">${{ order.total_amount }}</td>
+                        <td class="fw-bold">৳{{ order.total_amount }}</td>
                         <td>
                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
                                 {{ order.get_status_display }}
@@ -943,6 +1015,100 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Multiselect dropdown management for Status & Payment Status
+    function initMultiselect(containerId, defaultPlaceholder) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const displayText = container.querySelector('.multiselect-display-text');
+        const countBadge = container.querySelector('.multiselect-count-badge');
+        const checkboxes = container.querySelectorAll('.multiselect-checkbox');
+        const selectAllBtn = container.querySelector('.multiselect-select-all');
+        const clearAllBtn = container.querySelector('.multiselect-clear-all');
+        const menu = container.querySelector('.multiselect-menu');
+
+        // Prevent clicking inside the dropdown from closing the dropdown menu
+        if (menu) {
+            menu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        function updateDisplay() {
+            const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+            const total = checkboxes.length;
+
+            if (checkedBoxes.length === 0) {
+                displayText.textContent = defaultPlaceholder;
+                displayText.classList.add('text-muted');
+                displayText.classList.remove('text-dark', 'fw-medium');
+                if (countBadge) {
+                    countBadge.classList.add('d-none');
+                    countBadge.textContent = '0';
+                }
+            } else if (checkedBoxes.length === 1) {
+                const label = checkedBoxes[0].getAttribute('data-label') || checkedBoxes[0].value;
+                displayText.textContent = label;
+                displayText.classList.remove('text-muted');
+                displayText.classList.add('text-dark', 'fw-medium');
+                if (countBadge) {
+                    countBadge.classList.add('d-none');
+                    countBadge.textContent = '1';
+                }
+            } else if (checkedBoxes.length === total) {
+                displayText.textContent = `All Selected (${total})`;
+                displayText.classList.remove('text-muted');
+                displayText.classList.add('text-dark', 'fw-medium');
+                if (countBadge) {
+                    countBadge.classList.remove('d-none');
+                    countBadge.textContent = total;
+                }
+            } else {
+                const labels = checkedBoxes.map(cb => cb.getAttribute('data-label') || cb.value);
+                const joined = labels.join(', ');
+                if (joined.length <= 22) {
+                    displayText.textContent = joined;
+                } else {
+                    displayText.textContent = `${checkedBoxes.length} Selected`;
+                }
+                displayText.classList.remove('text-muted');
+                displayText.classList.add('text-dark', 'fw-medium');
+                if (countBadge) {
+                    countBadge.classList.remove('d-none');
+                    countBadge.textContent = checkedBoxes.length;
+                }
+            }
+        }
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateDisplay);
+        });
+
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                checkboxes.forEach(cb => { cb.checked = true; });
+                updateDisplay();
+            });
+        }
+
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                checkboxes.forEach(cb => { cb.checked = false; });
+                updateDisplay();
+            });
+        }
+
+        // Initialize display on page load
+        updateDisplay();
+    }
+
+    initMultiselect('statusMultiselectContainer', 'All Fulfillment Statuses');
+    initMultiselect('paymentStatusMultiselectContainer', 'All Payment Statuses');
 
     // Initial Render
     renderCalendars();

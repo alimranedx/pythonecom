@@ -371,8 +371,19 @@ def admin_review_delete(request, pk):
 # ---------------- ORDERS MODULE ----------------
 @require_permission('orders.orders', 'view')
 def admin_order_list(request):
-    status_filter = request.GET.get('status', '').strip()
-    payment_status_filter = request.GET.get('payment_status', '').strip()
+    def get_filter_list(param_name):
+        raw_values = request.GET.getlist(param_name)
+        result = []
+        for val in raw_values:
+            if val:
+                for item in str(val).split(','):
+                    cleaned = item.strip()
+                    if cleaned and cleaned not in result:
+                        result.append(cleaned)
+        return result
+
+    status_filters = get_filter_list('status')
+    payment_status_filters = get_filter_list('payment_status')
     payment_method_filter = request.GET.get('payment_method', '').strip()
     order_id_filter = request.GET.get('order_id', '').strip()
     customer_filter = request.GET.get('customer', '').strip()
@@ -419,11 +430,11 @@ def admin_order_list(request):
     if dt_to:
         orders = orders.filter(created_at__lte=dt_to)
 
-    if status_filter:
-        orders = orders.filter(status=status_filter)
+    if status_filters:
+        orders = orders.filter(status__in=status_filters)
 
-    if payment_status_filter:
-        orders = orders.filter(payment_status=payment_status_filter)
+    if payment_status_filters:
+        orders = orders.filter(payment_status__in=payment_status_filters)
 
     if payment_method_filter:
         orders = orders.filter(payment_method=payment_method_filter)
@@ -461,8 +472,8 @@ def admin_order_list(request):
 
     # Count active non-empty filters
     active_filters_count = sum([
-        bool(status_filter),
-        bool(payment_status_filter),
+        bool(status_filters),
+        bool(payment_status_filters),
         bool(payment_method_filter),
         bool(order_id_filter),
         bool(customer_filter),
@@ -534,7 +545,18 @@ def admin_order_list(request):
     if 'page' in query_params:
         del query_params['page']
     query_params['per_page'] = per_page
+    if status_filters:
+        query_params.setlist('status', status_filters)
+    elif 'status' in query_params:
+        del query_params['status']
+    if payment_status_filters:
+        query_params.setlist('payment_status', payment_status_filters)
+    elif 'payment_status' in query_params:
+        del query_params['payment_status']
     querystring = query_params.urlencode()
+
+    status_filter = status_filters[0] if len(status_filters) == 1 else (','.join(status_filters) if status_filters else '')
+    payment_status_filter = payment_status_filters[0] if len(payment_status_filters) == 1 else (','.join(payment_status_filters) if payment_status_filters else '')
 
     return render(request, 'admin_panel/orders/list.html', {
         'orders': page_obj,
@@ -544,7 +566,9 @@ def admin_order_list(request):
         'per_page': per_page,
         'per_page_options': [5, 10, 20, 50, 100],
         'ellipsis': getattr(paginator, 'ELLIPSIS', '…'),
+        'status_filters': status_filters,
         'status_filter': status_filter,
+        'payment_status_filters': payment_status_filters,
         'payment_status_filter': payment_status_filter,
         'payment_method_filter': payment_method_filter,
         'order_id_filter': order_id_filter,
