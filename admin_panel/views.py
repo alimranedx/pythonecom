@@ -510,19 +510,40 @@ def admin_order_list(request):
     total_filtered_orders = orders.count()
     total_filtered_revenue = orders.filter(payment_status='paid').aggregate(t=Sum('total_amount'))['t'] or Decimal('0.00')
 
-    paginator = Paginator(orders, 10)
+    per_page_raw = request.GET.get('per_page', '10').strip()
+    try:
+        per_page = int(per_page_raw)
+        if per_page not in [5, 10, 20, 25, 50, 100]:
+            per_page = 10
+    except (ValueError, TypeError):
+        per_page = 10
+
+    paginator = Paginator(orders, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    try:
+        elided_page_range = paginator.get_elided_page_range(
+            page_obj.number, on_each_side=2, on_ends=1
+        )
+    except Exception:
+        elided_page_range = paginator.page_range
 
     # Clean query string for pagination links
     query_params = request.GET.copy()
     if 'page' in query_params:
         del query_params['page']
+    query_params['per_page'] = per_page
     querystring = query_params.urlencode()
 
     return render(request, 'admin_panel/orders/list.html', {
         'orders': page_obj,
         'page_obj': page_obj,
+        'paginator': paginator,
+        'elided_page_range': elided_page_range,
+        'per_page': per_page,
+        'per_page_options': [5, 10, 20, 50, 100],
+        'ellipsis': getattr(paginator, 'ELLIPSIS', '…'),
         'status_filter': status_filter,
         'payment_status_filter': payment_status_filter,
         'payment_method_filter': payment_method_filter,

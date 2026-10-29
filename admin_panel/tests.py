@@ -292,6 +292,52 @@ class AdminPanelOrderManagementTests(TestCase):
         self.assertIn(self.order.order_number, csv_content)
         self.assertIn('Test Customer', csv_content)
 
+    def test_order_list_pagination_and_per_page_limits(self):
+        # Create 14 additional orders for pagination testing (total 15 orders)
+        for i in range(14):
+            Order.objects.create(
+                full_name=f'Pagination User {i}',
+                email=f'user{i}@pagination.com',
+                phone='+8801700000000',
+                street_address='Street',
+                city='City',
+                postal_code='1000',
+                subtotal=Decimal('100.00'),
+                shipping_fee=Decimal('0.00'),
+                total_amount=Decimal('100.00'),
+                status='pending',
+                payment_status='pending',
+                payment_method='cod'
+            )
+
+        # 1. Custom per_page = 5 (should produce 3 pages: 15 / 5 = 3)
+        res_p5 = self.client.get('/app-admin/orders/?per_page=5')
+        self.assertEqual(res_p5.status_code, 200)
+        self.assertEqual(len(res_p5.context['orders']), 5)
+        self.assertEqual(res_p5.context['page_obj'].paginator.num_pages, 3)
+        p5_html = res_p5.content.decode('utf-8')
+        self.assertIn('Showing <strong>1</strong> to <strong>5</strong> of <strong>15</strong>', p5_html)
+        self.assertIn('value="5" selected', p5_html)
+        self.assertIn('page=2', p5_html)
+
+        # 2. Navigate to Page 2 with per_page = 5 and a filter
+        res_page2 = self.client.get('/app-admin/orders/?page=2&per_page=5&status=pending')
+        self.assertEqual(res_page2.status_code, 200)
+        self.assertEqual(res_page2.context['page_obj'].number, 2)
+        p2_html = res_page2.content.decode('utf-8')
+        self.assertIn('Page <strong>2</strong> of <strong>3</strong>', p2_html)
+        # Verify previous page and next page links retain status=pending and per_page=5
+        self.assertIn('page=1', p2_html)
+        self.assertIn('page=3', p2_html)
+        self.assertIn('status=pending', p2_html)
+        self.assertIn('per_page=5', p2_html)
+
+        # 3. Default per_page = 10 (should produce 2 pages: 15 / 10 = 2)
+        res_default = self.client.get('/app-admin/orders/')
+        self.assertEqual(res_default.status_code, 200)
+        self.assertEqual(len(res_default.context['orders']), 10)
+        self.assertEqual(res_default.context['page_obj'].paginator.num_pages, 2)
+
 
 class AdminPanelCustomer360Tests(TestCase):
     def setUp(self):

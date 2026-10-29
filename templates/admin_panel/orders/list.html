@@ -128,11 +128,11 @@
 
         <!-- Quick Status Pills -->
         <div class="d-flex flex-wrap gap-2">
-            <a href="{% url 'admin_order_list' %}" class="btn btn-sm rounded-pill {% if not status_filter %}btn-dark{% else %}btn-light border{% endif %}">
+            <a href="{% url 'admin_order_list' %}?per_page={{ per_page }}" class="btn btn-sm rounded-pill {% if not status_filter %}btn-dark{% else %}btn-light border{% endif %}">
                 All Orders
             </a>
             {% for code, label in statuses %}
-                <a href="{% url 'admin_order_list' %}?status={{ code }}" class="btn btn-sm rounded-pill {% if status_filter == code %}btn-dark{% else %}btn-light border{% endif %}">
+                <a href="{% url 'admin_order_list' %}?status={{ code }}&per_page={{ per_page }}" class="btn btn-sm rounded-pill {% if status_filter == code %}btn-dark{% else %}btn-light border{% endif %}">
                     {{ label }}
                 </a>
             {% endfor %}
@@ -158,6 +158,8 @@
         <div class="collapse show" id="filterPanelCollapse">
             <div class="card-body p-3 pt-0 border-top">
                 <form method="get" action="{% url 'admin_order_list' %}" id="ordersFilterForm">
+                    <input type="hidden" name="per_page" id="filterFormPerPage" value="{{ per_page }}">
+                    {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
                     <div class="row g-3 mt-1">
                         <!-- 1. DATE RANGE (Interactive Dropdown matching user reference) -->
                         <div class="col-lg-4 col-md-6">
@@ -356,7 +358,7 @@
                             <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold">
                                 <i class="bi bi-funnel me-1"></i> Apply Filters
                             </button>
-                            <a href="{% url 'admin_order_list' %}" class="btn btn-light border btn-sm rounded-pill px-3 text-secondary">
+                            <a href="{% url 'admin_order_list' %}?per_page={{ per_page }}" class="btn btn-light border btn-sm rounded-pill px-3 text-secondary">
                                 <i class="bi bi-arrow-counterclockwise me-1"></i> Clear Filters
                             </a>
                         </div>
@@ -372,14 +374,33 @@
         </div>
     </div>
 
-    <!-- Filtered Results Summary Bar -->
-    <div class="d-flex justify-content-between align-items-center bg-light px-3 py-2 rounded-3 mb-3 small">
-        <span class="text-muted">
-            Found <strong>{{ total_filtered_orders }}</strong> order{{ total_filtered_orders|pluralize }} matching criteria
-        </span>
-        <span class="text-dark">
-            Settled Revenue: <strong class="text-success">${{ total_filtered_revenue }}</strong>
-        </span>
+    <!-- Filtered Results Summary Bar & Per-Page Selector -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center bg-light px-3 py-2 rounded-3 mb-3 small gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted">
+                Total <strong>{{ total_filtered_orders }}</strong> record{{ total_filtered_orders|pluralize }} found
+            </span>
+            {% if total_filtered_orders > 0 %}
+            <span class="text-muted border-start ps-3 d-none d-sm-inline">
+                Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> of <strong>{{ total_filtered_orders }}</strong>
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <span class="text-dark">
+                Settled Revenue: <strong class="text-success">${{ total_filtered_revenue }}</strong>
+            </span>
+            <div class="d-flex align-items-center gap-1 border-start ps-3">
+                <label for="perPageTopSelect" class="text-muted text-nowrap mb-0" style="font-size: 0.8rem;">Show</label>
+                <select id="perPageTopSelect" class="form-select form-select-sm py-0 px-2 per-page-select" style="width: auto; height: 30px; font-size: 0.8rem;">
+                    {% for opt in per_page_options %}
+                        <option value="{{ opt }}" {% if per_page == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+                <span class="text-muted text-nowrap" style="font-size: 0.8rem;">per page</span>
+            </div>
+        </div>
     </div>
 
     <!-- Orders Table -->
@@ -438,35 +459,83 @@
         </table>
     </div>
 
-    <!-- Pagination Controls -->
-    {% if page_obj.has_other_pages %}
-        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-            <small class="text-muted">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} ({{ page_obj.paginator.count }} total orders)</small>
-            <nav>
-                <ul class="pagination pagination-sm mb-0">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">&laquo;</a>
-                        </li>
-                    {% endif %}
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}{% if querystring %}&{{ querystring }}{% endif %}">{{ num }}</a>
-                            </li>
-                        {% endif %}
+    <!-- Pagination & Page Limit Controls Footer -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 pt-3 border-top gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <small class="text-muted">
+                Showing <strong>{{ page_obj.start_index|default:0 }}</strong> to <strong>{{ page_obj.end_index|default:0 }}</strong> of <strong>{{ page_obj.paginator.count }}</strong> orders (Page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong>)
+            </small>
+            <div class="d-flex align-items-center gap-1 border-start ps-3 d-none d-md-flex">
+                <label for="perPageBottomSelect" class="text-muted text-nowrap mb-0 small" style="font-size: 0.8rem;">Per page:</label>
+                <select id="perPageBottomSelect" class="form-select form-select-sm py-0 px-2 per-page-select" style="width: auto; height: 28px; font-size: 0.8rem;">
+                    {% for opt in per_page_options %}
+                        <option value="{{ opt }}" {% if per_page == opt %}selected{% endif %}>{{ opt }}</option>
                     {% endfor %}
-                    {% if page_obj.has_next %}
+                </select>
+            </div>
+        </div>
+
+        <nav aria-label="Orders pagination">
+            <ul class="pagination pagination-sm mb-0">
+                <!-- First Page -->
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                    {% if page_obj.has_previous %}
+                        <a class="page-link" href="?page=1{% if querystring %}&{{ querystring }}{% endif %}" title="First Page" aria-label="First">
+                            &laquo;&laquo;
+                        </a>
+                    {% else %}
+                        <span class="page-link text-muted" aria-hidden="true">&laquo;&laquo;</span>
+                    {% endif %}
+                </li>
+
+                <!-- Previous Page -->
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                    {% if page_obj.has_previous %}
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" title="Previous Page" aria-label="Previous">
+                            &lsaquo; Prev
+                        </a>
+                    {% else %}
+                        <span class="page-link text-muted" aria-hidden="true">&lsaquo; Prev</span>
+                    {% endif %}
+                </li>
+
+                <!-- Numbered Pages with Ellipsis -->
+                {% for num in elided_page_range %}
+                    {% if num == ellipsis %}
+                        <li class="page-item disabled"><span class="page-link text-muted">&hellip;</span></li>
+                    {% elif num == page_obj.number %}
+                        <li class="page-item active" aria-current="page"><span class="page-link fw-bold">{{ num }}</span></li>
+                    {% else %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">&raquo;</a>
+                            <a class="page-link" href="?page={{ num }}{% if querystring %}&{{ querystring }}{% endif %}">{{ num }}</a>
                         </li>
                     {% endif %}
-                </ul>
-            </nav>
-        </div>
-    {% endif %}
+                {% endfor %}
+
+                <!-- Next Page -->
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                    {% if page_obj.has_next %}
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" title="Next Page" aria-label="Next">
+                            Next &rsaquo;
+                        </a>
+                    {% else %}
+                        <span class="page-link text-muted" aria-hidden="true">Next &rsaquo;</span>
+                    {% endif %}
+                </li>
+
+                <!-- Last Page -->
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                    {% if page_obj.has_next %}
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}" title="Last Page" aria-label="Last">
+                            &raquo;&raquo;
+                        </a>
+                    {% else %}
+                        <span class="page-link text-muted" aria-hidden="true">&raquo;&raquo;</span>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
 {% endblock %}
 
@@ -839,6 +908,32 @@ document.addEventListener('DOMContentLoaded', function() {
         displayEndText.value = '';
         presetButtons.forEach(b => b.classList.remove('active'));
         renderCalendars();
+    });
+
+    // Sync and handle Per Page limit changes
+    const perPageSelectors = document.querySelectorAll('.per-page-select');
+    perPageSelectors.forEach(select => {
+        select.addEventListener('change', function() {
+            const newLimit = this.value;
+            const hiddenPerPage = document.getElementById('filterFormPerPage');
+            if (hiddenPerPage) {
+                hiddenPerPage.value = newLimit;
+            }
+            perPageSelectors.forEach(s => { s.value = newLimit; });
+
+            // Submit filter form to reload with all selected inputs preserved + new page limit
+            const form = document.getElementById('ordersFilterForm');
+            if (form) {
+                const exportBtn = form.querySelector('[name="export"]');
+                if (exportBtn) exportBtn.disabled = true;
+                form.submit();
+            } else {
+                const url = new URL(window.location.href);
+                url.searchParams.set('per_page', newLimit);
+                url.searchParams.set('page', '1');
+                window.location.href = url.toString();
+            }
+        });
     });
 
     // Initial Render
