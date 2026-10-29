@@ -9,6 +9,9 @@
 1. [Platform Overview & Key Innovations](#1-platform-overview--key-innovations)
 2. [Customer & Storefront Guide (How to Shop)](#2-customer--storefront-guide-how-to-shop)
    - [Product Catalog & Measurement Units](#product-catalog--measurement-units)
+   - [Bilingual English & বাংলা Localization](#bilingual-english--বাংলা-localization)
+   - [Dark & Light Theme Switcher](#dark--light-theme-switcher)
+   - [Full Mobile Responsive Storefront Layout](#full-mobile-responsive-storefront-layout)
    - [Instant Cart Steppers & Floating Bag](#instant-cart-steppers--floating-bag)
    - [Free Delivery Progress Indicator](#free-delivery-progress-indicator)
    - [Delivery Slot Scheduling (Today / Tomorrow Windows)](#delivery-slot-scheduling)
@@ -18,6 +21,9 @@
    - [Visual 4-Stage Order Tracking Timeline](#visual-4-stage-order-tracking-timeline)
 3. [Administrator & Back-Office Guide (How to Manage)](#3-administrator--back-office-guide-how-to-manage)
    - [Role-Based Access Control (RBAC) & Staff Security](#role-based-access-control-rbac--staff-security)
+   - [Store & Brand Settings Management](#store--brand-settings-management)
+   - [Back-Office Searchable Select Components](#back-office-searchable-select-components)
+   - [Scrollable Admin Sidebar & Dynamic Tab Navigation](#scrollable-admin-sidebar--dynamic-tab-navigation)
    - [Orders Management & Adjustable Multi-Filter Panel](#orders-management--adjustable-multi-filter-panel)
    - [Interactive Dual-Calendar Date Range Picker](#interactive-dual-calendar-date-range-picker)
    - [CSV Export & Custom Rows-Per-Page Limits](#csv-export--custom-rows-per-page-limits)
@@ -26,6 +32,7 @@
    - [Catalog Management (Products, Units, Categories, Brands)](#catalog-management)
    - [Customer Reviews Moderation](#customer-reviews-moderation)
    - [Customer 360 Profiles & Account Moderation](#customer-360-profiles--account-moderation)
+   - [Complete Database Seeder & Fixture Snapshot Management](#complete-database-seeder--fixture-snapshot-management)
 4. [Bangladesh Logistics & Currency Standards](#4-bangladesh-logistics--currency-standards)
 
 ---
@@ -54,6 +61,27 @@ PythonEcom is an enterprise-grade e-commerce platform engineered specifically to
   * Discount percentage badge (e.g. `-15% OFF`).
   * Packaging measurement unit (e.g. `1 kg`, `500 gm`, `1 ltr`).
   * In-stock or out-of-stock badge.
+
+### Bilingual English & বাংলা Localization
+* **1-Click Language Switcher**: Located in the top header and offcanvas navigation menu (`EN` / `বাংলা`).
+* **Complete Translation Coverage**:
+  * Announcement banner, navigation links, and search placeholder.
+  * Section headings (*Top Deals*, *Shop by Category*, *Trending Products*).
+  * Delivery slots (*Morning Slot*, *Evening Slot*, *Express 60-min*).
+  * Cart drawer, checkout inputs, and order status timelines.
+  * Native Bengali numeral converter converts price numbers (e.g., `৳ 250` ➔ `৳ ২৫০`), stock numbers, and rating counts.
+* **Administrative Isolation**: The back-office management portal (`/app-admin/`) remains strictly in English to uphold standard enterprise ERP conventions.
+
+### Dark & Light Theme Switcher
+* **Storefront Theme Toggle**: Customers can toggle between **Light Mode** and **Dark Mode** via the sun/moon button in the header and mobile menu.
+* **Persistent Preference**: The chosen theme is saved in the browser's `localStorage` and automatically loaded on return visits.
+* **Admin Portal Isolation**: The back-office portal is locked strictly to **Light Mode** for data entry clarity.
+
+### Full Mobile Responsive Storefront Layout
+* **Mobile-First Design**: Custom media queries and viewport scaling optimized for all smartphones and tablets.
+* **Bottom Navigation Bar**: Fixed mobile navigation providing 1-tap access to **Home**, **Catalog**, **Wishlist**, **Shopping Bag** (with real-time item counter), and **Account**.
+* **Left Off-Canvas Menu Drawer**: Clean sliding drawer containing category links, brand directory, language switch, and theme switcher.
+* **Catalog Mobile Filter Drawer**: Floating filter button on mobile catalog pages opening an off-canvas drawer for category, brand, and stock filters.
 
 ### Instant Cart Steppers & Floating Bag
 * **Adding to Cart**: Click the **"Add to Cart"** / **"Add to Bag"** button on any product card or detail page.
@@ -112,8 +140,26 @@ After placing an order (or via **My Orders** in customer account), customers see
 * **Route**: `/app-admin/login/`
 * **Role Types**:
   * **Super Administrator**: Complete system access, staff account creation, role editing.
-  * **Custom Roles**: Tailored permissions per module (`Catalog`, `Orders`, `Customers`, `Reviews`).
+  * **Custom Roles**: Tailored permissions per module (`Catalog`, `Orders`, `Customers`, `Reviews`, `Settings`).
 * **Session Isolation**: Staff sessions are strictly isolated from customer storefront sessions; browser background requests (e.g. `/favicon.ico`) preserve staff authentication.
+
+### Store & Brand Settings Management
+* **Route**: `/app-admin/settings/`
+* **Permissions**: Guarded by `settings.site_settings.view` and `settings.site_settings.edit`.
+* **Capabilities**:
+  * **Brand Identity**: Store name, tagline, brand logo image, browser tab favicon.
+  * **Header & Announcement Banner**: Enable/disable top announcement bar, bilingual announcement text (EN & BN), customer care hours, public telephone, email, and store address.
+  * **Footer & Social Links**: Company description (EN & BN), Facebook, Twitter/X, Instagram, GitHub, and LinkedIn URLs.
+  * **Newsletter & Notices**: Newsletter headings, accepted payment gateway badges, and legal copyright text.
+  * Changes take effect immediately across all storefront templates without restarting the server.
+
+### Back-Office Searchable Select Components
+* **Live Search Filter**: Category and Brand dropdown selectors in product create/edit forms feature a built-in search input for fast real-time filtering among dozens of categories and brands.
+* **Clean UI**: Replaced Django's default `---------` placeholder with professional `"Please Select"`.
+
+### Scrollable Admin Sidebar & Dynamic Tab Navigation
+* **Scrollable Sidebar**: The admin sidebar `#sidebar` features a fixed branding header and a scrollable body `.sidebar-content` with a sleek custom scrollbar (`scrollbar-width: thin`), ensuring all modules (including *Settings* and *Live Storefront*) are 100% accessible on any screen height.
+* **Dynamic Active Underline Tabs**: Modern underlined navigation tabs on the Settings page dynamically move the blue highlight bar to whichever tab is selected, remembering the active tab across form submissions and reloads.
 
 ### Orders Management & Adjustable Multi-Filter Panel
 * **Route**: `/app-admin/orders/`

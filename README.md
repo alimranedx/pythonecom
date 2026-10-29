@@ -133,6 +133,7 @@ After running `python manage.py seed_ecommerce`, the following pre-configured ac
 | **Customer Wishlist** | `http://127.0.0.1:8000/account/wishlist/` | Saved items, live heart badge, move-to-cart in 1-click |
 | **Address Book** | `http://127.0.0.1:8000/account/addresses/` | Manage shipping destinations with default indicator |
 | **Back-Office Portal** | `http://127.0.0.1:8000/app-admin/` | Custom RBAC staff dashboard, revenue KPIs, low-stock warnings |
+| **Store & Brand Settings** | `http://127.0.0.1:8000/app-admin/settings/` | Dynamic store identity, announcements, contacts, social links, footer notices |
 | **Role & Permission Manager** | `http://127.0.0.1:8000/app-admin/rbac/roles/` | Interactive matrix of module & submodule capabilities |
 | **Django Admin** | `http://127.0.0.1:8000/admin/` | Default Django superuser admin portal |
 
@@ -187,6 +188,31 @@ Super Administrators can create new roles and assign any combination of module p
 
 ## ✨ Advanced Production E-Commerce Features
 
+- **Dynamic Store & Brand Settings Management (`/app-admin/settings/`)**:
+  - Full RBAC-secured back-office management for marketplace brand name, logo, favicon, top announcement bar, 24/7 care hours, support phone/email, social media handles, payment badges, and copyright notices.
+  - Changes reflect globally in real time across all customer storefront headers, meta tags, and footers.
+- **Bilingual English & Bangla Storefront Localization**:
+  - 1-click language switching between **English (EN)** and **বাংলা (BN)** on the customer storefront with cookie/session persistence.
+  - Full localization covering navigation, announcement banner, search placeholders, filter badges, product details, delivery slots, cart, checkout, and footer.
+  - Native Bengali numeral conversions (৳ prices, stock counts, rating values).
+  - Administrative back-office strictly isolated in English for enterprise standardization.
+- **Storefront Dark / Light Mode Theme**:
+  - Customer storefront provides an instant **Dark / Light** theme toggle with persistent preferences in local storage.
+  - High-contrast, accessibility-tested dark color palette.
+  - Administrative back-office strictly isolated in professional Light theme.
+- **Full Mobile Responsive Storefront**:
+  - Native mobile app experience with bottom navigation bar (Home, Catalog, Wishlist, Bag with counter, Account).
+  - Left off-canvas drawer for category browsing and language selection.
+  - Dedicated mobile filter drawer for catalog browsing.
+- **Back-Office Searchable Dropdowns with Real-Time Filtering**:
+  - Custom searchable select UI for Brand and Category selection in product creation/editing.
+  - Clean "Please Select" placeholder replacing raw `---------`.
+- **Scrollable Admin Sidebar & Dynamic Navigation Tabs**:
+  - Fixed-header admin sidebar with custom slim scrollbar preventing navigation links from being cut off on any screen size.
+  - Dynamic active underline indicators on admin settings tabs that move smoothly across tabs with URL hash state preservation.
+- **Complete Database Snapshot Seeder**:
+  - `python manage.py seed_ecommerce` restores all 542 records (Settings, 24 Categories, 38 Brands, 72 Products, 246 Gallery Images, 15 Reviews, 5 Delivery Slots, 2 Coupons, 3 Orders, RBAC Roles, and Test Users).
+  - `python manage.py seed_ecommerce --export` captures live database modifications into `core/fixtures/initial_seed_data.json`.
 - **Multiple Image Upload**: Back-office product manager allows uploading a primary thumbnail plus multiple gallery photos simultaneously with individual deletion controls.
 - **Circle Mirror Zoom**: Product detail page features a circular magnifying glass loupe (Amazon/Shopify-style) that tracks the cursor with 2.4x high-resolution optical zoom.
 - **Interactive Image Thumbnails**: Hovering or clicking any gallery angle instantaneously switches the main showcase image and syncs the circle mirror zoom background.
@@ -218,8 +244,14 @@ The platform underwent a full security audit and implements defense-in-depth mit
 
 ## 🧪 Running Automated Tests & Sanity Checks
 
-Run the verification command to verify storefront routes, RBAC protection, and Django system health:
+The project includes an enterprise test suite with **58 automated unit and integration tests** verifying bilingual translation integrity, dark/light theme isolation, mobile responsive elements, RBAC security guards, order payment state machines, site settings singleton behavior, and database seeder loading:
 
-```powershell
-python -c "import os, django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pythonecom.settings'); django.setup(); from django.test import Client; c = Client(); print('Storefront Home:', c.get('/', HTTP_HOST='127.0.0.1').status_code)"
+```bash
+# Run the complete test suite (58 tests)
+python manage.py test
+
+# Or run tests for specific apps
+python manage.py test core
+python manage.py test orders
+python manage.py test rbac
 ```
