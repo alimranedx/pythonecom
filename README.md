@@ -59,11 +59,16 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
-#### Step 6: Seed RBAC Roles, Demo Accounts & Catalog
-Populates system roles, granular permissions, demo products, categories, sample shipping addresses, and test credentials:
+#### Step 6: Seed Complete Database & Catalog
+Populates complete marketplace data: store & brand settings, bilingual announcements, 24 categories, 38 brands, 72 products with specifications and gallery images, customer reviews, delivery slots, promo coupons, sample orders, and RBAC accounts:
 ```bash
 python manage.py seed_ecommerce
 ```
+
+> **Tip:** To capture your current database state into the version-controlled seed fixture at any time, run:
+> ```bash
+> python manage.py seed_ecommerce --export
+> ```
 
 #### Step 7: Run Development Server
 ```bash

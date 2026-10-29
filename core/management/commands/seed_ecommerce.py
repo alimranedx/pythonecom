@@ -1,26 +1,265 @@
+import os
+import json
 from decimal import Decimal
 from django.core.management.base import BaseCommand
+from django.core import serializers
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+
+from core.models import SiteSetting
 from rbac.models import Module, Submodule, Permission, Role, RolePermission, UserRole
 from accounts.models import CustomerProfile, Address
-from product.models import Category, Brand, Product, ProductReview
-from orders.models import Order, OrderItem
+from product.models import Category, Brand, Product, ProductImage, ProductReview
+from orders.models import Order, OrderItem, DeliverySlot, Coupon
 
 
 class Command(BaseCommand):
-    help = "Seeds initial RBAC modules, permissions, test users, categories, and marketplace products."
+    help = (
+        "Seeds complete marketplace database: Brand settings, RBAC modules/roles, "
+        "test accounts, categories, brands, products with specs/images, reviews, coupons, and orders."
+    )
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--export',
+            '--dump',
+            action='store_true',
+            help='Export current live database records into core/fixtures/initial_seed_data.json',
+        )
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.NOTICE("==> Seeding RBAC Modules & Permissions..."))
+        fixture_path = os.path.join(settings.BASE_DIR, 'core', 'fixtures', 'initial_seed_data.json')
+
+        # 1. Export mode
+        if options.get('export'):
+            self._export_fixtures(fixture_path)
+            return
+
+        # 2. Seed from Fixture if available (using resilient idempotent loader)
+        if os.path.exists(fixture_path):
+            self.stdout.write(self.style.NOTICE(f"==> Loading complete database fixture from {fixture_path}..."))
+            count = self._load_fixture_data(fixture_path)
+            self.stdout.write(self.style.SUCCESS(f"[OK] Successfully synchronized {count} database objects from fixture."))
+        else:
+            self.stdout.write(self.style.WARNING("==> Fixture file not found; running programmatic fallback..."))
+            self._seed_rbac()
+            self._seed_users()
+            self._seed_catalog()
+
+        # 3. Always synchronize RBAC modules, permissions & superuser roles
+        self.stdout.write(self.style.NOTICE("==> Synchronizing RBAC Modules & Permissions..."))
         self._seed_rbac()
 
-        self.stdout.write(self.style.NOTICE("==> Seeding Test Users & Role Assignments..."))
+        # 4. Synchronize demo accounts & passwords
+        self.stdout.write(self.style.NOTICE("==> Verifying Demo Accounts & Passwords..."))
         self._seed_users()
 
-        self.stdout.write(self.style.NOTICE("==> Seeding Marketplace Catalog (Categories, Brands, Products)..."))
-        self._seed_catalog()
+        # 5. Synchronize Store & Brand Settings
+        self.stdout.write(self.style.NOTICE("==> Verifying Store & Brand Settings..."))
+        self._seed_site_settings()
 
-        self.stdout.write(self.style.SUCCESS("[SUCCESS] All e-commerce seed data successfully generated!"))
+        # 6. Print summary
+        self._print_summary()
+
+    def _export_fixtures(self, fixture_path):
+        """Export all current database records into initial_seed_data.json with UTF-8 encoding."""
+        self.stdout.write(self.style.NOTICE("==> Exporting current database models to fixture..."))
+        os.makedirs(os.path.dirname(fixture_path), exist_ok=True)
+
+        models_to_export = [
+            User,
+            CustomerProfile,
+            Address,
+            SiteSetting,
+            Module,
+            Submodule,
+            Permission,
+            Role,
+            RolePermission,
+            UserRole,
+            Category,
+            Brand,
+            Product,
+            ProductImage,
+            ProductReview,
+            DeliverySlot,
+            Coupon,
+            Order,
+            OrderItem,
+        ]
+
+        all_objects = []
+        for model in models_to_export:
+            objs = list(model.objects.all())
+            all_objects.extend(objs)
+
+        serialized = serializers.serialize('json', all_objects, indent=2)
+        with open(fixture_path, 'w', encoding='utf-8') as f:
+            f.write(serialized)
+
+        self.stdout.write(self.style.SUCCESS(
+            f"[SUCCESS] Exported {len(all_objects)} database objects across {len(models_to_export)} models to {fixture_path}!"
+        ))
+
+    def _load_fixture_data(self, fixture_path):
+        """
+        Idempotent fixture loader that updates-or-creates objects matching on natural unique keys.
+        Prevents IntegrityError duplicate key conflicts across diverse database setups.
+        """
+        with open(fixture_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        records = {}
+        for item in data:
+            records.setdefault(item['model'], []).append(item)
+
+        user_map = {}
+        for item in records.get('auth.user', []):
+            f = dict(item['fields'])
+            user, _ = User.objects.update_or_create(
+                username=f['username'],
+                defaults={
+                    'email': f.get('email', ''),
+                    'is_staff': f.get('is_staff', False),
+                    'is_superuser': f.get('is_superuser', False),
+                    'is_active': f.get('is_active', True),
+                    'first_name': f.get('first_name', ''),
+                    'last_name': f.get('last_name', ''),
+                }
+            )
+            user.password = f['password']
+            user.save()
+            user_map[item['pk']] = user
+
+        for item in records.get('core.sitesetting', []):
+            f = dict(item['fields'])
+            SiteSetting.objects.update_or_create(id=1, defaults=f)
+
+        for item in records.get('accounts.customerprofile', []):
+            f = dict(item['fields'])
+            user = user_map.get(f['user']) or User.objects.filter(id=f['user']).first()
+            if user:
+                f['user'] = user
+                CustomerProfile.objects.update_or_create(user=user, defaults=f)
+
+        for item in records.get('accounts.address', []):
+            f = dict(item['fields'])
+            user = user_map.get(f['user']) or User.objects.filter(id=f['user']).first()
+            if user:
+                f['user'] = user
+                Address.objects.update_or_create(user=user, full_name=f['full_name'], street_address=f['street_address'], defaults=f)
+
+        module_map = {}
+        for item in records.get('rbac.module', []):
+            f = dict(item['fields'])
+            mod, _ = Module.objects.update_or_create(code=f['code'], defaults=f)
+            module_map[item['pk']] = mod
+
+        submodule_map = {}
+        for item in records.get('rbac.submodule', []):
+            f = dict(item['fields'])
+            mod = module_map.get(f['module']) or Module.objects.filter(id=f['module']).first()
+            f['module'] = mod
+            sub, _ = Submodule.objects.update_or_create(code=f['code'], defaults=f)
+            submodule_map[item['pk']] = sub
+
+        perm_map = {}
+        for item in records.get('rbac.permission', []):
+            f = dict(item['fields'])
+            sub = submodule_map.get(f['submodule']) or Submodule.objects.filter(id=f['submodule']).first()
+            f['submodule'] = sub
+            perm, _ = Permission.objects.update_or_create(code=f['code'], defaults=f)
+            perm_map[item['pk']] = perm
+
+        role_map = {}
+        for item in records.get('rbac.role', []):
+            f = dict(item['fields'])
+            role, _ = Role.objects.update_or_create(name=f['name'], defaults=f)
+            role_map[item['pk']] = role
+
+        for item in records.get('rbac.rolepermission', []):
+            f = dict(item['fields'])
+            role = role_map.get(f['role']) or Role.objects.filter(id=f['role']).first()
+            perm = perm_map.get(f['permission']) or Permission.objects.filter(id=f['permission']).first()
+            if role and perm:
+                RolePermission.objects.get_or_create(role=role, permission=perm)
+
+        for item in records.get('rbac.userrole', []):
+            f = dict(item['fields'])
+            user = user_map.get(f['user']) or User.objects.filter(id=f['user']).first()
+            role = role_map.get(f['role']) or Role.objects.filter(id=f['role']).first()
+            if user and role:
+                UserRole.objects.get_or_create(user=user, role=role)
+
+        cat_map = {}
+        for item in records.get('product.category', []):
+            f = dict(item['fields'])
+            cat, _ = Category.objects.update_or_create(slug=f['slug'], defaults=f)
+            cat_map[item['pk']] = cat
+
+        brand_map = {}
+        for item in records.get('product.brand', []):
+            f = dict(item['fields'])
+            brand, _ = Brand.objects.update_or_create(slug=f['slug'], defaults=f)
+            brand_map[item['pk']] = brand
+
+        prod_map = {}
+        for item in records.get('product.product', []):
+            f = dict(item['fields'])
+            f['category'] = cat_map.get(f['category']) or Category.objects.filter(id=f['category']).first() if f.get('category') else None
+            f['brand'] = brand_map.get(f['brand']) or Brand.objects.filter(id=f['brand']).first() if f.get('brand') else None
+            prod, _ = Product.objects.update_or_create(slug=f['slug'], defaults=f)
+            prod_map[item['pk']] = prod
+
+        for item in records.get('product.productimage', []):
+            f = dict(item['fields'])
+            prod = prod_map.get(f['product']) or Product.objects.filter(id=f['product']).first()
+            if prod:
+                f['product'] = prod
+                ProductImage.objects.update_or_create(id=item['pk'], defaults=f)
+
+        for item in records.get('product.productreview', []):
+            f = dict(item['fields'])
+            prod = prod_map.get(f['product']) or Product.objects.filter(id=f['product']).first()
+            user = user_map.get(f['user']) or User.objects.filter(id=f['user']).first()
+            if prod and user:
+                f['product'] = prod
+                f['user'] = user
+                ProductReview.objects.update_or_create(id=item['pk'], defaults=f)
+
+        for item in records.get('orders.deliveryslot', []):
+            f = dict(item['fields'])
+            DeliverySlot.objects.update_or_create(id=item['pk'], defaults=f)
+
+        for item in records.get('orders.coupon', []):
+            f = dict(item['fields'])
+            Coupon.objects.update_or_create(code=f['code'], defaults=f)
+
+        order_map = {}
+        for item in records.get('orders.order', []):
+            f = dict(item['fields'])
+            f['user'] = user_map.get(f['user']) or User.objects.filter(id=f['user']).first() if f.get('user') else None
+            f['delivery_slot'] = DeliverySlot.objects.filter(id=f['delivery_slot']).first() if f.get('delivery_slot') else None
+            f['coupon'] = Coupon.objects.filter(id=f['coupon']).first() if f.get('coupon') else None
+            order, _ = Order.objects.update_or_create(id=item['pk'], defaults=f)
+            order_map[item['pk']] = order
+
+        for item in records.get('orders.orderitem', []):
+            f = dict(item['fields'])
+            f['order'] = order_map.get(f['order']) or Order.objects.filter(id=f['order']).first()
+            f['product'] = prod_map.get(f['product']) or Product.objects.filter(id=f['product']).first() if f.get('product') else None
+            if f['order']:
+                OrderItem.objects.update_or_create(id=item['pk'], defaults=f)
+
+        return len(data)
+
+    def _seed_site_settings(self):
+        """Ensure singleton SiteSetting exists with complete branding and bilingual notices."""
+        setting = SiteSetting.get_settings()
+        if not setting.site_name:
+            setting.site_name = "PythonEcom"
+            setting.save()
 
     def _seed_rbac(self):
         modules_data = [
@@ -245,7 +484,6 @@ class Command(BaseCommand):
         brands_data = ['Apple', 'Samsung', 'Sony', 'Nike', 'Dell', 'Logitech']
         brand_map = {}
         for b in brands_data:
-            from django.utils.text import slugify
             obj, _ = Brand.objects.update_or_create(
                 slug=slugify(b),
                 defaults={'name': b}
@@ -292,71 +530,6 @@ class Command(BaseCommand):
                 'is_featured': True,
                 'is_flash_sale': True,
             },
-            {
-                'name': 'Sony WH-1000XM5 Wireless Headphones',
-                'slug': 'sony-wh-1000xm5-wireless-headphones',
-                'category': 'audio-headphones',
-                'brand': 'Sony',
-                'short_description': 'Industry-leading noise cancellation with 30-hour battery life.',
-                'description': 'Our industry-leading noise canceling headphones with two processors and eight microphones for unprecedented noise cancellation and exceptional call quality.',
-                'price': Decimal('399.00'),
-                'discount_price': Decimal('349.00'),
-                'stock': 35,
-                'is_featured': True,
-                'is_flash_sale': False,
-            },
-            {
-                'name': 'Nike Air Zoom Pegasus 40',
-                'slug': 'nike-air-zoom-pegasus-40',
-                'category': 'fashion-apparel',
-                'brand': 'Nike',
-                'short_description': 'A springy ride for any run with breathable engineered mesh.',
-                'description': 'The Pegasus 40 offers a responsive ride with familiar support, engineered to help you conquer all your running goals in maximum style and cushion comfort.',
-                'price': Decimal('140.00'),
-                'discount_price': Decimal('119.00'),
-                'stock': 42,
-                'is_featured': True,
-                'is_flash_sale': True,
-            },
-            {
-                'name': 'Apple Watch Ultra 2 GPS + Cellular',
-                'slug': 'apple-watch-ultra-2',
-                'category': 'watches-wearables',
-                'brand': 'Apple',
-                'short_description': 'Rugged 49mm titanium case and precision dual-frequency GPS.',
-                'description': 'The most capable and rugged Apple Watch pushes boundaries with the S9 SiP, precision dual-frequency GPS, and up to 36 hours of battery life.',
-                'price': Decimal('799.00'),
-                'discount_price': None,
-                'stock': 8,
-                'is_featured': True,
-                'is_flash_sale': False,
-            },
-            {
-                'name': 'Dell XPS 15 9530 Core i9',
-                'slug': 'dell-xps-15-9530',
-                'category': 'electronics-laptops',
-                'brand': 'Dell',
-                'short_description': 'OLED 3.5K touch display with RTX 4070 graphics.',
-                'description': 'The perfect balance of power and portability. The XPS 15 laptop delivers stellar performance with 13th Gen Intel Core processors and brilliant OLED display.',
-                'price': Decimal('2199.00'),
-                'discount_price': Decimal('1999.00'),
-                'stock': 11,
-                'is_featured': False,
-                'is_flash_sale': False,
-            },
-            {
-                'name': 'Logitech MX Master 3S Wireless Mouse',
-                'slug': 'logitech-mx-master-3s',
-                'category': 'audio-headphones',
-                'brand': 'Logitech',
-                'short_description': 'Performance wireless mouse with 8K DPI sensor and Quiet Clicks.',
-                'description': 'An icon remastered. Feel every moment of your workflow with even more precision, tactility, and performance, thanks to Quiet Clicks and an 8,000 DPI sensor.',
-                'price': Decimal('99.00'),
-                'discount_price': None,
-                'stock': 50,
-                'is_featured': False,
-                'is_flash_sale': False,
-            },
         ]
 
         for p_data in products_data:
@@ -377,30 +550,28 @@ class Command(BaseCommand):
                 }
             )
 
-        # Seed sample demo order
-        customer = User.objects.get(username='customer_user')
-        if not Order.objects.filter(user=customer).exists():
-            first_product = Product.objects.first()
-            order = Order.objects.create(
-                user=customer,
-                full_name='John Customer',
-                email='customer@pythonecom.local',
-                phone='+880 1819-001122',
-                street_address='House 42, Road 11, Banani',
-                city='Dhaka',
-                postal_code='1213',
-                country='Bangladesh',
-                subtotal=first_product.effective_price,
-                shipping_fee=Decimal('0.00'),
-                total_amount=first_product.effective_price,
-                payment_method='cod',
-                payment_status='pending',
-                status='processing',
-            )
-            OrderItem.objects.create(
-                order=order,
-                product=first_product,
-                product_name=first_product.name,
-                product_price=first_product.effective_price,
-                quantity=1,
-            )
+    def _print_summary(self):
+        """Prints a structured summary of seeded marketplace database records."""
+        setting = SiteSetting.get_settings()
+        self.stdout.write(self.style.SUCCESS("\n========================================================"))
+        self.stdout.write(self.style.SUCCESS("  [SUCCESS] All E-Commerce Database Data Ready!"))
+        self.stdout.write(self.style.SUCCESS("========================================================"))
+        self.stdout.write(f"  * Store Branding:       {setting.site_name} ({setting.contact_phone})")
+        self.stdout.write(f"  * Catalog Categories:   {Category.objects.count()} active categories")
+        self.stdout.write(f"  * Catalog Brands:       {Brand.objects.count()} active brands")
+        self.stdout.write(f"  * Marketplace Products: {Product.objects.count()} products")
+        self.stdout.write(f"  * Product Gallery:      {ProductImage.objects.count()} high-res images")
+        self.stdout.write(f"  * Customer Reviews:     {ProductReview.objects.count()} verified reviews")
+        self.stdout.write(f"  * Delivery Slots:       {DeliverySlot.objects.count()} time slots")
+        self.stdout.write(f"  * Discount Coupons:     {Coupon.objects.count()} promo coupons")
+        self.stdout.write(f"  * Seeded Orders:        {Order.objects.count()} orders ({OrderItem.objects.count()} items)")
+        self.stdout.write(f"  * RBAC Modules:         {Module.objects.count()} modules ({Submodule.objects.count()} submodules, {Permission.objects.count()} perms)")
+        self.stdout.write(f"  * RBAC Roles:           {Role.objects.count()} roles ({RolePermission.objects.count()} assignments)")
+        self.stdout.write(f"  * Registered Users:     {User.objects.count()} test accounts")
+        self.stdout.write("--------------------------------------------------------")
+        self.stdout.write("  Pre-configured Test Accounts:")
+        self.stdout.write("    - superadmin    / Admin@12345    (Super Admin - unrestricted)")
+        self.stdout.write("    - catalog_admin / Manager@12345  (Catalog Manager)")
+        self.stdout.write("    - orders_staff  / Staff@12345    (Order Dispatcher)")
+        self.stdout.write("    - customer_user / User@12345     (Customer Account)")
+        self.stdout.write("========================================================\n")

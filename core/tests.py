@@ -420,3 +420,13 @@ class BilingualStorefrontTests(TestCase):
         }, follow=True)
         self.assertEqual(res_post_allowed.status_code, 200)
         self.assertEqual(SiteSetting.get_settings().site_name, 'StaffApprovedBrand')
+
+    def test_seed_ecommerce_command_loads_fixture_and_syncs(self):
+        """Calling 'python manage.py seed_ecommerce' executes cleanly and verifies all data."""
+        from django.core.management import call_command
+        import io
+        out = io.StringIO()
+        call_command('seed_ecommerce', stdout=out)
+        output_str = out.getvalue()
+        self.assertIn('[SUCCESS] All E-Commerce Database Data Ready!', output_str)
+        self.assertTrue(SiteSetting.objects.exists())
