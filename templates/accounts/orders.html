@@ -50,7 +50,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-dark border">{{ order.get_payment_method_display }}</span>
+                                    <span class="badge bg-light text-dark border d-block mb-1">{{ order.get_payment_method_display }}</span>{% if order.transaction_id %}<span class="badge bg-danger-subtle text-danger font-monospace border border-danger-subtle d-inline-block small" title="bKash TrxID"><i class="bi bi-receipt me-1"></i>{{ order.transaction_id }}</span>{% endif %}
                                 </td>
                                 <td class="text-end pe-4">
                                     <a href="{% url 'order_confirmation' order.order_number %}" class="btn btn-sm btn-outline-primary rounded-pill">

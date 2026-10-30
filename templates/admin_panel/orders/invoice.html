@@ -100,7 +100,7 @@
                     </div>
                     <div>
                         <span class="small text-muted me-2">Payment Method:</span>
-                        <span class="badge bg-light text-dark border">{{ order.get_payment_method_display }}</span>
+                        <span class="badge bg-light text-dark border">{{ order.get_payment_method_display }}</span>{% if order.transaction_id %}<div class="mt-1"><span class="small text-muted me-2">bKash TrxID:</span><code class="fw-bold text-danger">{{ order.transaction_id }}</code></div>{% endif %}
                     </div>
                 </div>
             </div>

@@ -443,7 +443,11 @@ def admin_order_list(request):
         orders = orders.filter(payment_method=payment_method_filter)
 
     if order_id_filter:
-        orders = orders.filter(order_number__icontains=order_id_filter)
+        orders = orders.filter(
+            Q(order_number__icontains=order_id_filter) |
+            Q(transaction_id__icontains=order_id_filter) |
+            Q(payment_id__icontains=order_id_filter)
+        )
 
     if customer_filter:
         orders = orders.filter(
@@ -456,6 +460,8 @@ def admin_order_list(request):
     if q:
         orders = orders.filter(
             Q(order_number__icontains=q) |
+            Q(transaction_id__icontains=q) |
+            Q(payment_id__icontains=q) |
             Q(full_name__icontains=q) |
             Q(email__icontains=q) |
             Q(phone__icontains=q)

@@ -105,6 +105,48 @@
 
     <!-- Right: Status Update Controls -->
     <div class="col-lg-4">
+        <!-- Payment Settlement & bKash TrxID Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Payment Settlement</h5>
+                {% if order.payment_status == 'paid' %}
+                    <span class="badge bg-success-subtle text-success fs-6"><i class="bi bi-check-circle me-1"></i>Paid</span>
+                {% elif order.payment_status == 'failed' %}
+                    <span class="badge bg-danger-subtle text-danger fs-6">Failed</span>
+                {% else %}
+                    <span class="badge bg-warning-subtle text-warning-emphasis fs-6">{{ order.get_payment_status_display }}</span>
+                {% endif %}
+            </div>
+
+            <div class="small">
+                <div class="mb-3">
+                    <span class="text-muted d-block small">Payment Method:</span>
+                    <strong class="text-dark fs-6">{{ order.get_payment_method_display }}</strong>
+                </div>
+
+                {% if order.transaction_id %}
+                <div class="mb-3 p-3 bg-light rounded-3 border border-danger-subtle">
+                    <span class="text-muted d-block small fw-bold text-uppercase">
+                        <i class="bi bi-receipt text-danger me-1"></i>bKash TrxID / Reference
+                    </span>
+                    <div class="d-flex align-items-center justify-content-between mt-1">
+                        <code class="fw-bold text-danger fs-5">{{ order.transaction_id }}</code>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-0" onclick="navigator.clipboard.writeText('{{ order.transaction_id }}'); this.innerHTML='<i class=\'bi bi-check\'></i> Copied'; setTimeout(() => this.innerHTML='<i class=\'bi bi-copy\'></i> Copy', 2000)">
+                            <i class="bi bi-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if order.payment_id %}
+                <div>
+                    <span class="text-muted d-block small">Gateway Session ID:</span>
+                    <span class="font-monospace text-secondary small text-break">{{ order.payment_id }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 90px;">
             <h5 class="fw-bold mb-3">Order Status Workflow</h5>
 
