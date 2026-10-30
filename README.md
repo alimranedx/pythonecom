@@ -157,7 +157,7 @@ pythonecom/
 
 ### Applied Patterns
 1. **Strategy Pattern** (`orders/strategies.py`):
-   - Decoupled payment processing supporting `CashOnDeliveryStrategy`, `CardPaymentStrategy`, and `MobileBankingStrategy` via `PaymentStrategyFactory`.
+   - Decoupled payment processing supporting `CashOnDeliveryStrategy`, `BKashPaymentStrategy` (Official Tokenized Gateway), `CardPaymentStrategy`, and `MobileBankingStrategy` via `PaymentStrategyFactory`.
 2. **Service Layer & Unit of Work** (`orders/services.py`, `cart/services.py`, `rbac/services.py`):
    - View logic remains lightweight; transactions are wrapped in `@transaction.atomic` for consistency across order creation, inventory decrements, and payment capture.
 3. **Decorator Pattern** (`rbac/decorators.py`):
@@ -224,6 +224,92 @@ Super Administrators can create new roles and assign any combination of module p
   - Avatar image upload, personal information editing, and password change.
   - Multi-address book management (Add, Edit, Delete, Primary Default Shipping).
 - **Customer Product Reviews**: Star ratings (1-5) and feedback submission.
+
+---
+
+## 💳 Online Payment Gateway (bKash Tokenized Checkout v1.2.0)
+
+PythonEcom includes a production-ready, fully verified **bKash Tokenized Checkout (v1.2.0-beta)** integration built directly into the storefront order workflow.
+
+### 1. Integration Architecture & Payment Lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer as Customer (Browser)
+    participant Store as PythonEcom (Django)
+    participant bKashAPI as bKash PGW Server
+    participant bKashUI as bKash Hosted Gateway
+
+    Customer->>Store: Places Order (Payment Method: bKash)
+    Store->>bKashAPI: POST /tokenized/checkout/token/grant (Get id_token)
+    Store->>bKashAPI: POST /tokenized/checkout/create (Pass amount, order_number, callbackURL)
+    bKashAPI-->>Store: Returns paymentID & bkashURL
+    Store-->>Customer: Redirects browser to bkashURL
+    Customer->>bKashUI: Enters Wallet Number (e.g., 01877722345)
+    Customer->>bKashUI: Enters Verification OTP (123456)
+    Customer->>bKashUI: Enters Secret PIN (12121) & Confirms
+    bKashUI-->>Store: Browser redirected to callbackURL?paymentID=...&status=success
+    Store->>bKashAPI: POST /tokenized/checkout/execute (Verify & Capture)
+    bKashAPI-->>Store: Returns statusCode "0000", transactionStatus "Completed", TrxID
+    Store->>Store: Atomically updates Order (payment_status="paid", status="processing", transaction_id=TrxID)
+    Store-->>Customer: Renders Order Confirmation with Paid Badge & Verified TrxID
+```
+
+### 2. Integration Components
+
+1. **Service Layer (`orders/bkash.py`)**:
+   - `BKashService.grant_token()`: Fetches OAuth-style Bearer `id_token` (auto-refreshed).
+   - `BKashService.create_payment()`: Initializes payment session and retrieves dynamic `bkashURL`.
+   - `BKashService.execute_payment()`: Verifies and captures transaction upon customer authorization.
+   - `BKashService.query_payment()`: Checks transaction status, payer account, and verification state.
+2. **Strategy Pattern (`orders/strategies.py`)**:
+   - `BKashPaymentStrategy` encapsulated into `PaymentStrategyFactory`, maintaining clean separation of concerns.
+3. **Callback & Recovery Controllers (`orders/views.py`)**:
+   - `bkash_callback`: Processes redirect params (`?paymentID=...&status=...`), executes successful charges, and safely flags cancellations/failures.
+   - `retry_bkash_payment`: Enables 1-click payment retries directly from the receipt page without abandoning or duplicating the order.
+4. **Data Persistence (`orders/models.py`)**:
+   - `Order.payment_id`: Tracks the internal bKash payment session identifier.
+   - `Order.transaction_id`: Stores the public MFS Transaction ID (`TrxID`) for customer invoices.
+
+### 3. Environment Configuration (`.env`)
+
+Configure the following variables in your local `.env` file (an `.env.example` template is provided in project root):
+
+```ini
+# bKash PGW v1.2.0 Configuration
+BKASH_BASE_URL=https://tokenized.sandbox.bka.sh/v1.2.0-beta
+BKASH_APP_KEY=4f6o0cjiki2rfm34kfdadl1eqq
+BKASH_APP_SECRET=2is7hdktrekvrbljjh44ll3d9l1dtjo4pasmjvs5vl5qr3fug4b
+BKASH_USERNAME=sandboxTokenizedUser02
+BKASH_PASSWORD=sandboxTokenizedUser02@12345
+```
+
+### 4. Sandbox Testing Guide
+
+When testing on your local development machine:
+
+| Field | Sandbox Test Value | Notes |
+| :--- | :--- | :--- |
+| **Active Test Wallets** | `01877722345`<br>`01619777282`<br>`01619777283` | Tested and verified active with sufficient balance. |
+| **Test OTP** | `123456` | Universal sandbox OTP for all test wallets. |
+| **Test PIN** | `12121` | Universal sandbox PIN. |
+| **Numbers to Avoid** | `01823074817` *(Insufficient Balance simulation)*<br>`01823074818` *(Debit Block simulation)*<br>`01770618575` *(Frequently locked due to public traffic)* | Built into sandbox exclusively for negative test cases. |
+
+### 5. Production Go-Live Checklist
+
+To transition from sandbox testing to live customer billing:
+
+1. **Obtain Production Credentials:** Contact bKash Merchant Onboarding (`https://www.bkash.com/business`) with your Trade License, TIN, and bank account.
+2. **Update Environment Variables:**
+   ```ini
+   BKASH_BASE_URL=https://tokenized.pay.bka.sh/v1.2.0-beta
+   BKASH_APP_KEY=<your_live_app_key>
+   BKASH_APP_SECRET=<your_live_app_secret>
+   BKASH_USERNAME=<your_live_merchant_username>
+   BKASH_PASSWORD=<your_live_merchant_password>
+   ```
+3. **Verify HTTPS Callback:** Ensure your production domain uses valid SSL/TLS certificates for `callbackURL`.
 
 ---
 

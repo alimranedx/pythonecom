@@ -70,6 +70,31 @@
                     <small class="d-block text-muted mt-1">Placed on {{ order.created_at|date:"M d, Y h:i A" }}</small>
                 </div>
 
+                {% if order.payment_method == 'bkash' and order.payment_status != 'paid' %}
+                <div class="alert alert-warning border border-warning-subtle rounded-4 text-start mb-4 p-3 d-flex align-items-center justify-content-between flex-wrap gap-3 shadow-sm">
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1 d-flex align-items-center">
+                            <i class="bi bi-exclamation-circle-fill text-danger me-2 fs-5"></i>
+                            bKash Payment Incomplete
+                        </h6>
+                        <p class="small text-muted mb-0">
+                            Your transaction was cancelled or OTP/PIN was not confirmed. Click below to complete your payment.
+                        </p>
+                    </div>
+                    <a href="{% url 'retry_bkash_payment' order.order_number %}" class="btn btn-danger rounded-pill px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-wallet2 me-1"></i> Pay Now with bKash
+                    </a>
+                </div>
+                {% elif order.payment_status == 'paid' %}
+                <div class="alert alert-success border border-success-subtle rounded-4 text-start mb-4 p-3 d-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                    <div>
+                        <strong class="text-success d-block">Payment Confirmed</strong>
+                        <span class="small text-muted">Paid via bKash. Transaction ID: <code>{{ order.transaction_id }}</code></span>
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Chaldal-Style Visual 4-Stage Order Tracking Stepper -->
                 {% if order.status != 'cancelled' %}
                 <div class="card bg-white border p-3 rounded-4 mb-4 text-start shadow-sm">
@@ -187,6 +212,23 @@
                                 <tr>
                                     <td class="text-muted small">Payment Method:</td>
                                     <td class="text-end small"><span class="badge bg-white border text-dark">{{ order.get_payment_method_display }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted small">Payment Status:</td>
+                                    <td class="text-end small">
+                                        {% if order.payment_status == 'paid' %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>Paid</span>
+                                        {% else %}
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">{{ order.get_payment_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if order.transaction_id %}
+                                <tr>
+                                    <td class="text-muted small">bKash TrxID:</td>
+                                    <td class="text-end small"><code class="fw-bold text-dark">{{ order.transaction_id }}</code></td>
+                                </tr>
+                                {% endif %}
                                 </tr>
                             </tbody>
                         </table>

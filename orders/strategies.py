@@ -62,6 +62,22 @@ class MobileBankingStrategy(PaymentStrategy):
         }
 
 
+class BKashPaymentStrategy(PaymentStrategy):
+    """
+    Handles bKash Tokenized Online Payment flow.
+    """
+
+    def process_payment(self, order, payment_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        order.payment_status = 'pending'
+        order.status = 'pending'
+        order.save(update_fields=['payment_status', 'status'])
+        return {
+            'success': True,
+            'message': 'bKash payment initialized.',
+            'transaction_id': f"BKASH-{order.order_number}",
+        }
+
+
 class PaymentStrategyFactory:
     """
     Factory creating concrete payment strategies based on method key.
@@ -70,6 +86,7 @@ class PaymentStrategyFactory:
         'cod': CashOnDeliveryStrategy,
         'card': CardPaymentStrategy,
         'mobile_banking': MobileBankingStrategy,
+        'bkash': BKashPaymentStrategy,
     }
 
     @classmethod

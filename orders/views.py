@@ -7,6 +7,7 @@ from cart.services import CartService
 from accounts.models import Address
 from .models import Order, DeliverySlot
 from .services import OrderService
+from .bkash import BKashService
 
 
 def checkout(request):
@@ -86,6 +87,20 @@ def checkout(request):
                 user=request.user if request.user.is_authenticated else None,
             )
             request.session['last_order_number'] = order.order_number
+            # bKash Online Gateway Redirection
+            if order.payment_method == 'bkash':
+                callback_url = request.build_absolute_uri('/orders/bkash/callback/')
+                success, bkash_res = BKashService.create_payment(order, callback_url)
+                if success and bkash_res.get('bkash_url'):
+                    order.payment_id = bkash_res.get('payment_id', '')
+                    order.save(update_fields=['payment_id'])
+                    request.session['bkash_order_number'] = order.order_number
+                    return redirect(bkash_res['bkash_url'])
+                else:
+                    err_msg = bkash_res.get('message', 'Failed to initialize bKash checkout.')
+                    messages.warning(request, f"bKash Gateway Notice: {err_msg}")
+                    return redirect('order_confirmation', order_number=order.order_number)
+
             messages.success(request, f"Order {order.order_number} confirmed! Thank you for shopping with us.")
             return redirect('order_confirmation', order_number=order.order_number)
         except ValidationError as e:
@@ -123,3 +138,77 @@ def order_confirmation(request, order_number):
         if request.session.get('last_order_number') != order.order_number and not (request.user.is_authenticated and request.user.is_staff):
             raise PermissionDenied("You do not have permission to view this order confirmation.")
     return render(request, 'orders/confirmation.html', {'order': order})
+
+
+def bkash_callback(request):
+    """
+    Handles bKash redirect callback after customer acts on the bKash checkout page.
+    Query parameters sent by bKash: ?paymentID=...&status=success|failure|cancel
+    """
+    payment_id = request.GET.get('paymentID')
+    status = request.GET.get('status')
+
+    order_number = request.session.get('bkash_order_number')
+    order = None
+    if payment_id:
+        order = Order.objects.filter(payment_id=payment_id).first()
+    if not order and order_number:
+        order = Order.objects.filter(order_number=order_number).first()
+
+    if not order:
+        messages.error(request, "bKash transaction order record could not be found.")
+        return redirect('home')
+
+    request.session['last_order_number'] = order.order_number
+
+    if status == 'success':
+        success, exec_res = BKashService.execute_payment(payment_id)
+        if success:
+            order.payment_status = 'paid'
+            order.status = 'processing'
+            order.transaction_id = exec_res.get('trx_id', '')
+            order.save(update_fields=['payment_status', 'status', 'transaction_id'])
+            messages.success(
+                request,
+                f"bKash Payment Completed Successfully! TrxID: {order.transaction_id}. Thank you!"
+            )
+            return redirect('order_confirmation', order_number=order.order_number)
+        else:
+            order.payment_status = 'failed'
+            order.save(update_fields=['payment_status'])
+            err_msg = exec_res.get('message', 'Execution verification failed.')
+            messages.error(request, f"bKash execution failed: {err_msg}")
+            return redirect('order_confirmation', order_number=order.order_number)
+
+    elif status == 'cancel':
+        messages.warning(request, "bKash payment was cancelled.")
+        return redirect('order_confirmation', order_number=order.order_number)
+    else:
+        order.payment_status = 'failed'
+        order.save(update_fields=['payment_status'])
+        messages.error(request, "bKash payment unsuccessful or failed.")
+        return redirect('order_confirmation', order_number=order.order_number)
+
+
+def retry_bkash_payment(request, order_number):
+    """
+    Allows a customer to retry an incomplete or failed bKash payment without re-ordering.
+    """
+    order = get_object_or_404(Order, order_number=order_number)
+    if order.payment_status == 'paid':
+        messages.info(request, "This order is already marked as paid.")
+        return redirect('order_confirmation', order_number=order.order_number)
+
+    callback_url = request.build_absolute_uri('/orders/bkash/callback/')
+    success, bkash_res = BKashService.create_payment(order, callback_url)
+    if success and bkash_res.get('bkash_url'):
+        order.payment_id = bkash_res.get('payment_id', '')
+        order.save(update_fields=['payment_id'])
+        request.session['bkash_order_number'] = order.order_number
+        return redirect(bkash_res['bkash_url'])
+    else:
+        err_msg = bkash_res.get('message', 'Unable to reach bKash gateway.')
+        messages.error(request, f"bKash Gateway Notice: {err_msg}")
+        return redirect('order_confirmation', order_number=order.order_number)
+
+

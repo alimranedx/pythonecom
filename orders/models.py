@@ -97,7 +97,8 @@ class Order(TimeStampedModel):
     PAYMENT_METHOD_CHOICES = [
         ('cod', 'Cash On Delivery'),
         ('card', 'Credit / Debit Card'),
-        ('mobile_banking', 'Mobile Banking (bKash/Nagad)'),
+        ('bkash', 'bKash Online Payment'),
+        ('mobile_banking', 'Mobile Banking (Nagad/Rocket)'),
     ]
 
     order_number = models.CharField(max_length=32, unique=True, editable=False)
@@ -106,6 +107,8 @@ class Order(TimeStampedModel):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
     payment_method = models.CharField(max_length=30, choices=PAYMENT_METHOD_CHOICES, default='cod')
+    payment_id = models.CharField(max_length=100, blank=True, default='', help_text="Gateway Payment ID")
+    transaction_id = models.CharField(max_length=100, blank=True, default='', help_text="MFS TrxID / Reference")
 
     # Shipping Details Snapshot
     full_name = models.CharField(max_length=150)
