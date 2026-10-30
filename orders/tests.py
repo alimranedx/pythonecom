@@ -159,3 +159,30 @@ class CouponAndDeliverySlotTests(TestCase):
         })
         self.assertEqual(res_create.status_code, 302)
         self.assertTrue(Coupon.objects.filter(code='SPECIAL20').exists())
+
+    def test_customer_order_invoice_access_and_idor(self):
+        user = User.objects.create_user('john_invoice_user', 'john@test.com', 'Pass123')
+        other_user = User.objects.create_user('jane_invoice_user', 'jane@test.com', 'Pass123')
+        order = Order.objects.create(
+            user=user,
+            full_name='John Doe',
+            email='john@test.com',
+            phone='01700000000',
+            street_address='123 Test St',
+            city='Dhaka',
+            total_amount=Decimal('500.00'),
+            transaction_id='DJU40PSZEM',
+        )
+
+        # 1. Owner can view invoice without admin login
+        self.client.force_login(user)
+        res = self.client.get(f'/orders/invoice/{order.order_number}/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+        self.assertIn('CUSTOMER INVOICE', content)
+        self.assertIn('DJU40PSZEM', content)
+
+        # 2. Another user gets 403 Forbidden (IDOR Protection)
+        self.client.force_login(other_user)
+        res_forbidden = self.client.get(f'/orders/invoice/{order.order_number}/')
+        self.assertEqual(res_forbidden.status_code, 403)

@@ -212,3 +212,19 @@ def retry_bkash_payment(request, order_number):
         return redirect('order_confirmation', order_number=order.order_number)
 
 
+def order_invoice(request, order_number):
+    """
+    Renders customer-facing printable order invoice.
+    Protected with IDOR validation (scoped to order owner, authorized session, or staff).
+    """
+    order = get_object_or_404(Order.objects.prefetch_related('items__product'), order_number=order_number)
+    if order.user:
+        if order.user != request.user and not (request.user.is_authenticated and request.user.is_staff):
+            raise PermissionDenied("You do not have permission to view this invoice.")
+    else:
+        if request.session.get('last_order_number') != order.order_number and not (request.user.is_authenticated and request.user.is_staff):
+            raise PermissionDenied("You do not have permission to view this invoice.")
+
+    return render(request, 'orders/invoice.html', {'order': order})
+
+
