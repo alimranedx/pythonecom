@@ -1,0 +1,65 @@
+name: Deploy Django eCommerce to cPanel Subdomain
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build, Verify & Deploy to cPanel Subdomain
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python Environment
+      - name: 🐍 Setup Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      # Step 3: Install Dependencies & Run Integrity Check
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔍 Django System Check
+        run: |
+          python manage.py check
+
+      # Step 4: Collect Static Files
+      - name: 🎨 Collect Static Files
+        run: |
+          python manage.py collectstatic --noinput
+
+      # Step 5: Prepare Passenger restart marker
+      - name: 🔄 Create Restart Marker
+        run: |
+          mkdir -p tmp
+          echo "restart-$(date +%s)" > tmp/restart.txt
+
+      # Step 6: Deploy to cPanel Subdomain via FTP
+      - name: 🚀 Deploy to cPanel (ecommerce.shopbusket.com)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER || '104.152.168.205' }}
+          username: ${{ secrets.FTP_USERNAME || 'shopbusk' }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /ecommerce.shopbusket.com/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.venv*/**
+            **/venv/**
+            **/__pycache__/**
+            .env
+            .env.*
+            cookies.txt
+            scratch/**

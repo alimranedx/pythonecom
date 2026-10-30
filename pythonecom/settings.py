@@ -26,9 +26,9 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-lx1t3rkvbc)px7(o6m(s_e4n3685r-25hs%&u@n-ev87dg@y3o')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost,testserver,ecommerce.shopbusket.com,shopbusket.com,104.152.168.205').split(',') if h.strip()]
 
 
 # Application definition
@@ -93,11 +93,11 @@ WSGI_APPLICATION = 'pythonecom.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'pythonecom.custom_mysql_backend',
-        'NAME': 'pythonecom_db',
-        'USER': 'root',
-        'PASSWORD': '',       # Laragon default is empty password
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME', 'pythonecom_db'),
+        'USER': os.environ.get('DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
         'CONN_MAX_AGE': 600,   # Keep database connections open for 10 mins to eliminate connection churn
         'CONN_HEALTH_CHECKS': True,  # Automatically ping and reconnect if MySQL server dropped the connection
         'OPTIONS': {

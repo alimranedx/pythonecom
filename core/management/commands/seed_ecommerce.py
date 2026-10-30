@@ -59,7 +59,11 @@ class Command(BaseCommand):
         self.stdout.write(self.style.NOTICE("==> Verifying Store & Brand Settings..."))
         self._seed_site_settings()
 
-        # 6. Print summary
+        # 6. Synchronize Media Assets (Images, Logos, Gallery)
+        self.stdout.write(self.style.NOTICE("==> Verifying & Generating Local Media Assets (Images, Logos, Gallery)..."))
+        self._ensure_media_assets()
+
+        # 7. Print summary
         self._print_summary()
 
     def _export_fixtures(self, fixture_path):
@@ -446,10 +450,10 @@ class Command(BaseCommand):
         customer = User.objects.get(username='customer_user')
         Address.objects.get_or_create(
             user=customer,
+            street_address='House 42, Road 11, Banani',
             defaults={
                 'full_name': 'John Customer',
                 'phone': '+880 1819-001122',
-                'street_address': 'House 42, Road 11, Banani',
                 'apartment': 'Suite 4B',
                 'city': 'Dhaka',
                 'postal_code': '1213',
@@ -549,6 +553,104 @@ class Command(BaseCommand):
                     'is_active': True,
                 }
             )
+
+    def _ensure_media_assets(self):
+        """
+        Guarantees that all Category images, Brand logos, Product cover images,
+        and Product gallery images physically exist in MEDIA_ROOT.
+        If files are missing (e.g. after fresh clone or git pull where media/ is gitignored),
+        this auto-generates clean, professional placeholder images with Pillow.
+        """
+        try:
+            from PIL import Image, ImageDraw
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  [WARN] Pillow is not installed; skipping placeholder image generation."))
+            return
+
+        def _generate_placeholder(filepath, title, subtitle='', badge='', size=(600, 600), theme_idx=0):
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            palettes = [
+                ((241, 245, 249), (30, 41, 59), (59, 130, 246)),   # Slate / Blue
+                ((240, 253, 250), (19, 78, 74), (13, 148, 136)),   # Teal
+                ((254, 242, 242), (127, 29, 29), (225, 29, 72)),   # Rose
+                ((245, 243, 255), (76, 29, 149), (124, 58, 237)),  # Purple
+                ((254, 249, 195), (113, 63, 18), (202, 138, 4)),   # Amber
+                ((240, 249, 255), (12, 74, 110), (2, 132, 199)),   # Sky
+            ]
+            bg_col, text_col, accent_col = palettes[theme_idx % len(palettes)]
+            img = Image.new('RGB', size, color=bg_col)
+            draw = ImageDraw.Draw(img)
+            w, h = size
+            pad = 20
+            draw.rounded_rectangle([(pad, pad), (w - pad, h - pad)], radius=16, fill=(255, 255, 255), outline=(226, 232, 240), width=2)
+            draw.rounded_rectangle([(pad + 2, pad + 2), (w - pad - 2, pad + 10)], radius=4, fill=accent_col)
+
+            if badge:
+                draw.rounded_rectangle([(pad + 16, pad + 20), (pad + 140, pad + 52)], radius=8, fill=bg_col)
+                draw.text((pad + 78, pad + 36), str(badge)[:15], fill=accent_col, anchor='mm')
+
+            title_str = str(title).strip()
+            if len(title_str) > 28:
+                mid = title_str[:28].rfind(' ')
+                if mid == -1: mid = 28
+                line1 = title_str[:mid]
+                line2 = title_str[mid:].strip()[:28]
+                draw.text((w // 2, h // 2 - 25), line1, fill=text_col, anchor='mm')
+                draw.text((w // 2, h // 2 + 5), line2, fill=text_col, anchor='mm')
+            else:
+                draw.text((w // 2, h // 2 - 10), title_str, fill=text_col, anchor='mm')
+
+            if subtitle:
+                draw.text((w // 2, h // 2 + 35), str(subtitle)[:35], fill=(100, 116, 139), anchor='mm')
+
+            ext = os.path.splitext(filepath)[1].lower()
+            fmt = 'WEBP' if ext == '.webp' else ('JPEG' if ext in ['.jpg', '.jpeg'] else 'PNG')
+            img.save(filepath, format=fmt)
+
+        generated_count = 0
+
+        # 1. Categories
+        for idx, cat in enumerate(Category.objects.all()):
+            if cat.image:
+                fp = os.path.join(settings.MEDIA_ROOT, str(cat.image))
+                if not os.path.exists(fp):
+                    _generate_placeholder(fp, cat.name, subtitle='Category', badge='Store', size=(600, 400), theme_idx=idx)
+                    generated_count += 1
+
+        # 2. Brands
+        for idx, brand in enumerate(Brand.objects.all()):
+            if brand.logo:
+                fp = os.path.join(settings.MEDIA_ROOT, str(brand.logo))
+                if not os.path.exists(fp):
+                    _generate_placeholder(fp, brand.name, subtitle='Brand Logo', badge='Verified', size=(400, 400), theme_idx=idx)
+                    generated_count += 1
+
+        # 3. Products
+        for idx, prod in enumerate(Product.objects.all()):
+            if prod.image:
+                if str(prod.image) == 'products/.png':
+                    prod.image = f'products/{prod.slug}.png'
+                    prod.save(update_fields=['image'])
+                fp = os.path.join(settings.MEDIA_ROOT, str(prod.image))
+                if not os.path.exists(fp):
+                    cat_name = prod.category.name if prod.category else ''
+                    brand_name = prod.brand.name if prod.brand else ''
+                    _generate_placeholder(fp, prod.name, subtitle=cat_name, badge=brand_name or f'${prod.price}', size=(800, 800), theme_idx=idx)
+                    generated_count += 1
+
+        # 4. Product Gallery Images
+        for idx, pimg in enumerate(ProductImage.objects.select_related('product').all()):
+            if pimg.image:
+                fp = os.path.join(settings.MEDIA_ROOT, str(pimg.image))
+                if not os.path.exists(fp):
+                    pname = pimg.product.name if pimg.product else 'Gallery'
+                    _generate_placeholder(fp, pname, subtitle=f"Gallery Angle #{idx + 1}", badge='Gallery', size=(800, 800), theme_idx=idx)
+                    generated_count += 1
+
+        if generated_count > 0:
+            self.stdout.write(self.style.SUCCESS(f"  [OK] Successfully auto-generated {generated_count} missing media images."))
+        else:
+            self.stdout.write(self.style.SUCCESS("  [OK] All media image files are present on disk."))
 
     def _print_summary(self):
         """Prints a structured summary of seeded marketplace database records."""

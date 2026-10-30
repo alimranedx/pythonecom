@@ -1,8 +1,8 @@
 asgiref==3.8.1
-Django==5.1.1
-djangorestframework==3.18.3
-mysqlclient==2.3.0
-pillow==13.0.0
+Django>=4.2,<5.0
+djangorestframework>=3.14.0,<3.16.0
+pymysql>=1.1.0
+pillow>=10.0.0
 sqlparse==0.5.1
 tzdata==2024.1
 requests>=2.31.0

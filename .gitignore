@@ -11,8 +11,15 @@ __pycache__/
 db.sqlite3
 *.log
 
+# Static files
+staticfiles/
+
 # Environment variables
 .env
 
 # Uploaded media
 media/
+
+# Temporary
+cookies.txt
+scratch/
