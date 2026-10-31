@@ -1,3 +1,4 @@
+import json
 import logging
 import requests
 from django.conf import settings
@@ -21,6 +22,24 @@ class BKashService:
             'password': getattr(settings, 'BKASH_PASSWORD', ''),
             'base_url': getattr(settings, 'BKASH_BASE_URL', 'https://tokenized.sandbox.bka.sh/v1.2.0-beta').rstrip('/'),
         }
+
+    @staticmethod
+    def _parse_response(response) -> dict:
+        """
+        Safely parses JSON responses from bKash API.
+        Uses strict=False to tolerate unescaped control characters (e.g. raw newlines)
+        that bKash Sandbox error messages frequently contain.
+        """
+        try:
+            return json.loads(response.text, strict=False)
+        except Exception:
+            try:
+                return response.json()
+            except Exception:
+                return {
+                    'statusCode': str(response.status_code),
+                    'statusMessage': (response.text or '').strip(),
+                }
 
     @classmethod
     def get_headers(cls, id_token: str = None) -> dict:
@@ -55,10 +74,11 @@ class BKashService:
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=15)
-            data = response.json()
+            data = cls._parse_response(response)
             if response.status_code == 200 and data.get('statusCode') == '0000':
                 return True, data.get('id_token'), "Token granted successfully."
-            return False, '', data.get('statusMessage', 'Failed to retrieve bKash auth token.')
+            msg = (data.get('statusMessage') or 'Failed to retrieve bKash auth token.').strip()
+            return False, '', msg
         except Exception as e:
             logger.error("bKash token grant error: %s", e)
             return False, '', str(e)
@@ -89,7 +109,7 @@ class BKashService:
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=20)
-            data = response.json()
+            data = cls._parse_response(response)
             if response.status_code == 200 and data.get('statusCode') == '0000':
                 return True, {
                     'payment_id': data.get('paymentID'),
@@ -97,7 +117,8 @@ class BKashService:
                     'id_token': id_token,
                     'data': data,
                 }
-            return False, {'message': data.get('statusMessage', 'bKash payment initiation failed.')}
+            msg = (data.get('statusMessage') or 'bKash payment initiation failed.').strip()
+            return False, {'message': msg}
         except Exception as e:
             logger.error("bKash create payment error: %s", e)
             return False, {'message': str(e)}
@@ -119,8 +140,7 @@ class BKashService:
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=25)
-            data = response.json()
-            # bKash returns statusCode 0000 and transactionStatus Completed
+            data = cls._parse_response(response)
             if response.status_code == 200 and data.get('statusCode') == '0000':
                 return True, {
                     'trx_id': data.get('trxID'),
@@ -129,8 +149,9 @@ class BKashService:
                     'customer_msisdn': data.get('customerMsisdn'),
                     'data': data,
                 }
+            msg = (data.get('statusMessage') or 'bKash execution failed.').strip()
             return False, {
-                'message': data.get('statusMessage', 'bKash execution failed.'),
+                'message': msg,
                 'statusCode': data.get('statusCode'),
             }
         except Exception as e:
@@ -153,9 +174,10 @@ class BKashService:
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=15)
-            data = response.json()
+            data = cls._parse_response(response)
             if response.status_code == 200 and data.get('statusCode') == '0000':
                 return True, data
-            return False, {'message': data.get('statusMessage', 'Payment query failed.')}
+            msg = (data.get('statusMessage') or 'Payment query failed.').strip()
+            return False, {'message': msg}
         except Exception as e:
             return False, {'message': str(e)}
