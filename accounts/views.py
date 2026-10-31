@@ -453,7 +453,7 @@ def google_callback(request):
 
     # Log in the user
     guest_session_key = request.session.session_key
-    login(request, user)
+    login(request, user, backend='accounts.backends.PhoneOrUsernameBackend')
     if guest_session_key:
         CartService.merge_guest_cart(guest_session_key, user)
 
