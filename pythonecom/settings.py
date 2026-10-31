@@ -197,4 +197,10 @@ BKASH_APP_KEY = os.environ.get('BKASH_APP_KEY', '')
 BKASH_APP_SECRET = os.environ.get('BKASH_APP_SECRET', '')
 BKASH_USERNAME = os.environ.get('BKASH_USERNAME', '')
 BKASH_PASSWORD = os.environ.get('BKASH_PASSWORD', '')
+# ==============================================================================
+# GOOGLE OAUTH2 AUTHENTICATION CONFIGURATION
+# ==============================================================================
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

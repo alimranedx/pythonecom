@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     path('register/', views.customer_register, name='account_register'),
     path('login/', views.customer_login, name='account_login'),
+    path('google/login/', views.google_login, name='google_login'),
+    path('google/callback/', views.google_callback, name='google_callback'),
     path('logout/', views.customer_logout, name='account_logout'),
     path('dashboard/', views.customer_dashboard, name='customer_dashboard'),
     path('profile/edit/', views.customer_profile_edit, name='customer_profile_edit'),

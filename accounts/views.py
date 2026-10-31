@@ -1,3 +1,11 @@
+import re
+import secrets
+import urllib.parse
+import requests
+from django.conf import settings
+from django.urls import reverse
+from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -261,3 +269,202 @@ def wishlist_move_to_cart(request, product_id):
     Wishlist.objects.filter(user=request.user, product=product).delete()
     messages.success(request, f"Moved '{product.name}' to your shopping cart!")
     return redirect('cart_detail')
+
+
+def google_login(request):
+    """
+    Initiates Google OAuth 2.0 flow for customer registration or sign-in.
+    """
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            logout(request)
+        else:
+            return redirect('customer_dashboard')
+
+    client_id = getattr(settings, 'GOOGLE_CLIENT_ID', '').strip()
+    client_secret = getattr(settings, 'GOOGLE_CLIENT_SECRET', '').strip()
+
+    if not client_id or not client_secret:
+        messages.warning(
+            request,
+            "Google Sign-In is pending setup. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in the .env configuration."
+        )
+        next_param = request.GET.get('next')
+        return redirect(next_param if next_param and url_has_allowed_host_and_scheme(next_param, {request.get_host()}) else 'account_login')
+
+    # Security: Generate CSRF state token
+    state = secrets.token_urlsafe(32)
+    request.session['google_oauth_state'] = state
+
+    # Capture optional post-auth redirect target
+    next_url = request.GET.get('next') or request.POST.get('next')
+    if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+        request.session['google_oauth_next'] = next_url
+    else:
+        request.session.pop('google_oauth_next', None)
+
+    # Determine redirect URI
+    redirect_uri = request.build_absolute_uri(reverse('google_callback'))
+    if request.is_secure() or 'ecommerce.shopbusket.com' in request.get_host():
+        redirect_uri = redirect_uri.replace('http://', 'https://')
+
+    params = {
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': 'code',
+        'scope': 'openid email profile',
+        'state': state,
+        'access_type': 'online',
+        'prompt': 'select_account',
+    }
+    auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?{urllib.parse.urlencode(params)}"
+    return redirect(auth_url)
+
+
+def _sync_google_avatar(profile, picture_url, user_id):
+    """
+    Downloads and caches the user's Google profile avatar.
+    """
+    if not picture_url:
+        return
+    try:
+        resp = requests.get(picture_url, timeout=10)
+        if resp.status_code == 200 and resp.content:
+            filename = f"google_{user_id}.jpg"
+            profile.avatar.save(filename, ContentFile(resp.content), save=True)
+    except Exception:
+        pass
+
+
+def google_callback(request):
+    """
+    Handles Google OAuth 2.0 authorization code response.
+    Creates new customer account or authenticates existing customer.
+    """
+    error = request.GET.get('error')
+    if error:
+        messages.info(request, f"Google authentication was cancelled: {error}")
+        return redirect('account_login')
+
+    code = request.GET.get('code')
+    state = request.GET.get('state')
+    saved_state = request.session.pop('google_oauth_state', None)
+    next_url = request.session.pop('google_oauth_next', None)
+
+    if not code or not state or state != saved_state:
+        messages.error(request, "Google sign-in session expired or invalid. Please try again.")
+        return redirect('account_login')
+
+    client_id = getattr(settings, 'GOOGLE_CLIENT_ID', '').strip()
+    client_secret = getattr(settings, 'GOOGLE_CLIENT_SECRET', '').strip()
+
+    redirect_uri = request.build_absolute_uri(reverse('google_callback'))
+    if request.is_secure() or 'ecommerce.shopbusket.com' in request.get_host():
+        redirect_uri = redirect_uri.replace('http://', 'https://')
+
+    # Exchange authorization code for access token
+    token_url = 'https://oauth2.googleapis.com/token'
+    token_payload = {
+        'code': code,
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'redirect_uri': redirect_uri,
+        'grant_type': 'authorization_code',
+    }
+
+    try:
+        token_resp = requests.post(token_url, data=token_payload, timeout=15)
+        token_data = token_resp.json()
+    except Exception as e:
+        messages.error(request, f"Failed to connect to Google OAuth servers: {e}")
+        return redirect('account_login')
+
+    if token_resp.status_code != 200 or 'access_token' not in token_data:
+        err_msg = token_data.get('error_description') or token_data.get('error', 'Token exchange failed')
+        messages.error(request, f"Google login error: {err_msg}")
+        return redirect('account_login')
+
+    access_token = token_data['access_token']
+
+    # Retrieve profile info from Google
+    userinfo_url = 'https://www.googleapis.com/oauth2/v3/userinfo'
+    try:
+        userinfo_resp = requests.get(userinfo_url, headers={'Authorization': f'Bearer {access_token}'}, timeout=15)
+        user_info = userinfo_resp.json()
+    except Exception as e:
+        messages.error(request, f"Failed to retrieve user profile from Google: {e}")
+        return redirect('account_login')
+
+    email = user_info.get('email', '').strip().lower()
+    if not email:
+        messages.error(request, "Google did not provide a valid email address.")
+        return redirect('account_login')
+
+    # Look up existing user
+    user = User.objects.filter(email__iexact=email).first()
+
+    if user:
+        # Enforce panel isolation: staff accounts must log in via admin portal
+        if user.is_staff:
+            messages.error(request, "This Google account belongs to an administrative staff user. Please log in through the Admin Portal.")
+            return redirect('admin_login')
+
+        profile, _ = CustomerProfile.objects.get_or_create(user=user)
+
+        # Update name if missing
+        updated = False
+        given_name = user_info.get('given_name') or user_info.get('name', '').split(' ')[0]
+        family_name = user_info.get('family_name') or (user_info.get('name', '').split(' ')[1] if ' ' in user_info.get('name', '') else '')
+        if not user.first_name and given_name:
+            user.first_name = given_name
+            updated = True
+        if not user.last_name and family_name:
+            user.last_name = family_name
+            updated = True
+        if updated:
+            user.save(update_fields=['first_name', 'last_name'])
+
+        # Sync avatar from Google if not yet set
+        picture_url = user_info.get('picture')
+        if picture_url and not profile.avatar:
+            _sync_google_avatar(profile, picture_url, user.pk)
+    else:
+        # Create a new customer user
+        given_name = user_info.get('given_name') or user_info.get('name', '').split(' ')[0]
+        family_name = user_info.get('family_name') or (user_info.get('name', '').split(' ')[1] if ' ' in user_info.get('name', '') else '')
+
+        # Generate unique username from email
+        base_username = re.sub(r'[^a-zA-Z0-9_]', '', email.split('@')[0]) or 'customer'
+        candidate_username = base_username
+        suffix = 1
+        while User.objects.filter(username__iexact=candidate_username).exists():
+            candidate_username = f"{base_username}_{suffix}"
+            suffix += 1
+
+        user = User.objects.create_user(
+            username=candidate_username,
+            email=email,
+            first_name=given_name,
+            last_name=family_name,
+            is_staff=False,
+        )
+        user.set_unusable_password()
+        user.save()
+
+        profile = CustomerProfile.objects.create(user=user, phone='')
+        picture_url = user_info.get('picture')
+        if picture_url:
+            _sync_google_avatar(profile, picture_url, user.pk)
+
+    # Log in the user
+    guest_session_key = request.session.session_key
+    login(request, user)
+    if guest_session_key:
+        CartService.merge_guest_cart(guest_session_key, user)
+
+    display_name = user.first_name or user.username
+    messages.success(request, f"Welcome, {display_name}! Successfully authenticated with Google.")
+
+    if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
+    return redirect('customer_dashboard')
