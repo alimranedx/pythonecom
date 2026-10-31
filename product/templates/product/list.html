@@ -42,7 +42,7 @@
             <!-- Per-Page Selector -->
             <div class="d-flex align-items-center gap-1">
                 <label for="perPageTopSelect" class="small text-muted text-nowrap mb-0">{{ tr.show }}</label>
-                <select id="perPageTopSelect" class="form-select form-select-sm py-0 px-2" style="width: auto; height: 31px; font-size: 0.82rem;" onchange="updateCatalogParam('per_page', this.value)">
+                <select id="perPageTopSelect" class="form-select form-select-sm py-0 shadow-none border-secondary-subtle" style="width: 130px; height: 31px; font-size: 0.82rem; padding-left: 10px; padding-right: 26px; cursor: pointer;" onchange="updateCatalogParam('per_page', this.value)">
                     {% for opt in per_page_options %}
                         <option value="{{ opt }}" {% if per_page == opt %}selected{% endif %}>{{ opt }} per page</option>
                     {% endfor %}
@@ -52,7 +52,7 @@
             <!-- Sort Selector -->
             <div class="d-flex align-items-center gap-1">
                 <label for="catalogSortSelect" class="small text-muted text-nowrap mb-0">{{ tr.sort }}</label>
-                <select id="catalogSortSelect" class="form-select form-select-sm py-0 px-2" style="width: auto; height: 31px; font-size: 0.82rem;" onchange="updateCatalogParam('sort', this.value)">
+                <select id="catalogSortSelect" class="form-select form-select-sm py-0 shadow-none border-secondary-subtle" style="min-width: 145px; height: 31px; font-size: 0.82rem; padding-left: 10px; padding-right: 26px; cursor: pointer;" onchange="updateCatalogParam('sort', this.value)">
                     <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{{ tr.newest_arrivals }}</option>
                     <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>{{ tr.price_low_high }}</option>
                     <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>{{ tr.price_high_low }}</option>
@@ -280,9 +280,9 @@
                             Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> of <strong>{{ total_count }}</strong> items
                             (Page <strong>{{ page_obj.number }}</strong> of <strong>{{ paginator.num_pages }}</strong>)
                         </small>
-                        <div class="d-flex align-items-center gap-1 border-start ps-3 d-none d-md-flex">
-                            <label for="perPageBottomSelect" class="text-muted text-nowrap mb-0 small" style="font-size: 0.8rem;">Per page:</label>
-                            <select id="perPageBottomSelect" class="form-select form-select-sm py-0 px-2" style="width: auto; height: 28px; font-size: 0.8rem;" onchange="updateCatalogParam('per_page', this.value)">
+                        <div class="d-flex align-items-center gap-2 border-start ps-3 d-none d-md-flex">
+                            <label for="perPageBottomSelect" class="text-muted text-nowrap mb-0 small" style="font-size: 0.82rem;">Per page:</label>
+                            <select id="perPageBottomSelect" class="form-select form-select-sm py-0 shadow-none border-secondary-subtle" style="width: 78px; height: 30px; font-size: 0.82rem; padding-left: 10px; padding-right: 24px; cursor: pointer;" onchange="updateCatalogParam('per_page', this.value)">
                                 {% for opt in per_page_options %}
                                     <option value="{{ opt }}" {% if per_page == opt %}selected{% endif %}>{{ opt }}</option>
                                 {% endfor %}
