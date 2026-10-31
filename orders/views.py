@@ -65,7 +65,7 @@ def checkout(request):
             'delivery_area': request.POST.get('delivery_area', 'Inside Dhaka').strip()[:100],
             'delivery_date': request.POST.get('delivery_date', available_dates[0]['value']).strip()[:20],
             'delivery_slot': request.POST.get('delivery_slot', '').strip(),
-            'payment_method': request.POST.get('payment_method', 'cod'),
+            'payment_method': request.POST.get('payment_method', 'cod') if request.POST.get('payment_method') in ['cod', 'bkash'] else 'cod',
         }
 
         # Basic validations
