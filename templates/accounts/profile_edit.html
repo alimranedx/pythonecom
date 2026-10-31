@@ -2,6 +2,31 @@
 
 {% block title %}Edit Profile | PythonEcom{% endblock %}
 
+{% block extra_head %}
+<!-- Cropper.js CSS for image cropping and editing -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<style>
+    .cropper-preview-circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #0d6efd;
+        background-color: #fff;
+    }
+    .cropper-container {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .avatar-preview-box {
+        transition: all 0.25s ease;
+    }
+    .avatar-preview-box:hover {
+        transform: scale(1.02);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">
@@ -10,28 +35,15 @@
                 <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
                     <div>
                         <h4 class="fw-bold mb-1">Edit Account Profile</h4>
-                        <small class="text-muted">Update your personal information and contact details</small>
+                        <small class="text-muted">Update your personal information and profile avatar</small>
                     </div>
                     <a href="{% url 'customer_dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
                         <i class="bi bi-arrow-left me-1"></i> Dashboard
                     </a>
                 </div>
 
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" id="profileEditForm">
                     {% csrf_token %}
-
-                    <!-- Avatar Preview -->
-                    <div class="text-center mb-4">
-                        <div class="position-relative d-inline-block">
-                            {% if profile.avatar %}
-                                <img src="{{ profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-                            {% else %}
-                                <div class="rounded-circle bg-primary-subtle text-primary mx-auto d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-                                    <i class="bi bi-person display-4"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
@@ -54,9 +66,52 @@
                         {{ form.phone }}
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label small fw-semibold">Profile Avatar / Picture</label>
-                        {{ form.avatar }}
+                    <!-- Profile Avatar Upload Section with Preview, Crop & Edit -->
+                    <div class="mb-4 p-3 bg-light rounded-4 border">
+                        <label class="form-label small fw-bold text-dark d-flex align-items-center justify-content-between mb-2">
+                            <span><i class="bi bi-person-bounding-box text-primary me-1"></i> Profile Avatar / Picture</span>
+                            <span class="badge bg-secondary-subtle text-secondary small fw-normal">JPG, PNG, WebP • Max 10MB</span>
+                        </label>
+
+                        <div class="d-flex align-items-center gap-3 flex-wrap flex-sm-nowrap">
+                            <!-- Live Avatar Circle Preview -->
+                            <div class="position-relative flex-shrink-0 avatar-preview-box">
+                                <div id="avatarContainer" class="rounded-circle border border-2 border-primary-subtle shadow-sm overflow-hidden d-flex align-items-center justify-content-center bg-white" style="width: 90px; height: 90px;">
+                                    {% if profile.avatar %}
+                                        <img id="avatarPreviewImg" src="{{ profile.avatar.url }}" alt="{{ request.user.username }}" class="w-100 h-100 object-fit-cover">
+                                        <div id="avatarPlaceholder" class="rounded-circle bg-primary-subtle text-primary w-100 h-100 d-none align-items-center justify-content-center">
+                                            <i class="bi bi-person fs-1"></i>
+                                        </div>
+                                    {% else %}
+                                        <img id="avatarPreviewImg" src="" alt="Preview" class="w-100 h-100 object-fit-cover d-none">
+                                        <div id="avatarPlaceholder" class="rounded-circle bg-primary-subtle text-primary w-100 h-100 d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person fs-1"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <span id="cropStatusBadge" class="position-absolute bottom-0 end-0 badge rounded-pill bg-success p-1 d-none" title="Cropped and Ready">
+                                    <i class="bi bi-check-lg" style="font-size: 0.75rem;"></i>
+                                </span>
+                            </div>
+
+                            <!-- File Input & Action Buttons -->
+                            <div class="flex-grow-1">
+                                <div class="mb-2">
+                                    {{ form.avatar }}
+                                </div>
+                                {{ form.cropped_avatar_base64 }}
+
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <button type="button" id="btnOpenCropper" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold d-none">
+                                        <i class="bi bi-crop me-1"></i> Crop & Edit
+                                    </button>
+                                    <button type="button" id="btnRevertAvatar" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold d-none">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i> Revert
+                                    </button>
+                                    <span id="avatarFileName" class="text-muted small"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top">
@@ -65,7 +120,7 @@
                         </a>
                         <div>
                             <a href="{% url 'customer_dashboard' %}" class="btn btn-light border px-4 me-2">Cancel</a>
-                            <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Changes</button>
+                            <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">Save Changes</button>
                         </div>
                     </div>
                 </form>
@@ -73,4 +128,326 @@
         </div>
     </div>
 </div>
+
+<!-- Image Cropper & Editing Modal -->
+<div class="modal fade" id="imageCropperModal" tabindex="-1" aria-labelledby="imageCropperModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-light py-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary text-white rounded-3 p-1 px-2">
+                        <i class="bi bi-crop fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="imageCropperModalLabel">Crop & Edit Profile Picture</h5>
+                        <small class="text-muted">Adjust crop boundary, rotate, flip, and zoom</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-3 p-md-4">
+                <div class="row g-3">
+                    <!-- Left: Cropper Canvas Viewport -->
+                    <div class="col-lg-8">
+                        <div class="bg-dark rounded-3 overflow-hidden d-flex align-items-center justify-content-center" style="max-height: 400px; height: 380px;">
+                            <img id="cropperImage" src="" alt="Crop image" style="max-width: 100%; display: block;">
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Circular Preview & Editing Tools -->
+                    <div class="col-lg-4 d-flex flex-column justify-content-between">
+                        <!-- Live Preview Widget -->
+                        <div class="card border rounded-3 p-3 bg-light text-center mb-3">
+                            <span class="small fw-bold text-muted mb-2 d-block">Live Avatar Preview</span>
+                            <div class="mx-auto rounded-circle overflow-hidden border border-2 border-primary shadow-sm bg-white" style="width: 100px; height: 100px;">
+                                <div class="cropper-preview-circle w-100 h-100 overflow-hidden"></div>
+                            </div>
+                            <small class="text-muted mt-2 d-block" style="font-size: 0.72rem;">Circular view as seen in navbar & reviews</small>
+                        </div>
+
+                        <!-- Aspect Ratio Presets -->
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted d-block mb-1">Aspect Ratio</label>
+                            <div class="btn-group btn-group-sm w-100" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="btnRatio1">1:1 Square</button>
+                                <button type="button" class="btn btn-outline-primary" id="btnRatio43">4:3</button>
+                                <button type="button" class="btn btn-outline-primary" id="btnRatioFree">Free</button>
+                            </div>
+                        </div>
+
+                        <!-- Edit Controls: Rotate, Flip, Zoom -->
+                        <div>
+                            <label class="small fw-bold text-muted d-block mb-1">Transform & Rotate</label>
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                <button type="button" class="btn btn-sm btn-light border flex-grow-1" id="btnRotateLeft" title="Rotate Left 90°">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> -90°
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light border flex-grow-1" id="btnRotateRight" title="Rotate Right 90°">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> +90°
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light border flex-grow-1" id="btnFlipH" title="Flip Horizontal">
+                                    <i class="bi bi-symmetry-vertical me-1"></i> Flip
+                                </button>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-sm btn-light border flex-grow-1" id="btnZoomIn" title="Zoom In">
+                                    <i class="bi bi-zoom-in"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light border flex-grow-1" id="btnZoomOut" title="Zoom Out">
+                                    <i class="bi bi-zoom-out"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light border text-danger flex-grow-1" id="btnResetCrop" title="Reset All Edits">
+                                    <i class="bi bi-arrow-repeat"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light py-2 px-3 border-top d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold" id="btnApplyCrop">
+                    <i class="bi bi-check-circle-fill me-1"></i> Apply Crop & Edits
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Cropper.js JavaScript Bundle -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.getElementById('id_avatar');
+    const croppedBase64Input = document.getElementById('id_cropped_avatar_base64');
+    const avatarPreviewImg = document.getElementById('avatarPreviewImg');
+    const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+    const cropStatusBadge = document.getElementById('cropStatusBadge');
+    const btnOpenCropper = document.getElementById('btnOpenCropper');
+    const btnRevertAvatar = document.getElementById('btnRevertAvatar');
+    const avatarFileName = document.getElementById('avatarFileName');
+    const cropperImage = document.getElementById('cropperImage');
+    const cropperModalEl = document.getElementById('imageCropperModal');
+
+    const originalAvatarSrc = avatarPreviewImg ? avatarPreviewImg.src : '';
+    const hasOriginalAvatar = {% if profile.avatar %}true{% else %}false{% endif %};
+
+    let cropper = null;
+    let cropperModal = null;
+    let selectedFile = null;
+    let scaleX = 1;
+
+    if (cropperModalEl && typeof bootstrap !== 'undefined') {
+        cropperModal = new bootstrap.Modal(cropperModalEl);
+    }
+
+    // When a user selects a file
+    avatarInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            selectedFile = files[0];
+            
+            // Validate image type
+            if (!selectedFile.type.startsWith('image/')) {
+                alert('Please select a valid image file (JPG, PNG, WebP).');
+                return;
+            }
+
+            avatarFileName.textContent = `${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)`;
+            btnOpenCropper.classList.remove('d-none');
+            btnRevertAvatar.classList.remove('d-none');
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                cropperImage.src = event.target.result;
+                // Open modal automatically for cropping & editing
+                if (cropperModal) {
+                    cropperModal.show();
+                }
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    });
+
+    // Reopen cropper modal button
+    btnOpenCropper.addEventListener('click', function() {
+        if (cropperModal && cropperImage.src) {
+            cropperModal.show();
+        }
+    });
+
+    // Modal shown event -> initialize or reset Cropper.js
+    cropperModalEl.addEventListener('shown.bs.modal', function() {
+        if (cropper) {
+            cropper.destroy();
+        }
+        scaleX = 1;
+        cropper = new Cropper(cropperImage, {
+            aspectRatio: 1, // 1:1 default for profile avatar
+            viewMode: 1,
+            dragMode: 'move',
+            preview: '.cropper-preview-circle',
+            autoCropArea: 0.9,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+        });
+    });
+
+    // Modal hidden event
+    cropperModalEl.addEventListener('hidden.bs.modal', function() {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    });
+
+    // Editing Controls: Aspect Ratio
+    const btnRatio1 = document.getElementById('btnRatio1');
+    const btnRatio43 = document.getElementById('btnRatio43');
+    const btnRatioFree = document.getElementById('btnRatioFree');
+
+    function setActiveRatio(btn) {
+        [btnRatio1, btnRatio43, btnRatioFree].forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    btnRatio1.addEventListener('click', function() {
+        if (cropper) {
+            cropper.setAspectRatio(1);
+            setActiveRatio(btnRatio1);
+        }
+    });
+    btnRatio43.addEventListener('click', function() {
+        if (cropper) {
+            cropper.setAspectRatio(4 / 3);
+            setActiveRatio(btnRatio43);
+        }
+    });
+    btnRatioFree.addEventListener('click', function() {
+        if (cropper) {
+            cropper.setAspectRatio(NaN);
+            setActiveRatio(btnRatioFree);
+        }
+    });
+
+    // Rotate Left & Right
+    document.getElementById('btnRotateLeft').addEventListener('click', function() {
+        if (cropper) cropper.rotate(-90);
+    });
+    document.getElementById('btnRotateRight').addEventListener('click', function() {
+        if (cropper) cropper.rotate(90);
+    });
+
+    // Flip Horizontal
+    document.getElementById('btnFlipH').addEventListener('click', function() {
+        if (cropper) {
+            scaleX = -scaleX;
+            cropper.scaleX(scaleX);
+        }
+    });
+
+    // Zoom Controls
+    document.getElementById('btnZoomIn').addEventListener('click', function() {
+        if (cropper) cropper.zoom(0.1);
+    });
+    document.getElementById('btnZoomOut').addEventListener('click', function() {
+        if (cropper) cropper.zoom(-0.1);
+    });
+
+    // Reset All Edits
+    document.getElementById('btnResetCrop').addEventListener('click', function() {
+        if (cropper) {
+            cropper.reset();
+            scaleX = 1;
+            cropper.setAspectRatio(1);
+            setActiveRatio(btnRatio1);
+        }
+    });
+
+    // Apply Crop & Edits
+    document.getElementById('btnApplyCrop').addEventListener('click', function() {
+        if (!cropper) return;
+
+        // Generate cropped canvas at 400x400 high resolution
+        const canvas = cropper.getCroppedCanvas({
+            width: 400,
+            height: 400,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+
+        if (!canvas) {
+            alert('Could not crop the image. Please try again.');
+            return;
+        }
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+        // Update live preview on profile page
+        avatarPreviewImg.src = dataUrl;
+        avatarPreviewImg.classList.remove('d-none');
+        if (avatarPlaceholder) {
+            avatarPlaceholder.classList.add('d-none');
+            avatarPlaceholder.classList.remove('d-flex');
+        }
+        cropStatusBadge.classList.remove('d-none');
+
+        // Store base64 data for fallback
+        if (croppedBase64Input) {
+            croppedBase64Input.value = dataUrl;
+        }
+
+        // Convert canvas to Blob & update input.files via DataTransfer
+        canvas.toBlob(function(blob) {
+            if (blob && window.DataTransfer) {
+                const fileName = selectedFile ? selectedFile.name : 'avatar.jpg';
+                const croppedFile = new File([blob], fileName, { type: 'image/jpeg', lastModified: Date.now() });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                avatarInput.files = dataTransfer.files;
+            }
+        }, 'image/jpeg', 0.92);
+
+        // Close modal
+        if (cropperModal) {
+            cropperModal.hide();
+        }
+    });
+
+    // Revert changes
+    btnRevertAvatar.addEventListener('click', function() {
+        avatarInput.value = '';
+        if (croppedBase64Input) croppedBase64Input.value = '';
+        selectedFile = null;
+        avatarFileName.textContent = '';
+        btnOpenCropper.classList.add('d-none');
+        btnRevertAvatar.classList.add('d-none');
+        cropStatusBadge.classList.add('d-none');
+
+        if (hasOriginalAvatar) {
+            avatarPreviewImg.src = originalAvatarSrc;
+            avatarPreviewImg.classList.remove('d-none');
+            if (avatarPlaceholder) avatarPlaceholder.classList.add('d-none');
+        } else {
+            avatarPreviewImg.src = '';
+            avatarPreviewImg.classList.add('d-none');
+            if (avatarPlaceholder) {
+                avatarPlaceholder.classList.remove('d-none');
+                avatarPlaceholder.classList.add('d-flex');
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

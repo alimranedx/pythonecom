@@ -36,7 +36,8 @@ class CustomerLoginForm(AuthenticationForm):
 
 class UserProfileForm(forms.ModelForm):
     phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone number'}))
-    avatar = forms.ImageField(required=False, validators=[validate_image_file], widget=forms.FileInput(attrs={'class': 'form-control'}))
+    avatar = forms.ImageField(required=False, validators=[validate_image_file], widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}))
+    cropped_avatar_base64 = forms.CharField(required=False, widget=forms.HiddenInput())
 
     class Meta:
         model = User
@@ -58,6 +59,17 @@ class UserProfileForm(forms.ModelForm):
         profile.phone = self.cleaned_data.get('phone', '')
         if self.cleaned_data.get('avatar'):
             profile.avatar = self.cleaned_data['avatar']
+        elif self.cleaned_data.get('cropped_avatar_base64'):
+            b64_data = self.cleaned_data['cropped_avatar_base64']
+            if 'data:image' in b64_data and ';base64,' in b64_data:
+                import base64
+                import time
+                from django.core.files.base import ContentFile
+                header, imgstr = b64_data.split(';base64,')
+                ext = header.split('/')[-1]
+                if ext == 'jpeg': ext = 'jpg'
+                filename = f"avatar_{user.id}_{int(time.time())}.{ext}"
+                profile.avatar.save(filename, ContentFile(base64.b64decode(imgstr)), save=False)
         profile.full_clean()
         profile.save()
         return user
