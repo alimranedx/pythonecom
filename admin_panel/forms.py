@@ -119,7 +119,7 @@ class SiteSettingForm(forms.ModelForm):
             'accepted_payments_text', 'copyright_text', 'subfooter_notice'
         ]
         widgets = {
-            'site_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. PythonEcom'}),
+            'site_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Easy Purchase'}),
             'site_tagline': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Modern E-Commerce Marketplace'}),
             'brand_logo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'brand_favicon': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
@@ -129,7 +129,7 @@ class SiteSettingForm(forms.ModelForm):
             'customer_care_text_en': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '24/7 Customer Care'}),
             'customer_care_text_bn': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '২৪/৭ কাস্টমার কেয়ার'}),
             'contact_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+880 1700-000000'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'support@pythonecom.com'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'support@easypuchase.com'}),
             'contact_address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Dhaka, Bangladesh'}),
             'about_text_en': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Company description in English...'}),
             'about_text_bn': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'কোম্পানির বিবরণ বাংলায়...'}),
@@ -143,6 +143,6 @@ class SiteSettingForm(forms.ModelForm):
             'newsletter_text_en': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subscribe to get special discounts...'}),
             'newsletter_text_bn': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'বিশেষ মূল্যছাড় পেতে সাবস্ক্রাইব করুন...'}),
             'accepted_payments_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cash on Delivery, Cards, bKash / Nagad'}),
-            'copyright_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '© 2026 PythonEcom. All rights reserved.'}),
+            'copyright_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '© 2026 Easy Purchase. All rights reserved.'}),
             'subfooter_notice': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Engineered with Clean Architecture'}),
         }

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Modern E-Commerce Marketplace{% endblock %}</title>
+    <title>{% block title %}Easy Purchase{% endblock %}</title>
 
     <!-- Early execution to prevent Flash of Unstyled Content (FOUC) in Dark Mode -->
     <script>
         (function() {
             try {
-                var storedTheme = localStorage.getItem('pythonecom_theme');
+                var storedTheme = localStorage.getItem('easypuchase_theme') || localStorage.getItem('pythonecom_theme');
                 if (storedTheme === 'dark' || storedTheme === 'light') {
                     document.documentElement.setAttribute('data-bs-theme', storedTheme);
                 } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -398,7 +398,7 @@
                             <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 38px; width: auto; object-fit: contain;">
                         {% else %}
                             <i class="bi bi-bag-check-fill fs-3 text-primary"></i>
-                            <span>{{ site_settings.site_name|default:'ShopBusket Ecommerce' }}</span>
+                            <span>{{ site_settings.site_name|default:'Easy Purchase' }}</span>
                         {% endif %}
                     </a>
                 </div>
@@ -531,7 +531,7 @@
                     <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 32px; width: auto; object-fit: contain;">
                 {% else %}
                     <i class="bi bi-bag-check-fill fs-4 text-primary"></i>
-                    <span class="fw-bold">{{ site_settings.site_name|default:'ShopBusket Ecommerce' }}</span>
+                    <span class="fw-bold">{{ site_settings.site_name|default:'Easy Purchase' }}</span>
                 {% endif %}
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -750,7 +750,7 @@
                             <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 36px; width: auto; filter: brightness(1.1);">
                         {% else %}
                             <i class="bi bi-bag-check-fill text-primary"></i>
-                            <span>{{ site_settings.site_name|default:'ShopBusket Ecommerce' }}</span>
+                            <span>{{ site_settings.site_name|default:'Easy Purchase' }}</span>
                         {% endif %}
                     </h5>
                     <p class="text-secondary small">
@@ -882,7 +882,7 @@
         var nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-bs-theme', nextTheme);
         try {
-            localStorage.setItem('pythonecom_theme', nextTheme);
+            localStorage.setItem('easypuchase_theme', nextTheme);
             document.cookie = 'site_theme=' + nextTheme + ';path=/;max-age=31536000;SameSite=Lax';
         } catch (e) {}
         updateThemeUI(nextTheme);

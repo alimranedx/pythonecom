@@ -55,7 +55,7 @@ def customer_register(request):
             if guest_session_key:
                 CartService.merge_guest_cart(guest_session_key, user)
 
-            messages.success(request, f"Welcome to ShopBusket, {user.first_name or user.username}!")
+            messages.success(request, f"Welcome to Easy Purchase, {user.first_name or user.username}!")
             return redirect('customer_dashboard')
     else:
         form = CustomerRegistrationForm()

@@ -20,7 +20,7 @@ class SiteSetting(TimeStampedModel):
     Managed via Back-Office Admin Panel with RBAC security.
     """
     # 1. Brand Identity (Header & Footer)
-    site_name = models.CharField(max_length=100, default="PythonEcom", help_text="Public brand / store name")
+    site_name = models.CharField(max_length=100, default="Easy Purchase", help_text="Public brand / store name")
     site_tagline = models.CharField(max_length=200, default="Modern E-Commerce Marketplace", blank=True, help_text="Short slogan or tagline")
     brand_logo = models.ImageField(upload_to="branding/", blank=True, null=True, help_text="Brand logo image (replaces default icon/text)")
     brand_favicon = models.ImageField(upload_to="branding/", blank=True, null=True, help_text="Browser tab favicon")
@@ -32,7 +32,7 @@ class SiteSetting(TimeStampedModel):
     customer_care_text_en = models.CharField(max_length=100, default="24/7 Customer Care", blank=True, help_text="Customer care text in English")
     customer_care_text_bn = models.CharField(max_length=100, default="২৪/৭ কাস্টমার কেয়ার", blank=True, help_text="Customer care text in Bangla")
     contact_phone = models.CharField(max_length=50, default="+880 1700-000000", help_text="Public contact & support telephone")
-    contact_email = models.EmailField(default="support@pythonecom.com", blank=True, help_text="Public support email")
+    contact_email = models.EmailField(default="support@easypuchase.com", blank=True, help_text="Public support email")
     contact_address = models.CharField(max_length=255, default="Dhaka, Bangladesh", blank=True, help_text="Physical store or office address")
 
     # 3. Footer & Brand Information
@@ -64,7 +64,7 @@ class SiteSetting(TimeStampedModel):
     # 6. Copyright & Sub-Footer Notices
     copyright_text = models.CharField(
         max_length=255,
-        default="© 2026 PythonEcom. Senior Software Engineering Implementation. All rights reserved.",
+        default="© 2026 Easy Purchase. All rights reserved.",
         blank=True
     )
     subfooter_notice = models.CharField(
@@ -89,6 +89,11 @@ class SiteSetting(TimeStampedModel):
         instance = cls.objects.first()
         if not instance:
             instance = cls.objects.create()
+        if instance.site_name in ['ShopBusket Ecommerce', 'PythonEcom', 'ShopBusket', '']:
+            instance.site_name = 'Easy Purchase'
+            instance.contact_email = 'support@easypuchase.com'
+            instance.copyright_text = '© 2026 Easy Purchase. All rights reserved.'
+            instance.save(update_fields=['site_name', 'contact_email', 'copyright_text'])
         return instance
 
     def get_announcement_text(self, is_bangla=False):

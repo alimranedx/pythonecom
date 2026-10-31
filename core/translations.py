@@ -179,7 +179,7 @@ TRANSLATIONS = {
         'last_name': 'Last Name',
         'no_account_yet': "Don't have an account yet?",
         'already_registered': 'Already registered?',
-        'join_offers_sub': 'Join PythonEcom for fast checkout and exclusive offers',
+        'join_offers_sub': 'Join Easy Purchase for fast checkout and exclusive offers',
         'dashboard_overview': 'Dashboard Overview',
         'change_password': 'Change Password',
         'total_orders': 'Total Orders',

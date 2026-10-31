@@ -262,7 +262,7 @@ class Command(BaseCommand):
         """Ensure singleton SiteSetting exists with complete branding and bilingual notices."""
         setting = SiteSetting.get_settings()
         if not setting.site_name:
-            setting.site_name = "PythonEcom"
+            setting.site_name = "Easy Purchase"
             setting.save()
 
     def _seed_rbac(self):

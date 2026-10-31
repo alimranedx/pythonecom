@@ -282,7 +282,7 @@ class BilingualStorefrontTests(TestCase):
         """SiteSetting model provides singleton access, defaults, and multi-language helpers."""
         setting = SiteSetting.get_settings()
         self.assertIsNotNone(setting)
-        self.assertEqual(setting.site_name, 'PythonEcom')
+        self.assertEqual(setting.site_name, 'Easy Purchase')
         self.assertEqual(setting.contact_phone, '+880 1700-000000')
 
         # Multi-language helpers
