@@ -493,9 +493,15 @@
                 <div class="col-lg-2 col-md-4 col-6">
                     <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none">
                         <div class="card border-0 shadow-sm text-center p-3 h-100 category-card rounded-4 hover-shadow" style="transition: all 0.2s ease;">
-                            <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
-                                <i class="bi {{ cat.icon }} fs-4"></i>
-                            </div>
+                            {% if cat.image %}
+                                <div class="mx-auto mb-2 overflow-hidden rounded-circle shadow-sm" style="width: 60px; height: 60px;">
+                                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-100 h-100" style="object-fit: cover;">
+                                </div>
+                            {% else %}
+                                <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                                    <i class="bi {{ cat.icon }} fs-4"></i>
+                                </div>
+                            {% endif %}
                             <h6 class="fw-bold text-dark mb-0 small">{{ cat.name }}</h6>
                         </div>
                     </a>
@@ -650,6 +656,38 @@
             {% endfor %}
         </div>
     </div>
+
+
+    <!-- Featured Brands Showcase -->
+    {% if brands %}
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-0">Featured Brands</h3>
+                <p class="text-muted small">Explore authentic products from certified global & local top brands</p>
+            </div>
+            <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                All Brands <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+        <div class="row g-3 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6">
+            {% for brand in brands %}
+                <div class="col">
+                    <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="text-decoration-none text-dark">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 text-center h-100 hover-shadow transition-all bg-white d-flex flex-column align-items-center justify-content-center" style="min-height: 110px;">
+                            {% if brand.logo %}
+                                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="img-fluid mb-2" style="max-height: 48px; max-width: 90px; object-fit: contain;">
+                            {% else %}
+                                <i class="bi bi-award fs-2 text-primary mb-1"></i>
+                            {% endif %}
+                            <span class="small fw-bold text-truncate w-100">{{ brand.name }}</span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
 </div>
 {% endblock %}
