@@ -8,9 +8,13 @@
         <!-- Sidebar Navigation -->
         <div class="col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4">
-                <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
-                    <i class="bi bi-person-circle display-5"></i>
-                </div>
+                {% if request.user.profile.avatar %}
+                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover mx-auto mb-3 border border-2 border-primary-subtle shadow-sm" style="width: 72px; height: 72px;">
+                {% else %}
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                        <i class="bi bi-person-circle display-5"></i>
+                    </div>
+                {% endif %}
                 <h5 class="fw-bold mb-0">{{ request.user.get_full_name|default:request.user.username }}</h5>
                 <small class="text-muted">{{ request.user.email }}</small>
             </div>

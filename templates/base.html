@@ -423,7 +423,11 @@
                     <!-- User Account Dropdown (Desktop) -->
                     <div class="dropdown d-none d-sm-block">
                         <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle fs-5 text-secondary"></i>
+                            {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
+                                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 26px; height: 26px;">
+                            {% else %}
+                                <i class="bi bi-person-circle fs-5 text-secondary"></i>
+                            {% endif %}
                             <span class="d-none d-lg-inline small fw-semibold">
                                 {% if request.user.is_authenticated and not request.user.is_staff %}
                                     {{ request.user.first_name|default:request.user.username }}
@@ -432,11 +436,20 @@
                                 {% endif %}
                             </span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="min-width: 220px;">
                             {% if request.user.is_authenticated and not request.user.is_staff %}
-                                <li class="px-3 py-2 border-bottom">
-                                    <small class="text-muted d-block">{{ tr.signed_in_as }}</small>
-                                    <strong class="text-truncate d-block">{{ request.user.username }}</strong>
+                                <li class="px-3 py-2 border-bottom d-flex align-items-center gap-2">
+                                    {% if request.user.profile.avatar %}
+                                        <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 36px; height: 36px;">
+                                    {% else %}
+                                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px;">
+                                            <i class="bi bi-person-fill fs-5"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="overflow-hidden">
+                                        <small class="text-muted d-block" style="font-size: 0.72rem; line-height: 1.2;">{{ tr.signed_in_as }}</small>
+                                        <strong class="text-truncate d-block small">{{ request.user.get_full_name|default:request.user.username }}</strong>
+                                    </div>
                                 </li>
                                 <li><a class="dropdown-item py-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-grid me-2"></i> {{ tr.dashboard }}</a></li>
                                 <li><a class="dropdown-item py-2" href="{% url 'customer_profile_edit' %}"><i class="bi bi-person-gear me-2"></i> {{ tr.edit_profile }}</a></li>
@@ -528,10 +541,14 @@
             <div class="p-3 bg-light border-bottom">
                 {% if request.user.is_authenticated and not request.user.is_staff %}
                     <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                            <i class="bi bi-person-fill fs-5"></i>
-                        </div>
-                        <div>
+                        {% if request.user.profile.avatar %}
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle shadow-sm" style="width: 44px; height: 44px;">
+                        {% else %}
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
+                                <i class="bi bi-person-fill fs-5"></i>
+                            </div>
+                        {% endif %}
+                        <div class="overflow-hidden">
                             <small class="text-muted d-block">{{ tr.signed_in_as }}</small>
                             <strong class="d-block text-truncate" style="max-width: 180px;">{{ request.user.get_full_name|default:request.user.username }}</strong>
                         </div>
@@ -676,8 +693,12 @@
                 <div class="col">
                     {% if request.user.is_authenticated and not request.user.is_staff %}
                         <a href="{% url 'customer_dashboard' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center {% if '/account/' in request.path %}text-primary fw-bold active{% else %}text-secondary{% endif %}">
-                            <i class="bi bi-person-circle fs-5 lh-1 text-primary"></i>
-                            <span style="font-size: 0.68rem; margin-top: 3px;">{{ tr.account }}</span>
+                            {% if request.user.profile.avatar %}
+                                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-primary-subtle" style="width: 22px; height: 22px; margin-bottom: 2px;">
+                            {% else %}
+                                <i class="bi bi-person-circle fs-5 lh-1 text-primary"></i>
+                            {% endif %}
+                            <span style="font-size: 0.68rem; margin-top: 1px;">{{ tr.account }}</span>
                         </a>
                     {% else %}
                         <a href="{% url 'account_login' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center text-secondary">
