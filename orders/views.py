@@ -147,7 +147,7 @@ def order_confirmation(request, order_number):
 def bkash_callback(request):
     """
     Handles bKash redirect callback after customer acts on the bKash checkout page.
-    Query parameters sent by bKash: ?paymentID=...&status=success|failure|cancel
+    Includes amount verification against order total and idempotency checks.
     """
     payment_id = request.GET.get('paymentID')
     status = request.GET.get('status')
@@ -165,9 +165,28 @@ def bkash_callback(request):
 
     request.session['last_order_number'] = order.order_number
 
+    # Idempotency check: prevent duplicate execution or state flipping on page refresh
+    if order.payment_status == 'paid':
+        messages.info(request, "This order has already been paid and confirmed.")
+        return redirect('order_confirmation', order_number=order.order_number)
+
     if status == 'success':
         success, exec_res = BKashService.execute_payment(payment_id)
         if success:
+            # Payment amount verification: prevent partial payment tampering
+            try:
+                from decimal import Decimal
+                paid_amount = Decimal(str(exec_res.get('amount', '0')))
+            except Exception:
+                paid_amount = Decimal('0.00')
+
+            if paid_amount < order.total_amount:
+                order.payment_status = 'failed'
+                order.notes = (order.notes or "") + f"\n[SECURITY ALERT] bKash executed amount ৳{paid_amount} is less than order total ৳{order.total_amount}."
+                order.save(update_fields=['payment_status', 'notes'])
+                messages.error(request, f"Payment error: Executed amount ৳{paid_amount} does not match order total ৳{order.total_amount}.")
+                return redirect('order_confirmation', order_number=order.order_number)
+
             order.payment_status = 'paid'
             order.status = 'processing'
             order.transaction_id = exec_res.get('trx_id', '')
@@ -197,8 +216,18 @@ def bkash_callback(request):
 def retry_bkash_payment(request, order_number):
     """
     Allows a customer to retry an incomplete or failed bKash payment without re-ordering.
+    Protected with IDOR validation (scoped to order owner, authorized session, or staff).
     """
     order = get_object_or_404(Order, order_number=order_number)
+
+    # IDOR check: verify ownership
+    if order.user:
+        if order.user != request.user and not (request.user.is_authenticated and request.user.is_staff):
+            raise PermissionDenied("You do not have permission to retry payment for this order.")
+    else:
+        if request.session.get('last_order_number') != order.order_number and not (request.user.is_authenticated and request.user.is_staff):
+            raise PermissionDenied("You do not have permission to retry payment for this order.")
+
     if order.payment_status == 'paid':
         messages.info(request, "This order is already marked as paid.")
         return redirect('order_confirmation', order_number=order.order_number)

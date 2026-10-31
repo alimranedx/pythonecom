@@ -8,7 +8,7 @@ from .models import Product, Category, Brand
 from .forms import ProductForm
 
 
-def product_list(request):
+def product_list(request, category_slug=None):
     """
     Storefront catalog view with comprehensive filtering, searching, sorting, and pagination.
     """
@@ -26,7 +26,8 @@ def product_list(request):
         )
 
     # Category Filter
-    category_slug = request.GET.get('category')
+    if not category_slug:
+        category_slug = request.GET.get('category')
     selected_category = None
     if category_slug:
         selected_category = get_object_or_404(Category, slug=category_slug)
@@ -157,11 +158,13 @@ def product_add_review(request, pk):
             rating = 5
         comment = request.POST.get('comment', '').strip()[:1000]
         if comment:
-            ProductReview.objects.create(
+            ProductReview.objects.update_or_create(
                 product=product,
                 user=request.user,
-                rating=rating,
-                comment=comment,
+                defaults={
+                    'rating': rating,
+                    'comment': comment,
+                }
             )
             messages.success(request, "Thank you! Your product review has been published.")
         else:
