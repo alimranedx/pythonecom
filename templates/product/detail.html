@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ product.name }} | PythonEcom{% endblock %}
+{% block title %}{{ product.name }} | {{ site_settings.site_name|default:'ShopBusket' }}{% endblock %}
 
 {% block extra_head %}
 <style>

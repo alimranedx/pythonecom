@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Profile | PythonEcom{% endblock %}
+{% block title %}Edit Profile | {{ site_settings.site_name|default:'ShopBusket' }}{% endblock %}
 
 {% block extra_head %}
 <!-- Cropper.js CSS for image cropping and editing -->

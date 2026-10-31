@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}My Wishlist | PythonEcom{% endblock %}
+{% block title %}My Wishlist | {{ site_settings.site_name|default:'ShopBusket' }}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
