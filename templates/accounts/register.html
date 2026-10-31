@@ -16,8 +16,12 @@
                 </div>
 
                 {% if form.errors %}
-                    <div class="alert alert-danger small py-2">
-                        Please correct the errors in the form below.
+                    <div class="alert alert-danger small py-2 mb-3">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <div><i class="bi bi-exclamation-circle me-1"></i> {{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
                     </div>
                 {% endif %}
 
@@ -25,48 +29,61 @@
                     {% csrf_token %}
                     <div class="row g-3 mb-3">
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">{{ tr.first_name }}</label>
+                            <label class="form-label small fw-semibold">
+                                {% if IS_BANGLA %}প্রথম নাম{% else %}First Name{% endif %} <span class="text-danger">*</span>
+                            </label>
                             {{ form.first_name }}
                         </div>
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">{{ tr.last_name }}</label>
+                            <label class="form-label small fw-semibold">
+                                {% if IS_BANGLA %}শেষ নাম{% else %}Last Name{% endif %}
+                            </label>
                             {{ form.last_name }}
                         </div>
                     </div>
 
+                    <!-- Phone Number (Required for BD Perspective) -->
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold">{{ tr.username_or_email }} <span class="text-danger">*</span></label>
-                        {{ form.username }}
-                        {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors|striptags }}</div>{% endif %}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">{{ tr.email_address }} <span class="text-danger">*</span></label>
-                        {{ form.email }}
-                        {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors|striptags }}</div>{% endif %}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">{{ tr.phone_number }}</label>
+                        <label class="form-label small fw-semibold">
+                            <i class="bi bi-phone text-primary me-1"></i>
+                            {% if IS_BANGLA %}মোবাইল নম্বর{% else %}Mobile Number{% endif %} <span class="text-danger">*</span>
+                        </label>
                         {{ form.phone }}
+                        <small class="text-muted d-block mt-1" style="font-size: 0.76rem;">
+                            {% if IS_BANGLA %}১১ ডিজিটের বাংলাদেশি মোবাইল নম্বর (যেমন: 017XXXXXXXX){% else %}11-digit Bangladeshi mobile number (e.g. 017XXXXXXXX){% endif %}
+                        </small>
                     </div>
 
+                    <!-- Email Address (Optional) -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-envelope text-secondary me-1"></i> {% if IS_BANGLA %}ইমেইল এড্রেস{% else %}Email Address{% endif %}</span>
+                            <span class="badge bg-light text-muted border fw-normal" style="font-size: 0.72rem;">{% if IS_BANGLA %}ঐচ্ছিক{% else %}Optional{% endif %}</span>
+                        </label>
+                        {{ form.email }}
+                    </div>
+
+                    <!-- Password and Confirmation -->
                     <div class="row g-3 mb-4">
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">{{ tr.password }} <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">
+                                {% if IS_BANGLA %}পাসওয়ার্ড{% else %}Password{% endif %} <span class="text-danger">*</span>
+                            </label>
                             {{ form.password }}
                         </div>
                         <div class="col-6">
-                            <label class="form-label small fw-semibold">{{ tr.confirm_password }} <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold">
+                                {% if IS_BANGLA %}কনফার্ম পাসওয়ার্ড{% else %}Confirm Password{% endif %} <span class="text-danger">*</span>
+                            </label>
                             {{ form.confirm_password }}
                         </div>
-                        {% if form.confirm_password.errors %}<div class="text-danger small px-2">{{ form.confirm_password.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm mb-3">
-                        {{ tr.create_account }}
+                        {% if IS_BANGLA %}অ্যাকাউন্ট তৈরি করুন{% else %}Create Account{% endif %}
                     </button>
                 </form>
+
                 <div class="position-relative my-4 text-center">
                     <hr class="text-secondary opacity-25">
                     <span class="position-absolute top-50 start-50 translate-middle bg-body px-3 text-muted small fw-semibold">
@@ -84,7 +101,6 @@
                     </svg>
                     <span>{% if IS_BANGLA %}গুগল দিয়ে অ্যাকাউন্ট তৈরি করুন{% else %}Sign up with Google{% endif %}</span>
                 </a>
-
 
                 <div class="text-center small text-muted">
                     {{ tr.already_registered }} 

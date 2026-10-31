@@ -203,4 +203,11 @@ BKASH_PASSWORD = os.environ.get('BKASH_PASSWORD', '')
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# ==============================================================================
+# AUTHENTICATION BACKENDS (PHONE, EMAIL & USERNAME)
+# ==============================================================================
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.PhoneOrUsernameBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 

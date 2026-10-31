@@ -69,8 +69,12 @@ def checkout(request):
         }
 
         # Basic validations
-        required_fields = ['full_name', 'email', 'phone', 'street_address', 'city']
+        required_fields = ['full_name', 'phone', 'street_address', 'city']
         missing = [f for f in required_fields if not shipping_data.get(f)]
+        if not shipping_data.get('email'):
+            clean_p = re.sub(r'\D', '', str(shipping_data.get('phone', 'customer')))
+            shipping_data['email'] = f"{clean_p}@customer.shopbusket.com"
+
         if missing:
             messages.error(request, "Please fill in all required shipping fields.")
             return render(request, 'orders/checkout.html', {

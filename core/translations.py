@@ -172,7 +172,7 @@ TRANSLATIONS = {
         # Customer Account & Dashboard
         'customer_signin': 'Customer Sign In',
         'customer_signin_sub': 'Access your order history and saved addresses',
-        'username_or_email': 'Username or Email',
+        'username_or_email': 'Phone Number or Email',
         'password': 'Password',
         'confirm_password': 'Confirm Password',
         'first_name': 'First Name',
@@ -373,7 +373,7 @@ TRANSLATIONS = {
         # Customer Account & Dashboard
         'customer_signin': 'কাস্টমার লগইন',
         'customer_signin_sub': 'আপনার অর্ডার ও সংরক্ষিত ঠিকানা দেখতে লগইন করুন',
-        'username_or_email': 'ইউজারনেম অথবা ইমেইল',
+        'username_or_email': 'মোবাইল নম্বর বা ইমেইল',
         'password': 'পাসওয়ার্ড',
         'confirm_password': 'পাসওয়ার্ড নিশ্চিত করুন',
         'first_name': 'নামের প্রথম অংশ',

@@ -18,8 +18,14 @@
                 <form method="post" novalidate>
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold">{{ tr.username_or_email }}</label>
+                        <label class="form-label small fw-semibold">
+                            <i class="bi bi-phone text-primary me-1"></i>
+                            {{ tr.username_or_email }}
+                        </label>
                         {{ form.username }}
+                        <small class="text-muted d-block mt-1" style="font-size: 0.76rem;">
+                            {% if IS_BANGLA %}আপনার নিবন্ধিত মোবাইল নম্বর বা ইমেইল লিখুন{% else %}Enter your registered mobile number or email{% endif %}
+                        </small>
                     </div>
 
                     <div class="mb-4">
@@ -33,6 +39,7 @@
                         {{ tr.sign_in }}
                     </button>
                 </form>
+
                 <div class="position-relative my-4 text-center">
                     <hr class="text-secondary opacity-25">
                     <span class="position-absolute top-50 start-50 translate-middle bg-body px-3 text-muted small fw-semibold">
@@ -50,8 +57,6 @@
                     </svg>
                     <span>{% if IS_BANGLA %}গুগল দিয়ে সাইন ইন করুন{% else %}Continue with Google{% endif %}</span>
                 </a>
-
-
 
                 <div class="text-center small text-muted">
                     {{ tr.no_account_yet }} 

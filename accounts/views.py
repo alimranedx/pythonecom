@@ -40,8 +40,6 @@ def customer_required(view_func):
 
 
 def customer_register(request):
-    # If logged in user is not a customer (e.g. staff/admin),
-    # clear all session and cookies so they can cleanly register as a customer.
     if request.user.is_authenticated:
         if request.user.is_staff:
             logout(request)
@@ -51,19 +49,13 @@ def customer_register(request):
     if request.method == 'POST':
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-
-            phone = form.cleaned_data.get('phone', '')
-            CustomerProfile.objects.create(user=user, phone=phone)
-
+            user = form.save()
             guest_session_key = request.session.session_key
-            login(request, user)
+            login(request, user, backend='accounts.backends.PhoneOrUsernameBackend')
             if guest_session_key:
                 CartService.merge_guest_cart(guest_session_key, user)
 
-            messages.success(request, f"Welcome to PythonEcom, {user.first_name or user.username}!")
+            messages.success(request, f"Welcome to ShopBusket, {user.first_name or user.username}!")
             return redirect('customer_dashboard')
     else:
         form = CustomerRegistrationForm()
@@ -72,8 +64,6 @@ def customer_register(request):
 
 
 def customer_login(request):
-    # If logged in user is not a customer (e.g. staff/admin),
-    # clear all session and cookies so they can cleanly sign in as a customer.
     if request.user.is_authenticated:
         if request.user.is_staff:
             logout(request)
@@ -86,16 +76,21 @@ def customer_login(request):
         form = CustomerLoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            # Enforce panel isolation: staff cannot log in through customer storefront
+            if user.is_staff:
+                messages.error(request, "This account is for administrative staff. Please sign in via the Admin portal.")
+                return redirect('admin_login')
+
             guest_session_key = request.session.session_key
-            login(request, user)
+            login(request, user, backend='accounts.backends.PhoneOrUsernameBackend')
             if guest_session_key:
                 CartService.merge_guest_cart(guest_session_key, user)
-            messages.success(request, f"Welcome back, {user.username}!")
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
             if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
                 return redirect(next_url)
             return redirect('customer_dashboard')
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Invalid mobile number, email, or password.")
     else:
         form = CustomerLoginForm()
 
