@@ -224,6 +224,148 @@
         transform: scale(1.08);
         background-color: rgba(255, 255, 255, 0.25) !important;
     }
+
+    /* Category Horizontal Scroller (One Line & Smaller Cards) */
+    .category-scroll-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .category-scroll-container {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.85rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px 4px 14px 4px;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE / Edge */
+        cursor: grab;
+        user-select: none;
+    }
+
+    .category-scroll-container.is-dragging {
+        cursor: grabbing;
+        scroll-behavior: auto;
+    }
+
+    .category-scroll-container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+    .category-scroll-item {
+        flex: 0 0 118px;
+        width: 118px;
+        min-width: 118px;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 575.98px) {
+        .category-scroll-item {
+            flex: 0 0 102px;
+            width: 102px;
+            min-width: 102px;
+            flex-shrink: 0;
+        }
+    }
+
+    .category-card {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 14px;
+        padding: 0.75rem 0.45rem;
+        height: 122px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-scroll-item a:hover .category-card {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+        border-color: rgba(37, 99, 235, 0.45);
+    }
+
+    .category-img-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 0.45rem;
+        background: var(--surface-muted, #f8fafc);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+    }
+
+    .category-scroll-item a:hover .category-img-box {
+        transform: scale(1.08);
+    }
+
+    .category-img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .category-name-text {
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: var(--text-main, #1e293b);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 2.4em;
+        margin-bottom: 0;
+        transition: color 0.2s ease;
+    }
+
+    .category-scroll-item a:hover .category-name-text {
+        color: var(--primary-color, #2563eb);
+    }
+
+    /* Scroll Navigation Buttons */
+    .category-nav-arrow {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid var(--border-color, #e2e8f0);
+        background: var(--surface-card, #ffffff);
+        color: var(--text-main, #1e293b);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        font-size: 0.82rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .category-nav-arrow:hover:not(:disabled) {
+        background: var(--primary-color, #2563eb);
+        color: #ffffff;
+        border-color: var(--primary-color, #2563eb);
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    .category-nav-arrow:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
 </style>
 {% endblock %}
 
@@ -477,36 +619,48 @@
         </div>
     </div>
 
-    <!-- Featured Categories Grid -->
+    <!-- Featured Categories Horizontal Scroller (Single Line) -->
     <div class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h3 class="fw-bold mb-0">{{ tr.shop_by_category }}</h3>
-                <p class="text-muted small">{{ tr.shop_by_category_sub }}</p>
+                <p class="text-muted small mb-0">{{ tr.shop_by_category_sub }}</p>
             </div>
-            <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                {{ tr.view_all }} <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-        </div>
-        <div class="row g-3">
-            {% for cat in featured_categories %}
-                <div class="col-lg-2 col-md-4 col-6">
-                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none">
-                        <div class="card border-0 shadow-sm text-center p-3 h-100 category-card rounded-4 hover-shadow" style="transition: all 0.2s ease;">
-                            {% if cat.image %}
-                                <div class="mx-auto mb-2 overflow-hidden rounded-circle shadow-sm" style="width: 60px; height: 60px;">
-                                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-100 h-100" style="object-fit: cover;">
-                                </div>
-                            {% else %}
-                                <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
-                                    <i class="bi {{ cat.icon }} fs-4"></i>
-                                </div>
-                            {% endif %}
-                            <h6 class="fw-bold text-dark mb-0 small">{{ cat.name }}</h6>
-                        </div>
-                    </a>
+            <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-1">
+                    <button type="button" class="category-nav-arrow" id="catScrollPrev" title="Scroll left" aria-label="Scroll left">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button type="button" class="category-nav-arrow" id="catScrollNext" title="Scroll right" aria-label="Scroll right">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
                 </div>
-            {% endfor %}
+                <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                    {{ tr.view_all }} <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="category-scroll-wrapper">
+            <div class="category-scroll-container" id="categoryScrollContainer">
+                {% for cat in featured_categories %}
+                    <div class="category-scroll-item">
+                        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none">
+                            <div class="category-card">
+                                {% if cat.image %}
+                                    <div class="category-img-box">
+                                        <img src="{{ cat.image.url }}" alt="{{ cat.name }}" loading="lazy">
+                                    </div>
+                                {% else %}
+                                    <div class="category-img-box bg-primary-subtle text-primary">
+                                        <i class="bi {{ cat.icon|default:'bi-tag' }} fs-5"></i>
+                                    </div>
+                                {% endif %}
+                                <p class="category-name-text" title="{{ cat.name }}">{{ cat.name }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -690,4 +844,97 @@
     {% endif %}
 
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('categoryScrollContainer');
+    const prevBtn = document.getElementById('catScrollPrev');
+    const nextBtn = document.getElementById('catScrollNext');
+
+    if (!container) return;
+
+    function updateNavButtons() {
+        if (!prevBtn || !nextBtn) return;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        prevBtn.disabled = container.scrollLeft <= 4;
+        nextBtn.disabled = container.scrollLeft >= maxScroll - 4;
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+            const scrollStep = Math.max(container.clientWidth * 0.65, 240);
+            container.scrollBy({ left: -scrollStep, behavior: 'smooth' });
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+            const scrollStep = Math.max(container.clientWidth * 0.65, 240);
+            container.scrollBy({ left: scrollStep, behavior: 'smooth' });
+        });
+    }
+
+    container.addEventListener('scroll', updateNavButtons, { passive: true });
+    window.addEventListener('resize', updateNavButtons);
+    setTimeout(updateNavButtons, 200);
+
+    // Mouse Wheel horizontal scroll support
+    container.addEventListener('wheel', function (e) {
+        if (e.deltaY === 0) return;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        const canScrollLeft = container.scrollLeft > 0 && e.deltaY < 0;
+        const canScrollRight = container.scrollLeft < maxScroll && e.deltaY > 0;
+        if (canScrollLeft || canScrollRight) {
+            e.preventDefault();
+            container.scrollBy({ left: e.deltaY * 0.9, behavior: 'auto' });
+        }
+    }, { passive: false });
+
+    // Mouse Drag to Scroll
+    let isDown = false;
+    let startX = 0;
+    let scrollLeftStart = 0;
+    let hasDragged = false;
+
+    container.addEventListener('mousedown', function (e) {
+        isDown = true;
+        hasDragged = false;
+        container.classList.add('is-dragging');
+        startX = e.pageX - container.offsetLeft;
+        scrollLeftStart = container.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', function () {
+        if (!isDown) return;
+        isDown = false;
+        container.classList.remove('is-dragging');
+        setTimeout(function () {
+            hasDragged = false;
+        }, 50);
+    });
+
+    container.addEventListener('mousemove', function (e) {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 1.3;
+        if (Math.abs(x - startX) > 6) {
+            hasDragged = true;
+        }
+        container.scrollLeft = scrollLeftStart - walk;
+    });
+
+    // Prevent link click when dragging
+    container.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            if (hasDragged) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
