@@ -244,6 +244,14 @@
                 </div>
             {% endfor %}
 
+            <div class="nav-header">System</div>
+            <a href="{% url 'admin_system_errors' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_system_errors' %}active{% endif %}">
+                <i class="bi bi-shield-exclamation me-2 text-danger"></i> Error Logs
+                {% if has_system_errors %}
+                    <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.65rem;">{{ unresolved_error_count }}</span>
+                {% endif %}
+            </a>
+
             <div class="nav-header">Storefront</div>
             <a href="{% url 'home' %}" target="_blank" class="sidebar-link">
                 <i class="bi bi-box-arrow-up-right me-2"></i> View Storefront
@@ -261,6 +269,12 @@
 
             <!-- User Info & Role Badge -->
             <div class="d-flex align-items-center gap-3">
+                {% if has_system_errors %}
+                    <a href="{% url 'admin_system_errors' %}" class="btn btn-outline-danger btn-sm rounded-pill d-flex align-items-center gap-1 shadow-sm px-2 py-1" title="{{ unresolved_error_count }} unresolved system error(s)">
+                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                        <span class="badge bg-danger rounded-pill">{{ unresolved_error_count }}</span>
+                    </a>
+                {% endif %}
                 <div class="text-end d-none d-sm-block">
                     <strong class="d-block text-dark small">{{ request.user.get_full_name|default:request.user.username }}</strong>
                     <span class="badge bg-dark-subtle text-dark border" style="font-size: 0.72rem;">
@@ -284,6 +298,34 @@
                 </div>
             </div>
         </header>
+
+        <!-- System Exception Emergency Alert Banner -->
+        {% if has_system_errors %}
+            <div class="container-fluid px-4 mt-3">
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm border-danger d-flex flex-wrap align-items-center justify-content-between p-3 gap-2" role="alert">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-danger text-white rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                            <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block text-danger">System Exception Alert!</strong>
+                            <span class="small text-dark">
+                                <strong>{{ unresolved_error_count }}</strong> unresolved system error(s) captured.
+                                {% if latest_system_error %}
+                                    Latest: <code>{{ latest_system_error.error_type }}</code> on <code>{{ latest_system_error.path }}</code> ({{ latest_system_error.created_at|timesince }} ago).
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="{% url 'admin_system_errors' %}" class="btn btn-danger btn-sm rounded-pill px-3 fw-semibold">
+                            <i class="bi bi-shield-exclamation me-1"></i> View Error Logs
+                        </a>
+                        <button type="button" class="btn-close position-static p-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
 
         <!-- Flash Messages -->
         <div class="container-fluid px-4 mt-3">

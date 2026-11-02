@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}403 - Access Denied | {{ site_settings.site_name|default:"Easy Purchase" }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-md-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="mb-3">
+                    <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill fw-bold" style="font-size: 0.85rem;">
+                        <i class="bi bi-lock-fill me-1"></i> ERROR 403
+                    </span>
+                </div>
+                
+                <div class="display-1 fw-bold text-warning mb-2" style="font-size: 5rem; letter-spacing: -2px; line-height: 1;">
+                    4<span class="text-danger">0</span>3
+                </div>
+                
+                <h2 class="fw-bold text-dark mb-3">
+                    {% if IS_BANGLA %}প্রবেশাধিকার সংরক্ষিত{% else %}Access Denied{% endif %}
+                </h2>
+                
+                <p class="text-muted mb-4 lead fs-6">
+                    {% if IS_BANGLA %}
+                        দুঃখিত, এই পৃষ্ঠা বা বিভাগটি দেখার অনুমতি আপনার অ্যাকাউন্টের নেই অথবা আপনার সেশনটি উত্তীর্ণ হয়েছে।
+                    {% else %}
+                        {{ exception_message|default:"Sorry, you do not have permission to access this page or resource. Please ensure you are logged in with appropriate credentials." }}
+                    {% endif %}
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-center gap-2 pt-2">
+                    <a href="{% url 'home' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="bi bi-house-door me-1"></i> {% if IS_BANGLA %}হোমপেজে ফিরুন{% else %}Back to Home{% endif %}
+                    </a>
+                    <a href="{% url 'account_login' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> {% if IS_BANGLA %}লগইন করুন{% else %}Sign In{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

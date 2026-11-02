@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Error | {{ site_settings.site_name|default:"Easy Purchase" }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e2e8f0;
+            max-width: 620px;
+            width: 100%;
+        }
+        .brand-badge {
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5 px-3">
+        <div class="row justify-content-center">
+            <div class="col-12 d-flex justify-content-center">
+                <div class="error-card p-4 p-md-5 text-center">
+                    <div class="mb-3">
+                        <span class="brand-badge">
+                            <i class="bi bi-shield-exclamation me-1"></i> ERROR 500
+                        </span>
+                    </div>
+
+                    <div class="display-1 fw-bold text-danger mb-2" style="font-size: 5rem; letter-spacing: -2px; line-height: 1;">
+                        5<span class="text-warning">0</span>0
+                    </div>
+
+                    <h2 class="fw-bold text-dark mb-3">Internal Server Error</h2>
+                    
+                    <p class="text-muted mb-4 lead fs-6">
+                        We apologize for the inconvenience. Our system experienced a temporary technical issue. Our engineering team has been automatically notified and is resolving it right now.
+                    </p>
+
+                    {% if request.user.is_staff %}
+                        <div class="alert alert-warning text-start py-2 px-3 mb-4 rounded-3 small">
+                            <i class="bi bi-info-circle-fill me-1"></i> <strong>Admin Debug Note:</strong> An error record was saved to the back-office log. 
+                            <a href="/app-admin/system-errors/" class="fw-bold text-dark text-decoration-underline ms-1">View in Back-Office</a>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex flex-wrap justify-content-center gap-2 pt-2">
+                        <a href="/" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                            <i class="bi bi-house-door me-1"></i> Return to Homepage
+                        </a>
+                        <button onclick="window.location.reload();" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Reload Page
+                        </button>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top text-muted small">
+                        Need urgent assistance? Contact us at <a href="mailto:{{ site_settings.contact_email|default:'support@easypuchase.com' }}" class="text-primary fw-medium">{{ site_settings.contact_email|default:'support@easypuchase.com' }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,4 +1,6 @@
 from django.contrib.auth import logout
+from django.http import Http404
+from django.core.exceptions import PermissionDenied
 
 
 class SessionRoleIsolationMiddleware:
@@ -78,3 +80,32 @@ class LanguageRoutingMiddleware:
             response.set_cookie('site_language', lang, max_age=365 * 24 * 60 * 60, samesite='Lax')
 
         return response
+
+
+class SystemExceptionLoggingMiddleware:
+    """
+    Catches any unhandled runtime exceptions / 500 errors across the application:
+    1. Safely writes to error log file via Python logging.
+    2. Records the exception in the database (SystemErrorLog) for Admin notification.
+    3. Guarantees zero leakage of tracebacks to regular users.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    def process_exception(self, request, exception):
+        # Normal HTTP flow exceptions (404, 403) are handled by standard handlers
+        if isinstance(exception, (Http404, PermissionDenied)):
+            return None
+
+        # Record system exception safely to DB and log file
+        try:
+            from core.models import SystemErrorLog
+            SystemErrorLog.log_exception(request, exception)
+        except Exception:
+            pass
+
+        return None

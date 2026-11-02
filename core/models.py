@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class TimeStampedModel(models.Model):
@@ -120,3 +121,87 @@ class SiteSetting(TimeStampedModel):
         if is_bangla and self.newsletter_text_bn:
             return self.newsletter_text_bn
         return self.newsletter_text_en or ""
+
+
+class SystemErrorLog(TimeStampedModel):
+    """
+    Captures system-wide exceptions, unhandled 500 errors, and runtime failures
+    to notify administrators and facilitate rapid debugging.
+    """
+    error_type = models.CharField(max_length=255, db_index=True)
+    message = models.TextField()
+    traceback = models.TextField()
+    path = models.CharField(max_length=500, db_index=True)
+    method = models.CharField(max_length=10, default='GET')
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='system_errors')
+    user_agent = models.CharField(max_length=500, blank=True)
+    is_resolved = models.BooleanField(default=False, db_index=True)
+    resolved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='resolved_errors')
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "System Error Log"
+        verbose_name_plural = "System Error Logs"
+
+    def __str__(self):
+        return f"[{self.created_at.strftime('%Y-%m-%d %H:%M') if self.created_at else 'New'}] {self.error_type} on {self.path}"
+
+    @classmethod
+    def log_exception(cls, request, exception):
+        """
+        Safely records an unhandled exception to both the database and logger.
+        Guaranteed never to raise secondary exceptions.
+        """
+        import sys
+        import traceback
+        import logging
+
+        tb_text = traceback.format_exc()
+        if not tb_text or tb_text.strip() == 'NoneType: None':
+            exc_type, exc_val, exc_tb = sys.exc_info()
+            if exc_tb:
+                tb_text = "".join(traceback.format_exception(exc_type, exc_val, exc_tb))
+            else:
+                tb_text = str(exception)
+
+        path = getattr(request, 'path_info', '') or getattr(request, 'path', 'Unknown')
+        method = getattr(request, 'method', 'GET')
+        user = getattr(request, 'user', None)
+        if user and not user.is_authenticated:
+            user = None
+
+        meta = getattr(request, 'META', {})
+        x_forwarded = meta.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded:
+            ip = x_forwarded.split(',')[0].strip()
+        else:
+            ip = meta.get('REMOTE_ADDR')
+
+        user_agent = str(meta.get('HTTP_USER_AGENT', ''))[:500]
+        err_type = exception.__class__.__name__
+        err_msg = str(exception)
+
+        # 1. Log to Python standard logging
+        logger = logging.getLogger('django.request')
+        logger.error(
+            f"System Exception: {err_type} on {method} {path} | User: {user} | IP: {ip}\n{tb_text}"
+        )
+
+        # 2. Persist to database for Admin alert & tracking
+        try:
+            return cls.objects.create(
+                error_type=err_type[:255],
+                message=err_msg,
+                traceback=tb_text,
+                path=path[:500],
+                method=method[:10],
+                ip_address=ip if ip and len(ip) <= 45 else None,
+                user=user,
+                user_agent=user_agent,
+                is_resolved=False
+            )
+        except Exception as db_err:
+            logger.error(f"Failed to record SystemErrorLog to database: {db_err}")
+            return None

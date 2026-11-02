@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}400 - Bad Request | {{ site_settings.site_name|default:"Easy Purchase" }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-md-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="mb-3">
+                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill fw-bold" style="font-size: 0.85rem;">
+                        <i class="bi bi-exclamation-octagon me-1"></i> ERROR 400
+                    </span>
+                </div>
+                
+                <div class="display-1 fw-bold text-secondary mb-2" style="font-size: 5rem; letter-spacing: -2px; line-height: 1;">
+                    4<span class="text-danger">0</span>0
+                </div>
+                
+                <h2 class="fw-bold text-dark mb-3">
+                    {% if IS_BANGLA %}অনুরোধটি ত্রুটিপূর্ণ{% else %}Bad Request{% endif %}
+                </h2>
+                
+                <p class="text-muted mb-4 lead fs-6">
+                    {% if IS_BANGLA %}
+                        আপনার পাঠানো ব্রাউজার অনুরোধটি সার্ভার বুঝতে পারছে না। অনুগ্রহ করে লিঙ্কটি পুনরায় পরীক্ষা করুন।
+                    {% else %}
+                        {{ exception_message|default:"The server could not understand the request due to invalid syntax or an expired token. Please verify the URL and try again." }}
+                    {% endif %}
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-center gap-2 pt-2">
+                    <a href="{% url 'home' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="bi bi-house-door me-1"></i> {% if IS_BANGLA %}হোমপেজে ফিরুন{% else %}Back to Home{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

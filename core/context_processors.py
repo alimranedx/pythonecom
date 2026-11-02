@@ -1,6 +1,7 @@
 from core.translations import TranslationProxy, to_bn_number
 from core.models import SiteSetting
 
+
 def language_processor(request):
     """
     Exposes storefront bilingual state and translation proxies to templates:
@@ -25,4 +26,31 @@ def site_settings_processor(request):
     """
     return {
         'site_settings': SiteSetting.get_settings(),
+    }
+
+
+def admin_system_alert_processor(request):
+    """
+    Exposes system-wide exception alerts to authenticated administrators and staff members
+    across all page requests (back-office and storefront).
+    """
+    user = getattr(request, 'user', None)
+    if user and user.is_authenticated and (user.is_staff or user.is_superuser):
+        try:
+            from core.models import SystemErrorLog
+            unresolved = SystemErrorLog.objects.filter(is_resolved=False)
+            unresolved_count = unresolved.count()
+            latest = unresolved.first() if unresolved_count > 0 else None
+            return {
+                'has_system_errors': unresolved_count > 0,
+                'unresolved_error_count': unresolved_count,
+                'latest_system_error': latest,
+            }
+        except Exception:
+            pass
+
+    return {
+        'has_system_errors': False,
+        'unresolved_error_count': 0,
+        'latest_system_error': None,
     }

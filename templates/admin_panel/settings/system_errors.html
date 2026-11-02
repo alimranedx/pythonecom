@@ -1,0 +1,262 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block title %}System Error Logs | Easy Purchase Admin{% endblock %}
+
+{% block page_title %}
+<div class="d-flex align-items-center gap-2">
+    <i class="bi bi-shield-exclamation text-danger fs-4"></i>
+    <span>System Exception & Error Monitoring</span>
+</div>
+{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-0">
+
+    <!-- KPI / Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-danger border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase">Unresolved Exceptions</div>
+                        <div class="fs-2 fw-bold text-danger mt-1">{{ unresolved_count }}</div>
+                    </div>
+                    <div class="bg-danger-subtle text-danger p-3 rounded-circle">
+                        <i class="bi bi-exclamation-octagon-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase">Resolved Exceptions</div>
+                        <div class="fs-2 fw-bold text-success mt-1">{{ resolved_count }}</div>
+                    </div>
+                    <div class="bg-success-subtle text-success p-3 rounded-circle">
+                        <i class="bi bi-check-circle-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-primary border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase">Total Captured</div>
+                        <div class="fs-2 fw-bold text-primary mt-1">{{ total_count }}</div>
+                    </div>
+                    <div class="bg-primary-subtle text-primary p-3 rounded-circle">
+                        <i class="bi bi-journal-text fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters, Search & Bulk Actions Bar -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body p-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <!-- Status Filter Pills -->
+                <div class="btn-group" role="group">
+                    <a href="?status=unresolved{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if status_filter == 'unresolved' %}btn-danger fw-bold{% else %}btn-outline-secondary{% endif %}">
+                        <i class="bi bi-exclamation-circle me-1"></i> Unresolved ({{ unresolved_count }})
+                    </a>
+                    <a href="?status=resolved{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if status_filter == 'resolved' %}btn-success fw-bold{% else %}btn-outline-secondary{% endif %}">
+                        <i class="bi bi-check2-circle me-1"></i> Resolved ({{ resolved_count }})
+                    </a>
+                    <a href="?status=all{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if status_filter == 'all' %}btn-dark fw-bold{% else %}btn-outline-secondary{% endif %}">
+                        <i class="bi bi-list-ul me-1"></i> All Logs ({{ total_count }})
+                    </a>
+                </div>
+
+                <!-- Search form -->
+                <form method="GET" class="d-flex gap-2 flex-grow-1 flex-md-grow-0" style="min-width: 280px;">
+                    <input type="hidden" name="status" value="{{ status_filter }}">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search error type, path...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                    {% if query %}
+                        <a href="?status={{ status_filter }}" class="btn btn-sm btn-outline-danger" title="Clear Search">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    {% endif %}
+                </form>
+
+                <!-- Bulk Actions -->
+                <div class="d-flex gap-2">
+                    {% if unresolved_count > 0 %}
+                        <form method="POST" action="{% url 'admin_resolve_all_errors' %}" onsubmit="return confirm('Are you sure you want to mark ALL unresolved errors as resolved?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-check-all me-1"></i> Resolve All
+                            </button>
+                        </form>
+                    {% endif %}
+                    {% if resolved_count > 0 %}
+                        <form method="POST" action="{% url 'admin_clear_resolved_errors' %}" onsubmit="return confirm('Delete all resolved error logs permanently?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash3 me-1"></i> Clear Resolved
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Log Table / Accordion -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h6 class="mb-0 fw-bold text-dark">
+                <i class="bi bi-clock-history me-1"></i> Recorded System Exceptions
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small text-uppercase">
+                            <tr>
+                                <th style="width: 70px;">ID</th>
+                                <th style="width: 140px;">Status</th>
+                                <th style="width: 180px;">Time</th>
+                                <th>Exception & Message</th>
+                                <th>Route / URL</th>
+                                <th>Client & User</th>
+                                <th class="text-end" style="width: 150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for err in page_obj %}
+                                <tr>
+                                    <td class="fw-bold text-muted">#{{ err.id }}</td>
+                                    <td>
+                                        {% if err.is_resolved %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                                <i class="bi bi-check-circle me-1"></i> Resolved
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
+                                                <i class="bi bi-exclamation-circle me-1"></i> Pending
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="small text-muted">
+                                        <i class="bi bi-calendar3 me-1"></i> {{ err.created_at|date:"M d, Y" }}<br>
+                                        <i class="bi bi-clock me-1"></i> {{ err.created_at|date:"H:i:s" }}
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-danger small font-monospace">
+                                            {{ err.error_type }}
+                                        </div>
+                                        <div class="text-muted small text-truncate" style="max-width: 320px;" title="{{ err.message }}">
+                                            {{ err.message }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-dark border font-monospace small">
+                                            {{ err.method }}
+                                        </span>
+                                        <span class="small font-monospace text-dark ms-1" title="{{ err.path }}">
+                                            {{ err.path|truncatechars:40 }}
+                                        </span>
+                                    </td>
+                                    <td class="small">
+                                        <div><i class="bi bi-person me-1"></i> {{ err.user.username|default:"Guest" }}</div>
+                                        <div class="text-muted"><i class="bi bi-globe me-1"></i> {{ err.ip_address|default:"127.0.0.1" }}</div>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#traceback-{{ err.id }}">
+                                            <i class="bi bi-code-slash"></i> Trace
+                                        </button>
+                                        {% if not err.is_resolved %}
+                                            <a href="{% url 'admin_resolve_error' err.id %}" class="btn btn-sm btn-outline-success ms-1" title="Mark as Resolved">
+                                                <i class="bi bi-check-lg"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <!-- Collapsible Traceback Row -->
+                                <tr class="collapse bg-light" id="traceback-{{ err.id }}">
+                                    <td colspan="7" class="p-3">
+                                        <div class="card border rounded-3 shadow-none">
+                                            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+                                                <span class="small font-monospace">
+                                                    <i class="bi bi-terminal me-1"></i> Python Exception Traceback — Error #{{ err.id }}
+                                                </span>
+                                                {% if err.is_resolved %}
+                                                    <span class="badge bg-success small">
+                                                        Resolved by {{ err.resolved_by.username|default:"Admin" }} on {{ err.resolved_at|date:"M d, Y H:i" }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-body bg-dark text-light p-3" style="max-height: 380px; overflow-y: auto;">
+                                                <pre class="mb-0 font-monospace small text-warning" style="white-space: pre-wrap; word-break: break-all;">{{ err.traceback }}</pre>
+                                            </div>
+                                            <div class="card-footer bg-white text-muted small py-2 d-flex justify-content-between align-items-center">
+                                                <span><strong>User Agent:</strong> {{ err.user_agent|default:"Unknown" }}</span>
+                                                <span><strong>Full Path:</strong> <code>{{ err.path }}</code></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <div class="p-3 border-top d-flex justify-content-between align-items-center">
+                        <div class="small text-muted">
+                            Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} logs
+                        </div>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}{% if query %}&q={{ query }}{% endif %}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}{% if query %}&q={{ query }}{% endif %}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="bg-success-subtle text-success p-3 rounded-circle d-inline-flex mb-3">
+                        <i class="bi bi-shield-check fs-1"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No System Errors Found</h5>
+                    <p class="text-muted small mb-0">
+                        {% if query %}
+                            No errors matching "{{ query }}" in category "{{ status_filter }}".
+                        {% elif status_filter == 'unresolved' %}
+                            All clean! There are currently no unresolved system exceptions.
+                        {% else %}
+                            No system exceptions have been recorded in this category.
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

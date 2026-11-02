@@ -60,4 +60,10 @@ urlpatterns = [
 
     # Site & Brand Settings (Header, Footer, Announcements, Contacts)
     path('settings/', views.admin_site_settings, name='admin_site_settings'),
+
+    # System Error Monitoring & Exception Logs
+    path('system-errors/', views.admin_system_errors, name='admin_system_errors'),
+    path('system-errors/<int:pk>/resolve/', views.admin_resolve_error, name='admin_resolve_error'),
+    path('system-errors/resolve-all/', views.admin_resolve_all_errors, name='admin_resolve_all_errors'),
+    path('system-errors/clear-resolved/', views.admin_clear_resolved_errors, name='admin_clear_resolved_errors'),
 ]

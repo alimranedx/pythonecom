@@ -430,3 +430,132 @@ class BilingualStorefrontTests(TestCase):
         output_str = out.getvalue()
         self.assertIn('[SUCCESS] All E-Commerce Database Data Ready!', output_str)
         self.assertTrue(SiteSetting.objects.exists())
+
+
+class ProductionErrorHandlingTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_custom_404_view_renders_404_template(self):
+        """Requesting non-existent route returns HTTP 404 with custom 404.html template."""
+        response = self.client.get('/this-path-does-not-exist-at-all-12345/')
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, '404.html')
+        self.assertContains(response, '404', status_code=404)
+
+    def test_custom_500_view_renders_cleanly(self):
+        """Direct invocation of custom_server_error_view returns HTTP 500 without leaking sensitive data."""
+        from django.test import RequestFactory
+        from core.views import custom_server_error_view
+        factory = RequestFactory()
+        request = factory.get('/')
+        response = custom_server_error_view(request)
+        self.assertEqual(response.status_code, 500)
+        self.assertIn(b'500', response.content)
+        self.assertIn(b'Internal Server Error', response.content)
+
+    def test_custom_403_view_renders_cleanly(self):
+        """custom_permission_denied_view returns HTTP 403 with 403.html."""
+        from django.test import RequestFactory
+        from core.views import custom_permission_denied_view
+        factory = RequestFactory()
+        request = factory.get('/app-admin/settings/')
+        response = custom_permission_denied_view(request)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn(b'403', response.content)
+
+    def test_custom_400_view_renders_cleanly(self):
+        """custom_bad_request_view returns HTTP 400 with 400.html."""
+        from django.test import RequestFactory
+        from core.views import custom_bad_request_view
+        factory = RequestFactory()
+        request = factory.get('/')
+        response = custom_bad_request_view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b'400', response.content)
+
+
+class SystemExceptionLoggingAndNotificationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.admin_user = User.objects.create_superuser('admin_tester', 'admin@example.com', 'AdminPass123!')
+        self.customer_user = User.objects.create_user('customer_tester', 'cust@example.com', 'CustPass123!')
+
+    def test_unhandled_exception_is_logged_to_database(self):
+        """When an exception occurs during request processing, SystemErrorLog records it."""
+        from django.test import RequestFactory
+        from core.middleware import SystemExceptionLoggingMiddleware
+        from core.models import SystemErrorLog
+
+        factory = RequestFactory()
+        request = factory.get('/test-failing-route/')
+        request.user = self.customer_user
+
+        middleware = SystemExceptionLoggingMiddleware(lambda req: None)
+        test_exc = ZeroDivisionError("division by zero test")
+        middleware.process_exception(request, test_exc)
+
+        log = SystemErrorLog.objects.filter(error_type='ZeroDivisionError').first()
+        self.assertIsNotNone(log)
+        self.assertEqual(log.path, '/test-failing-route/')
+        self.assertEqual(log.method, 'GET')
+        self.assertEqual(log.user, self.customer_user)
+        self.assertFalse(log.is_resolved)
+
+    def test_admin_system_alert_processor_flags_unresolved_errors(self):
+        """Admin context processor alerts staff users when unresolved errors exist."""
+        from core.models import SystemErrorLog
+        from core.context_processors import admin_system_alert_processor
+        from django.test import RequestFactory
+
+        SystemErrorLog.objects.create(
+            error_type='RuntimeError',
+            message='Test error message',
+            traceback='Traceback...',
+            path='/broken-endpoint/',
+            method='POST',
+            is_resolved=False
+        )
+
+        factory = RequestFactory()
+
+        # Admin user browsing
+        req_admin = factory.get('/app-admin/')
+        req_admin.user = self.admin_user
+        ctx_admin = admin_system_alert_processor(req_admin)
+        self.assertTrue(ctx_admin['has_system_errors'])
+        self.assertEqual(ctx_admin['unresolved_error_count'], 1)
+        self.assertIsNotNone(ctx_admin['latest_system_error'])
+
+        # Regular customer browsing (should NOT receive admin alerts)
+        req_cust = factory.get('/')
+        req_cust.user = self.customer_user
+        ctx_cust = admin_system_alert_processor(req_cust)
+        self.assertFalse(ctx_cust['has_system_errors'])
+        self.assertEqual(ctx_cust['unresolved_error_count'], 0)
+
+    def test_admin_can_view_and_resolve_errors(self):
+        """Staff member can view system errors and mark them resolved."""
+        from core.models import SystemErrorLog
+        err = SystemErrorLog.objects.create(
+            error_type='ValueError',
+            message='Invalid literal',
+            traceback='Traceback...',
+            path='/product/detail/',
+            is_resolved=False
+        )
+
+        self.client.force_login(self.admin_user)
+        resp = self.client.get('/app-admin/system-errors/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'ValueError')
+        self.assertContains(resp, '/product/detail/')
+
+        # Resolve error
+        resolve_resp = self.client.get(f'/app-admin/system-errors/{err.id}/resolve/')
+        self.assertEqual(resolve_resp.status_code, 302)
+
+        err.refresh_from_db()
+        self.assertTrue(err.is_resolved)
+        self.assertEqual(err.resolved_by, self.admin_user)
+

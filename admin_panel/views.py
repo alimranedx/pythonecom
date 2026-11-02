@@ -13,7 +13,7 @@ from django.core.paginator import Paginator
 from core.validators import validate_image_file
 from rbac.decorators import require_permission, require_superuser
 from .forms import StaffUserCreateForm, StaffUserEditForm, SiteSettingForm
-from core.models import SiteSetting
+from core.models import SiteSetting, SystemErrorLog
 from rbac.services import RBACService
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
 from product.models import Product, Category, Brand, ProductImage, ProductReview
@@ -1029,3 +1029,83 @@ def admin_site_settings(request):
         'can_edit': can_edit,
     }
     return render(request, 'admin_panel/settings/site_settings.html', context)
+
+
+@require_permission('settings.site_settings', 'view')
+def admin_system_errors(request):
+    """
+    Back-Office view for inspecting and resolving unhandled system exceptions.
+    """
+    logs_qs = SystemErrorLog.objects.all().select_related('user', 'resolved_by')
+
+    status_filter = request.GET.get('status', 'unresolved')
+    if status_filter == 'unresolved':
+        logs_qs = logs_qs.filter(is_resolved=False)
+    elif status_filter == 'resolved':
+        logs_qs = logs_qs.filter(is_resolved=True)
+
+    query = request.GET.get('q', '').strip()
+    if query:
+        logs_qs = logs_qs.filter(
+            Q(error_type__icontains=query) |
+            Q(message__icontains=query) |
+            Q(path__icontains=query)
+        )
+
+    paginator = Paginator(logs_qs, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    unresolved_count = SystemErrorLog.objects.filter(is_resolved=False).count()
+    resolved_count = SystemErrorLog.objects.filter(is_resolved=True).count()
+    total_count = SystemErrorLog.objects.count()
+
+    context = {
+        'page_obj': page_obj,
+        'status_filter': status_filter,
+        'query': query,
+        'unresolved_count': unresolved_count,
+        'resolved_count': resolved_count,
+        'total_count': total_count,
+    }
+    return render(request, 'admin_panel/settings/system_errors.html', context)
+
+
+@require_permission('settings.site_settings', 'edit')
+def admin_resolve_error(request, pk):
+    """
+    Mark an individual system error as resolved.
+    """
+    error = get_object_or_404(SystemErrorLog, pk=pk)
+    error.is_resolved = True
+    error.resolved_by = request.user
+    error.resolved_at = timezone.now()
+    error.save(update_fields=['is_resolved', 'resolved_by', 'resolved_at'])
+    messages.success(request, f"Error #{error.id} ({error.error_type}) marked as resolved.")
+    return redirect(request.META.get('HTTP_REFERER') or 'admin_system_errors')
+
+
+@require_permission('settings.site_settings', 'edit')
+def admin_resolve_all_errors(request):
+    """
+    Mark all currently unresolved system errors as resolved in bulk.
+    """
+    if request.method == 'POST':
+        updated = SystemErrorLog.objects.filter(is_resolved=False).update(
+            is_resolved=True,
+            resolved_by=request.user,
+            resolved_at=timezone.now()
+        )
+        messages.success(request, f"Marked {updated} system error(s) as resolved.")
+    return redirect('admin_system_errors')
+
+
+@require_permission('settings.site_settings', 'delete')
+def admin_clear_resolved_errors(request):
+    """
+    Purge resolved error logs from the database.
+    """
+    if request.method == 'POST':
+        deleted, _ = SystemErrorLog.objects.filter(is_resolved=True).delete()
+        messages.success(request, f"Deleted {deleted} resolved error log(s).")
+    return redirect('admin_system_errors')

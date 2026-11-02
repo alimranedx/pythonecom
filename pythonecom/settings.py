@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'core.middleware.SystemExceptionLoggingMiddleware',
     'core.middleware.SessionRoleIsolationMiddleware',
     'core.middleware.LanguageRoutingMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -79,6 +80,7 @@ TEMPLATES = [
                 'accounts.context_processors.wishlist_processor',
                 'core.context_processors.language_processor',
                 'core.context_processors.site_settings_processor',
+                'core.context_processors.admin_system_alert_processor',
             ],
         },
     },
@@ -106,6 +108,13 @@ DATABASES = {
         }
     }
 }
+
+import sys
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
 
 
 # Password validation
@@ -190,6 +199,61 @@ if not DEBUG:
 
 
 # ==============================================================================
+# PRODUCTION LOGGING CONFIGURATION
+# ==============================================================================
+LOGS_DIR = BASE_DIR / 'logs'
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] [{levelname}] [{name}:{lineno}] {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{levelname}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file_errors': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'django_error.log',
+            'maxBytes': 5 * 1024 * 1024,  # 5 MB per file
+            'backupCount': 5,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'core': {
+            'handlers': ['console', 'file_errors'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+
+# ==============================================================================
 # BKASH PAYMENT GATEWAY CONFIGURATION
 # ==============================================================================
 BKASH_BASE_URL = os.environ.get('BKASH_BASE_URL', 'https://tokenized.sandbox.bka.sh/v1.2.0-beta')
@@ -210,4 +274,3 @@ AUTHENTICATION_BACKENDS = [
     'accounts.backends.PhoneOrUsernameBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
