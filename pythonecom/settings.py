@@ -26,7 +26,11 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-lx1t3rkvbc)px7(o6m(s_e4n3685r-25hs%&u@n-ev87dg@y3o')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
+# On live cPanel server (/home/shopbusk), automatically enforce production error handling (DEBUG=False)
+if Path('/home/shopbusk').exists() or os.environ.get('DJANGO_ENV') == 'production':
+    DEBUG = os.environ.get('DJANGO_FORCE_DEBUG', 'False').lower() in ('true', '1', 'yes')
+else:
+    DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost,testserver,ecommerce.shopbusket.com,shopbusket.com,104.152.168.205').split(',') if h.strip()]
 
@@ -190,7 +194,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000            # Limit multipart form keys
 
 # Automated Production HTTPS Hardening (Engages automatically when DEBUG=False)
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'False').lower() in ('true', '1', 'yes')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000
