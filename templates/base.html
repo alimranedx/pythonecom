@@ -336,6 +336,22 @@
             color: #ffffff !important;
             border-color: #3b82f6 !important;
         }
+
+        /* Footer Payment Badges */
+        .payment-indicator {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .payment-chip {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            user-select: none;
+        }
+        .payment-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25) !important;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -795,6 +811,43 @@
                             <a href="{{ site_settings.social_linkedin }}" target="_blank" rel="noopener" class="text-secondary" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
                         {% endif %}
                     </div>
+
+                    <!-- Accepted Payment Methods -->
+                    <div class="mt-4 pt-1">
+                        <span class="d-block text-white-50 small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                            <i class="bi bi-credit-card-2-back text-primary me-1"></i>
+                            {% if IS_BANGLA %}অনুমোদিত পেমেন্ট মাধ্যম{% else %}Accepted Payment Methods{% endif %}
+                        </span>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <!-- bKash (Active) -->
+                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm" title="bKash Online Payment (Active)">
+                                <span class="payment-indicator bg-success"></span>
+                                <span class="fw-bold" style="color: #e2136e; font-size: 0.8rem; font-family: system-ui, -apple-system, sans-serif;">bKash</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Active</span>
+                            </div>
+
+                            <!-- Nagad (Active) -->
+                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm" title="Nagad Mobile Payment (Active)">
+                                <span class="payment-indicator bg-success"></span>
+                                <span class="fw-bold" style="color: #f7941d; font-size: 0.8rem; font-family: system-ui, -apple-system, sans-serif;">Nagad</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Active</span>
+                            </div>
+
+                            <!-- Cash on Delivery (Active) -->
+                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm" title="Cash on Delivery (Active)">
+                                <i class="bi bi-cash-stack text-success" style="font-size: 0.85rem;"></i>
+                                <span class="fw-bold text-dark" style="font-size: 0.78rem;">COD</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Active</span>
+                            </div>
+
+                            <!-- Card Payment (Coming Soon) -->
+                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 shadow-sm border" style="background-color: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.18) !important;" title="Debit / Credit Card (Visa, Mastercard - Coming Soon)">
+                                <i class="bi bi-credit-card-2-front text-light opacity-75" style="font-size: 0.85rem;"></i>
+                                <span class="fw-semibold text-light" style="font-size: 0.78rem;">Card Payment</span>
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
                     <h6 class="fw-bold text-white mb-3">{{ tr.quick_links }}</h6>
@@ -835,12 +888,10 @@
                         <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email">
                         <button class="btn btn-primary" type="button">Subscribe</button>
                     </div>
-                    {% if site_settings.accepted_payments_text %}
-                        <small class="text-muted d-block">Accepted Payment Gateways:</small>
-                        <div class="d-flex flex-wrap gap-2 mt-2">
-                            <span class="badge bg-secondary">{{ site_settings.accepted_payments_text }}</span>
-                        </div>
-                    {% endif %}
+                    <div class="mt-3 text-secondary small d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check text-success fs-5"></i>
+                        <span>{% if IS_BANGLA %}১০০% নিরাপদ ও সুরক্ষিত পেমেন্ট{% else %}100% Safe & Secure Checkout{% endif %}</span>
+                    </div>
                 </div>
             </div>
             <hr class="border-secondary my-4">
