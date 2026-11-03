@@ -6,7 +6,7 @@ def cart_processor(request):
     Back-office admin routes bypass cart creation completely.
     """
     path = getattr(request, 'path_info', '')
-    if path.startswith('/app-admin/') or path.startswith('/admin/'):
+    if path.startswith('/app-admin/'):
         return {
             'global_cart': None,
             'global_cart_items_count': 0,

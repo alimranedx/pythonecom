@@ -3,7 +3,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, Http404
 from django.db.models import Q
 from django.core.paginator import Paginator
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test
+
+
+def staff_member_required(view_func=None, login_url='admin_login'):
+    decorator = user_passes_test(lambda u: u.is_active and u.is_staff, login_url=login_url)
+    if view_func:
+        return decorator(view_func)
+    return decorator
 from .models import Product, Category, Brand
 from .forms import ProductForm
 

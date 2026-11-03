@@ -114,7 +114,6 @@ After running `python manage.py seed_ecommerce`, the following pre-configured ac
 | **Back-Office** | **Catalog Manager** | `catalog_admin` | `Manager@12345` | Products, Categories, and Inventory management only |
 | **Back-Office** | **Order Dispatcher** | `orders_staff` | `Staff@12345` | Order management, status workflows, view customers |
 | **Storefront** | **Customer** | `customer_user` | `User@12345` | Customer profile, shopping bag, checkout, orders |
-| **Native Admin** | **Superuser** | `superadmin` | `Admin@12345` | Standard Django admin interface (`/admin/`) |
 
 > **Note:** For security, change these credentials before deploying to a production environment.
 
@@ -135,7 +134,6 @@ After running `python manage.py seed_ecommerce`, the following pre-configured ac
 | **Back-Office Portal** | `http://127.0.0.1:8000/app-admin/` | Custom RBAC staff dashboard, revenue KPIs, low-stock warnings |
 | **Store & Brand Settings** | `http://127.0.0.1:8000/app-admin/settings/` | Dynamic store identity, announcements, contacts, social links, footer notices |
 | **Role & Permission Manager** | `http://127.0.0.1:8000/app-admin/rbac/roles/` | Interactive matrix of module & submodule capabilities |
-| **Django Admin** | `http://127.0.0.1:8000/admin/` | Default Django superuser admin portal |
 
 ---
 

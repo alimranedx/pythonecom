@@ -11,7 +11,7 @@ class SessionRoleIsolationMiddleware:
        If a staff/admin user is logged in, their session is automatically cleared (logout)
        so the root storefront is completely free for guest or customer shopping.
        
-    2. Admin routes ('/app-admin/', '/admin/'):
+    2. Admin routes ('/app-admin/'):
        If a regular customer user is logged in, their session is automatically cleared (logout)
        so the admin portal remains strictly isolated for staff authentication.
        
@@ -28,7 +28,7 @@ class SessionRoleIsolationMiddleware:
         # Skip static assets, media files, and browser metadata requests
         ignored_prefixes = ('/static/', '/media/', '/favicon.ico', '/robots.txt', '/apple-touch-icon')
         if not any(path.startswith(prefix) for prefix in ignored_prefixes):
-            is_admin_route = path.startswith('/app-admin/') or path.startswith('/admin/')
+            is_admin_route = path.startswith('/app-admin/')
 
             if request.user.is_authenticated:
                 if not is_admin_route and request.user.is_staff:
@@ -47,7 +47,7 @@ class SessionRoleIsolationMiddleware:
 class LanguageRoutingMiddleware:
     """
     Enforces bilingual language routing (English & Bangla) for root/storefront routes,
-    while guaranteeing that the administrative portal (/app-admin/, /admin/)
+    while guaranteeing that the administrative portal (/app-admin/)
     always strictly remains in English.
     """
 
@@ -56,7 +56,7 @@ class LanguageRoutingMiddleware:
 
     def __call__(self, request):
         path = request.path_info
-        is_admin_route = path.startswith('/app-admin/') or path.startswith('/admin/')
+        is_admin_route = path.startswith('/app-admin/')
 
         if is_admin_route:
             # Force English strictly for all administrative routes
