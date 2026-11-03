@@ -552,8 +552,7 @@
 
                     <span class="text-muted opacity-25">|</span>
 
-                    <a href="{% url 'home' %}" class="text-decoration-none fw-semibold text-dark">{{ tr.home }}</a>
-                    <a href="{% url 'product_list' %}" class="text-decoration-none fw-semibold text-dark">{{ tr.all_products }}</a>
+                    <a href="{% url 'product_list' %}" class="text-decoration-none fw-semibold text-dark">{{ tr.products }}</a>
 
                     <!-- Featured Categories Quick Links (Dynamically loaded from database) -->
                     {% for cat in nav_categories %}

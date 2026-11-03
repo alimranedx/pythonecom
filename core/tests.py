@@ -221,10 +221,12 @@ class BilingualStorefrontTests(TestCase):
         proxy_en = TranslationProxy('en')
         self.assertEqual(proxy_en.home, 'Home')
         self.assertEqual(proxy_en.add_to_cart, 'Add to Cart')
+        self.assertEqual(proxy_en.products, 'Products')
 
         proxy_bn = TranslationProxy('bn')
         self.assertEqual(proxy_bn.home, 'হোম')
         self.assertEqual(proxy_bn.add_to_cart, 'ব্যাগে যোগ করুন')
+        self.assertEqual(proxy_bn.products, 'পণ্য')
 
         # Fallback for unknown keys
         self.assertEqual(proxy_bn.unknown_key_123, 'unknown_key_123')

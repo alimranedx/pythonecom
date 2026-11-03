@@ -9,6 +9,7 @@ TRANSLATIONS = {
         # Navigation & Topbar
         'home': 'Home',
         'all_products': 'All Products',
+        'products': 'Products',
         'categories': 'Categories',
         'flash_deals': 'Flash Deals',
         'featured': 'Featured Deals',
@@ -210,6 +211,7 @@ TRANSLATIONS = {
         # Navigation & Topbar
         'home': 'হোম',
         'all_products': 'সকল পণ্য',
+        'products': 'পণ্য',
         'categories': 'ক্যাটাগরি',
         'flash_deals': 'ফ্ল্যাশ ডিল',
         'featured': 'সেরা অফার',
@@ -412,6 +414,7 @@ TRANSLATIONS = {
 STRING_TO_KEY = {
     'home': 'home',
     'all products': 'all_products',
+    'products': 'products',
     'categories': 'categories',
     'flash deals': 'flash_deals',
     'featured': 'featured',
