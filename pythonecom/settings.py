@@ -85,6 +85,7 @@ TEMPLATES = [
                 'core.context_processors.language_processor',
                 'core.context_processors.site_settings_processor',
                 'core.context_processors.admin_system_alert_processor',
+                'core.context_processors.navigation_categories_processor',
             ],
         },
     },

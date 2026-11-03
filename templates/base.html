@@ -524,14 +524,43 @@
         <!-- Sub Navigation Bar (Desktop) -->
         <div class="bg-light border-top py-1 d-none d-md-block">
             <div class="container d-flex align-items-center justify-content-between small">
-                <div class="d-flex align-items-center gap-4">
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Dynamic All Categories Dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-1 px-2 fw-semibold d-flex align-items-center gap-1 border-0 bg-transparent text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.82rem;">
+                            <i class="bi bi-grid-fill text-primary"></i>
+                            <span>{{ tr.all_categories|default:'All Categories' }}</span>
+                        </button>
+                        <ul class="dropdown-menu shadow border-0 py-2 mt-1" style="max-height: 400px; overflow-y: auto; min-width: 250px;">
+                            <li>
+                                <a class="dropdown-item fw-semibold text-primary py-2 d-flex align-items-center gap-2" href="{% url 'product_list' %}">
+                                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                                    <span>{{ tr.all_products }}</span>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            {% for cat in all_categories %}
+                                <li>
+                                    <a class="dropdown-item py-1 px-3 d-flex align-items-center gap-2 text-secondary" href="{% url 'product_list' %}?category={{ cat.slug }}">
+                                        <i class="bi {{ cat.icon|default:'bi-tag' }} text-muted"></i>
+                                        <span class="text-truncate">{{ cat.name }}</span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <span class="text-muted opacity-25">|</span>
+
                     <a href="{% url 'home' %}" class="text-decoration-none fw-semibold text-dark">{{ tr.home }}</a>
                     <a href="{% url 'product_list' %}" class="text-decoration-none fw-semibold text-dark">{{ tr.all_products }}</a>
-                    <a href="{% url 'product_list' %}?category=electronics-laptops" class="text-decoration-none text-secondary">{{ tr.laptops }}</a>
-                    <a href="{% url 'product_list' %}?category=smartphones-tablets" class="text-decoration-none text-secondary">{{ tr.smartphones }}</a>
-                    <a href="{% url 'product_list' %}?category=fashion-apparel" class="text-decoration-none text-secondary">{{ tr.fashion }}</a>
-                    <a href="{% url 'product_list' %}?category=audio-headphones" class="text-decoration-none text-secondary">{{ tr.audio }}</a>
-                    <a href="{% url 'product_list' %}?category=watches-wearables" class="text-decoration-none text-secondary">{{ tr.watches }}</a>
+
+                    <!-- Featured Categories Quick Links (Dynamically loaded from database) -->
+                    {% for cat in nav_categories %}
+                        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none text-secondary text-nowrap">
+                            {{ cat.name }}
+                        </a>
+                    {% endfor %}
                 </div>
                 <div class="text-muted">
                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ tr.flash_sale_active }}</span>
@@ -630,22 +659,17 @@
                 </div>
 
                 <h6 class="small fw-bold text-uppercase text-muted mb-2">{{ tr.categories }}</h6>
-                <div class="list-group list-group-flush mb-4">
-                    <a href="{% url 'product_list' %}?category=electronics-laptops" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
-                        <i class="bi bi-laptop text-secondary"></i> {{ tr.laptops }}
-                    </a>
-                    <a href="{% url 'product_list' %}?category=smartphones-tablets" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
-                        <i class="bi bi-phone text-secondary"></i> {{ tr.smartphones }}
-                    </a>
-                    <a href="{% url 'product_list' %}?category=fashion-apparel" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
-                        <i class="bi bi-handbag text-secondary"></i> {{ tr.fashion }}
-                    </a>
-                    <a href="{% url 'product_list' %}?category=audio-headphones" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
-                        <i class="bi bi-headphones text-secondary"></i> {{ tr.audio }}
-                    </a>
-                    <a href="{% url 'product_list' %}?category=watches-wearables" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
-                        <i class="bi bi-smartwatch text-secondary"></i> {{ tr.watches }}
-                    </a>
+                <div class="list-group list-group-flush mb-4" style="max-height: 280px; overflow-y: auto;">
+                    {% for cat in all_categories %}
+                        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded d-flex align-items-center gap-2">
+                            <i class="bi {{ cat.icon|default:'bi-tag' }} text-secondary"></i>
+                            <span class="text-truncate">{{ cat.name }}</span>
+                        </a>
+                    {% empty %}
+                        <a href="{% url 'product_list' %}" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded text-muted">
+                            {{ tr.all_products }}
+                        </a>
+                    {% endfor %}
                 </div>
 
                 {% if request.user.is_authenticated and not request.user.is_staff %}

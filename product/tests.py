@@ -67,3 +67,63 @@ class ProductCatalogPaginationTests(TestCase):
         res = self.client.get('/product/?page=999')
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.context['page_obj'].number, 3)
+
+
+class ProductCategoryNavigationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.cat_laptops = Category.objects.create(name='Laptops & Computers', slug='laptops', icon='bi-laptop', is_featured=True, order=1)
+        self.cat_phones = Category.objects.create(name='Smartphones & Mobiles', slug='smartphones', icon='bi-phone', is_featured=True, order=2)
+        self.cat_watches = Category.objects.create(name="Men's Luxury Watches", slug='mens-watches', icon='bi-smartwatch', is_featured=False, order=3)
+        self.brand = Brand.objects.create(name='Apple', slug='apple')
+
+        self.laptop_prod = Product.objects.create(
+            name='MacBook Air M2',
+            slug='macbook-air-m2',
+            category=self.cat_laptops,
+            brand=self.brand,
+            price=Decimal('999.00'),
+            stock=10,
+            is_active=True
+        )
+
+    def test_dynamic_navigation_context_processor(self):
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('nav_categories', res.context)
+        self.assertIn('all_categories', res.context)
+        nav_slugs = [c.slug for c in res.context['nav_categories']]
+        self.assertIn('laptops', nav_slugs)
+        self.assertIn('smartphones', nav_slugs)
+        html = res.content.decode('utf-8')
+        self.assertIn('Laptops &amp; Computers', html)
+
+    def test_category_query_filter_exact_slug(self):
+        res = self.client.get('/product/?category=laptops')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['selected_category'], self.cat_laptops)
+        self.assertEqual(len(res.context['products']), 1)
+
+    def test_category_query_filter_alias_resolution(self):
+        # 'electronics-laptops' should resolve via alias to 'laptops'
+        res = self.client.get('/product/?category=electronics-laptops')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['selected_category'], self.cat_laptops)
+        self.assertEqual(len(res.context['products']), 1)
+
+    def test_category_url_path_alias_resolution(self):
+        # /product/category/electronics-laptops/ should resolve to 'laptops'
+        res = self.client.get('/product/category/electronics-laptops/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['selected_category'], self.cat_laptops)
+
+    def test_invalid_category_query_param_graceful_handling(self):
+        # A nonexistent category query param should not throw 404
+        res = self.client.get('/product/?category=nonexistent_xyz')
+        self.assertEqual(res.status_code, 200)
+        self.assertIsNone(res.context['selected_category'])
+
+    def test_invalid_category_path_returns_404(self):
+        # A nonexistent category direct path should return 404
+        res = self.client.get('/product/category/completely-fake-category/')
+        self.assertEqual(res.status_code, 404)

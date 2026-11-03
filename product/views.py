@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.admin.views.decorators import staff_member_required
@@ -26,19 +26,37 @@ def product_list(request, category_slug=None):
         )
 
     # Category Filter
+    is_explicit_category_path = bool(category_slug)
     if not category_slug:
         category_slug = request.GET.get('category')
     selected_category = None
     if category_slug:
-        selected_category = get_object_or_404(Category, slug=category_slug)
-        products = products.filter(category=selected_category)
+        selected_category = Category.objects.filter(slug=category_slug).first()
+        if not selected_category:
+            CATEGORY_ALIASES = {
+                'electronics-laptops': 'laptops',
+                'smartphones-tablets': 'smartphones',
+                'fashion-apparel': 'mens-shirts',
+                'audio-headphones': 'mobile-accessories',
+                'watches-wearables': 'mens-watches',
+            }
+            alias_slug = CATEGORY_ALIASES.get(category_slug)
+            if alias_slug:
+                selected_category = Category.objects.filter(slug=alias_slug).first()
+
+        if not selected_category and is_explicit_category_path:
+            raise Http404("Category not found")
+
+        if selected_category:
+            products = products.filter(category=selected_category)
 
     # Brand Filter
     brand_slug = request.GET.get('brand')
     selected_brand = None
     if brand_slug:
-        selected_brand = get_object_or_404(Brand, slug=brand_slug)
-        products = products.filter(brand=selected_brand)
+        selected_brand = Brand.objects.filter(slug=brand_slug).first()
+        if selected_brand:
+            products = products.filter(brand=selected_brand)
 
     # In Stock Filter
     in_stock = request.GET.get('in_stock', '').strip()

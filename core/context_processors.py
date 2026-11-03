@@ -54,3 +54,41 @@ def admin_system_alert_processor(request):
         'unresolved_error_count': 0,
         'latest_system_error': None,
     }
+
+
+def navigation_categories_processor(request):
+    """
+    Exposes active categories globally to navigation menus and mobile drawer:
+    - nav_categories: Top 6 featured categories for the desktop horizontal sub-navbar.
+    - all_categories: All active categories for the 'Browse Categories' dropdown and mobile menu.
+    """
+    try:
+        from product.models import Category
+        featured = list(
+            Category.objects.filter(is_featured=True)
+            .order_by('order', 'name')
+            .only('id', 'name', 'slug', 'icon', 'order', 'is_featured')[:6]
+        )
+        if len(featured) < 5:
+            existing_ids = [c.id for c in featured]
+            supplements = list(
+                Category.objects.exclude(id__in=existing_ids)
+                .order_by('order', 'name')
+                .only('id', 'name', 'slug', 'icon', 'order', 'is_featured')[:(6 - len(featured))]
+            )
+            featured.extend(supplements)
+
+        all_cats = list(
+            Category.objects.all()
+            .order_by('order', 'name')
+            .only('id', 'name', 'slug', 'icon', 'order', 'is_featured')
+        )
+        return {
+            'nav_categories': featured,
+            'all_categories': all_cats,
+        }
+    except Exception:
+        return {
+            'nav_categories': [],
+            'all_categories': [],
+        }
