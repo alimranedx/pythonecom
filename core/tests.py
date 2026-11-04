@@ -476,6 +476,49 @@ class ProductionErrorHandlingTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn(b'400', response.content)
 
+    def test_custom_error_views_bifurcate_backoffice_and_storefront(self):
+        """All error handlers cleanly separate back-office layout from storefront layout."""
+        from django.test import RequestFactory
+        from core.views import (
+            custom_bad_request_view,
+            custom_permission_denied_view,
+            custom_page_not_found_view,
+            custom_server_error_view,
+        )
+        factory = RequestFactory()
+
+        # Admin routes render back-office templates
+        admin_req = factory.get('/app-admin/unknown-page/')
+        res_404_admin = custom_page_not_found_view(admin_req)
+        self.assertEqual(res_404_admin.status_code, 404)
+        self.assertIn(b'Back-Office Page Not Found', res_404_admin.content)
+        self.assertNotIn(b'Free Express Shipping', res_404_admin.content)
+
+        res_403_admin = custom_permission_denied_view(admin_req)
+        self.assertEqual(res_403_admin.status_code, 403)
+        self.assertIn(b'ACCESS RESTRICTED', res_403_admin.content)
+        self.assertNotIn(b'Free Express Shipping', res_403_admin.content)
+
+        res_400_admin = custom_bad_request_view(admin_req)
+        self.assertEqual(res_400_admin.status_code, 400)
+        self.assertIn(b'Invalid or Malformed Request', res_400_admin.content)
+        self.assertNotIn(b'Free Express Shipping', res_400_admin.content)
+
+        res_500_admin = custom_server_error_view(admin_req)
+        self.assertEqual(res_500_admin.status_code, 500)
+        self.assertIn(b'Internal Server Exception', res_500_admin.content)
+        self.assertNotIn(b'Free Express Shipping', res_500_admin.content)
+
+        # Storefront routes render storefront templates
+        store_req = factory.get('/some-store-page/')
+        res_404_store = custom_page_not_found_view(store_req)
+        self.assertEqual(res_404_store.status_code, 404)
+        self.assertIn(b'Free Express Shipping', res_404_store.content)
+
+        res_403_store = custom_permission_denied_view(store_req)
+        self.assertEqual(res_403_store.status_code, 403)
+        self.assertIn(b'Free Express Shipping', res_403_store.content)
+
 
 class SystemExceptionLoggingAndNotificationTests(TestCase):
     def setUp(self):
@@ -560,4 +603,48 @@ class SystemExceptionLoggingAndNotificationTests(TestCase):
         err.refresh_from_db()
         self.assertTrue(err.is_resolved)
         self.assertEqual(err.resolved_by, self.admin_user)
+    def test_unpermitted_staff_gets_backoffice_403_on_system_errors(self):
+        """Staff member without system errors permission receives back-office 403 page."""
+        staff_user = User.objects.create_user('limited_staff', 'staff@test.com', 'StaffPass123!', is_staff=True)
+        self.client.force_login(staff_user)
+        resp = self.client.get('/app-admin/system-errors/')
+        self.assertEqual(resp.status_code, 403)
+        self.assertTemplateUsed(resp, 'admin_panel/403.html')
+        content = resp.content.decode('utf-8')
+        self.assertIn('ACCESS RESTRICTED', content)
+        self.assertIn('Back to Dashboard', content)
+        # Verify customer storefront components are NOT rendered
+        self.assertNotIn('Free Express Shipping', content)
+        self.assertNotIn('Search products, brands, or categories...', content)
 
+    def test_staff_with_system_errors_perm_can_access(self):
+        """Staff user with settings.system_errors.view role permission can access error logs."""
+        from rbac.models import Module, Submodule, Permission, Role, UserRole
+        staff_user = User.objects.create_user('dev_staff', 'dev@test.com', 'DevPass123!', is_staff=True)
+        mod, _ = Module.objects.get_or_create(code='settings', defaults={'name': 'Settings'})
+        sub, _ = Submodule.objects.get_or_create(code='settings.system_errors', defaults={'module': mod, 'name': 'System Error Logs'})
+        perm, _ = Permission.objects.get_or_create(submodule=sub, action='view', code='settings.system_errors.view', defaults={'name': 'View System Errors'})
+        role = Role.objects.create(name='Dev Role')
+        role.permissions.add(perm)
+        UserRole.objects.create(user=staff_user, role=role)
+
+        self.client.force_login(staff_user)
+        resp = self.client.get('/app-admin/system-errors/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'admin_panel/settings/system_errors.html')
+
+    def test_staff_with_site_settings_fallback_perm_can_access(self):
+        """Staff user with settings.site_settings.view backward compatibility can access error logs."""
+        from rbac.models import Module, Submodule, Permission, Role, UserRole
+        staff_user = User.objects.create_user('admin_staff', 'admin2@test.com', 'AdminPass123!', is_staff=True)
+        mod, _ = Module.objects.get_or_create(code='settings', defaults={'name': 'Settings'})
+        sub, _ = Submodule.objects.get_or_create(code='settings.site_settings', defaults={'module': mod, 'name': 'Store & Brand Settings'})
+        perm, _ = Permission.objects.get_or_create(submodule=sub, action='view', code='settings.site_settings.view', defaults={'name': 'View Site Settings'})
+        role = Role.objects.create(name='Store Settings Manager')
+        role.permissions.add(perm)
+        UserRole.objects.create(user=staff_user, role=role)
+
+        self.client.force_login(staff_user)
+        resp = self.client.get('/app-admin/system-errors/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'admin_panel/settings/system_errors.html')

@@ -314,6 +314,7 @@ class Command(BaseCommand):
                 'order': 5,
                 'submodules': [
                     {'name': 'Store & Brand Settings', 'code': 'settings.site_settings', 'url_name': 'admin_site_settings', 'order': 1},
+                    {'name': 'System Error Logs', 'code': 'settings.system_errors', 'url_name': 'admin_system_errors', 'order': 2},
                 ]
             },
         ]

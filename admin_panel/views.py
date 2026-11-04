@@ -1031,7 +1031,7 @@ def admin_site_settings(request):
     return render(request, 'admin_panel/settings/site_settings.html', context)
 
 
-@require_permission('settings.site_settings', 'view')
+@require_permission('settings.system_errors', 'view')
 def admin_system_errors(request):
     """
     Back-Office view for inspecting and resolving unhandled system exceptions.
@@ -1060,6 +1060,9 @@ def admin_system_errors(request):
     resolved_count = SystemErrorLog.objects.filter(is_resolved=True).count()
     total_count = SystemErrorLog.objects.count()
 
+    can_edit = request.user.is_superuser or RBACService.user_has_permission(request.user, 'settings.system_errors', 'edit')
+    can_delete = request.user.is_superuser or RBACService.user_has_permission(request.user, 'settings.system_errors', 'delete')
+
     context = {
         'page_obj': page_obj,
         'status_filter': status_filter,
@@ -1067,11 +1070,13 @@ def admin_system_errors(request):
         'unresolved_count': unresolved_count,
         'resolved_count': resolved_count,
         'total_count': total_count,
+        'can_edit': can_edit,
+        'can_delete': can_delete,
     }
     return render(request, 'admin_panel/settings/system_errors.html', context)
 
 
-@require_permission('settings.site_settings', 'edit')
+@require_permission('settings.system_errors', 'edit')
 def admin_resolve_error(request, pk):
     """
     Mark an individual system error as resolved.
@@ -1082,10 +1087,10 @@ def admin_resolve_error(request, pk):
     error.resolved_at = timezone.now()
     error.save(update_fields=['is_resolved', 'resolved_by', 'resolved_at'])
     messages.success(request, f"Error #{error.id} ({error.error_type}) marked as resolved.")
-    return redirect(request.META.get('HTTP_REFERER') or 'admin_system_errors')
+    return redirect('admin_system_errors')
 
 
-@require_permission('settings.site_settings', 'edit')
+@require_permission('settings.system_errors', 'edit')
 def admin_resolve_all_errors(request):
     """
     Mark all currently unresolved system errors as resolved in bulk.
@@ -1100,7 +1105,7 @@ def admin_resolve_all_errors(request):
     return redirect('admin_system_errors')
 
 
-@require_permission('settings.site_settings', 'delete')
+@require_permission('settings.system_errors', 'delete')
 def admin_clear_resolved_errors(request):
     """
     Purge resolved error logs from the database.

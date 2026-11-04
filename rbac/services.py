@@ -14,7 +14,7 @@ class RBACService:
         Returns a set of all permission codes granted to the user across all assigned roles.
         Cached on the user instance to avoid redundant database lookups.
         """
-        if not user.is_authenticated:
+        if not user or not hasattr(user, 'is_authenticated') or not user.is_authenticated:
             return set()
 
         # Cache on request.user object for the lifecycle of the request
@@ -42,7 +42,7 @@ class RBACService:
         Checks if the user has a specific action permission on a submodule.
         Example: user_has_permission(user, 'catalog.products', 'edit')
         """
-        if not user.is_authenticated:
+        if not user or not hasattr(user, 'is_authenticated') or not user.is_authenticated:
             return False
         if user.is_superuser:
             return True
@@ -53,7 +53,15 @@ class RBACService:
 
         target_code = f"{submodule_code}.{action}"
         user_perms = cls.get_user_permission_codes(user)
-        return target_code in user_perms
+        if target_code in user_perms:
+            return True
+
+        # Backward compatibility fallback: allow settings.site_settings for system errors
+        if submodule_code == 'settings.system_errors':
+            if f"settings.site_settings.{action}" in user_perms:
+                return True
+
+        return False
 
     @classmethod
     def get_user_allowed_menu(cls, user: User):
@@ -62,7 +70,7 @@ class RBACService:
         exclusively by the submodules the user has 'view' permissions for.
         Access Control / User & Role Management is strictly visible to Super Administrators only.
         """
-        if not user.is_authenticated or not user.is_staff:
+        if not user or not hasattr(user, 'is_authenticated') or not user.is_authenticated or not getattr(user, 'is_staff', False):
             return []
 
         user_perms = cls.get_user_permission_codes(user)
@@ -82,6 +90,8 @@ class RBACService:
                     continue
                 view_perm_code = f"{sub.code}.view"
                 if user.is_superuser or view_perm_code in user_perms:
+                    allowed_submodules.append(sub)
+                elif sub.code == 'settings.system_errors' and 'settings.site_settings.view' in user_perms:
                     allowed_submodules.append(sub)
 
             if allowed_submodules:

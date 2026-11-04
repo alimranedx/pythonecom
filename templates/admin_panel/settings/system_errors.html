@@ -90,7 +90,7 @@
 
                 <!-- Bulk Actions -->
                 <div class="d-flex gap-2">
-                    {% if unresolved_count > 0 %}
+                    {% if unresolved_count > 0 and can_edit %}
                         <form method="POST" action="{% url 'admin_resolve_all_errors' %}" onsubmit="return confirm('Are you sure you want to mark ALL unresolved errors as resolved?');">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-outline-success">
@@ -98,7 +98,7 @@
                             </button>
                         </form>
                     {% endif %}
-                    {% if resolved_count > 0 %}
+                    {% if resolved_count > 0 and can_delete %}
                         <form method="POST" action="{% url 'admin_clear_resolved_errors' %}" onsubmit="return confirm('Delete all resolved error logs permanently?');">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -176,7 +176,7 @@
                                         <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#traceback-{{ err.id }}">
                                             <i class="bi bi-code-slash"></i> Trace
                                         </button>
-                                        {% if not err.is_resolved %}
+                                        {% if not err.is_resolved and can_edit %}
                                             <a href="{% url 'admin_resolve_error' err.id %}" class="btn btn-sm btn-outline-success ms-1" title="Mark as Resolved">
                                                 <i class="bi bi-check-lg"></i>
                                             </a>

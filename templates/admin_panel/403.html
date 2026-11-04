@@ -1,0 +1,38 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block page_title %}Access Denied{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-6 col-md-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white text-center">
+            <div class="mb-3">
+                <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill fw-bold" style="font-size: 0.85rem;">
+                    <i class="bi bi-shield-x me-1"></i> ERROR 403: ACCESS RESTRICTED
+                </span>
+            </div>
+            
+            <div class="display-1 fw-bold text-danger mb-2" style="font-size: 4.5rem; letter-spacing: -2px; line-height: 1;">
+                4<span class="text-warning">0</span>3
+            </div>
+            
+            <h3 class="fw-bold text-dark mb-3">
+                Permission Required
+            </h3>
+            
+            <p class="text-muted mb-4 lead fs-6">
+                {{ exception_message|default:"You do not have the necessary permissions to access this administrative section. Please contact your Super Administrator if you believe this is an error." }}
+            </p>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2 pt-2">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                    <i class="bi bi-speedometer2 me-1"></i> Back to Dashboard
+                </a>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Go Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

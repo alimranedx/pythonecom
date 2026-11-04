@@ -29,11 +29,21 @@ def set_language_view(request, lang_code):
 def custom_page_not_found_view(request, exception=None):
     """
     Production-ready 404 Page Not Found error handler.
-    Presents a clean, branded, bilingual search and navigation interface.
+    Distinguishes back-office (/app-admin/) requests from storefront requests.
     """
+    if not hasattr(request, 'user'):
+        from django.contrib.auth.models import AnonymousUser
+        request.user = AnonymousUser()
+
+    path = getattr(request, 'path_info', '')
+    if path.startswith('/app-admin/'):
+        return render(request, 'admin_panel/404.html', {
+            'requested_path': path,
+        }, status=404)
+
     context = {
         'site_settings': SiteSetting.get_settings(),
-        'requested_path': getattr(request, 'path_info', ''),
+        'requested_path': path,
     }
     return render(request, '404.html', context, status=404)
 
@@ -41,8 +51,12 @@ def custom_page_not_found_view(request, exception=None):
 def custom_server_error_view(request):
     """
     Production-ready 500 Internal Server Error handler.
-    Guarantees zero leakage of tracebacks or credentials to customers while notifying administrators.
+    Distinguishes back-office (/app-admin/) requests from storefront requests.
     """
+    if not hasattr(request, 'user'):
+        from django.contrib.auth.models import AnonymousUser
+        request.user = AnonymousUser()
+
     import sys
     exc_type, exc_val, exc_tb = sys.exc_info()
     error_type = exc_type.__name__ if exc_type else "SystemError"
@@ -55,6 +69,12 @@ def custom_server_error_view(request):
         except Exception:
             pass
 
+    path = getattr(request, 'path_info', '')
+    if path.startswith('/app-admin/'):
+        return render(request, 'admin_panel/500.html', {
+            'error_type': error_type,
+        }, status=500)
+
     context = {
         'site_settings': SiteSetting.get_settings(),
         'error_type': error_type,
@@ -65,7 +85,18 @@ def custom_server_error_view(request):
 def custom_permission_denied_view(request, exception=None):
     """
     Production-ready 403 Forbidden / Access Denied error handler.
+    Distinguishes back-office (/app-admin/) requests from storefront requests.
     """
+    if not hasattr(request, 'user'):
+        from django.contrib.auth.models import AnonymousUser
+        request.user = AnonymousUser()
+
+    path = getattr(request, 'path_info', '')
+    if path.startswith('/app-admin/'):
+        return render(request, 'admin_panel/403.html', {
+            'exception_message': str(exception) if exception else None,
+        }, status=403)
+
     context = {
         'site_settings': SiteSetting.get_settings(),
         'exception_message': str(exception) if exception else None,
@@ -76,7 +107,18 @@ def custom_permission_denied_view(request, exception=None):
 def custom_bad_request_view(request, exception=None):
     """
     Production-ready 400 Bad Request error handler.
+    Distinguishes back-office (/app-admin/) requests from storefront requests.
     """
+    if not hasattr(request, 'user'):
+        from django.contrib.auth.models import AnonymousUser
+        request.user = AnonymousUser()
+
+    path = getattr(request, 'path_info', '')
+    if path.startswith('/app-admin/'):
+        return render(request, 'admin_panel/400.html', {
+            'exception_message': str(exception) if exception else None,
+        }, status=400)
+
     context = {
         'site_settings': SiteSetting.get_settings(),
         'exception_message': str(exception) if exception else None,
