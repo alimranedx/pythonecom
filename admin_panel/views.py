@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from core.validators import validate_image_file
 from rbac.decorators import require_permission, require_superuser
-from .forms import StaffUserCreateForm, StaffUserEditForm, SiteSettingForm
+from .forms import StaffUserCreateForm, StaffUserEditForm, SiteSettingForm, AdminProfileUpdateForm, AdminPasswordChangeForm
 from core.models import SiteSetting, SystemErrorLog
 from rbac.services import RBACService
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
@@ -98,6 +98,52 @@ def admin_dashboard(request):
         'status_counts': status_counts,
         'recent_orders': recent_orders,
     })
+
+
+@login_required(login_url='admin_login')
+def admin_profile(request):
+    """
+    Back-Office staff account settings: allows any authenticated staff member
+    to update their name, email, username, and change their password.
+    """
+    if not request.user.is_staff:
+        messages.error(request, "Staff credentials required.")
+        return redirect('home')
+
+    profile_form = AdminProfileUpdateForm(instance=request.user)
+    password_form = AdminPasswordChangeForm(user=request.user)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'update_profile':
+            profile_form = AdminProfileUpdateForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Your profile details have been updated successfully.")
+                return redirect('admin_profile')
+            else:
+                messages.error(request, "Please correct the errors in the profile form.")
+        elif action == 'change_password':
+            password_form = AdminPasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Your password has been changed successfully.")
+                return redirect('admin_profile')
+            else:
+                messages.error(request, "Please correct the errors in the password form.")
+
+    user_roles = request.user.user_roles.select_related('role').all()
+    user_perms_count = len(RBACService.get_user_permission_codes(request.user))
+
+    context = {
+        'profile_form': profile_form,
+        'password_form': password_form,
+        'user_roles': user_roles,
+        'user_perms_count': user_perms_count,
+        'title': 'My Profile & Account Settings',
+    }
+    return render(request, 'admin_panel/profile/profile.html', context)
 
 
 # ---------------- CATALOG: PRODUCTS ----------------

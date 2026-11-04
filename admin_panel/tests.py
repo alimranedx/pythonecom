@@ -532,3 +532,108 @@ class AdminPanelDashboardAnalyticsTests(TestCase):
         self.assertIn('৳500.00', content)
         self.assertIn('Avg Order Value (AOV)', content)
         self.assertIn('Processing', content)
+
+
+class AdminPanelProfileTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.staff_user = User.objects.create_user(
+            username='staff_member',
+            email='staff@example.com',
+            password='OldPassword123!',
+            first_name='John',
+            last_name='Staff',
+            is_staff=True
+        )
+        self.other_user = User.objects.create_user(
+            username='existing_user',
+            email='other@example.com',
+            password='Password123!'
+        )
+
+    def test_unauthenticated_user_redirected_to_admin_login(self):
+        res = self.client.get('/app-admin/profile/')
+        self.assertEqual(res.status_code, 302)
+        self.assertIn('/app-admin/login/', res.url)
+
+    def test_non_staff_user_redirected_to_home(self):
+        self.client.force_login(self.other_user)
+        res = self.client.get('/app-admin/profile/')
+        self.assertEqual(res.status_code, 302)
+        self.assertIn('/app-admin/login/', res.url)
+
+    def test_staff_user_can_view_profile_page(self):
+        self.client.force_login(self.staff_user)
+        res = self.client.get('/app-admin/profile/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+        self.assertIn('staff_member', content)
+        self.assertIn('staff@example.com', content)
+        self.assertIn('Personal Information', content)
+        self.assertIn('Security & Password', content)
+        # Topbar link is rendered
+        self.assertIn('/app-admin/profile/', content)
+
+    def test_update_personal_info_success(self):
+        self.client.force_login(self.staff_user)
+        post_data = {
+            'action': 'update_profile',
+            'first_name': 'Johnny',
+            'last_name': 'Updated',
+            'username': 'johnny_updated',
+            'email': 'johnny@example.com',
+        }
+        res = self.client.post('/app-admin/profile/', post_data, follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.staff_user.refresh_from_db()
+        self.assertEqual(self.staff_user.first_name, 'Johnny')
+        self.assertEqual(self.staff_user.last_name, 'Updated')
+        self.assertEqual(self.staff_user.username, 'johnny_updated')
+        self.assertEqual(self.staff_user.email, 'johnny@example.com')
+        self.assertIn('Your profile details have been updated successfully.', res.content.decode('utf-8'))
+
+    def test_update_personal_info_duplicate_username_fails(self):
+        self.client.force_login(self.staff_user)
+        post_data = {
+            'action': 'update_profile',
+            'first_name': 'John',
+            'last_name': 'Staff',
+            'username': 'existing_user',  # Already taken
+            'email': 'staff@example.com',
+        }
+        res = self.client.post('/app-admin/profile/', post_data)
+        self.assertEqual(res.status_code, 200)
+        self.staff_user.refresh_from_db()
+        self.assertEqual(self.staff_user.username, 'staff_member')
+        self.assertIn('This username is already taken by another account.', res.content.decode('utf-8'))
+
+    def test_change_password_success_and_maintains_session(self):
+        self.client.force_login(self.staff_user)
+        post_data = {
+            'action': 'change_password',
+            'old_password': 'OldPassword123!',
+            'new_password1': 'NewComplexPassword456!',
+            'new_password2': 'NewComplexPassword456!',
+        }
+        res = self.client.post('/app-admin/profile/', post_data, follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.staff_user.refresh_from_db()
+        self.assertTrue(self.staff_user.check_password('NewComplexPassword456!'))
+        self.assertIn('Your password has been changed successfully.', res.content.decode('utf-8'))
+        # Session should still be active
+        self.assertTrue(res.wsgi_request.user.is_authenticated)
+
+    def test_change_password_incorrect_old_password_fails(self):
+        self.client.force_login(self.staff_user)
+        post_data = {
+            'action': 'change_password',
+            'old_password': 'WrongPassword999!',
+            'new_password1': 'NewComplexPassword456!',
+            'new_password2': 'NewComplexPassword456!',
+        }
+        res = self.client.post('/app-admin/profile/', post_data)
+        self.assertEqual(res.status_code, 200)
+        self.staff_user.refresh_from_db()
+        self.assertTrue(self.staff_user.check_password('OldPassword123!'))
+        self.assertFalse(self.staff_user.check_password('NewComplexPassword456!'))
+
