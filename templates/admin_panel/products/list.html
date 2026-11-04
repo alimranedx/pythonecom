@@ -73,7 +73,7 @@
                     <th>Price</th>
                     <th>Stock</th>
                     <th>Status</th>
-                    <th class="text-end pe-3">Actions</th>
+                    <th class="text-end pe-3 text-nowrap" style="min-width: 130px; width: 130px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -115,20 +115,22 @@
                                 <span class="badge bg-primary">Featured</span>
                             {% endif %}
                         </td>
-                        <td class="text-end pe-3">
-                            <a href="{% url 'product_detail' p.pk %}" target="_blank" class="btn btn-sm btn-light border me-1" title="View in Store">
-                                <i class="bi bi-box-arrow-up-right"></i>
-                            </a>
-                            {% if can_edit %}
-                                <a href="{% url 'admin_product_edit' p.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
-                                    <i class="bi bi-pencil"></i>
+                        <td class="text-end pe-3 text-nowrap">
+                            <div class="d-inline-flex align-items-center justify-content-end gap-1">
+                                <a href="{% url 'product_detail' p.pk %}" target="_blank" class="btn btn-sm btn-light border" title="View in Store">
+                                    <i class="bi bi-box-arrow-up-right"></i>
                                 </a>
-                            {% endif %}
-                            {% if can_delete %}
-                                <a href="{% url 'admin_product_delete' p.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            {% endif %}
+                                {% if can_edit %}
+                                    <a href="{% url 'admin_product_edit' p.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                {% endif %}
+                                {% if can_delete %}
+                                    <a href="{% url 'admin_product_delete' p.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                 {% empty %}
