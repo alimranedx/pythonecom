@@ -1066,7 +1066,10 @@ def admin_site_settings(request):
         if quick_theme:
             if quick_theme in THEMES:
                 setting.active_theme = quick_theme
-                setting.save(update_fields=['active_theme'])
+                if setting.pk:
+                    setting.save(update_fields=['active_theme'])
+                else:
+                    setting.save()
                 theme_info = THEMES[quick_theme]
                 messages.success(request, f"Storefront theme successfully switched to '{theme_info['name']}' ({theme_info['benchmark']})!")
                 return redirect(redirect_url or f"{reverse('admin_site_settings')}#theme-panel")
