@@ -129,6 +129,30 @@ class CouponAndDeliverySlotTests(TestCase):
         self.assertEqual(order.shipping_fee, Decimal('49.00'))
         self.assertEqual(order.total_amount, Decimal('249.00'))
 
+    def test_checkout_without_email_generates_fallback_email(self):
+        # Add 1 unit of product
+        self.client.post(f'/cart/add/{self.product.pk}/', {'quantity': 1})
+
+        today_str = timezone.localdate().strftime('%Y-%m-%d')
+        post_data = {
+            'full_name': 'Karim Phone Only',
+            'email': '',  # Customer left email field blank
+            'phone': '01811223344',
+            'street_address': 'Dhanmondi Road 27',
+            'city': 'Dhaka',
+            'postal_code': '1205',
+            'country': 'Bangladesh',
+            'delivery_area': 'Inside Dhaka',
+            'delivery_date': today_str,
+            'payment_method': 'cod',
+        }
+        res = self.client.post('/orders/checkout/', post_data)
+        self.assertEqual(res.status_code, 302)
+
+        order = Order.objects.filter(phone='01811223344').first()
+        self.assertIsNotNone(order)
+        self.assertTrue(order.email.startswith('01811223344@'))
+
     def test_admin_delivery_slots_and_coupons_management(self):
         admin_user = User.objects.create_superuser('admin_mgr', 'mgr@test.com', 'Pass123')
         self.client.force_login(admin_user)

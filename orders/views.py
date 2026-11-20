@@ -1,3 +1,4 @@
+import re
 from datetime import timedelta
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -73,7 +74,7 @@ def checkout(request):
         missing = [f for f in required_fields if not shipping_data.get(f)]
         if not shipping_data.get('email'):
             clean_p = re.sub(r'\D', '', str(shipping_data.get('phone', 'customer')))
-            shipping_data['email'] = f"{clean_p}@customer.shopbusket.com"
+            shipping_data['email'] = f"{clean_p or 'customer'}@customer.shopbusket.com"
 
         if missing:
             messages.error(request, "Please fill in all required shipping fields.")
