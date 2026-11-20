@@ -17,11 +17,12 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Setup Python Environment
-      - name: 🐍 Setup Python 3.9
+      - name: 🐍 Setup Python Environment
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
 
       # Step 3: Install Dependencies & Run Integrity Check
       - name: 📦 Install Dependencies
