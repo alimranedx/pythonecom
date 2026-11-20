@@ -80,26 +80,52 @@ def navigation_categories_processor(request):
     Exposes active categories globally to navigation menus and mobile drawer:
     - nav_categories: Top 6 featured categories for the desktop horizontal sub-navbar.
     - all_categories: All active categories for the 'Browse Categories' dropdown and mobile menu.
+    Strictly isolated to the current active/preview theme.
     """
     try:
         from product.models import Category
+        from core.models import SiteSetting
+        from core.themes import THEMES, DEFAULT_THEME_KEY
+        from django.db.models import Q
+
+        # Resolve active theme key
+        theme_key = None
+        if hasattr(request, 'GET'):
+            preview = request.GET.get('theme')
+            if preview and preview in THEMES:
+                theme_key = preview
+
+        if not theme_key:
+            settings = SiteSetting.get_settings()
+            theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
+            if theme_key not in THEMES:
+                theme_key = DEFAULT_THEME_KEY
+
+        if hasattr(Category, 'theme'):
+            if theme_key == 'mega_market':
+                theme_q = Q(theme='mega_market') | Q(theme='all')
+            else:
+                theme_q = Q(theme=theme_key)
+            base_cats = Category.objects.filter(theme_q)
+        else:
+            base_cats = Category.objects.all()
+
         featured = list(
-            Category.objects.filter(is_featured=True)
+            base_cats.filter(is_featured=True)
             .order_by('order', 'name')
             .only('id', 'name', 'slug', 'icon', 'order', 'is_featured')[:6]
         )
-        if len(featured) < 5:
+        if len(featured) < 6:
             existing_ids = [c.id for c in featured]
             supplements = list(
-                Category.objects.exclude(id__in=existing_ids)
+                base_cats.exclude(id__in=existing_ids)
                 .order_by('order', 'name')
                 .only('id', 'name', 'slug', 'icon', 'order', 'is_featured')[:(6 - len(featured))]
             )
             featured.extend(supplements)
 
         all_cats = list(
-            Category.objects.all()
-            .order_by('order', 'name')
+            base_cats.order_by('order', 'name')
             .only('id', 'name', 'slug', 'icon', 'order', 'is_featured')
         )
         return {

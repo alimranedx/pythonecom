@@ -4,6 +4,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from core.validators import validate_image_file
 from rbac.models import Role, UserRole
 from core.models import SiteSetting
+from product.forms import ProductForm, CategoryForm, BrandForm
 
 
 class StaffUserCreateForm(forms.ModelForm):

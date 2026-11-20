@@ -30,6 +30,13 @@
                     <small class="text-muted d-block mt-1">Leave empty to generate automatically from name.</small>
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Storefront Theme</label>
+                    {{ form.theme }}
+                    {% if form.theme.errors %}<div class="text-danger small mt-1">{{ form.theme.errors }}</div>{% endif %}
+                    <small class="text-muted d-block mt-1">Assign category to a specific niche theme (or all themes).</small>
+                </div>
+
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-semibold">Bootstrap Icon Class</label>

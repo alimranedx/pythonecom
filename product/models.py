@@ -3,6 +3,11 @@ from django.utils.text import slugify
 from django.contrib.auth.models import User
 from core.models import TimeStampedModel
 from core.validators import validate_image_file
+from core.themes import THEME_CHOICES as BASE_THEME_CHOICES
+
+THEME_CHOICES = BASE_THEME_CHOICES + (
+    ('all', 'All Themes (Universal)'),
+)
 
 
 class Category(TimeStampedModel):
@@ -10,6 +15,7 @@ class Category(TimeStampedModel):
     slug = models.SlugField(max_length=150, unique=True, blank=True)
     icon = models.CharField(max_length=50, default="bi-tag", help_text="Bootstrap icon class")
     image = models.ImageField(upload_to='categories/', blank=True, null=True, validators=[validate_image_file])
+    theme = models.CharField(max_length=50, choices=THEME_CHOICES, default='mega_market', blank=True, db_index=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children')
     is_featured = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
@@ -21,6 +27,8 @@ class Category(TimeStampedModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        if not self.theme:
+            self.theme = 'mega_market'
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -33,6 +41,7 @@ class Brand(TimeStampedModel):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     logo = models.ImageField(upload_to='brands/', blank=True, null=True, validators=[validate_image_file])
+    theme = models.CharField(max_length=50, choices=THEME_CHOICES, default='mega_market', blank=True, db_index=True)
 
     class Meta:
         ordering = ['name']
@@ -40,6 +49,8 @@ class Brand(TimeStampedModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        if not self.theme:
+            self.theme = 'mega_market'
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -52,6 +63,7 @@ class Product(TimeStampedModel):
     sku = models.CharField(max_length=50, unique=True, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    theme = models.CharField(max_length=50, choices=THEME_CHOICES, default='mega_market', blank=True, db_index=True)
     short_description = models.CharField(max_length=300, blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -67,6 +79,10 @@ class Product(TimeStampedModel):
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
+        if not self.theme and self.category and getattr(self.category, 'theme', None):
+            self.theme = self.category.theme
+        if not self.theme:
+            self.theme = 'mega_market'
         if not self.slug:
             base_slug = slugify(self.name)
             candidate = base_slug

@@ -13,13 +13,38 @@ def staff_member_required(view_func=None, login_url='admin_login'):
     return decorator
 from .models import Product, Category, Brand
 from .forms import ProductForm
+from core.models import SiteSetting
+from core.themes import THEMES, DEFAULT_THEME_KEY
 
 
 def product_list(request, category_slug=None):
     """
     Storefront catalog view with comprehensive filtering, searching, sorting, and pagination.
+    Strictly isolated and scoped to the active or preview theme.
     """
-    products = Product.objects.filter(is_active=True).select_related('category', 'brand')
+    # 1. Resolve active theme
+    preview_theme = request.GET.get('theme') if hasattr(request, 'GET') else None
+    if preview_theme and preview_theme in THEMES:
+        active_theme_key = preview_theme
+    else:
+        settings = SiteSetting.get_settings()
+        active_theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
+        if active_theme_key not in THEMES:
+            active_theme_key = DEFAULT_THEME_KEY
+
+    if active_theme_key == 'mega_market':
+        theme_q = Q(theme='mega_market') | Q(theme='all')
+    else:
+        theme_q = Q(theme=active_theme_key)
+
+    if hasattr(Product, 'theme'):
+        products = Product.objects.filter(is_active=True).filter(theme_q).select_related('category', 'brand')
+        categories = Category.objects.filter(theme_q).order_by('order', 'name')
+        brands = Brand.objects.filter(theme_q).order_by('name')
+    else:
+        products = Product.objects.filter(is_active=True).select_related('category', 'brand')
+        categories = Category.objects.all().order_by('order', 'name')
+        brands = Brand.objects.all().order_by('name')
 
     # Keyword Search (bounded to 100 chars to prevent search query DoS)
     query = request.GET.get('q', '').strip()[:100]
@@ -38,7 +63,7 @@ def product_list(request, category_slug=None):
         category_slug = request.GET.get('category')
     selected_category = None
     if category_slug:
-        selected_category = Category.objects.filter(slug=category_slug).first()
+        selected_category = categories.filter(slug=category_slug).first()
         if not selected_category:
             CATEGORY_ALIASES = {
                 'electronics-laptops': 'laptops',
@@ -49,7 +74,10 @@ def product_list(request, category_slug=None):
             }
             alias_slug = CATEGORY_ALIASES.get(category_slug)
             if alias_slug:
-                selected_category = Category.objects.filter(slug=alias_slug).first()
+                selected_category = categories.filter(slug=alias_slug).first()
+
+        if not selected_category:
+            selected_category = Category.objects.filter(slug=category_slug).first()
 
         if not selected_category and is_explicit_category_path:
             raise Http404("Category not found")
@@ -61,7 +89,9 @@ def product_list(request, category_slug=None):
     brand_slug = request.GET.get('brand')
     selected_brand = None
     if brand_slug:
-        selected_brand = Brand.objects.filter(slug=brand_slug).first()
+        selected_brand = brands.filter(slug=brand_slug).first()
+        if not selected_brand:
+            selected_brand = Brand.objects.filter(slug=brand_slug).first()
         if selected_brand:
             products = products.filter(brand=selected_brand)
 
@@ -122,9 +152,6 @@ def product_list(request, category_slug=None):
     query_params['per_page'] = per_page
     querystring = query_params.urlencode()
 
-    categories = Category.objects.all()
-    brands = Brand.objects.all()
-
     user_wishlist_ids = set()
     if request.user.is_authenticated:
         from accounts.models import Wishlist
@@ -150,20 +177,34 @@ def product_list(request, category_slug=None):
         'total_count': paginator.count,
         'querystring': querystring,
         'user_wishlist_ids': user_wishlist_ids,
+        'active_theme_key': active_theme_key,
     })
 
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
-    related_products = Product.objects.filter(
-        category=product.category, is_active=True
-    ).exclude(pk=product.pk)[:4]
+
+    # Scoped related products strictly within the same theme
+    related_qs = Product.objects.filter(is_active=True).exclude(pk=product.pk)
+    if hasattr(Product, 'theme') and getattr(product, 'theme', None):
+        related_qs = related_qs.filter(theme=product.theme)
+
+    if product.category:
+        related_products = list(related_qs.filter(category=product.category)[:4])
+        if len(related_products) < 4:
+            existing_ids = [p.id for p in related_products]
+            more = list(related_qs.exclude(id__in=existing_ids)[:(4 - len(related_products))])
+            related_products.extend(more)
+    else:
+        related_products = list(related_qs[:4])
+
+    bundle_qs = Product.objects.filter(is_active=True, stock__gt=0).exclude(pk=product.pk)
+    if hasattr(Product, 'theme') and getattr(product, 'theme', None):
+        bundle_qs = bundle_qs.filter(theme=product.theme)
 
     bundle_items = list(
-        Product.objects.filter(
-            category=product.category, is_active=True, stock__gt=0
-        ).exclude(pk=product.pk)[:2]
-    ) if product.category else []
+        bundle_qs.filter(category=product.category)[:2]
+    ) if product.category else list(bundle_qs[:2])
 
     bundle_discount_percent = 5
     bundle_total = product.effective_price

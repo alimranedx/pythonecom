@@ -5,97 +5,50 @@ from core.models import SiteSetting
 from core.themes import THEMES, DEFAULT_THEME_KEY
 
 
-def _filter_and_prioritize_categories(cat_slugs, limit=24):
-    """
-    Returns up to `limit` categories. If `cat_slugs` is provided, categories matching
-    those slugs are prioritized at the front. If the count is below `limit`, gracefully falls back
-    to include other featured categories, followed by remaining active categories.
-    """
-    if not cat_slugs:
-        featured = list(Category.objects.filter(is_featured=True).order_by('order', 'name')[:limit])
-        if len(featured) < limit:
-            existing_ids = [c.id for c in featured]
-            more = list(
-                Category.objects.exclude(id__in=existing_ids).order_by('order', 'name')[:(limit - len(featured))]
-            )
-            featured.extend(more)
-        return featured
+def _get_theme_q(active_theme_key):
+    if active_theme_key == 'mega_market':
+        return Q(theme='mega_market') | Q(theme='all')
+    return Q(theme=active_theme_key)
 
-    # Prioritize theme-specific categories matching slug list
-    theme_cats = list(Category.objects.filter(slug__in=cat_slugs).order_by('order', 'name'))
 
-    # Graceful fallback: supplement with other featured categories, then any categories
-    if len(theme_cats) < limit:
-        existing_ids = [c.id for c in theme_cats]
-        needed = limit - len(theme_cats)
-        other_featured = list(
-            Category.objects.filter(is_featured=True)
-            .exclude(id__in=existing_ids)
-            .order_by('order', 'name')[:needed]
+def _filter_theme_categories(active_theme_key, limit=24):
+    """
+    Returns up to `limit` categories strictly belonging to `active_theme_key`.
+    Prioritizes featured categories, then other categories belonging to the SAME theme.
+    NEVER falls back across different themes.
+    """
+    if hasattr(Category, 'theme'):
+        theme_q = _get_theme_q(active_theme_key)
+        base_cats = Category.objects.filter(theme_q)
+    else:
+        theme_config = THEMES.get(active_theme_key, THEMES[DEFAULT_THEME_KEY])
+        cat_slugs = theme_config.get('category_slugs')
+        base_cats = Category.objects.filter(slug__in=cat_slugs) if cat_slugs else Category.objects.all()
+
+    featured = list(base_cats.filter(is_featured=True).order_by('order', 'name')[:limit])
+    if len(featured) < limit:
+        existing_ids = [c.id for c in featured]
+        more = list(
+            base_cats.exclude(id__in=existing_ids).order_by('order', 'name')[:(limit - len(featured))]
         )
-        theme_cats.extend(other_featured)
-
-        if len(theme_cats) < limit:
-            existing_ids = [c.id for c in theme_cats]
-            needed_more = limit - len(theme_cats)
-            other_cats = list(
-                Category.objects.exclude(id__in=existing_ids)
-                .order_by('order', 'name')[:needed_more]
-            )
-            theme_cats.extend(other_cats)
-
-    return theme_cats[:limit]
+        featured.extend(more)
+    return featured[:limit]
 
 
-def _filter_and_prioritize_brands(brand_slugs, limit=12):
+def _filter_theme_brands(active_theme_key, limit=12):
     """
-    Returns up to `limit` brands. If `brand_slugs` is provided, brands matching
-    those slugs are placed first. Falls back to other brands if fewer than `limit`.
+    Returns up to `limit` brands strictly belonging to `active_theme_key`.
+    NEVER falls back across different themes.
     """
-    if not brand_slugs:
-        return list(Brand.objects.all().order_by('name')[:limit])
+    if hasattr(Brand, 'theme'):
+        theme_q = _get_theme_q(active_theme_key)
+        base_brands = Brand.objects.filter(theme_q)
+    else:
+        theme_config = THEMES.get(active_theme_key, THEMES[DEFAULT_THEME_KEY])
+        brand_slugs = theme_config.get('brand_slugs')
+        base_brands = Brand.objects.filter(slug__in=brand_slugs) if brand_slugs else Brand.objects.all()
 
-    theme_brands = list(Brand.objects.filter(slug__in=brand_slugs).order_by('name'))
-
-    if len(theme_brands) < limit:
-        existing_ids = [b.id for b in theme_brands]
-        needed = limit - len(theme_brands)
-        other_brands = list(
-            Brand.objects.exclude(id__in=existing_ids).order_by('name')[:needed]
-        )
-        theme_brands.extend(other_brands)
-
-    return theme_brands[:limit]
-
-
-def _filter_and_prioritize_products(base_qs, theme_q, limit, fallback_qs=None):
-    """
-    Returns up to `limit` products from `base_qs`, prioritizing those matching `theme_q`.
-    If fewer than `limit` match, gracefully falls back to include other active products
-    so no section is ever empty or sparse.
-    """
-    if not theme_q:
-        return list(base_qs[:limit])
-
-    # 1. Primary: Products in base_qs matching active theme
-    theme_matches = list(base_qs.filter(theme_q).distinct()[:limit])
-    count = len(theme_matches)
-
-    # 2. Graceful fallback: other products from base_qs
-    if count < limit:
-        matched_ids = [p.id for p in theme_matches]
-        needed = limit - count
-        base_fallback = list(base_qs.exclude(id__in=matched_ids).distinct()[:needed])
-        theme_matches.extend(base_fallback)
-
-        # 3. Secondary fallback: pull from general active products if base_qs was sparse
-        if len(theme_matches) < limit and fallback_qs is not None:
-            all_ids = [p.id for p in theme_matches]
-            needed_more = limit - len(theme_matches)
-            secondary_fallback = list(fallback_qs.exclude(id__in=all_ids).distinct()[:needed_more])
-            theme_matches.extend(secondary_fallback)
-
-    return theme_matches
+    return list(base_brands.order_by('name')[:limit])
 
 
 def index(request):
@@ -109,58 +62,69 @@ def index(request):
         if active_theme_key not in THEMES:
             active_theme_key = DEFAULT_THEME_KEY
 
-    theme_config = THEMES.get(active_theme_key, THEMES[DEFAULT_THEME_KEY])
-    cat_slugs = theme_config.get('category_slugs')
-    brand_slugs = theme_config.get('brand_slugs')
+    # 2. Filter & Prioritize Categories and Brands (STRICTLY within active theme)
+    featured_categories = _filter_theme_categories(active_theme_key, limit=24)
+    brands = _filter_theme_brands(active_theme_key, limit=12)
 
-    # Build Q filter for theme products
-    theme_q = Q()
-    if cat_slugs:
-        theme_q |= Q(category__slug__in=cat_slugs)
-    if brand_slugs:
-        theme_q |= Q(brand__slug__in=brand_slugs)
+    # 3. Base Querysets for Products strictly scoped to active theme
+    if hasattr(Product, 'theme'):
+        theme_q = _get_theme_q(active_theme_key)
+        all_theme_products = Product.objects.filter(is_active=True).filter(theme_q).select_related('category', 'brand')
+    else:
+        theme_config = THEMES.get(active_theme_key, THEMES[DEFAULT_THEME_KEY])
+        cat_slugs = theme_config.get('category_slugs')
+        brand_slugs = theme_config.get('brand_slugs')
+        slug_q = Q()
+        if cat_slugs:
+            slug_q |= Q(category__slug__in=cat_slugs)
+        if brand_slugs:
+            slug_q |= Q(brand__slug__in=brand_slugs)
+        base = Product.objects.filter(is_active=True).select_related('category', 'brand')
+        all_theme_products = base.filter(slug_q) if slug_q else base
 
-    # 2. Filter & Prioritize Categories and Brands
-    featured_categories = _filter_and_prioritize_categories(cat_slugs, limit=24)
-    brands = _filter_and_prioritize_brands(brand_slugs, limit=12)
-
-    # 3. Base Querysets for Products with Select Related
-    all_active_products = Product.objects.filter(is_active=True).select_related('category', 'brand')
-
+    # 4. Strict Theme Product Sections (Fallbacks ONLY from the SAME theme products)
     base_slider_qs = (
-        all_active_products
+        all_theme_products
         .filter(Q(is_flash_sale=True) | Q(is_featured=True) | Q(discount_price__isnull=False))
         .order_by('-is_featured', '-is_flash_sale', '-price')
     )
-    slider_candidates = _filter_and_prioritize_products(
-        base_slider_qs,
-        theme_q,
-        limit=5,
-        fallback_qs=all_active_products.order_by('-price')
-    )
+    slider_candidates = list(base_slider_qs[:5])
+    if len(slider_candidates) < 5:
+        existing_ids = [p.id for p in slider_candidates]
+        needed = 5 - len(slider_candidates)
+        fallback_slider = list(
+            all_theme_products.exclude(id__in=existing_ids).order_by('-price')[:needed]
+        )
+        slider_candidates.extend(fallback_slider)
 
-    base_flash_qs = all_active_products.filter(is_flash_sale=True).order_by('-discount_price', '-price')
-    flash_sales = _filter_and_prioritize_products(
-        base_flash_qs,
-        theme_q,
-        limit=12,
-        fallback_qs=all_active_products.filter(discount_price__isnull=False).order_by('-price')
-    )
+    base_flash_qs = all_theme_products.filter(is_flash_sale=True).order_by('-discount_price', '-price')
+    flash_sales = list(base_flash_qs[:12])
+    if len(flash_sales) < 12:
+        existing_ids = [p.id for p in flash_sales]
+        needed = 12 - len(flash_sales)
+        fallback_flash = list(
+            all_theme_products.filter(discount_price__isnull=False).exclude(id__in=existing_ids).order_by('-price')[:needed]
+        )
+        flash_sales.extend(fallback_flash)
+        if len(flash_sales) < 12:
+            existing_ids = [p.id for p in flash_sales]
+            needed_more = 12 - len(flash_sales)
+            fallback_any = list(
+                all_theme_products.exclude(id__in=existing_ids).order_by('-price')[:needed_more]
+            )
+            flash_sales.extend(fallback_any)
 
-    base_featured_qs = all_active_products.filter(is_featured=True).order_by('-created_at')
-    featured_products = _filter_and_prioritize_products(
-        base_featured_qs,
-        theme_q,
-        limit=8,
-        fallback_qs=all_active_products.order_by('-created_at')
-    )
+    base_featured_qs = all_theme_products.filter(is_featured=True).order_by('-created_at')
+    featured_products = list(base_featured_qs[:8])
+    if len(featured_products) < 8:
+        existing_ids = [p.id for p in featured_products]
+        needed = 8 - len(featured_products)
+        fallback_featured = list(
+            all_theme_products.exclude(id__in=existing_ids).order_by('-created_at')[:needed]
+        )
+        featured_products.extend(fallback_featured)
 
-    base_latest_qs = all_active_products.order_by('-created_at')
-    latest_products = _filter_and_prioritize_products(
-        base_latest_qs,
-        theme_q,
-        limit=8
-    )
+    latest_products = list(all_theme_products.order_by('-created_at')[:8])
 
     # 4. Hero Slider Customizations
     slider_themes = [

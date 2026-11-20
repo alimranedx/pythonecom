@@ -668,5 +668,107 @@ class ProductGalleryAssuranceTests(TestCase):
         self.assertEqual(ProductImage.objects.filter(product_id=product_pk).count(), 0)
 
 
+class ThemeIsolationSchemaAndFormsTests(TestCase):
+    """Unit tests for theme isolation schema attributes and admin forms."""
+
+    def test_theme_choices_contains_all_and_six_verticals(self):
+        from product.models import THEME_CHOICES
+        choice_keys = [k for k, _ in THEME_CHOICES]
+        expected_keys = [
+            'mega_market', 'tech_gadgets', 'beauty_cosmetics',
+            'fashion_lifestyle', 'grocery_organic', 'pharmacy_health', 'all'
+        ]
+        for key in expected_keys:
+            self.assertIn(key, choice_keys)
+
+    def test_category_theme_field_and_default(self):
+        cat = Category.objects.create(name='Tech Gear', slug='tech-gear')
+        self.assertEqual(cat.theme, 'mega_market')
+
+        cat_themed = Category.objects.create(name='Cosmetics', slug='cosmetics', theme='beauty_cosmetics')
+        self.assertEqual(cat_themed.theme, 'beauty_cosmetics')
+
+    def test_brand_theme_field_and_default(self):
+        brand = Brand.objects.create(name='Generic Brand', slug='generic-brand')
+        self.assertEqual(brand.theme, 'mega_market')
+
+        brand_themed = Brand.objects.create(name='Organic BD', slug='organic-bd', theme='grocery_organic')
+        self.assertEqual(brand_themed.theme, 'grocery_organic')
+
+    def test_product_theme_default_and_inheritance(self):
+        # Default theme
+        p1 = Product.objects.create(name='Default Item', price=Decimal('100.00'), stock=5)
+        self.assertEqual(p1.theme, 'mega_market')
+
+        # Category theme inheritance on save when product theme is blank
+        cat_tech = Category.objects.create(name='Laptops', slug='laptops-test', theme='tech_gadgets')
+        p2 = Product(name='Gaming Laptop', price=Decimal('85000.00'), stock=2, category=cat_tech, theme='')
+        p2.save()
+        self.assertEqual(p2.theme, 'tech_gadgets')
+
+        # Explicit product theme overrides category theme
+        p3 = Product(name='Universal Cable', price=Decimal('250.00'), stock=10, category=cat_tech, theme='all')
+        p3.save()
+        self.assertEqual(p3.theme, 'all')
+
+    def test_forms_theme_field_and_widgets(self):
+        from product.forms import ProductForm, CategoryForm, BrandForm
+        from admin_panel.forms import ProductForm as AdminProductForm
+
+        # Verify fields and widgets
+        for FormClass in [ProductForm, AdminProductForm]:
+            form = FormClass()
+            self.assertIn('theme', form.fields)
+            self.assertEqual(form.fields['theme'].widget.attrs.get('class'), 'form-select')
+
+        cat_form = CategoryForm()
+        self.assertIn('theme', cat_form.fields)
+        self.assertEqual(cat_form.fields['theme'].widget.attrs.get('class'), 'form-select')
+
+        brand_form = BrandForm()
+        self.assertIn('theme', brand_form.fields)
+        self.assertEqual(brand_form.fields['theme'].widget.attrs.get('class'), 'form-select')
+
+    def test_forms_validation_with_and_without_theme(self):
+        from product.forms import CategoryForm, BrandForm, ProductForm
+
+        # CategoryForm with and without theme
+        f1 = CategoryForm(data={'name': 'Fashion Hub', 'slug': 'fashion-hub', 'icon': 'bi-tag', 'order': 0})
+        self.assertTrue(f1.is_valid(), f1.errors)
+        cat = f1.save()
+        self.assertEqual(cat.theme, 'mega_market')
+
+        f2 = CategoryForm(data={'name': 'Meds Hub', 'slug': 'meds-hub', 'theme': 'pharmacy_health', 'icon': 'bi-capsule', 'order': 1})
+        self.assertTrue(f2.is_valid(), f2.errors)
+        cat2 = f2.save()
+        self.assertEqual(cat2.theme, 'pharmacy_health')
+
+        # BrandForm with and without theme
+        b1 = BrandForm(data={'name': 'Apex Shoes', 'slug': 'apex-shoes'})
+        self.assertTrue(b1.is_valid(), b1.errors)
+        brand = b1.save()
+        self.assertEqual(brand.theme, 'mega_market')
+
+        b2 = BrandForm(data={'name': 'Square Meds', 'slug': 'square-meds', 'theme': 'pharmacy_health'})
+        self.assertTrue(b2.is_valid(), b2.errors)
+        brand2 = b2.save()
+        self.assertEqual(brand2.theme, 'pharmacy_health')
+
+        # ProductForm with category inheritance
+        p_form = ProductForm(data={
+            'name': 'Cough Syrup',
+            'category': cat2.pk,
+            'description': 'Effective syrup',
+            'price': '120.00',
+            'stock': '50',
+            'unit': '1 bottle',
+            'theme': '',
+        })
+        self.assertTrue(p_form.is_valid(), p_form.errors)
+        prod = p_form.save()
+        self.assertEqual(prod.theme, 'pharmacy_health')
+
+
+
 
 

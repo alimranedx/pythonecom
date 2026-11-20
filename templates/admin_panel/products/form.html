@@ -39,18 +39,25 @@
                 </div>
 
                 <div class="row g-3 mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label small fw-semibold">Category</label>
                         {{ form.category }}
                         {% if form.category.errors %}
                             <div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label small fw-semibold">Brand</label>
                         {{ form.brand }}
                         {% if form.brand.errors %}
                             <div class="text-danger small mt-1">{{ form.brand.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Storefront Theme</label>
+                        {{ form.theme }}
+                        {% if form.theme.errors %}
+                            <div class="text-danger small mt-1">{{ form.theme.errors.0 }}</div>
                         {% endif %}
                     </div>
                 </div>

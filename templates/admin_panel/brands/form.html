@@ -35,6 +35,13 @@
                     {% if form.slug.errors %}<div class="text-danger small mt-1">{{ form.slug.errors }}</div>{% endif %}
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Storefront Theme</label>
+                    {{ form.theme }}
+                    {% if form.theme.errors %}<div class="text-danger small mt-1">{{ form.theme.errors }}</div>{% endif %}
+                    <small class="text-muted d-block mt-1">Assign brand to a specific niche theme (or all themes).</small>
+                </div>
+
                 <div class="mb-4">
                     <label class="form-label small fw-semibold">Brand Logo</label>
                     {{ form.logo }}

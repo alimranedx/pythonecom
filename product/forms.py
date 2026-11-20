@@ -7,13 +7,14 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            'name', 'category', 'brand', 'short_description', 'description',
+            'name', 'category', 'brand', 'theme', 'short_description', 'description',
             'price', 'discount_price', 'stock', 'unit', 'image', 'is_featured', 'is_flash_sale', 'is_active'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter product name'}),
             'category': forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Category'}),
             'brand': forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Brand'}),
+            'theme': forms.Select(attrs={'class': 'form-select', 'data-placeholder': 'Select Storefront Theme'}),
             'short_description': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Brief tagline/catchphrase'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Detailed product description'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
@@ -32,21 +33,18 @@ class ProductForm(forms.ModelForm):
             self.fields['category'].empty_label = "Please Select Category"
         if 'brand' in self.fields:
             self.fields['brand'].empty_label = "Please Select Brand"
-
-    def clean_image(self):
-        image = self.cleaned_data.get('image')
-        if image:
-            validate_image_file(image)
-        return image
+        if 'theme' in self.fields:
+            self.fields['theme'].required = False
 
 
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ['name', 'slug', 'icon', 'parent', 'is_featured', 'order']
+        fields = ['name', 'slug', 'theme', 'icon', 'parent', 'is_featured', 'order']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category Name'}),
             'slug': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'leave-blank-for-auto-slug'}),
+            'theme': forms.Select(attrs={'class': 'form-select', 'data-placeholder': 'Select Storefront Theme'}),
             'icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. bi-laptop, bi-phone, bi-tag'}),
             'parent': forms.Select(attrs={'class': 'form-select searchable-select', 'data-placeholder': 'Please Select Parent Category (None - Top Level)'}),
             'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -57,23 +55,25 @@ class CategoryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if 'parent' in self.fields:
             self.fields['parent'].empty_label = "Please Select Parent Category (None - Top Level)"
-
-    def clean_image(self):
-        image = self.cleaned_data.get('image')
-        if image:
-            validate_image_file(image)
-        return image
+        if 'theme' in self.fields:
+            self.fields['theme'].required = False
 
 
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
-        fields = ['name', 'slug', 'logo']
+        fields = ['name', 'slug', 'theme', 'logo']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Brand Name (e.g. Apple, Nike)'}),
             'slug': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'leave-blank-for-auto-slug'}),
+            'theme': forms.Select(attrs={'class': 'form-select', 'data-placeholder': 'Select Storefront Theme'}),
             'logo': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'theme' in self.fields:
+            self.fields['theme'].required = False
 
     def clean_logo(self):
         logo = self.cleaned_data.get('logo')

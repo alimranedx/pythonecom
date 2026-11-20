@@ -11,53 +11,61 @@ class StorefrontThemeFilteringTests(TestCase):
         self.client = Client()
         self.setting = SiteSetting.get_settings()
 
-        # Create Categories
-        self.cat_laptops = Category.objects.create(name='Laptops', slug='laptops', is_featured=True, order=10)
-        self.cat_phones = Category.objects.create(name='Smartphones', slug='smartphones', is_featured=True, order=11)
-        self.cat_beauty = Category.objects.create(name='Skin Care', slug='skin-care', is_featured=True, order=20)
-        self.cat_fashion = Category.objects.create(name="Men's Panjabi", slug='mens-panjabi', is_featured=True, order=30)
-        self.cat_grocery = Category.objects.create(name='Rice & Grains', slug='rice-grains', is_featured=True, order=40)
-        self.cat_pharmacy = Category.objects.create(name='Prescriptions', slug='prescriptions', is_featured=True, order=50)
+        # Create Categories with explicit theme assignments
+        self.cat_mega = Category.objects.create(name='General Electronics', slug='general-electronics', theme='mega_market', is_featured=True, order=1)
+        self.cat_laptops = Category.objects.create(name='Laptops', slug='laptops', theme='tech_gadgets', is_featured=True, order=10)
+        self.cat_phones = Category.objects.create(name='Smartphones', slug='smartphones', theme='tech_gadgets', is_featured=True, order=11)
+        self.cat_beauty = Category.objects.create(name='Skin Care', slug='skin-care', theme='beauty_cosmetics', is_featured=True, order=20)
+        self.cat_fashion = Category.objects.create(name="Men's Panjabi", slug='mens-panjabi', theme='fashion_lifestyle', is_featured=True, order=30)
+        self.cat_grocery = Category.objects.create(name='Rice & Grains', slug='rice-grains', theme='grocery_organic', is_featured=True, order=40)
+        self.cat_pharmacy = Category.objects.create(name='Prescriptions', slug='prescriptions', theme='pharmacy_health', is_featured=True, order=50)
 
-        # Create Brands
-        self.brand_apple = Brand.objects.create(name='Apple', slug='apple')
-        self.brand_samsung = Brand.objects.create(name='Samsung', slug='samsung')
-        self.brand_loreal = Brand.objects.create(name="L'Oreal", slug='loreal')
-        self.brand_aarong = Brand.objects.create(name='Aarong', slug='aarong')
-        self.brand_khaas = Brand.objects.create(name='Khaas Food', slug='khaas-food')
-        self.brand_square = Brand.objects.create(name='Square Pharma', slug='square-pharma')
+        # Create Brands with explicit theme assignments
+        self.brand_mega = Brand.objects.create(name='Mega Brand', slug='mega-brand', theme='mega_market')
+        self.brand_apple = Brand.objects.create(name='Apple', slug='apple', theme='tech_gadgets')
+        self.brand_samsung = Brand.objects.create(name='Samsung', slug='samsung', theme='tech_gadgets')
+        self.brand_loreal = Brand.objects.create(name="L'Oreal", slug='loreal', theme='beauty_cosmetics')
+        self.brand_aarong = Brand.objects.create(name='Aarong', slug='aarong', theme='fashion_lifestyle')
+        self.brand_khaas = Brand.objects.create(name='Khaas Food', slug='khaas-food', theme='grocery_organic')
+        self.brand_square = Brand.objects.create(name='Square Pharma', slug='square-pharma', theme='pharmacy_health')
+
+        # Create Products
+        self.mega_p1 = Product.objects.create(
+            name='Mega Multi Blender', slug='mega-blender', category=self.cat_mega, brand=self.brand_mega, theme='mega_market',
+            price=Decimal('3500'), discount_price=Decimal('3000'), stock=20, is_active=True, is_featured=True, is_flash_sale=True
+        )
 
         # Create Tech Products
         self.tech_p1 = Product.objects.create(
-            name='MacBook Pro M3', slug='macbook-pro-m3', category=self.cat_laptops, brand=self.brand_apple,
+            name='MacBook Pro M3', slug='macbook-pro-m3', category=self.cat_laptops, brand=self.brand_apple, theme='tech_gadgets',
             price=Decimal('250000'), discount_price=Decimal('230000'), stock=10, is_active=True, is_featured=True, is_flash_sale=True
         )
         self.tech_p2 = Product.objects.create(
-            name='Galaxy S24 Ultra', slug='galaxy-s24-ultra', category=self.cat_phones, brand=self.brand_samsung,
+            name='Galaxy S24 Ultra', slug='galaxy-s24-ultra', category=self.cat_phones, brand=self.brand_samsung, theme='tech_gadgets',
             price=Decimal('150000'), discount_price=Decimal('140000'), stock=10, is_active=True, is_featured=True, is_flash_sale=False
         )
 
         # Create Beauty Products
         self.beauty_p1 = Product.objects.create(
-            name='Hyaluronic Acid Serum', slug='hyaluronic-acid', category=self.cat_beauty, brand=self.brand_loreal,
+            name='Hyaluronic Acid Serum', slug='hyaluronic-acid', category=self.cat_beauty, brand=self.brand_loreal, theme='beauty_cosmetics',
             price=Decimal('1500'), discount_price=Decimal('1200'), stock=15, is_active=True, is_featured=True, is_flash_sale=True
         )
 
         # Create Fashion Products
         self.fashion_p1 = Product.objects.create(
-            name='Silk Panjabi Festive', slug='silk-panjabi', category=self.cat_fashion, brand=self.brand_aarong,
+            name='Silk Panjabi Festive', slug='silk-panjabi', category=self.cat_fashion, brand=self.brand_aarong, theme='fashion_lifestyle',
             price=Decimal('5500'), stock=8, is_active=True, is_featured=True, is_flash_sale=False
         )
 
         # Create Grocery Products
         self.grocery_p1 = Product.objects.create(
-            name='Kalijeera Rice 5kg', slug='kalijeera-rice', category=self.cat_grocery, brand=self.brand_khaas,
+            name='Kalijeera Rice 5kg', slug='kalijeera-rice', category=self.cat_grocery, brand=self.brand_khaas, theme='grocery_organic',
             price=Decimal('650'), discount_price=Decimal('600'), stock=25, is_active=True, is_featured=False, is_flash_sale=True
         )
 
         # Create Pharmacy Products
         self.pharma_p1 = Product.objects.create(
-            name='Napa Extra Box', slug='napa-extra', category=self.cat_pharmacy, brand=self.brand_square,
+            name='Napa Extra Box', slug='napa-extra', category=self.cat_pharmacy, brand=self.brand_square, theme='pharmacy_health',
             price=Decimal('480'), stock=100, is_active=True, is_featured=True, is_flash_sale=False
         )
 
@@ -189,30 +197,32 @@ class StorefrontThemeFilteringTests(TestCase):
         featured_prods = res.context['featured_products']
         self.assertEqual(featured_prods[0], self.pharma_p1)
 
-    def test_graceful_fallback_when_theme_items_are_fewer_than_slice_limit(self):
-        """When a theme has fewer products than slice limits, other active products fill sections."""
-        # Pharmacy only has 1 product (pharma_p1)
+    def test_strict_theme_isolation_no_out_of_niche_leakage(self):
+        """When a theme is active, only items strictly belonging to that theme appear (ZERO out-of-niche leakage)."""
+        # Pharmacy only has pharma_p1, cat_pharmacy, brand_square
         res = self.client.get('/?theme=pharmacy_health')
         self.assertEqual(res.status_code, 200)
 
         featured_prods = res.context['featured_products']
-        # Pharma product is at index 0
+        self.assertEqual(len(featured_prods), 1)
         self.assertEqual(featured_prods[0], self.pharma_p1)
-        # But section is NOT sparse: other active products fill the list
-        self.assertGreater(len(featured_prods), 1)
+        self.assertEqual(featured_prods[0].theme, 'pharmacy_health')
 
         slider_items = res.context['slider_items']
-        self.assertGreater(len(slider_items), 1)
+        self.assertEqual(len(slider_items), 1)
+        self.assertEqual(slider_items[0]['product'], self.pharma_p1)
 
-        # Categories: prescriptions is first, but total categories include others
+        # Categories: strictly pharmacy_health
         featured_cats = res.context['featured_categories']
+        self.assertEqual(len(featured_cats), 1)
         self.assertEqual(featured_cats[0].slug, 'prescriptions')
-        self.assertGreater(len(featured_cats), 1)
+        self.assertEqual(featured_cats[0].theme, 'pharmacy_health')
 
-        # Brands: square-pharma is first, but total brands include others
+        # Brands: strictly pharmacy_health
         brands = res.context['brands']
+        self.assertEqual(len(brands), 1)
         self.assertEqual(brands[0].slug, 'square-pharma')
-        self.assertGreater(len(brands), 1)
+        self.assertEqual(brands[0].theme, 'pharmacy_health')
 
     def test_db_setting_switch_active_theme(self):
         """When SiteSetting.active_theme is updated in DB, storefront reflects it without query param."""
@@ -237,3 +247,58 @@ class StorefrontThemeFilteringTests(TestCase):
         self.assertTrue(len(res.context['featured_categories']) > 0)
         self.assertTrue(len(res.context['brands']) > 0)
         self.assertTrue(len(res.context['slider_items']) > 0)
+
+    def test_all_6_themes_strict_isolation_100_percent(self):
+        """Verifies that across all 6 themes, 100% of visible categories, brands, and products strictly match that theme."""
+        themes = ['mega_market', 'tech_gadgets', 'beauty_cosmetics', 'fashion_lifestyle', 'grocery_organic', 'pharmacy_health']
+
+        for theme in themes:
+            allowed_themes = {'mega_market', 'all'} if theme == 'mega_market' else {theme}
+
+            # 1. Test Home Index
+            res_home = self.client.get(f'/?theme={theme}')
+            self.assertEqual(res_home.status_code, 200)
+
+            # Check featured categories
+            for cat in res_home.context['featured_categories']:
+                self.assertIn(cat.theme, allowed_themes, f"Out of niche category {cat.name} ({cat.theme}) appeared in {theme}")
+
+            # Check brands
+            for brand in res_home.context['brands']:
+                self.assertIn(brand.theme, allowed_themes, f"Out of niche brand {brand.name} ({brand.theme}) appeared in {theme}")
+
+            # Check slider products
+            for item in res_home.context['slider_items']:
+                prod = item['product']
+                self.assertIn(prod.theme, allowed_themes, f"Out of niche slider product {prod.name} ({prod.theme}) appeared in {theme}")
+
+            # Check flash sales
+            for prod in res_home.context['flash_sales']:
+                self.assertIn(prod.theme, allowed_themes, f"Out of niche flash sale product {prod.name} ({prod.theme}) appeared in {theme}")
+
+            # Check featured products
+            for prod in res_home.context['featured_products']:
+                self.assertIn(prod.theme, allowed_themes, f"Out of niche featured product {prod.name} ({prod.theme}) appeared in {theme}")
+
+            # Check latest products
+            for prod in res_home.context['latest_products']:
+                self.assertIn(prod.theme, allowed_themes, f"Out of niche latest product {prod.name} ({prod.theme}) appeared in {theme}")
+
+            # Check navigation categories context processor
+            for cat in res_home.context['nav_categories']:
+                self.assertIn(cat.theme, allowed_themes, f"Out of niche nav category {cat.name} ({cat.theme}) appeared in {theme}")
+            for cat in res_home.context['all_categories']:
+                self.assertIn(cat.theme, allowed_themes, f"Out of niche all_category {cat.name} ({cat.theme}) appeared in {theme}")
+
+            # 2. Test Product Catalog Listing
+            res_catalog = self.client.get(f'/product/?theme={theme}')
+            self.assertEqual(res_catalog.status_code, 200)
+
+            for prod in res_catalog.context['products']:
+                self.assertIn(prod.theme, allowed_themes, f"Out of niche catalog product {prod.name} ({prod.theme}) appeared in {theme}")
+
+            for cat in res_catalog.context['categories']:
+                self.assertIn(cat.theme, allowed_themes, f"Out of niche catalog category {cat.name} ({cat.theme}) appeared in {theme}")
+
+            for brand in res_catalog.context['brands']:
+                self.assertIn(brand.theme, allowed_themes, f"Out of niche catalog brand {brand.name} ({brand.theme}) appeared in {theme}")
