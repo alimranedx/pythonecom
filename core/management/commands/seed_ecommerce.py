@@ -491,18 +491,25 @@ class Command(BaseCommand):
             {'name': 'Smartphones & Mobiles', 'slug': 'smartphones', 'icon': 'bi-phone', 'is_featured': True, 'order': 11},
             {'name': 'PC Hardware & Components', 'slug': 'pc-hardware', 'icon': 'bi-cpu', 'is_featured': True, 'order': 12},
             {'name': 'Audio Gear & Headphones', 'slug': 'audio-gear', 'icon': 'bi-headphones', 'is_featured': True, 'order': 13},
+            {'name': 'Tablets & E-Readers', 'slug': 'tablets', 'icon': 'bi-tablet', 'is_featured': True, 'order': 14},
+            {'name': 'Mobile Accessories & Gadgets', 'slug': 'mobile-accessories', 'icon': 'bi-smartwatch', 'is_featured': True, 'order': 15},
 
             # Beauty & Cosmetics
             {'name': 'Skincare & Dermatological Serums', 'slug': 'skin-care', 'icon': 'bi-flower1', 'is_featured': True, 'order': 20},
             {'name': 'Makeup & Color Cosmetics', 'slug': 'makeup', 'icon': 'bi-palette', 'is_featured': True, 'order': 21},
             {'name': 'Hair Care & Deep Conditioning', 'slug': 'hair-care', 'icon': 'bi-droplet-half', 'is_featured': True, 'order': 22},
             {'name': 'Fragrances & Luxury Perfumes', 'slug': 'fragrances', 'icon': 'bi-droplet', 'is_featured': True, 'order': 23},
+            {'name': 'Beauty & Personal Care', 'slug': 'beauty', 'icon': 'bi-sparkles', 'is_featured': True, 'order': 24},
 
             # Fashion & Lifestyle
             {'name': "Men's Panjabi & Festive Wear", 'slug': 'mens-panjabi', 'icon': 'bi-person-badge', 'is_featured': True, 'order': 30},
             {'name': "Women's Kurti & Salwar Kameez", 'slug': 'womens-kurti', 'icon': 'bi-person-hearts', 'is_featured': True, 'order': 31},
             {'name': 'Formalwear, Blazers & Suits', 'slug': 'formalwear', 'icon': 'bi-briefcase', 'is_featured': True, 'order': 32},
             {'name': 'Casual Denim, Chinos & Jeans', 'slug': 'casual-denim', 'icon': 'bi-tag', 'is_featured': True, 'order': 33},
+            {'name': "Women's Fashion & Dresses", 'slug': 'womens-dresses', 'icon': 'bi-gender-female', 'is_featured': True, 'order': 34},
+            {'name': "Men's Shirts & Casuals", 'slug': 'mens-shirts', 'icon': 'bi-person', 'is_featured': True, 'order': 35},
+            {'name': "Men's Footwear & Shoes", 'slug': 'mens-shoes', 'icon': 'bi-shoe', 'is_featured': True, 'order': 36},
+            {'name': "Women's Footwear & Heels", 'slug': 'womens-shoes', 'icon': 'bi-handbag', 'is_featured': True, 'order': 37},
 
             # Organic Grocery
             {'name': 'Rice & Organic Ancient Grains', 'slug': 'rice-grains', 'icon': 'bi-box-seam', 'is_featured': True, 'order': 40},
@@ -828,12 +835,32 @@ class Command(BaseCommand):
                 ]
             },
             {
+                'slug': 'cerave-hydrating-cleanser-473ml',
+                'name': 'CeraVe Hydrating Facial Cleanser with Ceramides & Hyaluronic Acid 473ml',
+                'category': 'skin-care',
+                'brand': 'cerave',
+                'short_description': 'Dermatologist-developed gentle non-foaming lotion cleanser that hydrates and cleanses without stripping skin barrier.',
+                'description': 'Formulated with 3 essential ceramides and hyaluronic acid, CeraVe Hydrating Cleanser effectively cleanses away dirt, oil, and makeup while locking in moisture with MVE delivery technology. Non-comedogenic, fragrance-free, and accepted by the National Eczema Association.',
+                'price': Decimal('2250.00'),
+                'discount_price': Decimal('1950.00'),
+                'stock': 55,
+                'unit': '473 ml',
+                'is_featured': True,
+                'is_flash_sale': False,
+                'images': [
+                    ('products/gallery/cerave-hydrating-cleanser-473ml-angle-1.webp', 'CeraVe Hydrating Cleanser 473ml Pump Bottle Front', 1),
+                    ('products/gallery/cerave-hydrating-cleanser-473ml-angle-2.webp', 'Locking Pump Dispenser Nozzle and Lotion Texture', 2),
+                    ('products/gallery/cerave-hydrating-cleanser-473ml-angle-3.webp', 'Gentle Foamless Cleansing Demonstration on Skin', 3),
+                    ('products/gallery/cerave-hydrating-cleanser-473ml-angle-4.webp', 'Dermatologist Recommended Packaging & Ingredients', 4),
+                ]
+            },
+            {
                 'slug': 'loreal-paris-revitalift-hyaluronic-acid-serum',
-                'name': 'L\'Oreal Paris Revitalift 1.5% Pure Hyaluronic Acid Plumping Serum 30ml',
+                'name': 'L\'Oreal Paris Hyaluron Expert 1.5% Pure Hyaluronic Acid Plumping Serum 30ml',
                 'category': 'skin-care',
                 'brand': 'loreal',
                 'short_description': 'Dermatologist-validated anti-aging serum that visibly replumps skin and reduces wrinkles.',
-                'description': 'L\'Oreal Paris 1.5% Pure Hyaluronic Acid Serum absorbs quickly without sticky residue to visibly plump skin in 1 hour and reduce wrinkles in 4 weeks. Contains 0.5% High Molecular Weight Hyaluronic Acid to intensely rehydrate skin surface, and 1% Micro Molecular Weight Hyaluronic Acid to deeply penetrate.',
+                'description': 'L\'Oreal Paris Hyaluron Expert 1.5% Pure Hyaluronic Acid Serum absorbs quickly without sticky residue to visibly plump skin in 1 hour and reduce wrinkles in 4 weeks. Contains 0.5% High Molecular Weight Hyaluronic Acid to intensely rehydrate skin surface, and 1% Micro Molecular Weight Hyaluronic Acid to deeply penetrate.',
                 'price': Decimal('2450.00'),
                 'discount_price': Decimal('2150.00'),
                 'stock': 40,
@@ -841,7 +868,7 @@ class Command(BaseCommand):
                 'is_featured': True,
                 'is_flash_sale': False,
                 'images': [
-                    ('products/gallery/loreal-paris-revitalift-hyaluronic-acid-serum-angle-1.webp', 'L\'Oreal Revitalift Purple Glass Bottle Front View', 1),
+                    ('products/gallery/loreal-paris-revitalift-hyaluronic-acid-serum-angle-1.webp', 'L\'Oreal Hyaluron Expert Purple Glass Bottle Front View', 1),
                     ('products/gallery/loreal-paris-revitalift-hyaluronic-acid-serum-angle-2.webp', 'Curved Precision Dropper with Anti-Wrinkle Solution', 2),
                     ('products/gallery/loreal-paris-revitalift-hyaluronic-acid-serum-angle-3.webp', 'Clinical Plumpness and Hydration Chart Demonstration', 3),
                     ('products/gallery/loreal-paris-revitalift-hyaluronic-acid-serum-angle-4.webp', 'French Retail Carton Packaging with Safety Seal', 4),
@@ -891,11 +918,11 @@ class Command(BaseCommand):
             # ==================== FASHION & LIFESTYLE ====================
             {
                 'slug': 'aarong-hand-embroidered-royal-panjabi',
-                'name': 'Aarong Hand-Embroidered Pure Cotton Royal Panjabi - Off-White & Gold',
+                'name': 'Aarong Royal Silk & Hand-Embroidered Festive Panjabi - Off-White & Gold',
                 'category': 'mens-panjabi',
                 'brand': 'aarong',
-                'short_description': 'Heritage Nakshi Kantha hand-stitched collar and placket on breathable 100s count combed cotton.',
-                'description': 'Exclusively hand-crafted by rural master artisans of Bangladesh, this Aarong royal panjabi pairs time-honored Nakshi needlecraft with contemporary tailored silhouette. Cut from premium breathable combed cotton with mother-of-pearl buttons and discreet side pockets.',
+                'short_description': 'Heritage Nakshi Kantha hand-stitched collar and placket on breathable pure silk and combed cotton blend.',
+                'description': 'Exclusively hand-crafted by rural master artisans of Bangladesh, this Aarong Royal Silk Panjabi pairs time-honored Nakshi needlecraft with contemporary tailored silhouette. Cut from premium breathable combed silk-cotton blend with mother-of-pearl buttons and discreet side pockets.',
                 'price': Decimal('4850.00'),
                 'discount_price': Decimal('4250.00'),
                 'stock': 35,
@@ -1171,6 +1198,46 @@ class Command(BaseCommand):
                     ('products/gallery/aci-pure-aromatic-chinigura-rice-5kg-angle-4.webp', 'Laser Sortex Cleaning & Purity Certification Mark', 4),
                 ]
             },
+            {
+                'slug': 'chaldal-organic-chia-seeds-500g',
+                'name': 'Chaldal Organic Raw Superfood Black Chia Seeds 500g',
+                'category': 'fresh-agro',
+                'brand': 'chaldal-organic',
+                'short_description': 'Pesticide-free 100% natural raw black chia seeds rich in Omega-3, plant protein, and dietary fiber.',
+                'description': 'Chaldal Organic Chia Seeds are harvested from sustainable farms and triple-cleaned to deliver pure nutrition. Soak in water, yogurt, or smoothies to form a gelatinous superfood pudding that aids digestive health, controls appetite, and boosts endurance.',
+                'price': Decimal('520.00'),
+                'discount_price': Decimal('460.00'),
+                'stock': 85,
+                'unit': '500 gm',
+                'is_featured': True,
+                'is_flash_sale': True,
+                'images': [
+                    ('products/gallery/chaldal-organic-chia-seeds-500g-angle-1.webp', 'Chaldal Organic 500g Matte Zipper Pouch Front', 1),
+                    ('products/gallery/chaldal-organic-chia-seeds-500g-angle-2.webp', 'Macro View of Whole Glossy Black Chia Seeds in Spoon', 2),
+                    ('products/gallery/chaldal-organic-chia-seeds-500g-angle-3.webp', 'Hydrated Chia Seed Pudding Cup with Berries', 3),
+                    ('products/gallery/chaldal-organic-chia-seeds-500g-angle-4.webp', 'Resealable Top Seal and Certified Organic Nutrition Facts', 4),
+                ]
+            },
+            {
+                'slug': 'aci-pure-premium-danadar-ghee-900g',
+                'name': 'ACI Pure Premium Cow Milk Danadar Desi Ghee 900g Tin',
+                'category': 'pure-oils',
+                'brand': 'aci',
+                'short_description': 'Pure traditional clarified butter made from fresh dairy milk with distinct golden granular aroma.',
+                'description': 'ACI Pure Ghee is processed through advanced hygienic dairy technology preserving traditional rural taste and aroma. Rich in fat-soluble vitamins A, D, E, and K with zero adulteration or artificial fragrance.',
+                'price': Decimal('1580.00'),
+                'discount_price': Decimal('1420.00'),
+                'stock': 60,
+                'unit': '900 gm',
+                'is_featured': True,
+                'is_flash_sale': False,
+                'images': [
+                    ('products/gallery/aci-pure-premium-danadar-ghee-900g-angle-1.webp', 'ACI Pure 900g Golden Metal Tin Container Front', 1),
+                    ('products/gallery/aci-pure-premium-danadar-ghee-900g-angle-2.webp', 'Spoonful of Granular Golden Aromatic Desi Ghee', 2),
+                    ('products/gallery/aci-pure-premium-danadar-ghee-900g-angle-3.webp', 'Rich Ghee Melted Over Traditional Shahi Polao', 3),
+                    ('products/gallery/aci-pure-premium-danadar-ghee-900g-angle-4.webp', 'Hermetic Easy-Open Tin Ring Lid and BSTI Purity Mark', 4),
+                ]
+            },
 
             # ==================== PHARMACY & HEALTH ====================
             {
@@ -1313,6 +1380,46 @@ class Command(BaseCommand):
                     ('products/gallery/omron-hem-7120-automatic-blood-pressure-monitor-angle-4.webp', 'Zipper Travel Pouch & 3-Year Warranty Card', 4),
                 ]
             },
+            {
+                'slug': 'square-pharma-ceevit-250mg-chewable-box',
+                'name': 'Square Pharma Ceevit 250mg Vitamin C Chewable Tablets (Box of 240 Tablets)',
+                'category': 'vitamins',
+                'brand': 'square-pharma',
+                'short_description': 'Delicious orange-flavored Ascorbic Acid chewable tablets for daily immune defense and collagen synthesis.',
+                'description': 'Square Pharma Ceevit provides 250mg of essential Vitamin C (Ascorbic Acid BP) per tablet. Strengthens the immune system, promotes wound healing, combats free-radical oxidation, and supports gum and skin vitality. Sugar-balanced chewable formula suitable for family daily wellness.',
+                'price': Decimal('480.00'),
+                'discount_price': Decimal('430.00'),
+                'stock': 180,
+                'unit': 'Box of 240 tabs',
+                'is_featured': True,
+                'is_flash_sale': True,
+                'images': [
+                    ('products/gallery/square-pharma-ceevit-250mg-chewable-box-angle-1.webp', 'Square Pharma Ceevit 250mg Orange Box Front View', 1),
+                    ('products/gallery/square-pharma-ceevit-250mg-chewable-box-angle-2.webp', 'Alu-Alu Foil Strip of Bright Orange Chewable Tablets', 2),
+                    ('products/gallery/square-pharma-ceevit-250mg-chewable-box-angle-3.webp', 'Single Chewable Tablet Macro Showing Embossed C Mark', 3),
+                    ('products/gallery/square-pharma-ceevit-250mg-chewable-box-angle-4.webp', 'DGDA QR Verification and Daily Recommended Dose Leaflet', 4),
+                ]
+            },
+            {
+                'slug': 'savlon-antiseptic-liquid-1000ml',
+                'name': 'Savlon Hospital-Grade Antiseptic Liquid Disinfectant 1 Litre Bottle',
+                'category': 'personal-hygiene',
+                'brand': 'savlon',
+                'short_description': 'Broad-spectrum Chlorhexidine & Cetrimide antiseptic for medical first aid, bathing, and sanitization.',
+                'description': 'Savlon Antiseptic Liquid kills 99.9% of bacteria and viruses on skin and surfaces. Gentle non-staining germicidal action recommended by healthcare professionals for wound cleaning, post-natal care, laundry disinfection, and family personal hygiene.',
+                'price': Decimal('460.00'),
+                'discount_price': Decimal('395.00'),
+                'stock': 130,
+                'unit': '1 ltr',
+                'is_featured': True,
+                'is_flash_sale': False,
+                'images': [
+                    ('products/gallery/savlon-antiseptic-liquid-1000ml-angle-1.webp', 'Savlon 1 Litre Economy Plastic Bottle Front View', 1),
+                    ('products/gallery/savlon-antiseptic-liquid-1000ml-angle-2.webp', 'Blue-tinted Liquid Disinfectant Pouring into Bathing Water', 2),
+                    ('products/gallery/savlon-antiseptic-liquid-1000ml-angle-3.webp', 'Calibrated Dilution Cap and First Aid Application Guide', 3),
+                    ('products/gallery/savlon-antiseptic-liquid-1000ml-angle-4.webp', 'Tamper-Proof Induction Seal and Hospital Endorsement Badge', 4),
+                ]
+            },
 
             # ==================== MEGA MARKET / GENERAL ====================
             {
@@ -1411,6 +1518,30 @@ class Command(BaseCommand):
                     }
                 )
 
+        # Synchronize supplemental gallery images to guarantee >= 3-4 images for every product
+        supplemental_gallery = {
+            'tissue-paper-box-12': [
+                ('products/gallery/tissue-paper-box-gallery-3.webp', 'Tissue Paper Box - Dispenser Pop-Up Detail', 3),
+                ('products/gallery/tissue-paper-box-gallery-4.webp', 'Tissue Paper Box - 2-Ply Ultra Soft Texture & Pack', 4),
+            ],
+            'chicken-meat-11': [
+                ('products/gallery/chicken-meat-gallery-3.webp', 'Chicken Meat - Fresh Cut Diced Pieces', 3),
+                ('products/gallery/chicken-meat-gallery-4.webp', 'Chicken Meat - Vacuum Sealed Hygienic Pack', 4),
+            ],
+        }
+        for p_slug, imgs in supplemental_gallery.items():
+            p_obj = Product.objects.filter(slug=p_slug).first()
+            if p_obj:
+                for img_path, alt_txt, order_num in imgs:
+                    ProductImage.objects.update_or_create(
+                        product=p_obj,
+                        order=order_num,
+                        defaults={
+                            'image': img_path,
+                            'alt_text': alt_txt,
+                        }
+                    )
+
     def _ensure_media_assets(self):
         """
         Guarantees that all Category images, Brand logos, Product cover images,
@@ -1426,15 +1557,15 @@ class Command(BaseCommand):
 
         def _get_theme_style_for_item(name, category_slug, brand_name):
             key_lower = f"{name} {category_slug} {brand_name}".lower()
-            if any(k in key_lower for k in ['laptop', 'macbook', 'phone', 'iphone', 'samsung galaxy', 'rtx', 'asus', 'dell', 'logitech', 'headphone', 'tech', 'hardware']):
+            if any(k in key_lower for k in ['laptop', 'macbook', 'phone', 'iphone', 'samsung galaxy', 'rtx', 'asus', 'dell', 'logitech', 'headphone', 'tech', 'hardware', 'tablet', 'gadget']):
                 return ((15, 23, 42), (241, 245, 249), (2, 132, 199), "Tech Flagship")
-            elif any(k in key_lower for k in ['skin', 'cream', 'serum', 'lipstick', 'mascara', 'makeup', 'fragrance', 'perfume', 'ordinary', 'cerave', 'mac', 'maybelline', 'loreal', 'chanel', 'beauty']):
+            elif any(k in key_lower for k in ['skin', 'cream', 'serum', 'cleanser', 'lipstick', 'mascara', 'makeup', 'fragrance', 'perfume', 'ordinary', 'cerave', 'mac', 'maybelline', 'loreal', 'chanel', 'beauty']):
                 return ((253, 242, 248), (157, 23, 77), (219, 39, 119), "100% Authentic")
-            elif any(k in key_lower for k in ['panjabi', 'kurti', 'saree', 'blazer', 'denim', 'jeans', 'oxford', 'shoe', 'aarong', 'sailor', 'zara', 'apex', 'bata', 'fashion', 'formalwear']):
+            elif any(k in key_lower for k in ['panjabi', 'kurti', 'saree', 'blazer', 'denim', 'jeans', 'oxford', 'shoe', 'shirt', 'dress', 'aarong', 'sailor', 'zara', 'apex', 'bata', 'fashion', 'formalwear']):
                 return ((254, 252, 232), (124, 45, 18), (217, 119, 6), "Artisan Style")
-            elif any(k in key_lower for k in ['rice', 'oil', 'honey', 'dates', 'nuts', 'ghee', 'organic', 'grocery', 'agro', 'khaas', 'chaldal', 'chinigura', 'groceries']):
+            elif any(k in key_lower for k in ['rice', 'oil', 'honey', 'dates', 'nuts', 'ghee', 'chia', 'seed', 'organic', 'grocery', 'agro', 'khaas', 'chaldal', 'chinigura', 'groceries']):
                 return ((240, 253, 244), (21, 128, 61), (22, 163, 74), "100% Organic")
-            elif any(k in key_lower for k in ['pharma', 'medicine', 'prescription', 'napa', 'seclo', 'maxpro', 'bextram', 'dettol', 'savlon', 'hygiene', 'antiseptic', 'monitor', 'first aid', 'vitamin']):
+            elif any(k in key_lower for k in ['pharma', 'medicine', 'prescription', 'napa', 'seclo', 'ceevit', 'maxpro', 'bextram', 'dettol', 'savlon', 'hygiene', 'antiseptic', 'monitor', 'first aid', 'vitamin']):
                 return ((240, 253, 250), (15, 118, 110), (13, 148, 136), "DGDA Licensed")
             else:
                 return ((248, 250, 252), (30, 41, 59), (248, 86, 6), "Marketplace")

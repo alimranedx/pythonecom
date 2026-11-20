@@ -25,9 +25,17 @@ def site_settings_processor(request):
     Exposes dynamic store branding, header announcements, contact information,
     footer details, and dynamic theme tokens globally to all templates.
     Injects CURRENT_THEME_KEY, CURRENT_THEME_DATA, and THEME_CHOICES.
+    Supports preview theme via ?theme=<theme_key> query parameter for testing/admin.
     """
     settings = SiteSetting.get_settings()
     theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
+
+    # Allow preview theme via ?theme=<key> for testing/admin if present in THEMES
+    if hasattr(request, 'GET'):
+        preview_theme = request.GET.get('theme')
+        if preview_theme and preview_theme in THEMES:
+            theme_key = preview_theme
+
     is_bangla = getattr(request, 'IS_BANGLA', False)
     theme_data = get_theme_data(theme_key, is_bangla=is_bangla)
 

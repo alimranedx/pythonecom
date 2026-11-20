@@ -28,6 +28,9 @@ THEMES = {
         'benchmark': 'Daraz / Amazon Style',
         'icon': 'bi-cart4',
         'tag': 'Marketplace',
+        # Vertical Filtering Slugs (None = All categories & brands)
+        'category_slugs': None,
+        'brand_slugs': None,
         # Color Tokens
         'primary': '#f85606',
         'primary_hover': '#d94400',
@@ -89,6 +92,9 @@ THEMES = {
         'benchmark': 'Star Tech / Apple Gadgets Style',
         'icon': 'bi-laptop',
         'tag': 'Electronics',
+        # Vertical Filtering Slugs
+        'category_slugs': ['laptops', 'smartphones', 'pc-hardware', 'audio-gear', 'electronics-appliances', 'tablets', 'mobile-accessories'],
+        'brand_slugs': ['apple', 'samsung', 'asus', 'dell', 'sony', 'logitech'],
         # Color Tokens
         'primary': '#0284c7',
         'primary_hover': '#0369a1',
@@ -150,6 +156,9 @@ THEMES = {
         'benchmark': 'Shajgoj Style',
         'icon': 'bi-gem',
         'tag': 'Beauty',
+        # Vertical Filtering Slugs
+        'category_slugs': ['skin-care', 'makeup', 'hair-care', 'fragrances', 'beauty'],
+        'brand_slugs': ['loreal', 'the-ordinary', 'cerave', 'mac', 'maybelline', 'chanel'],
         # Color Tokens
         'primary': '#db2777',
         'primary_hover': '#be185d',
@@ -211,6 +220,9 @@ THEMES = {
         'benchmark': 'Aarong / Sailor Style',
         'icon': 'bi-person-heart',
         'tag': 'Fashion',
+        # Vertical Filtering Slugs
+        'category_slugs': ['mens-panjabi', 'womens-kurti', 'formalwear', 'casual-denim', 'fashion-apparel', 'womens-dresses', 'mens-shirts', 'mens-shoes', 'womens-shoes'],
+        'brand_slugs': ['aarong', 'sailor', 'apex', 'bata', 'zara'],
         # Color Tokens
         'primary': '#9a3412',
         'primary_hover': '#7c2d12',
@@ -272,6 +284,9 @@ THEMES = {
         'benchmark': 'Chaldal / Khaas Food Style',
         'icon': 'bi-basket2',
         'tag': 'Organic Grocery',
+        # Vertical Filtering Slugs
+        'category_slugs': ['rice-grains', 'pure-oils', 'honey-dry-fruits', 'fresh-agro', 'groceries'],
+        'brand_slugs': ['khaas-food', 'chaldal-organic', 'pran', 'aci', 'nestle', 'unilever'],
         # Color Tokens
         'primary': '#16a34a',
         'primary_hover': '#15803d',
@@ -333,6 +348,9 @@ THEMES = {
         'benchmark': 'Arogga Style',
         'icon': 'bi-heart-pulse',
         'tag': 'Pharmacy',
+        # Vertical Filtering Slugs
+        'category_slugs': ['prescriptions', 'vitamins', 'first-aid', 'personal-hygiene'],
+        'brand_slugs': ['square-pharma', 'beximco', 'dettol', 'savlon'],
         # Color Tokens
         'primary': '#0d9488',
         'primary_hover': '#0f766e',
