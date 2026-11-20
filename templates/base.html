@@ -23,6 +23,10 @@
 
     {% if site_settings.brand_favicon %}
         <link rel="icon" type="image/x-icon" href="{{ site_settings.brand_favicon.url }}">
+    {% elif CURRENT_THEME_DATA.favicon_url %}
+        <link rel="icon" type="image/svg+xml" href="{{ CURRENT_THEME_DATA.favicon_url }}">
+        <link rel="shortcut icon" href="{{ CURRENT_THEME_DATA.favicon_ico_url|default:CURRENT_THEME_DATA.favicon_url }}">
+        <link rel="apple-touch-icon" href="{{ CURRENT_THEME_DATA.favicon_url }}">
     {% else %}
         <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
@@ -527,9 +531,25 @@
                     <button class="btn btn-light rounded-pill p-2 d-md-none border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas" aria-label="Open Navigation Menu">
                         <i class="bi bi-list fs-5"></i>
                     </button>
-                    <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.site_name|default:'Easy Purchase' }}">
+                    <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                         {% if site_settings.brand_logo %}
                             <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                        {% elif CURRENT_THEME_DATA.logo_url %}
+                            <!-- Light theme logo (shown in light mode) -->
+                            <picture class="d-flex align-items-center logo-light">
+                                <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
+                                <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" class="brand-logo-img" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
+                            </picture>
+                            <!-- Dark theme logo (shown in dark mode) -->
+                            <picture class="d-flex align-items-center logo-dark">
+                                <source srcset="{{ CURRENT_THEME_DATA.logo_dark_url }}" type="image/svg+xml">
+                                <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" class="brand-logo-img" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
+                            </picture>
+                            <!-- Guaranteed minimum project logo fallback -->
+                            <span class="brand-logo-fallback align-items-center gap-2">
+                                <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-bag-check-fill' }} fs-3 text-primary"></i>
+                                <span class="fw-bold fs-5 text-dark brand-dark">{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}</span>
+                            </span>
                         {% else %}
                             <!-- Light theme logo (shown in light mode) -->
                             <picture class="d-flex align-items-center logo-light">
@@ -706,9 +726,11 @@
     <!-- Mobile Offcanvas Menu Drawer -->
     <div class="offcanvas offcanvas-start shadow" tabindex="-1" id="mobileMenuOffcanvas" aria-labelledby="mobileMenuLabel">
         <div class="offcanvas-header border-bottom">
-            <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.site_name|default:'Easy Purchase' }}">
+            <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                 {% if site_settings.brand_logo %}
                     <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="36" class="brand-logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;">
+                {% elif CURRENT_THEME_DATA.logo_url %}
+                    <img src="{{ CURRENT_THEME_DATA.logo_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="36" class="brand-logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;">
                 {% else %}
                     <!-- Light theme logo (shown in light mode) -->
                     <picture class="d-flex align-items-center logo-light">
@@ -933,9 +955,11 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
-                    <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none" title="{{ site_settings.site_name|default:'Easy Purchase' }}">
+                    <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                         {% if site_settings.brand_logo %}
                             <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);">
+                        {% elif CURRENT_THEME_DATA.logo_dark_url %}
+                            <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);">
                         {% else %}
                             <picture class="d-flex align-items-center">
                                 <source srcset="{% static 'images/logo_dark.svg' %}" type="image/svg+xml">

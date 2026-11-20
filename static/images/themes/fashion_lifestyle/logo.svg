@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 54" width="280" height="54">
+            <defs>
+                <style>
+                    .brand-title { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; fill: #451a03; }
+                    .brand-sub { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 9px; letter-spacing: 2px; fill: #9a3412; text-transform: uppercase; }
+                </style>
+            </defs>
+            
+        <g transform="translate(6, 6) scale(0.9545454545454546)">
+            <rect x="2" y="2" width="40" height="40" rx="10" fill="#9a3412"/>
+            <path d="M14 14l16 16M14 30l16-16" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+            <rect x="16" y="16" width="12" height="12" rx="2" fill="none" stroke="#d97706" stroke-width="2.5"/>
+            <circle cx="22" cy="22" r="2" fill="#ffffff"/>
+        </g>
+        
+            <text x="60" y="27" class="brand-title">HERITAGE</text>
+            <text x="60" y="42" class="brand-sub">FASHION & COUTURE</text>
+        </svg>

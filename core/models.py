@@ -92,6 +92,71 @@ class SiteSetting(TimeStampedModel):
     def __str__(self):
         return f"Site Configuration ({self.site_name})"
 
+    def get_brand_logo_url(self, theme_key=None):
+        """
+        Returns custom uploaded brand logo if present, otherwise returns
+        the active theme's dedicated vector brand logo SVG.
+        """
+        if self.brand_logo:
+            try:
+                return self.brand_logo.url
+            except Exception:
+                pass
+        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        from core.themes import get_theme
+        theme = get_theme(target_key)
+        return theme.get('logo_url', '/static/images/logo.svg')
+
+    def get_brand_logo_dark_url(self, theme_key=None):
+        """
+        Returns active theme's dark-mode brand logo.
+        """
+        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        from core.themes import get_theme
+        theme = get_theme(target_key)
+        return theme.get('logo_dark_url', '/static/images/logo_dark.svg')
+
+    def get_brand_favicon_url(self, theme_key=None):
+        """
+        Returns custom uploaded browser favicon if present, otherwise returns
+        the active theme's dedicated vector favicon SVG.
+        """
+        if self.brand_favicon:
+            try:
+                return self.brand_favicon.url
+            except Exception:
+                pass
+        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        from core.themes import get_theme
+        theme = get_theme(target_key)
+        return theme.get('favicon_url', '/static/images/favicon.svg')
+
+    def get_brand_favicon_ico_url(self, theme_key=None):
+        """
+        Returns active theme's browser favicon ICO url.
+        """
+        if self.brand_favicon:
+            try:
+                return self.brand_favicon.url
+            except Exception:
+                pass
+        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        from core.themes import get_theme
+        theme = get_theme(target_key)
+        return theme.get('favicon_ico_url', '/static/images/favicon.ico')
+
+    def get_effective_site_name(self, theme_key=None):
+        """
+        Returns active theme's brand name if store name is generic default 'Easy Purchase',
+        otherwise returns custom configured site_name.
+        """
+        if self.site_name and self.site_name not in ['Easy Purchase', 'ShopBusket Ecommerce', 'PythonEcom', '']:
+            return self.site_name
+        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        from core.themes import get_theme
+        theme = get_theme(target_key)
+        return theme.get('brand_name', self.site_name or 'Easy Purchase')
+
     @classmethod
     def get_settings(cls):
         """

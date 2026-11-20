@@ -182,11 +182,19 @@
                                     <div class="mb-3">
                                         <label class="form-label small fw-bold text-muted">Brand Logo Image</label>
                                         {{ form.brand_logo }}
-                                        <small class="text-muted d-block mt-1">Optional. If empty, the stylized text logo "Easy Purchase" is rendered.</small>
+                                        <small class="text-muted d-block mt-1">Optional. If empty, the active theme's pre-configured logo is rendered.</small>
                                         {% if setting.brand_logo %}
                                             <div class="mt-2 p-2 bg-light rounded d-inline-block border">
-                                                <small class="text-muted d-block mb-1">Current Logo:</small>
+                                                <small class="text-muted d-block mb-1">Custom Uploaded Logo:</small>
                                                 <img src="{{ setting.brand_logo.url }}" alt="Logo Preview" style="max-height: 48px; max-width: 180px;">
+                                            </div>
+                                        {% elif current_theme.logo_url %}
+                                            <div class="mt-2 p-2 bg-light rounded d-inline-block border">
+                                                <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
+                                                    <small class="text-muted fw-bold">Active Theme Default Logo:</small>
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem;">{{ current_theme.name }}</span>
+                                                </div>
+                                                <img src="{{ current_theme.logo_url }}" alt="{{ current_theme.name }} Logo" style="max-height: 44px; max-width: 190px;">
                                             </div>
                                         {% endif %}
                                     </div>
@@ -195,8 +203,16 @@
                                         {{ form.brand_favicon }}
                                         {% if setting.brand_favicon %}
                                             <div class="mt-2 p-2 bg-light rounded d-inline-block border">
-                                                <small class="text-muted d-block mb-1">Current Favicon:</small>
+                                                <small class="text-muted d-block mb-1">Custom Favicon:</small>
                                                 <img src="{{ setting.brand_favicon.url }}" alt="Favicon Preview" style="width: 24px; height: 24px;">
+                                            </div>
+                                        {% elif current_theme.favicon_url %}
+                                            <div class="mt-2 p-2 bg-light rounded d-inline-block border">
+                                                <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
+                                                    <small class="text-muted fw-bold">Active Theme Favicon:</small>
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem;">{{ current_theme.name }}</span>
+                                                </div>
+                                                <img src="{{ current_theme.favicon_url }}" alt="{{ current_theme.name }} Favicon" style="width: 28px; height: 28px;">
                                             </div>
                                         {% endif %}
                                     </div>
@@ -432,12 +448,29 @@
                                         <!-- Card Content -->
                                         <div class="card-body p-4 d-flex flex-column justify-content-between">
                                             <div>
-                                                <!-- Benchmark Badge -->
-                                                <div class="mb-3">
+                                                <!-- Benchmark Badge & Brand Assets -->
+                                                <div class="mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                                                     <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
                                                         <i class="bi bi-bullseye me-1 text-primary"></i> Benchmark: <strong>{{ theme.benchmark }}</strong>
                                                     </span>
+                                                    {% if theme.favicon_url %}
+                                                        <span class="d-inline-flex align-items-center gap-1.5 px-2 py-1 bg-light rounded-pill border small" title="Theme Favicon">
+                                                            <img src="{{ theme.favicon_url }}" alt="Favicon" style="width: 16px; height: 16px;">
+                                                            <span class="text-muted" style="font-size: 0.7rem;">Favicon</span>
+                                                        </span>
+                                                    {% endif %}
                                                 </div>
+
+                                                <!-- Theme Brand Logo Preview -->
+                                                {% if theme.logo_url %}
+                                                    <div class="mb-3 p-2.5 bg-light rounded-3 border d-flex align-items-center justify-content-between">
+                                                        <div>
+                                                            <div class="small fw-bold text-dark lh-1">{{ theme.brand_name }}</div>
+                                                            <small class="text-muted" style="font-size: 0.7rem;">{{ theme.brand_sub }}</small>
+                                                        </div>
+                                                        <img src="{{ theme.logo_url }}" alt="{{ theme.name }} Logo" style="max-height: 32px; max-width: 140px; object-fit: contain;">
+                                                    </div>
+                                                {% endif %}
 
                                                 <p class="small text-muted mb-3">{{ theme.subtitle }}</p>
 
