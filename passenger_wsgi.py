@@ -28,8 +28,8 @@ try:
 
     # Ensure multi-niche catalog seed data is populated if missing
     try:
-        from product.models import Category
-        if not Category.objects.filter(slug='laptops').exists():
+        from product.models import ProductImage
+        if ProductImage.objects.count() < 50:
             from django.core.management import call_command
             call_command('seed_ecommerce')
     except Exception as se:
