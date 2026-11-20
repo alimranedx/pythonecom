@@ -98,6 +98,14 @@
             letter-spacing: -0.5px;
         }
 
+        .brand-logo-img {
+            max-width: 100%;
+            object-fit: contain;
+            display: inline-block;
+            vertical-align: middle;
+            transition: filter 0.2s ease;
+        }
+
         .product-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             border-radius: 12px;
@@ -209,6 +217,9 @@
         [data-bs-theme="dark"] header.bg-white {
             background-color: #0f172a !important;
             border-color: #1e293b !important;
+        }
+        [data-bs-theme="dark"] .brand-logo-img {
+            filter: brightness(1.2);
         }
         [data-bs-theme="dark"] .bg-white {
             background-color: #1e293b !important;
@@ -436,11 +447,14 @@
                     <button class="btn btn-light rounded-pill p-2 d-md-none border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas" aria-label="Open Navigation Menu">
                         <i class="bi bi-list fs-5"></i>
                     </button>
-                    <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2">
+                    <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.site_name|default:'Easy Purchase' }}">
                         {% if site_settings.brand_logo %}
-                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 42px; width: auto; object-fit: contain;">
+                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
                         {% else %}
-                            <img src="{% static 'images/logo.svg' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" style="max-height: 42px; width: auto; object-fit: contain;">
+                            <picture class="d-flex align-items-center">
+                                <source srcset="{% static 'images/logo.svg' %}" type="image/svg+xml">
+                                <img src="{% static 'images/logo.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="42" width="186" style="height: 42px; width: 186px; max-width: 100%; object-fit: contain;" class="brand-logo-img">
+                            </picture>
                         {% endif %}
                     </a>
                 </div>
@@ -596,11 +610,14 @@
     <!-- Mobile Offcanvas Menu Drawer -->
     <div class="offcanvas offcanvas-start shadow" tabindex="-1" id="mobileMenuOffcanvas" aria-labelledby="mobileMenuLabel">
         <div class="offcanvas-header border-bottom">
-            <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2">
+            <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.site_name|default:'Easy Purchase' }}">
                 {% if site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 36px; width: auto; object-fit: contain;">
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="36" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;">
                 {% else %}
-                    <img src="{% static 'images/logo.svg' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" style="max-height: 36px; width: auto; object-fit: contain;">
+                    <picture class="d-flex align-items-center">
+                        <source srcset="{% static 'images/logo.svg' %}" type="image/svg+xml">
+                        <img src="{% static 'images/logo.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="36" width="160" style="height: 36px; width: 160px; max-width: 100%; object-fit: contain;" class="brand-logo-img">
+                    </picture>
                 {% endif %}
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -809,13 +826,16 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
-                    <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none" title="{{ site_settings.site_name|default:'Easy Purchase' }}">
                         {% if site_settings.brand_logo %}
-                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 38px; width: auto; filter: brightness(1.1);">
+                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);">
                         {% else %}
-                            <img src="{% static 'images/logo_dark.svg' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" style="max-height: 38px; width: auto;">
+                            <picture class="d-flex align-items-center">
+                                <source srcset="{% static 'images/logo_dark.svg' %}" type="image/svg+xml">
+                                <img src="{% static 'images/logo_dark.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="38" width="168" style="height: 38px; width: 168px; max-width: 100%; object-fit: contain;" class="brand-logo-img">
+                            </picture>
                         {% endif %}
-                    </h5>
+                    </a>
                     <p class="text-secondary small">
                         {% if IS_BANGLA %}
                             {{ site_settings.about_text_bn|default:site_settings.about_text_en }}
