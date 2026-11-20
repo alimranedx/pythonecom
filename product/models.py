@@ -99,6 +99,13 @@ class Product(TimeStampedModel):
         return 0
 
     @property
+    def discount_savings(self):
+        if self.has_discount and self.price > 0:
+            from decimal import Decimal
+            return (self.price - self.discount_price).quantize(Decimal('0.01'))
+        return 0
+
+    @property
     def in_stock(self):
         return self.stock > 0
 

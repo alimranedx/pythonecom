@@ -877,7 +877,7 @@
                         {% if product.has_discount %}
                             <span class="fs-4 text-decoration-line-through text-muted">৳{{ product.price }}</span>
                             <span class="badge bg-danger px-3 py-2 rounded-pill fw-semibold">
-                                {{ tr.save|default:'Save' }} ৳{{ product.price|add:"-product.discount_price"|default:"Discount" }}
+                                {{ tr.save|default:'Save' }} ৳{{ product.discount_savings }}
                             </span>
                         {% endif %}
                     </div>
