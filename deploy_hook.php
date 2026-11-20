@@ -16,6 +16,21 @@ if (!is_dir($restartDir)) {
 }
 @touch($restartDir . '/restart.txt');
 
+// Ensure media directories exist with valid permissions
+$mediaDirs = [
+    __DIR__ . '/media',
+    __DIR__ . '/media/products',
+    __DIR__ . '/media/products/gallery',
+    __DIR__ . '/media/categories',
+    __DIR__ . '/media/brands',
+    __DIR__ . '/media/branding',
+];
+foreach ($mediaDirs as $md) {
+    if (!is_dir($md)) {
+        @mkdir($md, 0755, true);
+    }
+}
+
 // 2. Parse .env for database credentials
 $env = [];
 $envFile = __DIR__ . '/.env';

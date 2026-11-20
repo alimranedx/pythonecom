@@ -62,7 +62,6 @@ jobs:
             **/__pycache__/**
             .env
             .env.*
-            media/**
             cookies.txt
             scratch/**
 

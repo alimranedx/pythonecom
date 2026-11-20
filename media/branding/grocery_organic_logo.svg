@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 54" width="280" height="54">
+            <defs>
+                <style>
+                    .brand-title { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; fill: #14532d; }
+                    .brand-sub { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 9px; letter-spacing: 2px; fill: #16a34a; text-transform: uppercase; }
+                </style>
+            </defs>
+            
+        <g transform="translate(6, 6) scale(0.9545454545454546)">
+            <rect x="2" y="2" width="40" height="40" rx="10" fill="#16a34a"/>
+            <path d="M14 28c0-8 6-14 14-14 0 8-6 14-14 14z" fill="#ffffff"/>
+            <path d="M14 28c4-4 8-6 14-14" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="28" cy="14" r="3" fill="#eab308"/>
+        </g>
+        
+            <text x="60" y="27" class="brand-title">PURE HARVEST</text>
+            <text x="60" y="42" class="brand-sub">ORGANIC & GROCERIES</text>
+        </svg>

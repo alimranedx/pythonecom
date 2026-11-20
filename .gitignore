@@ -19,8 +19,8 @@ staticfiles/
 # Environment variables
 .env
 
-# Uploaded media
-media/
+# Uploaded media (demo/seed assets tracked)
+# media/
 
 # Temporary
 cookies.txt
