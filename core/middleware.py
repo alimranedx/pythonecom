@@ -32,9 +32,10 @@ class SessionRoleIsolationMiddleware:
 
             if request.user.is_authenticated:
                 if not is_admin_route and request.user.is_staff:
-                    # Clear staff session when directly navigating customer/storefront routes
-                    storefront_routes = ('/cart/', '/orders/checkout', '/account/')
-                    if path == '/' or path.startswith('/product/') or any(path.startswith(p) for p in storefront_routes):
+                    # Allow staff users to freely view and preview storefront pages ('/', '/product/', etc.)
+                    # Only clear staff session if attempting customer-specific checkout/order placement
+                    customer_isolated_routes = ('/orders/checkout/', '/account/orders/')
+                    if any(path.startswith(p) for p in customer_isolated_routes):
                         logout(request)
                 elif is_admin_route and not request.user.is_staff:
                     # Customer user accessed admin route -> clear customer session
