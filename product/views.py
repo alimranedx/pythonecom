@@ -76,22 +76,17 @@ def product_list(request, category_slug=None):
             if alias_slug:
                 selected_category = categories.filter(slug=alias_slug).first()
 
-        if not selected_category:
-            selected_category = Category.objects.filter(slug=category_slug).first()
-
         if not selected_category and is_explicit_category_path:
             raise Http404("Category not found")
 
         if selected_category:
             products = products.filter(category=selected_category)
 
-    # Brand Filter
+    # Brand Filter (strictly scoped to active theme's brands)
     brand_slug = request.GET.get('brand')
     selected_brand = None
     if brand_slug:
         selected_brand = brands.filter(slug=brand_slug).first()
-        if not selected_brand:
-            selected_brand = Brand.objects.filter(slug=brand_slug).first()
         if selected_brand:
             products = products.filter(brand=selected_brand)
 
@@ -183,6 +178,21 @@ def product_list(request, category_slug=None):
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
+
+    # Resolve active theme
+    preview_theme = request.GET.get('theme') if hasattr(request, 'GET') else None
+    if preview_theme and preview_theme in THEMES:
+        active_theme_key = preview_theme
+    else:
+        settings = SiteSetting.get_settings()
+        active_theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
+        if active_theme_key not in THEMES:
+            active_theme_key = DEFAULT_THEME_KEY
+
+    # Strict Theme Isolation: verify that product belongs to the active storefront theme
+    if hasattr(product, 'theme') and product.theme:
+        if active_theme_key != 'mega_market' and product.theme != 'all' and product.theme != active_theme_key:
+            raise Http404("Product not available in this storefront theme")
 
     # Scoped related products strictly within the same theme
     related_qs = Product.objects.filter(is_active=True).exclude(pk=product.pk)
@@ -304,8 +314,22 @@ def product_add_review(request, pk):
 def product_quick_view(request, pk):
     """
     AJAX endpoint returning product information for quick view modal.
+    Strictly scoped to active storefront theme.
     """
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(Product, pk=pk, is_active=True)
+
+    preview_theme = request.GET.get('theme') if hasattr(request, 'GET') else None
+    if preview_theme and preview_theme in THEMES:
+        active_theme_key = preview_theme
+    else:
+        settings = SiteSetting.get_settings()
+        active_theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
+        if active_theme_key not in THEMES:
+            active_theme_key = DEFAULT_THEME_KEY
+
+    if hasattr(product, 'theme') and product.theme:
+        if active_theme_key != 'mega_market' and product.theme != 'all' and product.theme != active_theme_key:
+            return JsonResponse({'error': 'Product not available in this storefront theme'}, status=404)
     return JsonResponse({
         'id': product.pk,
         'name': product.name,

@@ -219,12 +219,23 @@ class Command(BaseCommand):
             prod, _ = Product.objects.update_or_create(slug=f['slug'], defaults=f)
             prod_map[item['pk']] = prod
 
+        existing_img_ids = set(ProductImage.objects.values_list('id', flat=True))
+        new_fixture_images = []
         for item in records.get('product.productimage', []):
-            f = dict(item['fields'])
-            prod = prod_map.get(f['product']) or Product.objects.filter(id=f['product']).first()
-            if prod:
-                f['product'] = prod
-                ProductImage.objects.update_or_create(id=item['pk'], defaults=f)
+            if item['pk'] not in existing_img_ids:
+                f = dict(item['fields'])
+                prod = prod_map.get(f['product']) or Product.objects.filter(id=f['product']).first()
+                if prod:
+                    new_fixture_images.append(ProductImage(
+                        id=item['pk'],
+                        product=prod,
+                        image=f['image'],
+                        alt_text=f.get('alt_text', ''),
+                        order=f.get('order', 0),
+                    ))
+                    existing_img_ids.add(item['pk'])
+        if new_fixture_images:
+            ProductImage.objects.bulk_create(new_fixture_images, batch_size=200)
 
         for item in records.get('product.productreview', []):
             f = dict(item['fields'])
@@ -542,16 +553,25 @@ class Command(BaseCommand):
             )
             valid_prod_slugs.add(p_data['slug'])
 
-            # Synchronize 4 distinct gallery angles
+        # Synchronize 4 distinct gallery angles efficiently
+        existing_gallery = set(ProductImage.objects.values_list('product_id', 'order'))
+        new_catalog_images = []
+        for p_data in PRODUCTS_DATA:
+            prod = Product.objects.filter(slug=p_data['slug']).first()
+            if not prod:
+                continue
             for img_path, alt_txt, order_num in p_data.get('images', []):
-                ProductImage.objects.update_or_create(
-                    product=prod,
-                    order=order_num,
-                    defaults={
-                        'image': img_path,
-                        'alt_text': alt_txt,
-                    }
-                )
+                if (prod.id, order_num) not in existing_gallery:
+                    new_catalog_images.append(ProductImage(
+                        product=prod,
+                        order=order_num,
+                        image=img_path,
+                        alt_text=alt_txt,
+                    ))
+                    existing_gallery.add((prod.id, order_num))
+
+        if new_catalog_images:
+            ProductImage.objects.bulk_create(new_catalog_images, batch_size=200)
 
         # 4. Clean up legacy out-of-niche dummy records to guarantee zero leakage
         Product.objects.exclude(slug__in=valid_prod_slugs).delete()

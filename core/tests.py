@@ -1077,6 +1077,8 @@ class ThemeTemplatesFrontEndTests(TestCase):
         setting = SiteSetting.get_settings()
         setting.active_theme = 'beauty_cosmetics'
         setting.save()
+        self.product.theme = 'beauty_cosmetics'
+        self.product.save()
 
         res = self.client.get(f'/product/{self.product.pk}/')
         self.assertEqual(res.status_code, 200)

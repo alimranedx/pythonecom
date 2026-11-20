@@ -302,3 +302,55 @@ class StorefrontThemeFilteringTests(TestCase):
 
             for brand in res_catalog.context['brands']:
                 self.assertIn(brand.theme, allowed_themes, f"Out of niche catalog brand {brand.name} ({brand.theme}) appeared in {theme}")
+
+    def test_strict_theme_isolation_detail_view_and_category_route(self):
+        """
+        Verify that out-of-niche direct detail URLs, quick-view, and category routes return 404.
+        """
+        # Set store active theme to tech_gadgets
+        self.setting.active_theme = 'tech_gadgets'
+        self.setting.save()
+
+        # Tech product detail returns 200
+        res_tech_prod = self.client.get(f'/product/{self.tech_p1.pk}/')
+        self.assertEqual(res_tech_prod.status_code, 200)
+
+        # Beauty product detail returns 404 under tech theme
+        res_beauty_prod = self.client.get(f'/product/{self.beauty_p1.pk}/')
+        self.assertEqual(res_beauty_prod.status_code, 404)
+
+        # Tech quick-view returns 200 JSON
+        res_qv_tech = self.client.get(f'/product/{self.tech_p1.pk}/quick-view/')
+        self.assertEqual(res_qv_tech.status_code, 200)
+
+        # Beauty quick-view returns 404 JSON
+        res_qv_beauty = self.client.get(f'/product/{self.beauty_p1.pk}/quick-view/')
+        self.assertEqual(res_qv_beauty.status_code, 404)
+
+        # Tech category route returns 200
+        res_tech_cat = self.client.get('/product/category/laptops/')
+        self.assertEqual(res_tech_cat.status_code, 200)
+
+        # Beauty category route returns 404 under tech theme
+        res_beauty_cat = self.client.get('/product/category/skin-care/')
+        self.assertEqual(res_beauty_cat.status_code, 404)
+
+        # Switch to beauty_cosmetics theme
+        self.setting.active_theme = 'beauty_cosmetics'
+        self.setting.save()
+
+        # Beauty product detail now returns 200
+        res_beauty_prod2 = self.client.get(f'/product/{self.beauty_p1.pk}/')
+        self.assertEqual(res_beauty_prod2.status_code, 200)
+
+        # Tech product detail now returns 404 under beauty theme
+        res_tech_prod2 = self.client.get(f'/product/{self.tech_p1.pk}/')
+        self.assertEqual(res_tech_prod2.status_code, 404)
+
+        # Beauty category route now returns 200
+        res_beauty_cat2 = self.client.get('/product/category/skin-care/')
+        self.assertEqual(res_beauty_cat2.status_code, 200)
+
+        # Tech category route now returns 404 under beauty theme
+        res_tech_cat2 = self.client.get('/product/category/laptops/')
+        self.assertEqual(res_tech_cat2.status_code, 404)
