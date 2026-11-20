@@ -4,7 +4,11 @@ Simulates Admin Panel Theme Switch for all 6 themes and validates
 branding, category isolation, brand logos, product featured images, and gallery.
 """
 import os
+import sys
 import django
+
+# Force unbuffered output
+sys.stdout.reconfigure(line_buffering=True)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pythonecom.settings')
 django.setup()
