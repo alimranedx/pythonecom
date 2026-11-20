@@ -98,14 +98,25 @@ class SiteSetting(TimeStampedModel):
         Retrieves the singleton settings record, automatically creating
         an initial record with production defaults if none exists.
         """
-        instance = cls.objects.first()
+        try:
+            instance = cls.objects.first()
+        except Exception:
+            return cls(site_name='Easy Purchase', active_theme='mega_market')
+
         if not instance:
-            instance = cls.objects.create()
+            try:
+                instance = cls.objects.create()
+            except Exception:
+                return cls(site_name='Easy Purchase', active_theme='mega_market')
+
         if instance.site_name in ['ShopBusket Ecommerce', 'PythonEcom', 'ShopBusket', '']:
             instance.site_name = 'Easy Purchase'
             instance.contact_email = 'support@easypuchase.com'
             instance.copyright_text = '© 2026 Easy Purchase. All rights reserved.'
-            instance.save(update_fields=['site_name', 'contact_email', 'copyright_text'])
+            try:
+                instance.save(update_fields=['site_name', 'contact_email', 'copyright_text'])
+            except Exception:
+                pass
         return instance
 
     def get_announcement_text(self, is_bangla=False):

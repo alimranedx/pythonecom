@@ -16,6 +16,25 @@ if VENV_PACKAGES.exists() and str(VENV_PACKAGES) not in sys.path:
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pythonecom.settings')
 
 try:
+    import django
+    django.setup()
+
+    # Automatically run migrations on deploy/restart
+    try:
+        from django.core.management import call_command
+        call_command('migrate', interactive=False)
+    except Exception as me:
+        sys.stderr.write(f"Startup migrate error: {me}\n")
+
+    # Ensure multi-niche catalog seed data is populated if missing
+    try:
+        from product.models import Category
+        if not Category.objects.filter(slug='laptops').exists():
+            from django.core.management import call_command
+            call_command('seed_ecommerce')
+    except Exception as se:
+        sys.stderr.write(f"Startup seed error: {se}\n")
+
     from django.core.wsgi import get_wsgi_application
     application = get_wsgi_application()
 except Exception:
