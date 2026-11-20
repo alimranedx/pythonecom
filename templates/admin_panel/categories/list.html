@@ -37,9 +37,13 @@
                 {% for c in categories %}
                     <tr>
                         <td class="ps-3">
-                            <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                <i class="bi {{ c.icon }}"></i>
-                            </div>
+                            {% if c.image %}
+                                <img src="{{ c.image.url }}" alt="{{ c.name }}" class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;">
+                            {% else %}
+                                <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="bi {{ c.icon|default:'bi-tag' }}"></i>
+                                </div>
+                            {% endif %}
                         </td>
                         <td><strong class="text-dark">{{ c.name }}</strong></td>
                         <td><code>{{ c.slug }}</code></td>
