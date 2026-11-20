@@ -200,6 +200,7 @@ def render_safe_html(value):
     Renders rich HTML formatting safely:
     - Allows safe formatting tags (p, h1-h6, ul, ol, li, strong, b, em, i, br, hr, span, div, table, etc.)
     - Aggressively strips dangerous tags/attributes (script, style, iframe, object, onerror, javascript:, etc.)
+    - Gracefully handles both raw HTML tags and entity-escaped tags (&lt;p&gt;...&lt;/p&gt;)
     - If input is plain text (no HTML tags), converts newlines to clean linebreaks/paragraphs.
     """
     if not value:
@@ -209,14 +210,18 @@ def render_safe_html(value):
     if not text:
         return ''
 
+    # If text contains HTML entity codes (&lt; and &gt;), decode them first
+    # so rich HTML seeded or escaped from forms is parsed properly
+    unescaped_text = html.unescape(text) if ('&lt;' in text and '&gt;' in text) else text
+
     # Check if text contains HTML tags
-    has_html_tags = bool(re.search(r'<[a-zA-Z\/][^>]*>', text))
+    has_html_tags = bool(re.search(r'<[a-zA-Z\/][^>]*>', unescaped_text))
     if not has_html_tags:
         # Plain text: escape raw characters and format newlines
-        return mark_safe(linebreaks(escape(text)))
+        return mark_safe(linebreaks(escape(unescaped_text)))
 
     # HTML content: sanitize and mark safe
-    clean_html = sanitize_html(text)
+    clean_html = sanitize_html(unescaped_text)
     return mark_safe(clean_html)
 
 
@@ -233,6 +238,10 @@ def clean_plain_summary(value, num_words=45):
     text = str(value).strip()
     if not text:
         return ''
+
+    # Decode entities first so tags are recognized for stripping
+    if '&lt;' in text and '&gt;' in text:
+        text = html.unescape(text)
 
     # Pre-strip dangerous blocks
     text = DANGEROUS_BLOCK_RE.sub('', text)

@@ -194,6 +194,30 @@ class ProductHTMLSanitizationTests(TestCase):
         self.assertIn('High quality 100% cotton.', rendered)
         self.assertIn('Machine wash cold.', rendered)
 
+    def test_render_safe_html_entity_encoded_tags(self):
+        from product.templatetags.product_tags import render_safe_html
+        encoded = (
+            "&lt;p&gt;The Powder Canister is a finely milled setting powder.&lt;/p&gt;\n"
+            "&lt;h5&gt;Product Features &amp; Specifications:&lt;/h5&gt;\n"
+            "&lt;ul&gt;\n"
+            "&lt;li&gt;&lt;strong&gt;Brand:&lt;/strong&gt; L'Oreal&lt;/li&gt;\n"
+            "&lt;/ul&gt;"
+        )
+        rendered = render_safe_html(encoded)
+        self.assertNotIn('&lt;p&gt;', rendered)
+        self.assertNotIn('&lt;h5&gt;', rendered)
+        self.assertIn('<p>The Powder Canister', rendered)
+        self.assertIn('<h5>Product Features', rendered)
+        self.assertIn('<li><strong>Brand:</strong>', rendered)
+
+    def test_render_safe_html_entity_encoded_with_malicious_script(self):
+        from product.templatetags.product_tags import render_safe_html
+        encoded_xss = "&lt;p&gt;Safe text&lt;/p&gt;&lt;script&gt;alert('xss')&lt;/script&gt;"
+        rendered = render_safe_html(encoded_xss)
+        self.assertNotIn('<script', rendered)
+        self.assertNotIn("alert('xss')", rendered)
+        self.assertIn('<p>Safe text</p>', rendered)
+
     def test_clean_plain_summary_strips_tags_before_truncating(self):
         from product.templatetags.product_tags import clean_plain_summary
         rich_content = (

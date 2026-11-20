@@ -238,14 +238,15 @@
         color: #60a5fa;
     }
 
-    /* Quantity Stepper Control */
+    /* Modern Ergonomic Quantity Stepper Control */
     .quantity-stepper {
         display: inline-flex;
         align-items: center;
         background: var(--surface-card, #ffffff);
-        border: 1px solid var(--border-color, #e2e8f0);
-        border-radius: 30px;
-        padding: 4px;
+        border: 1px solid var(--border-color, #cbd5e1);
+        border-radius: 8px;
+        height: 42px;
+        padding: 2px 4px;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
     [data-bs-theme="dark"] .quantity-stepper {
@@ -254,17 +255,17 @@
     }
     .quantity-stepper:focus-within {
         border-color: var(--primary-color, #2563eb);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
     }
     .stepper-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        border-radius: 6px;
         border: none;
         background: transparent;
         color: var(--text-main, #334155);
-        font-size: 1.1rem;
-        font-weight: bold;
+        font-size: 1.15rem;
+        font-weight: 600;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -283,12 +284,12 @@
         color: #60a5fa;
     }
     .stepper-input {
-        width: 52px;
+        width: 44px;
         border: none;
         background: transparent;
         text-align: center;
-        font-weight: 700;
-        font-size: 1.05rem;
+        font-weight: 600;
+        font-size: 0.95rem;
         color: var(--text-main, #334155);
         outline: none;
         -moz-appearance: textfield;
@@ -302,40 +303,95 @@
         color: #f1f5f9;
     }
 
-    /* Add to Bag Button */
-    .btn-add-to-bag {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    /* Modern Standard E-Commerce Action Buttons (Height: 48px, Radius: 10px) */
+    .btn-order-now {
+        background: #dc2626;
         color: #ffffff;
-        border: none;
-        border-radius: 30px;
-        padding: 0.9rem 2rem;
-        font-size: 1.05rem;
-        font-weight: 700;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.28);
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #dc2626;
+        border-radius: 10px;
+        height: 48px;
+        padding: 0 1.25rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 8px;
+        box-shadow: 0 1px 3px rgba(220, 38, 38, 0.2);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-order-now:hover:not(:disabled) {
+        background: #b91c1c;
+        border-color: #b91c1c;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+    }
+    .btn-order-now:active:not(:disabled) {
+        transform: translateY(0);
+    }
+    .btn-order-now:disabled {
+        background: #94a3b8;
+        border-color: #94a3b8;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+    [data-bs-theme="dark"] .btn-order-now {
+        background: #ef4444;
+        border-color: #ef4444;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+    }
+    [data-bs-theme="dark"] .btn-order-now:hover:not(:disabled) {
+        background: #dc2626;
+        border-color: #dc2626;
+        box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-add-to-bag {
+        background: #2563eb;
+        color: #ffffff;
+        border: 1px solid #2563eb;
+        border-radius: 10px;
+        height: 48px;
+        padding: 0 1.25rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .btn-add-to-bag:hover:not(:disabled) {
-        background: linear-gradient(135deg, #1d4ed8, #1e40af);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.38);
+        background: #1d4ed8;
+        border-color: #1d4ed8;
         color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+    .btn-add-to-bag:active:not(:disabled) {
+        transform: translateY(0);
     }
     .btn-add-to-bag:disabled {
         background: #94a3b8;
+        border-color: #94a3b8;
         box-shadow: none;
         cursor: not-allowed;
         opacity: 0.65;
     }
     [data-bs-theme="dark"] .btn-add-to-bag {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        box-shadow: 0 4px 18px rgba(59, 130, 246, 0.35);
+        background: #3b82f6;
+        border-color: #3b82f6;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
     }
     [data-bs-theme="dark"] .btn-add-to-bag:hover:not(:disabled) {
-        background: linear-gradient(135deg, #60a5fa, #3b82f6);
-        box-shadow: 0 8px 26px rgba(59, 130, 246, 0.45);
+        background: #2563eb;
+        border-color: #2563eb;
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.4);
     }
 
     /* Value Proposition Mini Badges */
@@ -907,25 +963,25 @@
 
                     <div class="row g-2 g-sm-3">
                         <div class="col-12 col-sm-6">
-                            <button type="submit" name="buy_now" value="1" class="btn btn-danger btn-lg rounded-pill fw-semibold shadow-sm w-100 py-3 d-flex align-items-center justify-content-center" onclick="document.getElementById('buyNowInput').value='1'" {% if product.stock <= 0 %}disabled{% endif %}>
-                                <i class="bi bi-lightning-charge-fill me-1 fs-5"></i> {% if IS_BANGLA %}এখনই অর্ডার করুন{% else %}Order Now{% endif %}
+                            <button type="submit" name="buy_now" value="1" class="btn btn-order-now w-100" onclick="document.getElementById('buyNowInput').value='1'" {% if product.stock <= 0 %}disabled{% endif %}>
+                                <i class="bi bi-lightning-charge-fill fs-6"></i> {% if IS_BANGLA %}এখনই অর্ডার করুন{% else %}Order Now{% endif %}
                             </button>
                         </div>
                         <div class="col-12 col-sm-6">
-                            <button type="submit" class="btn btn-add-to-bag btn-lg rounded-pill fw-semibold shadow-sm w-100 py-3 d-flex align-items-center justify-content-center" onclick="document.getElementById('buyNowInput').value='0'" {% if product.stock <= 0 %}disabled{% endif %}>
-                                <i class="bi bi-bag-plus-fill me-2 fs-5"></i> {{ tr.add_to_bag_btn }}
+                            <button type="submit" class="btn btn-add-to-bag w-100" onclick="document.getElementById('buyNowInput').value='0'" {% if product.stock <= 0 %}disabled{% endif %}>
+                                <i class="bi bi-bag-plus-fill fs-6"></i> {{ tr.add_to_bag_btn }}
                             </button>
                         </div>
                     </div>
                 </form>
 
                 <!-- Transparent Delivery & COD Guarantee Box (Paradise-style) -->
-                <div class="delivery-trust-box p-3 p-md-4 rounded-4 mt-2">
+                <div class="delivery-trust-box p-3 p-md-4 rounded-3 mt-2">
                     <!-- Delivery Rate Badge Banner -->
-                    <div class="delivery-badge-banner d-flex align-items-center gap-2 p-2 px-3 rounded-pill mb-3">
+                    <div class="delivery-badge-banner d-flex align-items-center gap-2 p-2 px-3 rounded-2 mb-3">
                         <i class="bi bi-truck text-primary fs-5"></i>
                         <div class="small fw-bold">
-                            Inside Dhaka: <span class="text-primary">৳49</span> <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0 ms-1">Free over ৳500</span> &nbsp;|&nbsp; Outside Dhaka: <span class="text-primary">৳99</span>
+                            Inside Dhaka: <span class="text-primary">৳49</span> <span class="badge bg-success-subtle text-success border border-success-subtle rounded-1 px-2 py-0 ms-1">Free over ৳500</span> &nbsp;|&nbsp; Outside Dhaka: <span class="text-primary">৳99</span>
                         </div>
                     </div>
 
@@ -933,7 +989,7 @@
                     <div class="row g-2 g-md-3">
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
-                                <div class="trust-icon bg-success-subtle text-success rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                <div class="trust-icon bg-success-subtle text-success rounded-3 p-2 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-cash-stack fs-5"></i>
                                 </div>
                                 <div>
@@ -945,7 +1001,7 @@
 
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
-                                <div class="trust-icon bg-info-subtle text-info rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                <div class="trust-icon bg-info-subtle text-info rounded-3 p-2 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-arrow-repeat fs-5"></i>
                                 </div>
                                 <div>
@@ -957,7 +1013,7 @@
 
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
-                                <div class="trust-icon bg-primary-subtle text-primary rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                <div class="trust-icon bg-primary-subtle text-primary rounded-3 p-2 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-patch-check-fill fs-5"></i>
                                 </div>
                                 <div>
@@ -969,7 +1025,7 @@
 
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
-                                <div class="trust-icon bg-warning-subtle text-warning rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                <div class="trust-icon bg-warning-subtle text-warning rounded-3 p-2 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-shield-lock-fill fs-5"></i>
                                 </div>
                                 <div>
@@ -1217,7 +1273,7 @@
                                         <label class="form-label small fw-bold text-muted">Your Experience / Review</label>
                                         <textarea name="comment" rows="4" class="form-control form-control-sm rounded-3" required placeholder="What did you like or dislike about this product? How was the quality?"></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold shadow-sm w-100 py-2">
+                                    <button type="submit" class="btn btn-primary w-100 fw-semibold shadow-sm" style="height: 42px; border-radius: 8px;">
                                         <i class="bi bi-send-fill me-1"></i> Submit Review
                                     </button>
                                 </form>
@@ -1229,7 +1285,7 @@
                                 <div class="text-center py-4">
                                     <i class="bi bi-shield-lock display-4 text-muted opacity-50 d-block mb-3"></i>
                                     <p class="small text-muted mb-3">Please sign in to your customer account to submit a review.</p>
-                                    <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-semibold">
+                                    <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-outline-primary fw-semibold" style="height: 42px; border-radius: 8px; padding: 0 1.5rem; display: inline-flex; align-items: center; justify-content: center;">
                                         <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Review
                                     </a>
                                 </div>
@@ -1323,12 +1379,12 @@
                         <span class="fs-5 text-decoration-line-through text-muted" id="bundleOriginalPrice">৳{{ bundle_total }}</span>
                     </div>
 
-                    <div class="alert alert-success border-0 py-2 px-3 small rounded-pill d-inline-flex align-items-center gap-1 mb-3" id="bundleSavingsAlert">
+                    <div class="alert alert-success border-0 py-2 px-3 small rounded-2 d-inline-flex align-items-center gap-1 mb-3" id="bundleSavingsAlert">
                         <i class="bi bi-tag-fill text-success"></i>
                         <span>Save <strong id="bundleSavingsAmount">৳{{ bundle_savings }}</strong> (5% Bundle Discount)</span>
                     </div>
 
-                    <button type="button" class="btn btn-primary btn-lg rounded-pill fw-bold w-100 shadow-sm py-3 d-flex align-items-center justify-content-center" id="addBundleBtn" onclick="addBundleToCart()">
+                    <button type="button" class="btn btn-primary w-100 fw-semibold shadow-sm d-flex align-items-center justify-content-center" id="addBundleBtn" onclick="addBundleToCart()" style="height: 46px; border-radius: 10px; font-size: 0.95rem;">
                         <i class="bi bi-bag-plus-fill me-2 fs-5"></i>
                         <span id="addBundleBtnText">{% if IS_BANGLA %}বান্ডেল ব্যাগে যোগ করুন{% else %}Add Bundle to Bag{% endif %}</span>
                     </button>
@@ -1358,7 +1414,7 @@
                         <div class="card product-card border-0 shadow-sm h-100">
                             <div class="product-img-wrapper position-relative">
                                 {% if item.has_discount %}
-                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2 rounded-pill px-2 py-1 small">
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2 rounded-1 px-2 py-1 small">
                                         -{{ item.discount_percent }}%
                                     </span>
                                 {% endif %}
@@ -1375,7 +1431,7 @@
                                     </a>
                                 </h6>
                                 <div class="fs-5 fw-bold text-primary mb-3">৳{{ item.effective_price }}</div>
-                                <a href="{% url 'product_detail' item.pk %}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto">
+                                <a href="{% url 'product_detail' item.pk %}" class="btn btn-outline-primary btn-sm rounded-2 mt-auto" style="height: 36px; display: inline-flex; align-items: center; justify-content: center;">
                                     View Product
                                 </a>
                             </div>

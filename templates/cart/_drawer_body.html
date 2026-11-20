@@ -137,10 +137,10 @@
         </div>
 
         <div class="d-grid gap-2">
-            <a href="{% url 'checkout' %}" class="btn btn-primary py-2 fw-semibold rounded-pill">
+            <a href="{% url 'checkout' %}" class="btn btn-primary fw-semibold rounded-2 d-flex align-items-center justify-content-center gap-2" style="height: 46px;">
                 <i class="bi bi-credit-card me-1"></i> {{ tr.proceed_to_checkout }}
             </a>
-            <a href="{% url 'cart_detail' %}" class="btn btn-light border py-1 small rounded-pill text-secondary">
+            <a href="{% url 'cart_detail' %}" class="btn btn-light border small rounded-2 text-secondary d-flex align-items-center justify-content-center" style="height: 38px;">
                 {{ tr.view_full_bag }}
             </a>
         </div>
@@ -152,6 +152,6 @@
         </div>
         <h5 class="fw-bold text-dark">{{ tr.shopping_bag_empty }}</h5>
         <p class="small text-muted mb-4">{{ tr.shopping_bag_empty_sub }}</p>
-        <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm rounded-pill px-4" data-bs-dismiss="offcanvas">{{ tr.start_shopping }}</a>
+        <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm rounded-2 px-4" style="height: 38px; display: inline-flex; align-items: center;" data-bs-dismiss="offcanvas">{{ tr.start_shopping }}</a>
     </div>
 {% endif %}

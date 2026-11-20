@@ -449,18 +449,18 @@
 
                             <!-- Call-to-Actions -->
                             <div class="d-flex flex-wrap align-items-center gap-3">
-                                <a href="{% url 'product_detail' item.product.pk %}" class="btn btn-primary btn-lg px-4 rounded-pill fw-bold shadow hero-cta-btn">
+                                <a href="{% url 'product_detail' item.product.pk %}" class="btn btn-primary px-4 fw-bold shadow hero-cta-btn" style="height: 48px; border-radius: 10px; display: inline-flex; align-items: center;">
                                     <i class="bi bi-bag-check-fill me-2"></i> {{ tr.shop_deal_now }}
                                 </a>
 
                                 <form action="{% url 'add_to_cart' item.product.pk %}" method="post" class="d-inline-block m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold" {% if item.product.stock <= 0 %}disabled{% endif %}>
+                                    <button type="submit" class="btn btn-outline-light px-4 fw-semibold" style="height: 48px; border-radius: 10px; display: inline-flex; align-items: center;" {% if item.product.stock <= 0 %}disabled{% endif %}>
                                         <i class="bi bi-cart-plus me-1"></i> {{ tr.quick_add }}
                                     </button>
                                 </form>
 
-                                <button type="button" class="btn btn-outline-light btn-lg rounded-circle p-0 hero-wishlist-btn" onclick="toggleWishlist({{ item.product.pk }}, this)" title="Save to Wishlist">
+                                <button type="button" class="btn btn-outline-light hero-wishlist-btn p-0" style="width: 48px; height: 48px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;" onclick="toggleWishlist({{ item.product.pk }}, this)" title="Save to Wishlist">
                                     {% if item.product.pk in user_wishlist_ids %}
                                         <i class="bi bi-heart-fill text-danger fs-5"></i>
                                     {% else %}
@@ -557,10 +557,10 @@
                     Upgrade your everyday gear with top brand laptops, flagship smartphones, luxury audio, and fashion essentials. Up to 40% OFF this week!
                 </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg px-4 rounded-pill fw-semibold shadow">
+                    <a href="{% url 'product_list' %}" class="btn btn-primary px-4 fw-semibold shadow" style="height: 46px; border-radius: 10px; display: inline-flex; align-items: center;">
                         <i class="bi bi-bag-check me-2"></i> Shop Collection
                     </a>
-                    <a href="{% url 'product_list' %}?category=laptops" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold">
+                    <a href="{% url 'product_list' %}?category=laptops" class="btn btn-outline-light px-4 fw-semibold" style="height: 46px; border-radius: 10px; display: inline-flex; align-items: center;">
                         Browse Laptops
                     </a>
                 </div>
@@ -635,7 +635,7 @@
                         <i class="bi bi-chevron-right"></i>
                     </button>
                 </div>
-                <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-2 px-3">
                     {{ tr.view_all }} <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
@@ -720,7 +720,7 @@
                             <div class="mt-auto">
                                 <form action="{% url 'add_to_cart' product.pk %}" method="post">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-danger w-100 rounded-pill btn-sm fw-semibold">
+                                    <button type="submit" class="btn btn-outline-danger w-100 rounded-2 btn-sm fw-semibold" style="height: 38px;">
                                         <i class="bi bi-cart-plus me-1"></i> {{ tr.add_to_cart }}
                                     </button>
                                 </form>
@@ -740,7 +740,7 @@
                 <h3 class="fw-bold mb-0">{{ tr.trending_products }}</h3>
                 <p class="text-muted small">{{ tr.trending_products_sub }}</p>
             </div>
-            <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+            <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm rounded-2 px-3">
                 {{ tr.shop_all }} <i class="bi bi-arrow-right ms-1"></i>
             </a>
         </div>
@@ -796,11 +796,11 @@
                             <div class="mt-auto d-flex gap-2">
                                 <form action="{% url 'add_to_cart' product.pk %}" method="post" class="flex-grow-1">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm fw-semibold" {% if product.stock <= 0 %}disabled{% endif %}>
+                                    <button type="submit" class="btn btn-primary w-100 rounded-2 btn-sm fw-semibold" style="height: 38px;" {% if product.stock <= 0 %}disabled{% endif %}>
                                         <i class="bi bi-cart-plus me-1"></i> {{ tr.add_to_cart }}
                                     </button>
                                 </form>
-                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="View Details">
+                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-light btn-sm rounded-2 border d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="View Details">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </div>
@@ -820,7 +820,7 @@
                 <h3 class="fw-bold mb-0">Featured Brands</h3>
                 <p class="text-muted small">Explore authentic products from certified global & local top brands</p>
             </div>
-            <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-2 px-3">
                 All Brands <i class="bi bi-arrow-right ms-1"></i>
             </a>
         </div>
