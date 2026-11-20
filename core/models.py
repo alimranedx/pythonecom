@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from core.validators import validate_image_file
+from core.themes import THEME_CHOICES, get_theme_data
 
 
 class TimeStampedModel(models.Model):
@@ -21,6 +22,15 @@ class SiteSetting(TimeStampedModel):
     top header announcements, contact information, and footer configurations.
     Managed via Back-Office Admin Panel with RBAC security.
     """
+    # 0. Active Storefront Theme Architecture
+    active_theme = models.CharField(
+        max_length=50,
+        choices=THEME_CHOICES,
+        default='mega_market',
+        blank=True,
+        help_text="Active niche storefront theme design and color scheme"
+    )
+
     # 1. Brand Identity (Header & Footer)
     site_name = models.CharField(max_length=100, default="Easy Purchase", help_text="Public brand / store name")
     site_tagline = models.CharField(max_length=200, default="Modern E-Commerce Marketplace", blank=True, help_text="Short slogan or tagline")
@@ -122,6 +132,9 @@ class SiteSetting(TimeStampedModel):
         if is_bangla and self.newsletter_text_bn:
             return self.newsletter_text_bn
         return self.newsletter_text_en or ""
+
+    def get_theme_data(self, is_bangla=False):
+        return get_theme_data(self.active_theme, is_bangla=is_bangla)
 
 
 class SystemErrorLog(TimeStampedModel):

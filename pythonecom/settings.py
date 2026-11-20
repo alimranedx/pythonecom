@@ -114,10 +114,10 @@ DATABASES = {
 }
 
 import sys
-if 'test' in sys.argv:
+if os.environ.get('USE_SQLITE') == '1' or 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'NAME': BASE_DIR / 'db.sqlite3' if os.environ.get('USE_SQLITE') == '1' else ':memory:',
     }
 
 

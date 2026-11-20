@@ -30,6 +30,45 @@
         border-bottom: 3px solid #2563eb !important;
         background-color: transparent !important;
     }
+    .theme-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        border: 2px solid #e2e8f0 !important;
+        position: relative;
+    }
+    .theme-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+        border-color: #94a3b8 !important;
+    }
+    .theme-card.is-active-theme {
+        border-color: #10b981 !important;
+        background: linear-gradient(to bottom, #ffffff, #f0fdf4) !important;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3), 0 10px 25px -5px rgba(16, 185, 129, 0.15) !important;
+    }
+    .color-swatch-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 2px solid #ffffff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .theme-gradient-strip {
+        height: 10px;
+        border-radius: 6px;
+        width: 100%;
+        border: 1px solid rgba(0,0,0,0.08);
+    }
+    .trust-pillar-pill {
+        font-size: 0.76rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 9999px;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
 </style>
 {% endblock %}
 
@@ -99,6 +138,11 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-semibold py-3 px-4" id="theme-tab" data-bs-toggle="tab" data-bs-target="#theme-panel" type="button" role="tab" aria-controls="theme-panel" aria-selected="false">
+                            <i class="bi bi-palette-fill text-danger me-2"></i>Theme & Industry Niches
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link fw-semibold py-3 px-4" id="newsletter-tab" data-bs-toggle="tab" data-bs-target="#newsletter-panel" type="button" role="tab" aria-controls="newsletter-panel" aria-selected="false">
                             <i class="bi bi-envelope-paper text-success me-2"></i>Newsletter & Notices
                         </button>
@@ -123,6 +167,11 @@
                                         <label class="form-label small fw-bold text-muted">Brand Tagline</label>
                                         {{ form.site_tagline }}
                                         <small class="text-muted d-block mt-1">Appears in metadata title tags and search engine previews.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Active Storefront Theme <span class="text-danger">*</span></label>
+                                        {{ form.active_theme }}
+                                        <small class="text-muted d-block mt-1">Changes the storefront design system and color palette. Or explore visually in the <strong>Theme & Industry Niches</strong> tab.</small>
                                     </div>
                                 </div>
                             </div>
@@ -324,6 +373,142 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <!-- Tab 5: Theme & Industry Niches -->
+                    <div class="tab-pane fade" id="theme-panel" role="tabpanel" aria-labelledby="theme-tab">
+                        <!-- Overview Header -->
+                        <div class="card border-0 rounded-4 shadow-sm p-4 mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                <div>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 mb-2">
+                                        <i class="bi bi-cpu-fill me-1"></i> Multi-Niche Theme Engine
+                                    </span>
+                                    <h4 class="fw-bold mb-1 text-white">Dynamic Storefront Theme Architecture</h4>
+                                    <p class="text-white-50 mb-0 small" style="max-width: 680px;">
+                                        Select any benchmarked industry theme below. The system automatically recalculates CSS design tokens, primary & accent palettes, border geometry, hero typography, and 4 dedicated trust pillars across the live marketplace.
+                                    </p>
+                                </div>
+                                <div class="bg-white bg-opacity-10 rounded-3 p-3 text-end border border-white border-opacity-10">
+                                    <div class="small text-white-50">Currently Active Theme</div>
+                                    <div class="fw-bold fs-5 text-white">
+                                        <i class="bi {{ current_theme.icon }} me-1" style="color: {{ current_theme.primary }};"></i>
+                                        {{ current_theme.name }}
+                                    </div>
+                                    <span class="badge bg-success rounded-pill px-2 py-1 mt-1 small">
+                                        <i class="bi bi-compass me-1"></i> {{ current_theme.benchmark }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6 Theme Cards Grid -->
+                        <div class="row g-4">
+                            {% for key, theme in themes.items %}
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="card theme-card h-100 rounded-4 overflow-hidden bg-white shadow-sm {% if setting.active_theme == key %}is-active-theme{% endif %}">
+                                        <!-- Card Top Header -->
+                                        <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background-color: {{ theme.primary_light }};">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; background-color: {{ theme.primary }};">
+                                                    <i class="bi {{ theme.icon }} fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="fw-bold mb-0 text-dark">{{ theme.name }}</h6>
+                                                    <small class="text-muted">{{ theme.tag }}</small>
+                                                </div>
+                                            </div>
+                                            {% if setting.active_theme == key %}
+                                                <span class="badge bg-success rounded-pill px-2.5 py-1.5 shadow-sm">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Active
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-white text-muted border rounded-pill px-2.5 py-1">
+                                                    {{ theme.key }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Card Content -->
+                                        <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                            <div>
+                                                <!-- Benchmark Badge -->
+                                                <div class="mb-3">
+                                                    <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                                                        <i class="bi bi-bullseye me-1 text-primary"></i> Benchmark: <strong>{{ theme.benchmark }}</strong>
+                                                    </span>
+                                                </div>
+
+                                                <p class="small text-muted mb-3">{{ theme.subtitle }}</p>
+
+                                                <!-- Color Swatches & Gradient -->
+                                                <div class="mb-3 p-3 bg-light rounded-3 border">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="small fw-bold text-muted">Palette Tokens</span>
+                                                        <span class="small text-muted font-monospace">{{ theme.primary }}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <span class="color-swatch-dot" style="background-color: {{ theme.primary }};" title="Primary: {{ theme.primary }}"></span>
+                                                        <span class="color-swatch-dot" style="background-color: {{ theme.primary_hover }};" title="Hover: {{ theme.primary_hover }}"></span>
+                                                        <span class="color-swatch-dot" style="background-color: {{ theme.primary_light }}; border-color: #cbd5e1;" title="Light: {{ theme.primary_light }}"></span>
+                                                        <span class="color-swatch-dot" style="background-color: {{ theme.accent }};" title="Accent: {{ theme.accent }}"></span>
+                                                        <span class="color-swatch-dot" style="background-color: {{ theme.dark_primary }};" title="Dark: {{ theme.dark_primary }}"></span>
+                                                    </div>
+                                                    <div class="theme-gradient-strip" style="background: linear-gradient(90deg, {{ theme.hero_gradient_start }}, {{ theme.hero_gradient_end }});" title="Hero Gradient"></div>
+                                                </div>
+
+                                                <!-- Geometry Tokens -->
+                                                <div class="d-flex gap-2 mb-3">
+                                                    <span class="badge bg-light text-secondary border small">
+                                                        Button: <code>{{ theme.button_radius }}</code>
+                                                    </span>
+                                                    <span class="badge bg-light text-secondary border small">
+                                                        Card: <code>{{ theme.card_radius }}</code>
+                                                    </span>
+                                                    <span class="badge bg-light text-secondary border small">
+                                                        Badge: <code>{{ theme.badge_radius }}</code>
+                                                    </span>
+                                                </div>
+
+                                                <!-- Hero Copy Preview -->
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold text-muted mb-1">Hero Messaging</label>
+                                                    <div class="p-2.5 bg-light rounded-3 border">
+                                                        <div class="small fw-semibold text-dark mb-1">“{{ theme.hero_headline_en }}”</div>
+                                                        <div class="small text-muted">“{{ theme.hero_headline_bn }}”</div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Trust Pillars -->
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold text-muted mb-1">Trust Pillars (4)</label>
+                                                    <div class="d-flex flex-wrap gap-1">
+                                                        {% for pillar in theme.trust_pillars %}
+                                                            <span class="trust-pillar-pill" title="{{ pillar.desc_en }}">
+                                                                <i class="bi {{ pillar.icon }}" style="color: {{ theme.primary }};"></i>
+                                                                {{ pillar.title_en }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Activation Action Button -->
+                                            <div class="pt-3 border-top mt-2">
+                                                {% if setting.active_theme == key %}
+                                                    <button type="button" class="btn btn-outline-success w-100 rounded-pill fw-semibold py-2" disabled>
+                                                        <i class="bi bi-check2-circle me-1"></i> Currently Active Theme
+                                                    </button>
+                                                {% else %}
+                                                    <button type="submit" name="quick_switch_theme" value="{{ key }}" class="btn text-white w-100 rounded-pill fw-semibold py-2 shadow-sm" style="background-color: {{ theme.primary }}; border-color: {{ theme.primary }};" {% if not can_edit %}disabled{% endif %}>
+                                                        <i class="bi bi-lightning-charge-fill me-1"></i> Activate {{ theme.name }}
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

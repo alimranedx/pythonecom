@@ -41,9 +41,16 @@
 
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --accent-color: #f97316;
+            --primary-color: {{ CURRENT_THEME_DATA.primary|default:'#2563eb' }};
+            --primary-hover: {{ CURRENT_THEME_DATA.primary_hover|default:'#1d4ed8' }};
+            --primary-light: {{ CURRENT_THEME_DATA.primary_light|default:'#eff6ff' }};
+            --accent-color: {{ CURRENT_THEME_DATA.accent|default:'#f97316' }};
+            --text-on-primary: {{ CURRENT_THEME_DATA.text_on_primary|default:'#ffffff' }};
+            --hero-gradient-start: {{ CURRENT_THEME_DATA.hero_gradient_start|default:'#fff7ed' }};
+            --hero-gradient-end: {{ CURRENT_THEME_DATA.hero_gradient_end|default:'#ffffff' }};
+            --btn-border-radius: {{ CURRENT_THEME_DATA.button_radius|default:'0.5rem' }};
+            --card-border-radius: {{ CURRENT_THEME_DATA.card_radius|default:'0.75rem' }};
+            --badge-border-radius: {{ CURRENT_THEME_DATA.badge_radius|default:'9999px' }};
             --dark-color: #0f172a;
             --light-bg: #f8fafc;
             --border-color: #e2e8f0;
@@ -54,9 +61,10 @@
         }
 
         [data-bs-theme="dark"] {
-            --primary-color: #3b82f6;
-            --primary-hover: #60a5fa;
-            --accent-color: #fb923c;
+            --primary-color: {{ CURRENT_THEME_DATA.dark_primary|default:'#3b82f6' }};
+            --primary-hover: {{ CURRENT_THEME_DATA.primary_hover|default:'#60a5fa' }};
+            --accent-color: {{ CURRENT_THEME_DATA.dark_accent|default:'#fb923c' }};
+            --primary-light: rgba(59, 130, 246, 0.15);
             --dark-color: #f8fafc;
             --light-bg: #0b1120;
             --border-color: #334155;
@@ -139,13 +147,16 @@
 
         .product-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border-radius: 12px;
+            border-radius: var(--card-border-radius, 12px);
             overflow: hidden;
             background: #fff;
         }
         .product-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15) !important;
+        }
+        .card {
+            border-radius: var(--card-border-radius, 12px);
         }
         .product-img-wrapper {
             position: relative;
@@ -173,7 +184,7 @@
             font-weight: 700;
             font-size: 0.75rem;
             padding: 4px 8px;
-            border-radius: 6px;
+            border-radius: var(--badge-border-radius, 6px);
             z-index: 2;
         }
         .badge-new {
@@ -181,20 +192,50 @@
             top: 10px;
             right: 10px;
             background: var(--primary-color);
-            color: #fff;
+            color: var(--text-on-primary, #fff);
             font-weight: 700;
             font-size: 0.75rem;
             padding: 4px 8px;
-            border-radius: 6px;
+            border-radius: var(--badge-border-radius, 6px);
             z-index: 2;
         }
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
+            color: var(--text-on-primary, #ffffff);
+            border-radius: var(--btn-border-radius, 0.5rem);
         }
-        .btn-primary:hover {
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active {
             background-color: var(--primary-hover);
             border-color: var(--primary-hover);
+            color: var(--text-on-primary, #ffffff);
+        }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: var(--btn-border-radius, 0.5rem);
+        }
+        .btn-outline-primary:hover,
+        .btn-outline-primary:active,
+        .btn-outline-primary.active {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: var(--text-on-primary, #ffffff) !important;
+        }
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+            color: var(--text-on-primary, #ffffff) !important;
+        }
+        .bg-primary-subtle {
+            background-color: var(--primary-light) !important;
+        }
+        .border-primary {
+            border-color: var(--primary-color) !important;
         }
         .floating-cart-widget {
             position: fixed;
@@ -428,15 +469,23 @@
 
     <!-- Top Announcement Bar -->
     {% if site_settings.announcement_enabled %}
-    <div class="announcement-bar">
+    <div class="announcement-bar" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
         <div class="container d-flex justify-content-between align-items-center">
-            <div class="text-truncate me-2">
-                <i class="bi bi-truck me-1 text-warning"></i>
-                {% if IS_BANGLA %}
-                    {{ site_settings.announcement_text_bn|default:'ফ্রি এক্সপ্রেস ডেলিভারি ৳৫০০ এর বেশি অর্ডারে!' }}
-                {% else %}
-                    {{ site_settings.announcement_text_en|default:'Free Express Shipping on orders over ৳500!' }}
+            <div class="text-truncate me-2 d-flex align-items-center gap-2">
+                {% if CURRENT_THEME_DATA.name %}
+                    <span class="badge d-none d-sm-inline-flex align-items-center gap-1 shadow-sm" style="background-color: var(--primary-color); color: var(--text-on-primary, #ffffff); font-size: 0.72rem; padding: 3px 8px; border-radius: var(--badge-border-radius, 9999px);">
+                        <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-stars' }}"></i>
+                        <span>{{ CURRENT_THEME_DATA.name }}</span>
+                    </span>
                 {% endif %}
+                <span class="text-truncate">
+                    <i class="bi bi-truck me-1 text-warning"></i>
+                    {% if IS_BANGLA %}
+                        {{ site_settings.announcement_text_bn|default:'ফ্রি এক্সপ্রেস ডেলিভারি ৳৫০০ এর বেশি অর্ডারে!' }}
+                    {% else %}
+                        {{ site_settings.announcement_text_en|default:'Free Express Shipping on orders over ৳500!' }}
+                    {% endif %}
+                </span>
             </div>
             <div class="d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
                 <span class="small text-white d-none d-sm-inline">
@@ -625,8 +674,13 @@
                         </a>
                     {% endfor %}
                 </div>
-                <div class="text-muted">
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ tr.flash_sale_active }}</span>
+                <div class="text-muted d-flex align-items-center gap-2">
+                    {% if CURRENT_THEME_DATA.tag %}
+                        <span class="badge border d-none d-lg-inline-flex align-items-center gap-1" style="background-color: var(--primary-light, #f0f9ff); color: var(--primary-color); border-color: rgba(37, 99, 235, 0.2) !important; border-radius: var(--badge-border-radius, 9999px); font-size: 0.75rem;">
+                            <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-shop' }}"></i> {{ CURRENT_THEME_DATA.tag }}
+                        </span>
+                    {% endif %}
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="border-radius: var(--badge-border-radius, 9999px);">{{ tr.flash_sale_active }}</span>
                 </div>
             </div>
         </div>

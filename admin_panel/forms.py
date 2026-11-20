@@ -110,6 +110,7 @@ class SiteSettingForm(forms.ModelForm):
     class Meta:
         model = SiteSetting
         fields = [
+            'active_theme',
             'site_name', 'site_tagline', 'brand_logo', 'brand_favicon',
             'announcement_enabled', 'announcement_text_en', 'announcement_text_bn',
             'customer_care_text_en', 'customer_care_text_bn',
@@ -120,6 +121,7 @@ class SiteSettingForm(forms.ModelForm):
             'accepted_payments_text', 'copyright_text', 'subfooter_notice'
         ]
         widgets = {
+            'active_theme': forms.Select(attrs={'class': 'form-select', 'id': 'activeThemeSelect'}),
             'site_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Easy Purchase'}),
             'site_tagline': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Modern E-Commerce Marketplace'}),
             'brand_logo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
@@ -147,6 +149,17 @@ class SiteSettingForm(forms.ModelForm):
             'copyright_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '© 2026 Easy Purchase. All rights reserved.'}),
             'subfooter_notice': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Engineered with Clean Architecture'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'active_theme' in self.fields:
+            self.fields['active_theme'].required = False
+
+    def clean_active_theme(self):
+        theme = self.cleaned_data.get('active_theme')
+        if not theme and self.instance and self.instance.active_theme:
+            return self.instance.active_theme
+        return theme or 'mega_market'
 
     def clean_brand_logo(self):
         logo = self.cleaned_data.get('brand_logo')

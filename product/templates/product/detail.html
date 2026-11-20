@@ -103,17 +103,35 @@
         box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), inset 0 0 15px rgba(255, 255, 255, 0.1);
     }
 
-    /* Thumbnails Row */
+    /* Gallery Thumbnails Strip & Multi-Angle Styles */
+    .gallery-thumbnails-strip {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 4px 2px 10px 2px;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .gallery-thumbnails-strip::-webkit-scrollbar {
+        height: 5px;
+    }
+    .gallery-thumbnails-strip::-webkit-scrollbar-thumb {
+        background: var(--border-color, #cbd5e1);
+        border-radius: 4px;
+    }
     .thumb-btn {
         width: 76px;
         height: 76px;
-        border-radius: 14px;
+        min-width: 76px;
+        border-radius: var(--card-border-radius, 14px);
         border: 2px solid var(--border-color, #e2e8f0);
         background: #ffffff;
         padding: 6px;
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         object-fit: contain;
+        position: relative;
     }
     [data-bs-theme="dark"] .thumb-btn {
         background: #0f172a;
@@ -130,7 +148,88 @@
     }
     [data-bs-theme="dark"] .thumb-btn.active {
         border-color: #60a5fa;
-        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.35);
+    }
+
+    /* Lightbox Modal Custom Styles */
+    .lightbox-modal-content {
+        background-color: #0f172a !important;
+        border: 1px solid #334155 !important;
+        border-radius: 20px;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+    }
+    .lightbox-main-view {
+        height: 65vh;
+        min-height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: #020617;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .lightbox-main-img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease, opacity 0.2s ease;
+        user-select: none;
+    }
+    .lightbox-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 10;
+        font-size: 1.25rem;
+    }
+    .lightbox-nav-btn:hover {
+        background: #ffffff;
+        color: #0f172a;
+        transform: translateY(-50%) scale(1.08);
+    }
+    .lightbox-nav-prev {
+        left: 16px;
+    }
+    .lightbox-nav-next {
+        right: 16px;
+    }
+    .lightbox-thumbs-strip {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        justify-content: center;
+        padding: 8px 0;
+    }
+    .lightbox-thumb-btn {
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        border-radius: 10px;
+        border: 2px solid #334155;
+        background: #1e293b;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        object-fit: contain;
+    }
+    .lightbox-thumb-btn:hover {
+        border-color: #60a5fa;
+    }
+    .lightbox-thumb-btn.active {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.4);
     }
 
     /* Wishlist Button */
@@ -821,18 +920,31 @@
     <!-- Product Showcase Card (Elevated Theme Adaptive Container) -->
     <div class="card product-detail-card p-4 p-md-5 mb-5">
         <div class="row g-4 g-lg-5">
-            <!-- Left Column: Image Showcase with Circle Mirror Zoom & Thumbnails -->
+            <!-- Left Column: Multiple Image Showcase with Circle Mirror Zoom & Thumbnails -->
             <div class="col-lg-5">
                 <!-- Main Zoom Container -->
-                <div class="zoom-container" id="zoomContainer">
+                <div class="zoom-container position-relative" id="zoomContainer">
                     {% if product.has_discount %}
                         <span class="badge-discount-detail">
                             <i class="bi bi-tag-fill me-1"></i>-{{ product.discount_percent }}% {{ tr.off|default:'OFF' }}
                         </span>
                     {% endif %}
 
+                    <!-- Fullscreen Lightbox Trigger Button -->
+                    <button type="button" class="btn btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center" id="openLightboxBtn" style="width: 38px; height: 38px; z-index: 15;" onclick="openLightboxModal()" title="View Fullscreen Multi-Angle Preview">
+                        <i class="bi bi-arrows-fullscreen text-dark"></i>
+                    </button>
+
+                    <!-- Multiple Angles Count Pill -->
+                    {% if gallery_images %}
+                        <span class="position-absolute bottom-0 start-0 m-3 px-3 py-1 rounded-pill small fw-semibold text-white d-flex align-items-center gap-1 shadow-sm" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 15; font-size: 0.75rem;">
+                            <i class="bi bi-camera-fill text-warning"></i>
+                            <span id="galleryAngleCountBadge">1 / {{ gallery_images|length|add:1 }} Angles</span>
+                        </span>
+                    {% endif %}
+
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" id="mainProductImg">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" id="mainProductImg" onclick="openLightboxModal()" style="cursor: zoom-in;">
                     {% else %}
                         <div class="text-center text-muted" id="placeholderImgBox">
                             <i class="bi bi-box-seam display-1 opacity-50 d-block mb-2 text-primary"></i>
@@ -844,17 +956,20 @@
                     <div class="circle-mirror-lens" id="circleLens"></div>
                 </div>
 
-                <div class="text-center text-muted small mt-2">
-                    <i class="bi bi-search me-1 text-primary"></i> Hover over photo for <strong>circular mirror zoom</strong>
+                <div class="d-flex justify-content-between align-items-center text-muted small mt-2 px-1">
+                    <span><i class="bi bi-search me-1 text-primary"></i> Hover for <strong>mirror zoom</strong></span>
+                    <button type="button" class="btn btn-link text-decoration-none text-muted p-0 small" onclick="openLightboxModal()">
+                        <i class="bi bi-arrows-fullscreen me-1"></i> Fullscreen
+                    </button>
                 </div>
 
-                <!-- Gallery Thumbnails Row -->
-                <div class="d-flex flex-wrap gap-2 justify-content-center mt-3" id="galleryThumbs">
+                <!-- Gallery Thumbnails Strip -->
+                <div class="gallery-thumbnails-strip justify-content-start justify-content-sm-center mt-3" id="galleryThumbs">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" class="thumb-btn active" onclick="switchProductImage('{{ product.image.url }}', this)" alt="{{ product.name }}">
+                        <img src="{{ product.image.url }}" class="thumb-btn active" data-index="0" data-caption="{{ product.name }}" onclick="switchProductImage('{{ product.image.url }}', this, 0)" alt="{{ product.name }}">
                     {% endif %}
                     {% for g in gallery_images %}
-                        <img src="{{ g.image.url }}" class="thumb-btn" onclick="switchProductImage('{{ g.image.url }}', this)" alt="Gallery angle {{ forloop.counter }}">
+                        <img src="{{ g.image.url }}" class="thumb-btn" data-index="{% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}" data-caption="{{ g.alt_text|default:product.name }}" onclick="switchProductImage('{{ g.image.url }}', this, {% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %})" alt="{{ g.alt_text|default:'Gallery Angle' }}">
                     {% endfor %}
                 </div>
             </div>
@@ -975,18 +1090,31 @@
                     </div>
                 </form>
 
-                <!-- Transparent Delivery & COD Guarantee Box (Paradise-style) -->
-                <div class="delivery-trust-box p-3 p-md-4 rounded-3 mt-2">
+                <!-- Transparent Delivery & COD Guarantee Box (Dynamic Active Theme Driven) -->
+                <div class="delivery-trust-box p-3 p-md-4 rounded-3 mt-2" style="border-radius: var(--card-border-radius, 14px);">
                     <!-- Delivery Rate Badge Banner -->
-                    <div class="delivery-badge-banner d-flex align-items-center gap-2 p-2 px-3 rounded-2 mb-3">
-                        <i class="bi bi-truck text-primary fs-5"></i>
+                    <div class="delivery-badge-banner d-flex align-items-center gap-2 p-2 px-3 rounded-2 mb-3" style="border-radius: var(--card-border-radius, 8px);">
+                        <i class="bi bi-truck text-primary fs-5" style="color: var(--primary-color) !important;"></i>
                         <div class="small fw-bold">
-                            Inside Dhaka: <span class="text-primary">৳49</span> <span class="badge bg-success-subtle text-success border border-success-subtle rounded-1 px-2 py-0 ms-1">Free over ৳500</span> &nbsp;|&nbsp; Outside Dhaka: <span class="text-primary">৳99</span>
+                            Inside Dhaka: <span class="text-primary" style="color: var(--primary-color) !important;">৳49</span> <span class="badge bg-success-subtle text-success border border-success-subtle rounded-1 px-2 py-0 ms-1">Free over ৳500</span> &nbsp;|&nbsp; Outside Dhaka: <span class="text-primary" style="color: var(--primary-color) !important;">৳99</span>
                         </div>
                     </div>
 
                     <!-- Trust Pillars Grid -->
                     <div class="row g-2 g-md-3">
+                        {% for pillar in CURRENT_THEME_DATA.trust_pillars %}
+                        <div class="col-sm-6">
+                            <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
+                                <div class="trust-icon rounded-3 p-2 d-flex align-items-center justify-content-center" style="background-color: var(--primary-light, #eff6ff); color: var(--primary-color, #2563eb);">
+                                    <i class="bi {{ pillar.icon|default:'bi-shield-check' }} fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="small fw-bold mb-0">{{ pillar.title }}</h6>
+                                    <p class="text-muted mb-0" style="font-size: 0.78rem;">{{ pillar.desc }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
                                 <div class="trust-icon bg-success-subtle text-success rounded-3 p-2 d-flex align-items-center justify-content-center">
@@ -998,7 +1126,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
                                 <div class="trust-icon bg-info-subtle text-info rounded-3 p-2 d-flex align-items-center justify-content-center">
@@ -1010,7 +1137,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
                                 <div class="trust-icon bg-primary-subtle text-primary rounded-3 p-2 d-flex align-items-center justify-content-center">
@@ -1022,7 +1148,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-sm-6">
                             <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
                                 <div class="trust-icon bg-warning-subtle text-warning rounded-3 p-2 d-flex align-items-center justify-content-center">
@@ -1034,6 +1159,7 @@
                                 </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -1441,18 +1567,89 @@
             </div>
         </div>
     {% endif %}
+
+    <!-- Fullscreen Multi-Angle Gallery Lightbox Modal -->
+    <div class="modal fade" id="productLightboxModal" tabindex="-1" aria-labelledby="productLightboxModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content lightbox-modal-content border-0">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 py-2 px-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge rounded-pill" style="background-color: var(--primary-color); color: var(--text-on-primary, #fff);">
+                            <i class="bi bi-camera me-1"></i> Multi-Angle View
+                        </span>
+                        <h6 class="modal-title text-white fw-bold mb-0 text-truncate" id="productLightboxModalLabel" style="max-width: 450px;">
+                            {{ product.name }}
+                        </h6>
+                        <span class="badge bg-secondary-subtle text-white small" id="lightboxAngleIndex">1 / 1</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <div class="lightbox-main-view">
+                        <button type="button" class="lightbox-nav-btn lightbox-nav-prev" onclick="prevLightboxImage()" aria-label="Previous image">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <img src="" alt="{{ product.name }}" id="lightboxImg" class="lightbox-main-img img-fluid">
+                        <button type="button" class="lightbox-nav-btn lightbox-nav-next" onclick="nextLightboxImage()" aria-label="Next image">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    <!-- Lightbox Thumbnails Strip -->
+                    <div class="lightbox-thumbs-strip mt-3" id="lightboxThumbStrip">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
 // ==========================================
-// CIRCLE MIRROR ZOOM ENGINE (Magnifying Loupe)
+// MULTIPLE IMAGE GALLERY & FULLSCREEN LIGHTBOX ENGINE
 // ==========================================
 const zoomContainer = document.getElementById('zoomContainer');
 const mainImg = document.getElementById('mainProductImg');
 const circleLens = document.getElementById('circleLens');
 const ZOOM_LEVEL = 2.4; // 2.4x magnification factor
+
+// Collect all image URLs for multi-angle lightbox
+const galleryImagesList = [
+    {% if product.image %}'{{ product.image.url }}',{% endif %}
+    {% for g in gallery_images %}'{{ g.image.url }}',{% endfor %}
+];
+let currentImageIndex = 0;
+
+function switchProductImage(url, thumbElem, index) {
+    if (typeof index === 'number') {
+        currentImageIndex = index;
+    } else if (thumbElem && thumbElem.dataset && thumbElem.dataset.index) {
+        currentImageIndex = parseInt(thumbElem.dataset.index, 10);
+    }
+
+    if (mainImg) {
+        mainImg.style.opacity = '0.35';
+        mainImg.src = url;
+        mainImg.onload = function() {
+            mainImg.style.opacity = '1';
+            updateLensBackground();
+        };
+    }
+
+    // Update active thumbnail border indicator
+    document.querySelectorAll('.thumb-btn').forEach(btn => btn.classList.remove('active'));
+    if (thumbElem) {
+        thumbElem.classList.add('active');
+    }
+
+    // Update angle count badge if present
+    const countBadge = document.getElementById('galleryAngleCountBadge');
+    if (countBadge && galleryImagesList.length > 0) {
+        countBadge.textContent = `${currentImageIndex + 1} / ${galleryImagesList.length} Angles`;
+    }
+}
 
 function initCircleZoom() {
     if (!mainImg || !circleLens || !zoomContainer) return;
@@ -1494,17 +1691,88 @@ function updateLensBackground() {
     circleLens.style.backgroundSize = `${rect.width * ZOOM_LEVEL}px ${rect.height * ZOOM_LEVEL}px`;
 }
 
-function switchProductImage(url, thumbElem) {
-    if (mainImg) {
-        mainImg.src = url;
-        updateLensBackground();
+// Fullscreen Lightbox Controller
+function openLightboxModal(startIndex) {
+    if (galleryImagesList.length === 0) return;
+    if (typeof startIndex === 'number') {
+        currentImageIndex = startIndex;
     }
-    // Update active thumbnail border
-    document.querySelectorAll('.thumb-btn').forEach(btn => btn.classList.remove('active'));
-    if (thumbElem) {
-        thumbElem.classList.add('active');
+    const modalEl = document.getElementById('productLightboxModal');
+    if (!modalEl || !window.bootstrap) return;
+
+    buildLightboxThumbs();
+    updateLightboxView();
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+}
+
+function updateLightboxView() {
+    const lbImg = document.getElementById('lightboxImg');
+    const angleIndexBadge = document.getElementById('lightboxAngleIndex');
+    if (!lbImg || galleryImagesList.length === 0) return;
+
+    const url = galleryImagesList[currentImageIndex];
+    lbImg.style.opacity = '0.3';
+    lbImg.src = url;
+    lbImg.onload = () => { lbImg.style.opacity = '1'; };
+
+    if (angleIndexBadge) {
+        angleIndexBadge.textContent = `Angle ${currentImageIndex + 1} of ${galleryImagesList.length}`;
+    }
+
+    // Update active thumbnail in lightbox strip
+    document.querySelectorAll('.lightbox-thumb-btn').forEach((btn, idx) => {
+        if (idx === currentImageIndex) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+
+    // Also synchronize main page thumbnail and image
+    const allThumbs = document.querySelectorAll('.thumb-btn');
+    if (allThumbs && allThumbs[currentImageIndex]) {
+        switchProductImage(url, allThumbs[currentImageIndex], currentImageIndex);
     }
 }
+
+function prevLightboxImage() {
+    if (galleryImagesList.length <= 1) return;
+    currentImageIndex = (currentImageIndex - 1 + galleryImagesList.length) % galleryImagesList.length;
+    updateLightboxView();
+}
+
+function nextLightboxImage() {
+    if (galleryImagesList.length <= 1) return;
+    currentImageIndex = (currentImageIndex + 1) % galleryImagesList.length;
+    updateLightboxView();
+}
+
+function buildLightboxThumbs() {
+    const strip = document.getElementById('lightboxThumbStrip');
+    if (!strip) return;
+    strip.innerHTML = '';
+    galleryImagesList.forEach((url, idx) => {
+        const thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.className = `lightbox-thumb-btn ${idx === currentImageIndex ? 'active' : ''}`;
+        thumb.onclick = () => {
+            currentImageIndex = idx;
+            updateLightboxView();
+        };
+        strip.appendChild(thumb);
+    });
+}
+
+// Keyboard navigation listener for Lightbox
+document.addEventListener('keydown', (e) => {
+    const modalEl = document.getElementById('productLightboxModal');
+    if (!modalEl || !modalEl.classList.contains('show')) return;
+
+    if (e.key === 'ArrowLeft') {
+        prevLightboxImage();
+    } else if (e.key === 'ArrowRight') {
+        nextLightboxImage();
+    }
+});
 
 // ==========================================
 // QUANTITY STEPPER CONTROLLER

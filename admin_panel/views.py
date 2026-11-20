@@ -1044,8 +1044,10 @@ def admin_coupon_delete(request, pk):
 def admin_site_settings(request):
     """
     Manage Storefront Branding, Top Header Announcements, Contact Information,
-    and Footer Details with granular RBAC permissions.
+    Active Industry Themes, and Footer Details with granular RBAC permissions.
     """
+    from core.themes import THEMES, THEME_CHOICES, get_theme
+
     setting = SiteSetting.get_settings()
     can_edit = request.user.is_superuser or RBACService.user_has_permission(request.user, 'settings.site_settings', 'edit')
 
@@ -1058,6 +1060,19 @@ def admin_site_settings(request):
         redirect_url = reverse('admin_site_settings')
         if active_tab:
             redirect_url += f'#{active_tab}'
+
+        # Quick Theme Switch action from visual card selector
+        quick_theme = request.POST.get('quick_switch_theme', '').strip() or (request.POST.get('theme_key', '').strip() if request.POST.get('action') == 'switch_theme' else '')
+        if quick_theme:
+            if quick_theme in THEMES:
+                setting.active_theme = quick_theme
+                setting.save(update_fields=['active_theme'])
+                theme_info = THEMES[quick_theme]
+                messages.success(request, f"Storefront theme successfully switched to '{theme_info['name']}' ({theme_info['benchmark']})!")
+                return redirect(redirect_url or f"{reverse('admin_site_settings')}#theme-panel")
+            else:
+                messages.error(request, f"Invalid theme code '{quick_theme}'.")
+                return redirect(redirect_url or f"{reverse('admin_site_settings')}#theme-panel")
 
         form = SiteSettingForm(request.POST, request.FILES, instance=setting)
         if form.is_valid():
@@ -1073,6 +1088,10 @@ def admin_site_settings(request):
         'form': form,
         'setting': setting,
         'can_edit': can_edit,
+        'themes': THEMES,
+        'theme_choices': THEME_CHOICES,
+        'current_theme_key': setting.active_theme,
+        'current_theme': get_theme(setting.active_theme),
     }
     return render(request, 'admin_panel/settings/site_settings.html', context)
 

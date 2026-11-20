@@ -383,8 +383,8 @@
 
     <!-- Slider Header Pill (Top Right) -->
     <div class="position-absolute top-0 end-0 m-3 m-md-4 d-none d-sm-flex align-items-center gap-2 bg-black bg-opacity-45 backdrop-blur px-3 py-1 rounded-pill text-white small" style="z-index: 10; border: 1px solid rgba(255,255,255,0.18);">
-        <i class="bi bi-fire text-warning"></i>
-        <span class="fw-semibold">Top Deals & Best Products</span>
+        <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-fire' }}" style="color: var(--accent-color, #f97316);"></i>
+        <span class="fw-semibold">{{ CURRENT_THEME_DATA.hero_badge|default:'Top Deals & Best Products' }}</span>
     </div>
 
     <div class="carousel-inner">
@@ -399,16 +399,16 @@
                         <div class="col-lg-7 col-md-7 text-white">
                             <!-- Badges Row -->
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                                <span class="hero-pill-badge {{ item.theme.badge_class }}">
-                                    <i class="bi {{ item.theme.icon }}"></i> {{ item.theme.badge }}
+                                <span class="hero-pill-badge" style="background-color: var(--primary-color); color: var(--text-on-primary, #ffffff); border-radius: var(--badge-border-radius, 50rem);">
+                                    <i class="bi {{ CURRENT_THEME_DATA.icon|default:item.theme.icon }}"></i> {{ CURRENT_THEME_DATA.hero_badge|default:item.theme.badge }}
                                 </span>
                                 {% if item.product.category %}
-                                    <span class="hero-pill-badge hero-glass-pill">
+                                    <span class="hero-pill-badge hero-glass-pill" style="border-radius: var(--badge-border-radius, 50rem);">
                                         <i class="bi {{ item.product.category.icon|default:'bi-tag' }}"></i> {{ item.product.category.name }}
                                     </span>
                                 {% endif %}
                                 {% if item.product.has_discount %}
-                                    <span class="hero-pill-badge bg-danger text-white">
+                                    <span class="hero-pill-badge bg-danger text-white" style="border-radius: var(--badge-border-radius, 50rem);">
                                         <i class="bi bi-percent"></i> {{ item.product.discount_percent }}% OFF
                                     </span>
                                 {% endif %}
@@ -420,8 +420,8 @@
                             </h1>
 
                             <!-- Tagline / Hook -->
-                            <p class="fw-semibold mb-3 small text-uppercase" style="color: {{ item.theme.accent }}; letter-spacing: 0.5px;">
-                                <i class="bi bi-stars me-1"></i> {{ item.theme.tagline }}
+                            <p class="fw-semibold mb-3 small text-uppercase" style="color: var(--accent-color, {{ item.theme.accent }}); letter-spacing: 0.5px;">
+                                <i class="bi bi-stars me-1"></i> {{ CURRENT_THEME_DATA.hero_tagline|default:item.theme.tagline }}
                             </p>
 
                             <!-- Short Description -->
@@ -431,9 +431,13 @@
 
                             <!-- Trust & Delivery Highlights -->
                             <div class="d-flex flex-wrap gap-3 text-white-50 small mb-4">
-                                <span><i class="bi bi-shield-check text-success me-1"></i> {{ tr.authentic_guarantee }}</span>
-                                <span><i class="bi bi-truck text-warning me-1"></i> {{ tr.free_express_delivery }}</span>
-                                <span><i class="bi bi-arrow-repeat text-info me-1"></i> {{ tr.returns_guarantee }}</span>
+                                {% for p in CURRENT_THEME_DATA.trust_pillars|slice:":3" %}
+                                    <span><i class="bi {{ p.icon|default:'bi-shield-check' }} me-1" style="color: var(--accent-color, #38bdf8);"></i> {{ p.title }}</span>
+                                {% empty %}
+                                    <span><i class="bi bi-shield-check text-success me-1"></i> {{ tr.authentic_guarantee }}</span>
+                                    <span><i class="bi bi-truck text-warning me-1"></i> {{ tr.free_express_delivery }}</span>
+                                    <span><i class="bi bi-arrow-repeat text-info me-1"></i> {{ tr.returns_guarantee }}</span>
+                                {% endfor %}
                             </div>
 
                             <!-- Price Block -->
@@ -441,7 +445,7 @@
                                 <span class="hero-price-current">৳{{ item.product.effective_price }}</span>
                                 {% if item.product.has_discount %}
                                     <span class="hero-price-old">৳{{ item.product.price }}</span>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-bold rounded-pill">
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-bold" style="border-radius: var(--badge-border-radius, 50rem);">
                                         Save ৳{{ item.savings|floatformat:2 }}
                                     </span>
                                 {% endif %}
@@ -449,18 +453,18 @@
 
                             <!-- Call-to-Actions -->
                             <div class="d-flex flex-wrap align-items-center gap-3">
-                                <a href="{% url 'product_detail' item.product.pk %}" class="btn btn-primary px-4 fw-bold shadow hero-cta-btn" style="height: 48px; border-radius: 10px; display: inline-flex; align-items: center;">
+                                <a href="{% url 'product_detail' item.product.pk %}" class="btn btn-primary px-4 fw-bold shadow hero-cta-btn" style="height: 48px; border-radius: var(--btn-border-radius, 10px); display: inline-flex; align-items: center;">
                                     <i class="bi bi-bag-check-fill me-2"></i> {{ tr.shop_deal_now }}
                                 </a>
 
                                 <form action="{% url 'add_to_cart' item.product.pk %}" method="post" class="d-inline-block m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-light px-4 fw-semibold" style="height: 48px; border-radius: 10px; display: inline-flex; align-items: center;" {% if item.product.stock <= 0 %}disabled{% endif %}>
+                                    <button type="submit" class="btn btn-outline-light px-4 fw-semibold" style="height: 48px; border-radius: var(--btn-border-radius, 10px); display: inline-flex; align-items: center;" {% if item.product.stock <= 0 %}disabled{% endif %}>
                                         <i class="bi bi-cart-plus me-1"></i> {{ tr.quick_add }}
                                     </button>
                                 </form>
 
-                                <button type="button" class="btn btn-outline-light hero-wishlist-btn p-0" style="width: 48px; height: 48px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;" onclick="toggleWishlist({{ item.product.pk }}, this)" title="Save to Wishlist">
+                                <button type="button" class="btn btn-outline-light hero-wishlist-btn p-0" style="width: 48px; height: 48px; border-radius: var(--btn-border-radius, 10px); display: inline-flex; align-items: center; justify-content: center;" onclick="toggleWishlist({{ item.product.pk }}, this)" title="Save to Wishlist">
                                     {% if item.product.pk in user_wishlist_ids %}
                                         <i class="bi bi-heart-fill text-danger fs-5"></i>
                                     {% else %}
@@ -542,41 +546,37 @@
     </button>
 </div>
 {% else %}
-<!-- Fallback Full-Width Hero Banner -->
-<div class="hero-slider-container w-100 mb-5 text-white" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+<!-- Fallback Full-Width Hero Banner (Driven by CURRENT_THEME_DATA) -->
+<div class="hero-slider-container w-100 mb-5 text-white" style="background: linear-gradient(135deg, {{ CURRENT_THEME_DATA.hero_gradient_start|default:'#1e293b' }} 0%, {{ CURRENT_THEME_DATA.hero_gradient_end|default:'#0f172a' }} 100%);">
     <div class="container py-5">
         <div class="row align-items-center">
             <div class="col-lg-7">
-                <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold text-uppercase mb-3">
-                    <i class="bi bi-stars me-1"></i> Mega Season Sale 2026
+                <span class="badge px-3 py-2 fw-bold text-uppercase mb-3" style="background-color: var(--primary-color); color: var(--text-on-primary, #ffffff); border-radius: var(--badge-border-radius, 9999px);">
+                    <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-stars' }} me-1"></i> {{ CURRENT_THEME_DATA.hero_badge|default:'Mega Season Sale 2026' }}
                 </span>
                 <h1 class="display-4 fw-extrabold mb-3" style="font-weight: 800; letter-spacing: -1px;">
-                    Next-Gen Tech & Premium Lifestyle
+                    {{ CURRENT_THEME_DATA.hero_headline|default:'Next-Gen Tech & Premium Lifestyle' }}
                 </h1>
-                <p class="lead text-slate-300 mb-4 opacity-75">
-                    Upgrade your everyday gear with top brand laptops, flagship smartphones, luxury audio, and fashion essentials. Up to 40% OFF this week!
+                <p class="lead mb-4 opacity-75" style="color: rgba(255,255,255,0.85); max-width: 620px;">
+                    {{ CURRENT_THEME_DATA.hero_tagline|default:'Upgrade your everyday gear with top brand laptops, flagship smartphones, luxury audio, and fashion essentials. Up to 40% OFF this week!' }}
                 </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'product_list' %}" class="btn btn-primary px-4 fw-semibold shadow" style="height: 46px; border-radius: 10px; display: inline-flex; align-items: center;">
-                        <i class="bi bi-bag-check me-2"></i> Shop Collection
+                    <a href="{% url 'product_list' %}" class="btn btn-primary px-4 fw-semibold shadow hero-cta-btn" style="height: 46px; border-radius: var(--btn-border-radius, 10px); display: inline-flex; align-items: center;">
+                        <i class="bi bi-bag-check me-2"></i> {% if IS_BANGLA %}কেনাকাটা শুরু করুন{% else %}Shop Collection{% endif %}
                     </a>
-                    <a href="{% url 'product_list' %}?category=laptops" class="btn btn-outline-light px-4 fw-semibold" style="height: 46px; border-radius: 10px; display: inline-flex; align-items: center;">
-                        Browse Laptops
+                    <a href="{% url 'product_list' %}" class="btn btn-outline-light px-4 fw-semibold" style="height: 46px; border-radius: var(--btn-border-radius, 10px); display: inline-flex; align-items: center;">
+                        {% if IS_BANGLA %}সকল পণ্য দেখুন{% else %}Explore {{ CURRENT_THEME_DATA.name }}{% endif %}
                     </a>
                 </div>
             </div>
             <div class="col-lg-5 text-center mt-4 mt-lg-0">
-                <div class="p-4 bg-white bg-opacity-10 rounded-4 backdrop-blur">
-                    <i class="bi bi-laptop-fill display-1 text-warning mb-2 d-block"></i>
-                    <h4 class="fw-bold mb-1">MacBook Pro M3 Max</h4>
-                    <div class="text-warning mb-3">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                        <span class="text-white ms-1 small">(4.9/5)</span>
-                    </div>
-                    <div class="d-flex justify-content-center align-items-center gap-3">
-                        <span class="text-decoration-line-through text-white-50 fs-5">৳2,499</span>
-                        <span class="fs-2 fw-bold text-success">৳2,299</span>
-                    </div>
+                <div class="p-4 bg-white bg-opacity-10 backdrop-blur" style="border-radius: var(--card-border-radius, 16px); border: 1px solid rgba(255,255,255,0.18);">
+                    <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-bag-check-fill' }} display-1 text-warning mb-2 d-block"></i>
+                    <h4 class="fw-bold mb-1">{{ CURRENT_THEME_DATA.name }}</h4>
+                    <p class="text-white-50 small mb-3">{{ CURRENT_THEME_DATA.subtitle }}</p>
+                    <span class="badge px-3 py-2" style="background-color: var(--accent-color, #f97316); color: #ffffff; border-radius: var(--badge-border-radius, 9999px);">
+                        {{ CURRENT_THEME_DATA.tag|default:'Verified Store' }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -587,43 +587,53 @@
 <!-- Rest of page content wrapped in standard container -->
 <div class="container">
 
-    <!-- Value Proposition Badges -->
+    <!-- Active Theme Trust Pillars (4 Custom Value Propositions) -->
     <div class="row g-3 mb-5">
-        <div class="col-md-3 col-6">
-            <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
-                <i class="bi bi-truck fs-2 text-primary mb-2"></i>
-                <h6 class="fw-bold mb-1">{{ tr.free_shipping }}</h6>
-                <small class="text-muted">{{ tr.orders_over_500 }}</small>
+        {% for pillar in CURRENT_THEME_DATA.trust_pillars %}
+            <div class="col-md-3 col-6">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center" style="border-radius: var(--card-border-radius, 14px);">
+                    <i class="bi {{ pillar.icon }} fs-2 mb-2" style="color: var(--primary-color);"></i>
+                    <h6 class="fw-bold mb-1">{{ pillar.title }}</h6>
+                    <small class="text-muted">{{ pillar.desc }}</small>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
-                <i class="bi bi-shield-check fs-2 text-success mb-2"></i>
-                <h6 class="fw-bold mb-1">{{ tr.authentic }}</h6>
-                <small class="text-muted">{{ tr.brand_warranty }}</small>
+        {% empty %}
+            <div class="col-md-3 col-6">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center" style="border-radius: var(--card-border-radius, 14px);">
+                    <i class="bi bi-truck fs-2 mb-2" style="color: var(--primary-color);"></i>
+                    <h6 class="fw-bold mb-1">{{ tr.free_shipping }}</h6>
+                    <small class="text-muted">{{ tr.orders_over_500 }}</small>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
-                <i class="bi bi-arrow-repeat fs-2 text-warning mb-2"></i>
-                <h6 class="fw-bold mb-1">{{ tr.days_return }}</h6>
-                <small class="text-muted">{{ tr.hassle_free_returns }}</small>
+            <div class="col-md-3 col-6">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center" style="border-radius: var(--card-border-radius, 14px);">
+                    <i class="bi bi-shield-check fs-2 text-success mb-2"></i>
+                    <h6 class="fw-bold mb-1">{{ tr.authentic }}</h6>
+                    <small class="text-muted">{{ tr.brand_warranty }}</small>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card h-100 border-0 shadow-sm p-3 rounded-3 text-center">
-                <i class="bi bi-headset fs-2 text-info mb-2"></i>
-                <h6 class="fw-bold mb-1">{{ tr.vip_support }}</h6>
-                <small class="text-muted">{{ tr.dedicated_team }}</small>
+            <div class="col-md-3 col-6">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center" style="border-radius: var(--card-border-radius, 14px);">
+                    <i class="bi bi-arrow-repeat fs-2 text-warning mb-2"></i>
+                    <h6 class="fw-bold mb-1">{{ tr.days_return }}</h6>
+                    <small class="text-muted">{{ tr.hassle_free_returns }}</small>
+                </div>
             </div>
-        </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center" style="border-radius: var(--card-border-radius, 14px);">
+                    <i class="bi bi-headset fs-2 text-info mb-2"></i>
+                    <h6 class="fw-bold mb-1">{{ tr.vip_support }}</h6>
+                    <small class="text-muted">{{ tr.dedicated_team }}</small>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 
     <!-- Featured Categories Horizontal Scroller (Single Line) -->
     <div class="mb-5">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h3 class="fw-bold mb-0">{{ tr.shop_by_category }}</h3>
+                <h3 class="fw-bold mb-0">{% if CURRENT_THEME_DATA.name %}{{ CURRENT_THEME_DATA.name }} - {% endif %}{{ tr.shop_by_category }}</h3>
                 <p class="text-muted small mb-0">{{ tr.shop_by_category_sub }}</p>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -817,8 +827,8 @@
     <div class="mb-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h3 class="fw-bold mb-0">Featured Brands</h3>
-                <p class="text-muted small">Explore authentic products from certified global & local top brands</p>
+                <h3 class="fw-bold mb-0">{% if CURRENT_THEME_DATA.name %}{{ CURRENT_THEME_DATA.name }} {% endif %}Featured Brands</h3>
+                <p class="text-muted small">Explore authentic products from certified {{ CURRENT_THEME_DATA.name|default:'marketplace' }} top brands</p>
             </div>
             <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm rounded-2 px-3">
                 All Brands <i class="bi bi-arrow-right ms-1"></i>

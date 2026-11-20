@@ -873,3 +873,250 @@ class SecurityAuditFootprintAndHeadersTests(TestCase):
         self.assertLessEqual(data_json['added_count'], 15)
 
 
+class ThemeEngineTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.superuser = User.objects.create_superuser(
+            username='theme_admin',
+            email='theme_admin@example.com',
+            password='AdminPassword123'
+        )
+        self.regular_user = User.objects.create_user(
+            username='regular_customer',
+            email='customer@example.com',
+            password='CustomerPassword123'
+        )
+
+    def test_theme_registry_completeness(self):
+        """All 6 theme definitions exist and have required tokens and 4 trust pillars."""
+        from core.themes import THEMES, THEME_CHOICES
+        expected_keys = [
+            'mega_market',
+            'tech_gadgets',
+            'beauty_cosmetics',
+            'fashion_lifestyle',
+            'grocery_organic',
+            'pharmacy_health'
+        ]
+        self.assertEqual(len(THEMES), 6)
+        self.assertEqual(len(THEME_CHOICES), 6)
+
+        for key in expected_keys:
+            self.assertIn(key, THEMES)
+            theme = THEMES[key]
+            # Required keys
+            for token in [
+                'name', 'subtitle', 'benchmark', 'primary', 'primary_hover',
+                'primary_light', 'accent', 'text_on_primary',
+                'hero_gradient_start', 'hero_gradient_end', 'dark_primary', 'dark_accent',
+                'badge_radius', 'button_radius', 'card_radius',
+                'hero_headline_en', 'hero_headline_bn', 'hero_tagline_en', 'hero_tagline_bn',
+                'hero_badge_en', 'hero_badge_bn', 'trust_pillars'
+            ]:
+                self.assertIn(token, theme, f"Missing token '{token}' in theme '{key}'")
+
+            # Must have exactly 4 trust pillars with icons and bilingual descriptions
+            self.assertEqual(len(theme['trust_pillars']), 4, f"Theme '{key}' must have exactly 4 trust pillars")
+            for pillar in theme['trust_pillars']:
+                self.assertIn('icon', pillar)
+                self.assertIn('title_en', pillar)
+                self.assertIn('title_bn', pillar)
+                self.assertIn('desc_en', pillar)
+                self.assertIn('desc_bn', pillar)
+
+    def test_get_theme_and_fallback(self):
+        """get_theme returns requested theme and safely falls back to mega_market for unknown keys."""
+        from core.themes import get_theme
+        tech = get_theme('tech_gadgets')
+        self.assertEqual(tech['key'], 'tech_gadgets')
+        self.assertEqual(tech['name'], 'Tech & Gadgets')
+
+        fallback = get_theme('non_existent_key')
+        self.assertEqual(fallback['key'], 'mega_market')
+
+    def test_get_theme_data_bilingual_resolution(self):
+        """get_theme_data resolves language-aware headline, tagline, and trust pillars."""
+        from core.themes import get_theme_data
+        en_data = get_theme_data('grocery_organic', is_bangla=False)
+        self.assertIn('Farm-Fresh', en_data['hero_headline'])
+        self.assertEqual(en_data['trust_pillars'][0]['title'], en_data['trust_pillars'][0]['title_en'])
+
+        bn_data = get_theme_data('grocery_organic', is_bangla=True)
+        self.assertIn('খাঁটি অর্গানিক', bn_data['hero_headline'])
+        self.assertEqual(bn_data['trust_pillars'][0]['title'], bn_data['trust_pillars'][0]['title_bn'])
+
+    def test_site_setting_active_theme_persistence(self):
+        """SiteSetting model default is mega_market, and updates persist properly."""
+        setting = SiteSetting.get_settings()
+        self.assertEqual(setting.active_theme, 'mega_market')
+
+        setting.active_theme = 'pharmacy_health'
+        setting.save()
+
+        refetched = SiteSetting.get_settings()
+        self.assertEqual(refetched.active_theme, 'pharmacy_health')
+        theme_data = refetched.get_theme_data()
+        self.assertEqual(theme_data['key'], 'pharmacy_health')
+        self.assertEqual(theme_data['benchmark'], 'Arogga Style')
+
+    def test_site_settings_context_processor(self):
+        """Context processor injects CURRENT_THEME_KEY, CURRENT_THEME_DATA, and THEME_CHOICES."""
+        setting = SiteSetting.get_settings()
+        setting.active_theme = 'fashion_lifestyle'
+        setting.save()
+
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['CURRENT_THEME_KEY'], 'fashion_lifestyle')
+        self.assertEqual(res.context['CURRENT_THEME_DATA']['name'], 'Fashion & Lifestyle')
+        self.assertEqual(len(res.context['THEME_CHOICES']), 6)
+
+    def test_admin_switch_theme_via_quick_button(self):
+        """Admin can activate theme via quick_switch_theme button on settings page."""
+        self.client.login(username='theme_admin', password='AdminPassword123')
+        res = self.client.post('/app-admin/settings/', {
+            'quick_switch_theme': 'beauty_cosmetics'
+        }, follow=True)
+        self.assertEqual(res.status_code, 200)
+
+        setting = SiteSetting.get_settings()
+        self.assertEqual(setting.active_theme, 'beauty_cosmetics')
+
+    def test_admin_switch_theme_via_form_dropdown(self):
+        """Admin can save theme via standard SiteSettingForm submission."""
+        self.client.login(username='theme_admin', password='AdminPassword123')
+        setting = SiteSetting.get_settings()
+        res = self.client.post('/app-admin/settings/', {
+            'active_theme': 'tech_gadgets',
+            'site_name': setting.site_name,
+            'site_tagline': setting.site_tagline,
+            'announcement_enabled': 'on',
+            'announcement_text_en': setting.announcement_text_en,
+            'announcement_text_bn': setting.announcement_text_bn,
+            'contact_phone': setting.contact_phone,
+            'contact_email': setting.contact_email,
+            'contact_address': setting.contact_address,
+            'about_text_en': setting.about_text_en,
+            'about_text_bn': setting.about_text_bn,
+            'copyright_text': setting.copyright_text,
+            'subfooter_notice': setting.subfooter_notice,
+        }, follow=True)
+        self.assertEqual(res.status_code, 200)
+
+        setting.refresh_from_db()
+        self.assertEqual(setting.active_theme, 'tech_gadgets')
+
+    def test_non_staff_cannot_change_theme(self):
+        """Unauthenticated or customer users cannot change theme."""
+        res = self.client.post('/app-admin/settings/', {
+            'quick_switch_theme': 'grocery_organic'
+        })
+        self.assertEqual(res.status_code, 302)
+        setting = SiteSetting.get_settings()
+        self.assertNotEqual(setting.active_theme, 'grocery_organic')
+
+
+class ThemeTemplatesFrontEndTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.category = Category.objects.create(name='Electronics', slug='electronics')
+        self.product = Product.objects.create(
+            name='Test Smartphone Flagship',
+            category=self.category,
+            price=Decimal('79999.00'),
+            stock=15,
+            is_featured=True,
+            is_active=True
+        )
+
+    def test_dynamic_root_css_tokens_injected(self):
+        """base.html must inject dynamic :root CSS variables matching CURRENT_THEME_DATA."""
+        setting = SiteSetting.get_settings()
+        from core.themes import THEMES
+        for theme_key, theme in THEMES.items():
+            setting.active_theme = theme_key
+            setting.save()
+
+            res = self.client.get('/')
+            self.assertEqual(res.status_code, 200)
+            content = res.content.decode('utf-8')
+
+            # Verify dynamic tokens
+            self.assertIn(f"--primary-color: {theme['primary']};", content)
+            self.assertIn(f"--card-border-radius: {theme['card_radius']};", content)
+            self.assertIn(f"--btn-border-radius: {theme['button_radius']};", content)
+            self.assertIn(f"--badge-border-radius: {theme['badge_radius']};", content)
+
+    def test_announcement_bar_and_branding_accents(self):
+        """Header announcement bar and accents dynamically reflect the active theme."""
+        setting = SiteSetting.get_settings()
+        setting.active_theme = 'tech_gadgets'
+        setting.save()
+
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+        self.assertIn('Tech &amp; Gadgets', content)
+
+    def test_home_page_trust_pillars_rendered(self):
+        """home/index.html displays the active theme's 4 custom trust pillars."""
+        setting = SiteSetting.get_settings()
+        setting.active_theme = 'grocery_organic'
+        setting.save()
+
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+        # Check grocery trust highlights
+        self.assertIn('100% Organic &amp; Chemical-Free', content)
+        self.assertIn('1-Hour Express Delivery', content)
+        self.assertIn('Fresh Daily Harvest', content)
+
+    def test_product_detail_multiple_image_view_and_trust_box(self):
+        """Product detail template provides multiple image view, zoom lens, lightbox modal, and dynamic trust pillars."""
+        setting = SiteSetting.get_settings()
+        setting.active_theme = 'beauty_cosmetics'
+        setting.save()
+
+        res = self.client.get(f'/product/{self.product.pk}/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+
+        # Interactive gallery and lightbox elements
+        self.assertIn('id="zoomContainer"', content)
+        self.assertIn('id="circleLens"', content)
+        self.assertIn('id="galleryThumbs"', content)
+        self.assertIn('class="gallery-thumbnails-strip', content)
+        self.assertIn('id="productLightboxModal"', content)
+        self.assertIn('id="lightboxImg"', content)
+        self.assertIn('openLightboxModal', content)
+        self.assertIn('switchProductImage', content)
+
+        # Dynamic delivery & trust box pillars for beauty_cosmetics
+        self.assertIn('100% Authentic Import', content)
+        self.assertIn('Dermatologically Tested', content)
+        self.assertIn('Cruelty-Free &amp; Safe', content)
+
+
+class ThemeVerifierAssuranceTests(TestCase):
+    """End-to-end verification tests for Theme Engine registry, token resolution, and context processor."""
+    def setUp(self):
+        self.client = Client()
+        self.admin = User.objects.create_superuser('verifier_admin', 'vadmin@example.com', 'Pass12345!')
+
+    def test_all_six_themes_token_resolution_and_context(self):
+        from core.themes import THEMES
+        setting = SiteSetting.get_settings()
+        for key in THEMES.keys():
+            setting.active_theme = key
+            setting.save()
+            res = self.client.get('/')
+            self.assertEqual(res.status_code, 200)
+            self.assertEqual(res.context['CURRENT_THEME_KEY'], key)
+            self.assertEqual(res.context['CURRENT_THEME_DATA']['key'], key)
+            self.assertIn('--primary-color', res.content.decode('utf-8'))
+
+
+
+
+

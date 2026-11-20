@@ -1,5 +1,6 @@
 from core.translations import TranslationProxy, to_bn_number
 from core.models import SiteSetting
+from core.themes import THEMES, THEME_CHOICES, DEFAULT_THEME_KEY, get_theme_data
 
 
 def language_processor(request):
@@ -22,10 +23,20 @@ def language_processor(request):
 def site_settings_processor(request):
     """
     Exposes dynamic store branding, header announcements, contact information,
-    and footer details globally to all storefront templates.
+    footer details, and dynamic theme tokens globally to all templates.
+    Injects CURRENT_THEME_KEY, CURRENT_THEME_DATA, and THEME_CHOICES.
     """
+    settings = SiteSetting.get_settings()
+    theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
+    is_bangla = getattr(request, 'IS_BANGLA', False)
+    theme_data = get_theme_data(theme_key, is_bangla=is_bangla)
+
     return {
-        'site_settings': SiteSetting.get_settings(),
+        'site_settings': settings,
+        'CURRENT_THEME_KEY': theme_key,
+        'CURRENT_THEME_DATA': theme_data,
+        'THEME_CHOICES': THEME_CHOICES,
+        'ALL_THEMES': THEMES,
     }
 
 

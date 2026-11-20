@@ -16,7 +16,16 @@ if (!is_dir($restartDir)) {
 }
 @touch($restartDir . '/restart.txt');
 
-// 2. Clear opcache if enabled
+// 2. Auto-run database migrations if virtualenv python exists
+$pythonBin = '/home/shopbusk/virtualenv/ecommerce.shopbusket.com/3.10/bin/python';
+$migrateOutput = '';
+if (file_exists($pythonBin)) {
+    $managePy = __DIR__ . '/manage.py';
+    $cmd = escapeshellcmd("$pythonBin $managePy migrate --noinput") . ' 2>&1';
+    $migrateOutput = @shell_exec($cmd);
+}
+
+// 3. Clear opcache if enabled
 if (function_exists('opcache_reset')) {
     @opcache_reset();
 }
@@ -26,5 +35,6 @@ header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
     'message' => 'Passenger application reloaded successfully!',
+    'migrate_output' => $migrateOutput,
     'timestamp' => date('Y-m-d H:i:s')
 ]);
