@@ -496,7 +496,7 @@
                                 <div class="hero-img-box my-3">
                                     <a href="{% url 'product_detail' item.product.pk %}" class="d-block w-100 h-100 d-flex align-items-center justify-content-center">
                                         {% if item.product.image %}
-                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="hero-product-img img-fluid">
+                                            <img src="{{ item.product.image.url }}?v=2" alt="{{ item.product.name }}" class="hero-product-img img-fluid">
                                         {% else %}
                                             <i class="bi bi-laptop display-1 text-warning"></i>
                                         {% endif %}
@@ -708,7 +708,7 @@
                                 {% endif %}
                             </button>
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%;">
+                                <img src="{{ product.image.url }}?v=2" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%;">
                             {% else %}
                                 <i class="bi bi-box-seam display-4 text-secondary opacity-50"></i>
                             {% endif %}
@@ -774,7 +774,7 @@
                                 {% endif %}
                             </button>
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%;">
+                                <img src="{{ product.image.url }}?v=2" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%;">
                             {% else %}
                                 <i class="bi bi-phone display-4 text-primary opacity-50"></i>
                             {% endif %}

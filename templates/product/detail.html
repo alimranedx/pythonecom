@@ -944,7 +944,7 @@
                     {% endif %}
 
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" id="mainProductImg" onclick="openLightboxModal()" style="cursor: zoom-in;">
+                        <img src="{{ product.image.url }}?v=2" alt="{{ product.name }}" id="mainProductImg" onclick="openLightboxModal()" style="cursor: zoom-in;">
                     {% else %}
                         <div class="text-center text-muted" id="placeholderImgBox">
                             <i class="bi bi-box-seam display-1 opacity-50 d-block mb-2 text-primary"></i>
@@ -966,10 +966,10 @@
                 <!-- Gallery Thumbnails Strip -->
                 <div class="gallery-thumbnails-strip justify-content-start justify-content-sm-center mt-3" id="galleryThumbs">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" class="thumb-btn active" data-index="0" data-caption="{{ product.name }}" onclick="switchProductImage('{{ product.image.url }}', this, 0)" alt="{{ product.name }}">
+                        <img src="{{ product.image.url }}?v=2" class="thumb-btn active" data-index="0" data-caption="{{ product.name }}" onclick="switchProductImage('{{ product.image.url }}?v=2', this, 0)" alt="{{ product.name }}">
                     {% endif %}
                     {% for g in gallery_images %}
-                        <img src="{{ g.image.url }}" class="thumb-btn" data-index="{% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}" data-caption="{{ g.alt_text|default:product.name }}" onclick="switchProductImage('{{ g.image.url }}', this, {% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %})" alt="{{ g.alt_text|default:'Gallery Angle' }}">
+                        <img src="{{ g.image.url }}?v=2" class="thumb-btn" data-index="{% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}" data-caption="{{ g.alt_text|default:product.name }}" onclick="switchProductImage('{{ g.image.url }}?v=2', this, {% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %})" alt="{{ g.alt_text|default:'Gallery Angle' }}">
                     {% endfor %}
                 </div>
             </div>
