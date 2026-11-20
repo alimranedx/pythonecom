@@ -1,4 +1,5 @@
 from django import forms
+from core.validators import validate_image_file
 from .models import Product, Category, Brand
 
 
@@ -32,6 +33,12 @@ class ProductForm(forms.ModelForm):
         if 'brand' in self.fields:
             self.fields['brand'].empty_label = "Please Select Brand"
 
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if image:
+            validate_image_file(image)
+        return image
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -51,6 +58,12 @@ class CategoryForm(forms.ModelForm):
         if 'parent' in self.fields:
             self.fields['parent'].empty_label = "Please Select Parent Category (None - Top Level)"
 
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if image:
+            validate_image_file(image)
+        return image
+
 
 class BrandForm(forms.ModelForm):
     class Meta:
@@ -61,3 +74,9 @@ class BrandForm(forms.ModelForm):
             'slug': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'leave-blank-for-auto-slug'}),
             'logo': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+    def clean_logo(self):
+        logo = self.cleaned_data.get('logo')
+        if logo:
+            validate_image_file(logo)
+        return logo

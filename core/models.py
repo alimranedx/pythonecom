@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from core.validators import validate_image_file
 
 
 class TimeStampedModel(models.Model):
@@ -23,8 +24,8 @@ class SiteSetting(TimeStampedModel):
     # 1. Brand Identity (Header & Footer)
     site_name = models.CharField(max_length=100, default="Easy Purchase", help_text="Public brand / store name")
     site_tagline = models.CharField(max_length=200, default="Modern E-Commerce Marketplace", blank=True, help_text="Short slogan or tagline")
-    brand_logo = models.ImageField(upload_to="branding/", blank=True, null=True, help_text="Brand logo image (replaces default icon/text)")
-    brand_favicon = models.ImageField(upload_to="branding/", blank=True, null=True, help_text="Browser tab favicon")
+    brand_logo = models.ImageField(upload_to="branding/", blank=True, null=True, validators=[validate_image_file], help_text="Brand logo image (replaces default icon/text)")
+    brand_favicon = models.ImageField(upload_to="branding/", blank=True, null=True, validators=[validate_image_file], help_text="Browser tab favicon")
 
     # 2. Top Header & Announcement Bar
     announcement_enabled = models.BooleanField(default=True, help_text="Show or hide top announcement bar")

@@ -1,21 +1,81 @@
 {% extends 'base.html' %}
+{% load product_tags %}
 
 {% block title %}{{ product.name }} | {{ site_settings.site_name|default:'Easy Purchase' }}{% endblock %}
 
 {% block extra_head %}
 <style>
+    /* ==========================================================
+       PRODUCT DETAIL PREMIUM UI/UX ENHANCEMENTS (DARK & LIGHT)
+       ========================================================== */
+    
+    /* Modern Surface Cards */
+    .product-detail-card,
+    .product-tabs-card {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+        transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    [data-bs-theme="dark"] .product-detail-card,
+    [data-bs-theme="dark"] .product-tabs-card {
+        background: #1e293b;
+        border-color: #334155;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Breadcrumbs Modern Styling */
+    .detail-breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+    .detail-breadcrumb .breadcrumb-item a {
+        color: var(--text-muted, #64748b);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s ease;
+    }
+    .detail-breadcrumb .breadcrumb-item a:hover {
+        color: var(--primary-color, #2563eb);
+    }
+    .detail-breadcrumb .breadcrumb-item.active {
+        color: var(--text-main, #334155);
+        font-weight: 600;
+        max-width: 320px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    [data-bs-theme="dark"] .detail-breadcrumb .breadcrumb-item a {
+        color: #94a3b8;
+    }
+    [data-bs-theme="dark"] .detail-breadcrumb .breadcrumb-item a:hover {
+        color: #60a5fa;
+    }
+    [data-bs-theme="dark"] .detail-breadcrumb .breadcrumb-item.active {
+        color: #f1f5f9;
+    }
+
     /* Circle Mirror Zoom Styles */
     .zoom-container {
         position: relative;
         background: #f8fafc;
-        border-radius: 16px;
+        border-radius: 18px;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 420px;
+        height: 440px;
         cursor: crosshair;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color, #e2e8f0);
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    [data-bs-theme="dark"] .zoom-container {
+        background: #0f172a;
+        border-color: #334155;
     }
     #mainProductImg {
         max-height: 100%;
@@ -23,35 +83,57 @@
         object-fit: contain;
         display: block;
         user-select: none;
+        transition: transform 0.2s ease;
     }
     .circle-mirror-lens {
         position: absolute;
-        width: 170px;
-        height: 170px;
+        width: 180px;
+        height: 180px;
         border-radius: 50%;
-        border: 3px solid rgba(37, 99, 235, 0.9);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(0, 0, 0, 0.2);
+        border: 3px solid rgba(37, 99, 235, 0.95);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), inset 0 0 15px rgba(0, 0, 0, 0.25);
         background-repeat: no-repeat;
         pointer-events: none;
         display: none;
         z-index: 100;
         backdrop-filter: brightness(1.05);
     }
+    [data-bs-theme="dark"] .circle-mirror-lens {
+        border-color: rgba(96, 165, 250, 0.95);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), inset 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Thumbnails Row */
     .thumb-btn {
-        width: 72px;
-        height: 72px;
-        border-radius: 10px;
-        border: 2px solid #e2e8f0;
-        background: #fff;
-        padding: 4px;
+        width: 76px;
+        height: 76px;
+        border-radius: 14px;
+        border: 2px solid var(--border-color, #e2e8f0);
+        background: #ffffff;
+        padding: 6px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         object-fit: contain;
     }
-    .thumb-btn:hover, .thumb-btn.active {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    [data-bs-theme="dark"] .thumb-btn {
+        background: #0f172a;
+        border-color: #334155;
     }
+    .thumb-btn:hover {
+        border-color: var(--primary-color, #2563eb);
+        transform: translateY(-2px);
+    }
+    .thumb-btn.active {
+        border-color: var(--primary-color, #2563eb);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+        transform: translateY(-2px);
+    }
+    [data-bs-theme="dark"] .thumb-btn.active {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+    }
+
+    /* Wishlist Button */
     .wishlist-btn-detail {
         width: 48px;
         height: 48px;
@@ -60,42 +142,645 @@
         align-items: center;
         justify-content: center;
         font-size: 1.25rem;
-        transition: all 0.2s;
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        color: var(--text-muted, #64748b);
+    }
+    .wishlist-btn-detail:hover {
+        transform: scale(1.08);
+        border-color: #f43f5e;
+        color: #f43f5e;
+        box-shadow: 0 4px 14px rgba(244, 63, 94, 0.2);
+    }
+    [data-bs-theme="dark"] .wishlist-btn-detail {
+        background: #0f172a;
+        border-color: #334155;
+        color: #94a3b8;
+    }
+
+    /* Badges & Stock Status */
+    .badge-discount-detail {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        border-radius: 30px;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        z-index: 10;
+    }
+
+    .status-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-size: 0.825rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+    .status-in-stock {
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+    }
+    .status-low-stock {
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+    }
+    .status-out-stock {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+    }
+    [data-bs-theme="dark"] .status-in-stock {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+    [data-bs-theme="dark"] .status-low-stock {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+    [data-bs-theme="dark"] .status-out-stock {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Price Highlight Box */
+    .price-box-detail {
+        background: var(--surface-muted, #f8fafc);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+    [data-bs-theme="dark"] .price-box-detail {
+        background: #162032;
+        border-color: #334155;
+    }
+    .price-current-value {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: var(--primary-color, #2563eb);
+        letter-spacing: -0.5px;
+    }
+    [data-bs-theme="dark"] .price-current-value {
+        color: #60a5fa;
+    }
+
+    /* Quantity Stepper Control */
+    .quantity-stepper {
+        display: inline-flex;
+        align-items: center;
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 30px;
+        padding: 4px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    [data-bs-theme="dark"] .quantity-stepper {
+        background: #0f172a;
+        border-color: #334155;
+    }
+    .quantity-stepper:focus-within {
+        border-color: var(--primary-color, #2563eb);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+    .stepper-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        color: var(--text-main, #334155);
+        font-size: 1.1rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .stepper-btn:hover:not(:disabled) {
+        background: var(--surface-muted, #f1f5f9);
+        color: var(--primary-color, #2563eb);
+    }
+    [data-bs-theme="dark"] .stepper-btn {
+        color: #e2e8f0;
+    }
+    [data-bs-theme="dark"] .stepper-btn:hover:not(:disabled) {
+        background: #1e293b;
+        color: #60a5fa;
+    }
+    .stepper-input {
+        width: 52px;
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--text-main, #334155);
+        outline: none;
+        -moz-appearance: textfield;
+    }
+    .stepper-input::-webkit-outer-spin-button,
+    .stepper-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    [data-bs-theme="dark"] .stepper-input {
+        color: #f1f5f9;
+    }
+
+    /* Add to Bag Button */
+    .btn-add-to-bag {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #ffffff;
+        border: none;
+        border-radius: 30px;
+        padding: 0.9rem 2rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.28);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-add-to-bag:hover:not(:disabled) {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.38);
+        color: #ffffff;
+    }
+    .btn-add-to-bag:disabled {
+        background: #94a3b8;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+    [data-bs-theme="dark"] .btn-add-to-bag {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        box-shadow: 0 4px 18px rgba(59, 130, 246, 0.35);
+    }
+    [data-bs-theme="dark"] .btn-add-to-bag:hover:not(:disabled) {
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        box-shadow: 0 8px 26px rgba(59, 130, 246, 0.45);
+    }
+
+    /* Value Proposition Mini Badges */
+    .value-prop-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 12px;
+        background: var(--surface-muted, #f8fafc);
+        border: 1px solid var(--border-color, #e2e8f0);
+        font-size: 0.825rem;
+        font-weight: 500;
+        color: var(--text-main, #475569);
+    }
+    [data-bs-theme="dark"] .value-prop-item {
+        background: #162032;
+        border-color: #334155;
+        color: #cbd5e1;
+    }
+
+    /* ==========================================================
+       TABS NAVIGATION & STYLING (FIXES STARK WHITE BOX CONTRAST)
+       ========================================================== */
+    .detail-tabs-nav-wrap {
+        border-bottom: 2px solid var(--border-color, #e2e8f0);
+        padding-bottom: 0.25rem;
+    }
+    [data-bs-theme="dark"] .detail-tabs-nav-wrap {
+        border-color: #334155;
+    }
+    .detail-nav-pills {
+        gap: 8px;
+    }
+    .detail-nav-pills .nav-link {
+        color: var(--text-muted, #64748b);
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 10px 20px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .detail-nav-pills .nav-link:hover {
+        color: var(--primary-color, #2563eb);
+        background: var(--surface-muted, #f1f5f9);
+    }
+    .detail-nav-pills .nav-link.active {
+        color: #ffffff !important;
+        background: var(--primary-color, #2563eb) !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+    [data-bs-theme="dark"] .detail-nav-pills .nav-link {
+        color: #94a3b8;
+    }
+    [data-bs-theme="dark"] .detail-nav-pills .nav-link:hover {
+        color: #f1f5f9;
+        background: #1e293b;
+    }
+    [data-bs-theme="dark"] .detail-nav-pills .nav-link.active {
+        color: #ffffff !important;
+        background: #3b82f6 !important;
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
+    }
+    .detail-nav-badge {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.08);
+        color: inherit;
+        font-weight: 700;
+    }
+    .detail-nav-pills .nav-link.active .detail-nav-badge {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+    }
+
+    /* Rich Text Description Content */
+    .product-rich-description {
+        font-size: 1rem;
+        line-height: 1.85;
+        color: var(--text-main, #334155);
+    }
+    [data-bs-theme="dark"] .product-rich-description {
+        color: #cbd5e1;
+    }
+    .product-rich-description p {
+        margin-bottom: 1.25rem;
+    }
+    .product-rich-description h1,
+    .product-rich-description h2,
+    .product-rich-description h3,
+    .product-rich-description h4,
+    .product-rich-description h5,
+    .product-rich-description h6 {
+        font-weight: 700;
+        color: var(--dark-color, #0f172a);
+        margin-top: 1.75rem;
+        margin-bottom: 0.85rem;
+        letter-spacing: -0.3px;
+    }
+    [data-bs-theme="dark"] .product-rich-description h1,
+    [data-bs-theme="dark"] .product-rich-description h2,
+    [data-bs-theme="dark"] .product-rich-description h3,
+    [data-bs-theme="dark"] .product-rich-description h4,
+    [data-bs-theme="dark"] .product-rich-description h5,
+    [data-bs-theme="dark"] .product-rich-description h6 {
+        color: #f8fafc;
+    }
+    .product-rich-description ul,
+    .product-rich-description ol {
+        padding-left: 1.6rem;
+        margin-bottom: 1.4rem;
+    }
+    .product-rich-description li {
+        margin-bottom: 0.5rem;
+        line-height: 1.75;
+    }
+    .product-rich-description strong,
+    .product-rich-description b {
+        font-weight: 700;
+        color: var(--dark-color, #0f172a);
+    }
+    [data-bs-theme="dark"] .product-rich-description strong,
+    [data-bs-theme="dark"] .product-rich-description b {
+        color: #f1f5f9;
+    }
+    .product-rich-description table {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        border-collapse: collapse;
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .product-rich-description th,
+    .product-rich-description td {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color, #e2e8f0);
+    }
+    .product-rich-description th {
+        background: var(--surface-muted, #f8fafc);
+        font-weight: 600;
+    }
+    [data-bs-theme="dark"] .product-rich-description th,
+    [data-bs-theme="dark"] .product-rich-description td {
+        border-color: #334155;
+    }
+    [data-bs-theme="dark"] .product-rich-description th {
+        background: #0f172a;
+    }
+    .product-rich-description blockquote {
+        border-left: 4px solid var(--primary-color, #2563eb);
+        padding: 0.85rem 1.4rem;
+        margin: 1.5rem 0;
+        background: var(--surface-muted, #f8fafc);
+        border-radius: 0 12px 12px 0;
+        font-style: italic;
+        color: var(--text-main, #475569);
+    }
+    [data-bs-theme="dark"] .product-rich-description blockquote {
+        background: #0f172a;
+        color: #cbd5e1;
+    }
+
+    /* Specifications Dashboard & Feature Badges */
+    .spec-feature-box {
+        background: var(--surface-muted, #f8fafc);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 16px;
+        padding: 1.25rem;
+        height: 100%;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .spec-feature-box:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary-color, #2563eb);
+    }
+    [data-bs-theme="dark"] .spec-feature-box {
+        background: #162032;
+        border-color: #334155;
+    }
+    [data-bs-theme="dark"] .spec-feature-box:hover {
+        border-color: #60a5fa;
+    }
+    .spec-feature-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .specs-modern-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .specs-modern-table tr {
+        transition: background-color 0.15s ease;
+    }
+    .specs-modern-table tr:not(:last-child) td,
+    .specs-modern-table tr:not(:last-child) th {
+        border-bottom: 1px solid var(--border-color, #e2e8f0);
+    }
+    .specs-modern-table th {
+        background: var(--surface-muted, #f8fafc);
+        width: 30%;
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-muted, #64748b);
+    }
+    .specs-modern-table td {
+        padding: 1rem 1.25rem;
+        font-size: 0.925rem;
+        color: var(--text-main, #334155);
+        background: var(--surface-card, #ffffff);
+    }
+    [data-bs-theme="dark"] .specs-modern-table {
+        border-color: #334155;
+    }
+    [data-bs-theme="dark"] .specs-modern-table tr:not(:last-child) td,
+    [data-bs-theme="dark"] .specs-modern-table tr:not(:last-child) th {
+        border-color: #334155;
+    }
+    [data-bs-theme="dark"] .specs-modern-table th {
+        background: #0f172a;
+        color: #94a3b8;
+    }
+    [data-bs-theme="dark"] .specs-modern-table td {
+        background: #1e293b;
+        color: #e2e8f0;
+    }
+
+    /* Reviews Feed & Summary Card */
+    .review-score-hero {
+        background: var(--surface-muted, #f8fafc);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 18px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    [data-bs-theme="dark"] .review-score-hero {
+        background: #162032;
+        border-color: #334155;
+    }
+    .review-item-card {
+        padding: 1.25rem 0;
+        border-bottom: 1px solid var(--border-color, #e2e8f0);
+        transition: background-color 0.15s ease;
+    }
+    .review-item-card:last-child {
+        border-bottom: none;
+    }
+    [data-bs-theme="dark"] .review-item-card {
+        border-color: #334155;
+    }
+    .user-avatar-initial {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+    .review-form-panel {
+        background: var(--surface-muted, #f8fafc);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 18px;
+        padding: 1.5rem;
+    }
+    [data-bs-theme="dark"] .review-form-panel {
+        background: #162032;
+        border-color: #334155;
+    }
+
+    /* ==========================================================
+       DUAL CTA, TRUST GUARANTEE BOX & BUNDLE CARD STYLES
+       ========================================================== */
+    .delivery-trust-box {
+        background: var(--surface-muted, #f8fafc);
+        border: 1px solid var(--border-color, #e2e8f0);
+    }
+    [data-bs-theme="dark"] .delivery-trust-box {
+        background: #162032;
+        border-color: #334155;
+    }
+    .delivery-badge-banner {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+        font-size: 0.825rem;
+    }
+    [data-bs-theme="dark"] .delivery-badge-banner {
+        background: rgba(37, 99, 235, 0.15);
+        border-color: rgba(59, 130, 246, 0.3);
+        color: #93c5fd;
+    }
+    .trust-icon {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+    }
+    .trust-feature-item {
+        border-radius: 12px;
+        transition: background-color 0.15s ease;
+    }
+    .trust-feature-item:hover {
+        background: rgba(0, 0, 0, 0.025);
+    }
+    [data-bs-theme="dark"] .trust-feature-item:hover {
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    /* Frequently Bought Together Bundle */
+    .bundle-product-visual {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .bundle-img-box {
+        width: 95px;
+        height: 95px;
+        border-radius: 14px;
+        border: 1px solid var(--border-color, #e2e8f0);
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        overflow: hidden;
+    }
+    .bundle-img-box img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    [data-bs-theme="dark"] .bundle-img-box {
+        background: #0f172a;
+        border-color: #334155;
+    }
+    .bundle-summary-card {
+        background: var(--surface-muted, #f8fafc);
+        border: 1px solid var(--border-color, #e2e8f0);
+    }
+    [data-bs-theme="dark"] .bundle-summary-card {
+        background: #162032;
+        border-color: #334155;
+    }
+    .bundle-plus-icon {
+        font-weight: 300;
+        opacity: 0.6;
+    }
+    .bundle-item-check {
+        padding: 6px 10px;
+        border-radius: 8px;
+        transition: background-color 0.15s ease;
+    }
+    .bundle-item-check:hover {
+        background: rgba(0, 0, 0, 0.02);
+    }
+    [data-bs-theme="dark"] .bundle-item-check:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 767.98px) {
+        .zoom-container {
+            height: 320px;
+        }
+        .price-current-value {
+            font-size: 1.85rem;
+        }
+        .detail-nav-pills .nav-link {
+            padding: 8px 14px;
+            font-size: 0.875rem;
+        }
+        .specs-modern-table th {
+            width: 40%;
+            padding: 0.75rem 0.85rem;
+        }
+        .specs-modern-table td {
+            padding: 0.75rem 0.85rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb small">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">{{ tr.home }}</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none">{{ tr.all_products }}</a></li>
+<div class="container py-3">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="detail-breadcrumb">
+        <ol class="breadcrumb small align-items-center mb-0">
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}"><i class="bi bi-house-door me-1"></i>{{ tr.home }}</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'product_list' %}">{{ tr.all_products }}</a>
+            </li>
             {% if product.category %}
-                <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="text-decoration-none">{{ product.category.name }}</a></li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+                </li>
             {% endif %}
-            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+            <li class="breadcrumb-item active" aria-current="page" title="{{ product.name }}">
+                {{ product.name }}
+            </li>
         </ol>
     </nav>
 
-    <!-- Product Showcase Card -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
-        <div class="row g-4">
-            <!-- Left: Image Showcase with Circle Mirror Zoom & Thumbnails -->
+    <!-- Product Showcase Card (Elevated Theme Adaptive Container) -->
+    <div class="card product-detail-card p-4 p-md-5 mb-5">
+        <div class="row g-4 g-lg-5">
+            <!-- Left Column: Image Showcase with Circle Mirror Zoom & Thumbnails -->
             <div class="col-lg-5">
                 <!-- Main Zoom Container -->
-                <div class="zoom-container position-relative" id="zoomContainer">
+                <div class="zoom-container" id="zoomContainer">
                     {% if product.has_discount %}
-                        <span class="badge-discount fs-6 px-3 py-2">-{{ product.discount_percent }}% OFF</span>
+                        <span class="badge-discount-detail">
+                            <i class="bi bi-tag-fill me-1"></i>-{{ product.discount_percent }}% {{ tr.off|default:'OFF' }}
+                        </span>
                     {% endif %}
 
                     {% if product.image %}
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" id="mainProductImg">
                     {% else %}
                         <div class="text-center text-muted" id="placeholderImgBox">
-                            <i class="bi bi-box-seam display-1 opacity-50 d-block mb-2"></i>
-                            <span class="small">No primary photo uploaded</span>
+                            <i class="bi bi-box-seam display-1 opacity-50 d-block mb-2 text-primary"></i>
+                            <span class="small fw-semibold">No primary photo uploaded</span>
                         </div>
                     {% endif %}
 
@@ -104,210 +789,424 @@
                 </div>
 
                 <div class="text-center text-muted small mt-2">
-                    <i class="bi bi-search me-1 text-primary"></i> Move mouse over photo for <strong>circular mirror zoom</strong>
+                    <i class="bi bi-search me-1 text-primary"></i> Hover over photo for <strong>circular mirror zoom</strong>
                 </div>
 
                 <!-- Gallery Thumbnails Row -->
                 <div class="d-flex flex-wrap gap-2 justify-content-center mt-3" id="galleryThumbs">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" class="thumb-btn active" onclick="switchProductImage('{{ product.image.url }}', this)" alt="Main Photo">
+                        <img src="{{ product.image.url }}" class="thumb-btn active" onclick="switchProductImage('{{ product.image.url }}', this)" alt="{{ product.name }}">
                     {% endif %}
                     {% for g in gallery_images %}
-                        <img src="{{ g.image.url }}" class="thumb-btn" onclick="switchProductImage('{{ g.image.url }}', this)" alt="Gallery Angle">
+                        <img src="{{ g.image.url }}" class="thumb-btn" onclick="switchProductImage('{{ g.image.url }}', this)" alt="Gallery angle {{ forloop.counter }}">
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Right: Product Info & Buy Controls -->
+            <!-- Right Column: Product Info & Buy Controls -->
             <div class="col-lg-7 d-flex flex-column">
+                <!-- Category, Brand & Wishlist Action Bar -->
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                        {% if product.brand %}
-                            <span class="badge bg-light text-dark border me-2">{{ product.brand.name }}</span>
-                        {% endif %}
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
                         {% if product.category %}
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">{{ product.category.name }}</span>
+                            <a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="badge bg-primary-subtle text-primary border border-primary-subtle text-decoration-none px-3 py-2 rounded-pill fw-semibold">
+                                <i class="bi bi-grid-fill me-1"></i>{{ product.category.name }}
+                            </a>
+                        {% endif %}
+                        {% if product.brand %}
+                            <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}" class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle text-decoration-none px-3 py-2 rounded-pill fw-semibold">
+                                <i class="bi bi-patch-check-fill me-1 text-primary"></i>{{ product.brand.name }}
+                            </a>
                         {% endif %}
                     </div>
 
                     <!-- Wishlist Toggle Button -->
-                    <button type="button" class="btn btn-light border wishlist-btn-detail" onclick="toggleWishlist({{ product.pk }}, this)" title="Save to Wishlist">
+                    <button type="button" class="wishlist-btn-detail shadow-sm" onclick="toggleWishlist({{ product.pk }}, this)" title="{{ tr.save_to_wishlist|default:'Save to Wishlist' }}" aria-label="Toggle Wishlist">
                         {% if product.pk in user_wishlist_ids %}
                             <i class="bi bi-heart-fill text-danger"></i>
                         {% else %}
-                            <i class="bi bi-heart text-secondary"></i>
+                            <i class="bi bi-heart"></i>
                         {% endif %}
                     </button>
                 </div>
 
-                <h2 class="fw-bold mb-2">{{ product.name }}</h2>
+                <!-- Product Name Title -->
+                <h1 class="h2 fw-bold mb-3 lh-sm">{{ product.name }}</h1>
 
-                <!-- Ratings & Stock -->
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="text-warning small">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-half"></i>
-                        <span class="text-muted ms-1">({{ reviews.count }} review{{ reviews.count|pluralize }})</span>
+                <!-- Ratings Summary & Stock Status Badges -->
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="text-warning small me-2">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </div>
+                        <a href="#reviews" class="text-decoration-none text-muted small fw-semibold" onclick="activateTab('reviews-tab')">
+                            ({{ reviews.count }} {{ tr.customer_reviews|default:'reviews' }})
+                        </a>
                     </div>
-                    <span class="text-secondary">|</span>
+
+                    <span class="text-secondary opacity-50">|</span>
+
                     <div>
                         {% if product.stock > 5 %}
-                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                <i class="bi bi-check-circle me-1"></i> {{ tr.in_stock }} ({{ product.stock }})
+                            <span class="status-badge-pill status-in-stock">
+                                <i class="bi bi-check-circle-fill"></i> {{ tr.in_stock }} ({{ product.stock }})
                             </span>
                         {% elif product.stock > 0 %}
-                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
-                                <i class="bi bi-exclamation-triangle me-1"></i> {{ tr.low_stock }} ({{ product.stock }})
+                            <span class="status-badge-pill status-low-stock">
+                                <i class="bi bi-exclamation-triangle-fill"></i> {{ tr.low_stock }} ({{ product.stock }} left)
                             </span>
                         {% else %}
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
-                                <i class="bi bi-x-circle me-1"></i> {{ tr.out_of_stock }}
+                            <span class="status-badge-pill status-out-stock">
+                                <i class="bi bi-x-circle-fill"></i> {{ tr.out_of_stock }}
                             </span>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Price Box -->
-                <div class="p-3 bg-light rounded-3 mb-4">
-                    <div class="d-flex align-items-baseline gap-3">
-                        <span class="display-6 fw-bold text-primary">৳{{ product.effective_price }}</span>
-                        {% if product.unit %}<span class="badge bg-white text-dark border fs-6">{{ product.unit }}</span>{% endif %}
+                <!-- Price Highlight Box -->
+                <div class="price-box-detail mb-4">
+                    <div class="d-flex flex-wrap align-items-baseline gap-3">
+                        <span class="price-current-value">৳{{ product.effective_price }}</span>
+                        {% if product.unit %}
+                            <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-2 py-1 rounded-pill fs-6">{{ product.unit }}</span>
+                        {% endif %}
                         {% if product.has_discount %}
                             <span class="fs-4 text-decoration-line-through text-muted">৳{{ product.price }}</span>
-                            <span class="badge bg-danger">Save ৳{{ product.price|add:"-product.discount_price"|default:"Discount" }}</span>
+                            <span class="badge bg-danger px-3 py-2 rounded-pill fw-semibold">
+                                {{ tr.save|default:'Save' }} ৳{{ product.price|add:"-product.discount_price"|default:"Discount" }}
+                            </span>
                         {% endif %}
                     </div>
-                    <small class="text-muted d-block mt-1">{{ tr.tax_included_notice }}</small>
+                    <div class="small text-muted mt-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        <span>{{ tr.tax_included_notice }}</span>
+                    </div>
                 </div>
 
-                <!-- Short Summary -->
-                <p class="text-secondary mb-4">{{ product.short_description|default:product.description|truncatewords:45 }}</p>
+                <!-- Short Summary (Using secure clean_plain_summary to strip raw HTML tags cleanly) -->
+                <p class="text-secondary mb-4 lh-base" style="font-size: 0.975rem;">
+                    {{ product.short_description|default:product.description|clean_plain_summary:45 }}
+                </p>
 
-                <!-- Add to Cart Form -->
-                <form action="{% url 'add_to_cart' product.pk %}" method="post" class="mt-auto">
+                <!-- Dual CTA Action Form (Order Now & Add to Bag) -->
+                <form action="{% url 'add_to_cart' product.pk %}" method="post" class="mt-auto mb-4" id="productAddToCartForm">
                     {% csrf_token %}
-                    <div class="row g-3 align-items-center mb-3">
-                        <div class="col-auto">
-                            <label class="small fw-bold text-muted d-block mb-1">{{ tr.quantity }}</label>
-                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control text-center" style="width: 90px;" {% if product.stock <= 0 %}disabled{% endif %}>
+                    <input type="hidden" name="buy_now" id="buyNowInput" value="0">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <label class="small fw-bold text-muted mb-0">{{ tr.quantity }}</label>
+                        <div class="quantity-stepper">
+                            <button type="button" class="stepper-btn" onclick="changeDetailQty(-1)" {% if product.stock <= 0 %}disabled{% endif %} aria-label="Decrease quantity">-</button>
+                            <input type="number" name="quantity" id="productQtyInput" value="1" min="1" max="{{ product.stock|default:1 }}" class="stepper-input" {% if product.stock <= 0 %}disabled{% endif %}>
+                            <button type="button" class="stepper-btn" onclick="changeDetailQty(1)" {% if product.stock <= 0 %}disabled{% endif %} aria-label="Increase quantity">+</button>
                         </div>
-                        <div class="col">
-                            <label class="small fw-bold text-muted d-block mb-1">&nbsp;</label>
-                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-semibold shadow-sm" {% if product.stock <= 0 %}disabled{% endif %}>
-                                <i class="bi bi-cart-plus me-2"></i> {{ tr.add_to_bag_btn }}
+                    </div>
+
+                    <div class="row g-2 g-sm-3">
+                        <div class="col-12 col-sm-6">
+                            <button type="submit" name="buy_now" value="1" class="btn btn-danger btn-lg rounded-pill fw-semibold shadow-sm w-100 py-3 d-flex align-items-center justify-content-center" onclick="document.getElementById('buyNowInput').value='1'" {% if product.stock <= 0 %}disabled{% endif %}>
+                                <i class="bi bi-lightning-charge-fill me-1 fs-5"></i> {% if IS_BANGLA %}এখনই অর্ডার করুন{% else %}Order Now{% endif %}
+                            </button>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <button type="submit" class="btn btn-add-to-bag btn-lg rounded-pill fw-semibold shadow-sm w-100 py-3 d-flex align-items-center justify-content-center" onclick="document.getElementById('buyNowInput').value='0'" {% if product.stock <= 0 %}disabled{% endif %}>
+                                <i class="bi bi-bag-plus-fill me-2 fs-5"></i> {{ tr.add_to_bag_btn }}
                             </button>
                         </div>
                     </div>
                 </form>
 
-                <!-- Value Proposition Highlights -->
-                <div class="row g-2 pt-3 border-top mt-2 small text-muted">
-                    <div class="col-6">
-                        <i class="bi bi-truck text-primary me-1"></i> {{ tr.fast_shipping_highlight }}
+                <!-- Transparent Delivery & COD Guarantee Box (Paradise-style) -->
+                <div class="delivery-trust-box p-3 p-md-4 rounded-4 mt-2">
+                    <!-- Delivery Rate Badge Banner -->
+                    <div class="delivery-badge-banner d-flex align-items-center gap-2 p-2 px-3 rounded-pill mb-3">
+                        <i class="bi bi-truck text-primary fs-5"></i>
+                        <div class="small fw-bold">
+                            Inside Dhaka: <span class="text-primary">৳49</span> <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0 ms-1">Free over ৳500</span> &nbsp;|&nbsp; Outside Dhaka: <span class="text-primary">৳99</span>
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <i class="bi bi-shield-check text-success me-1"></i> {{ tr.genuine_product_highlight }}
+
+                    <!-- Trust Pillars Grid -->
+                    <div class="row g-2 g-md-3">
+                        <div class="col-sm-6">
+                            <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
+                                <div class="trust-icon bg-success-subtle text-success rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-cash-stack fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="small fw-bold mb-0">{% if IS_BANGLA %}ক্যাশ অন ডেলিভারি সহজলভ্য{% else %}Cash on Delivery Available{% endif %}</h6>
+                                    <p class="text-muted mb-0" style="font-size: 0.78rem;">{% if IS_BANGLA %}পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন{% else %}Pay when your order arrives{% endif %}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
+                                <div class="trust-icon bg-info-subtle text-info rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-arrow-repeat fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="small fw-bold mb-0">{% if IS_BANGLA %}৭ দিনের রিটার্ন ও রিপ্লেসমেন্ট গ্যারান্টি{% else %}7-Day Return & Replacement Guarantee{% endif %}</h6>
+                                    <p class="text-muted mb-0" style="font-size: 0.78rem;">{% if IS_BANGLA %}সহজ পরিবর্তন ও রিফান্ড সুবিধা{% else %}Hassle-free return policy{% endif %}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
+                                <div class="trust-icon bg-primary-subtle text-primary rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-patch-check-fill fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="small fw-bold mb-0">{% if IS_BANGLA %}১০০% খাঁটি পণ্যের নিশ্চয়তা{% else %}100% Genuine Guaranteed{% endif %}</h6>
+                                    <p class="text-muted mb-0" style="font-size: 0.78rem;">{% if IS_BANGLA %}অরিজিনাল ও ব্র্যান্ড ভেরিফাইড{% else %}Authentic verified products{% endif %}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="trust-feature-item d-flex align-items-start gap-2 p-2">
+                                <div class="trust-icon bg-warning-subtle text-warning rounded-circle p-2 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-shield-lock-fill fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="small fw-bold mb-0">{% if IS_BANGLA %}নিরাপদ শপিং নিশ্চয়তা{% else %}Safe & Secure Shopping{% endif %}</h6>
+                                    <p class="text-muted mb-0" style="font-size: 0.78rem;">{% if IS_BANGLA %}এনক্রিপ্টেড পেমেন্ট ও সাপোর্ট{% else %}Encrypted checkout protection{% endif %}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Product Details & Description Tabs -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
-        <ul class="nav nav-pills mb-4 border-bottom pb-3" id="productTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-semibold" id="desc-tab" data-bs-toggle="pill" data-bs-target="#desc" type="button" role="tab">{{ tr.detailed_description }}</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link fw-semibold" id="specs-tab" data-bs-toggle="pill" data-bs-target="#specs" type="button" role="tab">{{ tr.specifications }}</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link fw-semibold" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews" type="button" role="tab">{{ tr.customer_reviews }} ({{ reviews.count }})</button>
-            </li>
-        </ul>
+    <!-- Product Details & Description Tabs (Harmonized for Dark & Light Themes) -->
+    <div class="card product-tabs-card p-4 p-md-5 mb-5">
+        <!-- Modern Segmented Pill Tabs Navigation -->
+        <div class="detail-tabs-nav-wrap mb-4">
+            <ul class="nav detail-nav-pills" id="productDetailTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="desc-tab" data-bs-toggle="pill" data-bs-target="#desc" type="button" role="tab" aria-controls="desc" aria-selected="true">
+                        <i class="bi bi-file-text"></i>
+                        <span>{{ tr.detailed_description }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="specs-tab" data-bs-toggle="pill" data-bs-target="#specs" type="button" role="tab" aria-controls="specs" aria-selected="false">
+                        <i class="bi bi-sliders"></i>
+                        <span>{{ tr.specifications }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                        <i class="bi bi-chat-heart"></i>
+                        <span>{{ tr.customer_reviews }}</span>
+                        <span class="detail-nav-badge">{{ reviews.count }}</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
 
-        <div class="tab-content" id="productTabsContent">
-            <!-- Description -->
-            <div class="tab-pane fade show active" id="desc" role="tabpanel">
-                <div class="text-secondary" style="white-space: pre-line; line-height: 1.8;">
-                    {{ product.description }}
+        <div class="tab-content pt-2" id="productDetailTabsContent">
+            <!-- TAB 1: Detailed Description (Rendered securely with render_safe_html filter) -->
+            <div class="tab-pane fade show active" id="desc" role="tabpanel" aria-labelledby="desc-tab">
+                <div class="product-rich-description">
+                    {{ product.description|render_safe_html }}
                 </div>
             </div>
 
-            <!-- Specs -->
-            <div class="tab-pane fade" id="specs" role="tabpanel">
-                <table class="table table-bordered table-striped small">
-                    <tbody>
-                        <tr>
-                            <th class="w-25 text-muted">Product SKU</th>
-                            <td>{{ product.sku }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-muted">Category</th>
-                            <td>{{ product.category.name|default:"General" }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-muted">Brand</th>
-                            <td>{{ product.brand.name|default:"Official" }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-muted">Stock Availability</th>
-                            <td>{{ product.stock }} units remaining</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- TAB 2: Specifications & Product Features Dashboard -->
+            <div class="tab-pane fade" id="specs" role="tabpanel" aria-labelledby="specs-tab">
+                <!-- 4 Feature Highlights Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-primary-subtle text-primary">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1">Authentic Guarantee</h6>
+                            <p class="small text-muted mb-0">100% genuine brand verified product.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-success-subtle text-success">
+                                <i class="bi bi-truck"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1">Express Delivery</h6>
+                            <p class="small text-muted mb-0">Fast nationwide courier in 24-48 hours.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-info-subtle text-info">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1">Easy 30-Day Return</h6>
+                            <p class="small text-muted mb-0">Hassle-free replacement & refunds.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-warning-subtle text-warning">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1">Secure Packaging</h6>
+                            <p class="small text-muted mb-0">Multi-layer protective sealing.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structured Specs Table -->
+                <div class="table-responsive">
+                    <table class="specs-modern-table">
+                        <tbody>
+                            <tr>
+                                <th>{{ tr.product_sku|default:'Product SKU' }}</th>
+                                <td>
+                                    <code class="badge bg-secondary-subtle text-secondary-emphasis px-2 py-1 rounded">{{ product.sku }}</code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Category</th>
+                                <td>
+                                    {% if product.category %}
+                                        <a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="text-decoration-none fw-semibold">
+                                            {{ product.category.name }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">General</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Brand</th>
+                                <td>
+                                    {% if product.brand %}
+                                        <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}" class="text-decoration-none fw-semibold">
+                                            <i class="bi bi-patch-check-fill text-primary me-1"></i>{{ product.brand.name }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Official Store</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Packaging / Unit</th>
+                                <td>{{ product.unit|default:'1 pc' }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ tr.stock_availability|default:'Stock Availability' }}</th>
+                                <td>
+                                    {% if product.stock > 0 %}
+                                        <span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>{{ product.stock }} units available in stock</span>
+                                    {% else %}
+                                        <span class="text-danger fw-semibold"><i class="bi bi-x-circle-fill me-1"></i>Currently out of stock</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Warranty & Return</th>
+                                <td>30-Day Easy Return Guarantee & Direct Brand Warranty</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- Customer Reviews & Submission Form -->
-            <div class="tab-pane fade" id="reviews" role="tabpanel">
+            <!-- TAB 3: Customer Reviews Feed & Submission Form -->
+            <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                 <div class="row g-4">
-                    <!-- Existing Reviews List -->
+                    <!-- Left: Reviews Feed List & Stats -->
                     <div class="col-lg-7">
-                        <h6 class="fw-bold mb-3">Customer Feedback</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0">Customer Feedback</h5>
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-semibold">
+                                {{ reviews.count }} Review{{ reviews.count|pluralize }}
+                            </span>
+                        </div>
+
                         {% if reviews %}
-                            <div class="list-group list-group-flush">
+                            <div class="review-score-hero mb-4">
+                                <div class="d-flex align-items-center justify-content-center gap-3">
+                                    <div class="display-5 fw-bold text-primary">5.0</div>
+                                    <div class="text-start">
+                                        <div class="text-warning fs-5">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <small class="text-muted">Based on {{ reviews.count }} verified customer review{{ reviews.count|pluralize }}</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="review-feed-list">
                                 {% for r in reviews %}
-                                    <div class="list-group-item px-0 py-3">
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <strong class="text-dark">{{ r.user.get_full_name|default:r.user.username }}</strong>
-                                            <small class="text-muted">{{ r.created_at|date:"M d, Y" }}</small>
+                                    <div class="review-item-card">
+                                        <div class="d-flex gap-3">
+                                            <div class="user-avatar-initial flex-shrink-0">
+                                                {{ r.user.first_name|first|default:r.user.username|first|upper }}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-1">
+                                                    <div>
+                                                        <strong class="me-2">{{ r.user.get_full_name|default:r.user.username }}</strong>
+                                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0 rounded-pill small">
+                                                            <i class="bi bi-patch-check-fill me-1"></i>Verified Buyer
+                                                        </span>
+                                                    </div>
+                                                    <small class="text-muted">{{ r.created_at|date:"M d, Y" }}</small>
+                                                </div>
+                                                <div class="text-warning small mb-2">
+                                                    {% for i in "12345" %}
+                                                        {% if forloop.counter <= r.rating %}
+                                                            <i class="bi bi-star-fill"></i>
+                                                        {% else %}
+                                                            <i class="bi bi-star text-muted opacity-50"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <p class="text-secondary mb-0 small lh-base">{{ r.comment }}</p>
+                                            </div>
                                         </div>
-                                        <div class="text-warning small mb-2">
-                                            {% for i in "12345" %}
-                                                {% if forloop.counter <= r.rating %}
-                                                    <i class="bi bi-star-fill"></i>
-                                                {% else %}
-                                                    <i class="bi bi-star text-muted"></i>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        <p class="text-secondary mb-0 small">{{ r.comment }}</p>
                                     </div>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            <div class="text-center py-4 text-muted">
-                                <i class="bi bi-chat-square-quote display-4 mb-2 d-block"></i>
-                                <p class="mb-0">No customer reviews yet. Be the first to review this product!</p>
+                            <!-- Modern Empty State Illustration -->
+                            <div class="text-center py-5 px-3">
+                                <div class="mb-3">
+                                    <i class="bi bi-chat-square-heart display-2 text-primary opacity-50"></i>
+                                </div>
+                                <h5 class="fw-bold mb-2">No customer reviews yet</h5>
+                                <p class="text-muted small mb-0" style="max-width: 360px; margin: 0 auto;">
+                                    Have you tried this product? Share your experience with other customers by submitting a review!
+                                </p>
                             </div>
                         {% endif %}
                     </div>
 
-                    <!-- Leave a Review Form -->
+                    <!-- Right: Submit a Review Card -->
                     <div class="col-lg-5">
-                        <div class="card border rounded-3 p-3 bg-light">
-                            <h6 class="fw-bold mb-2">Write a Review</h6>
+                        <div class="review-form-panel">
+                            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-pencil-square text-primary"></i> Write a Review
+                            </h5>
+
                             {% if request.user.is_authenticated and not request.user.is_staff %}
                                 <form action="{% url 'product_add_review' product.pk %}" method="post">
                                     {% csrf_token %}
-                                    <div class="mb-2">
-                                        <label class="form-label small fw-semibold">Your Rating</label>
-                                        <select name="rating" class="form-select form-select-sm">
-                                            <option value="5">⭐⭐⭐⭐⭐ (5 - Excellent)</option>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Overall Rating</label>
+                                        <select name="rating" class="form-select form-select-sm rounded-3">
+                                            <option value="5" selected>⭐⭐⭐⭐⭐ (5 - Excellent)</option>
                                             <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
                                             <option value="3">⭐⭐⭐ (3 - Average)</option>
                                             <option value="2">⭐⭐ (2 - Below Average)</option>
@@ -315,18 +1214,25 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label small fw-semibold">Your Review</label>
-                                        <textarea name="comment" rows="3" class="form-control form-control-sm" required placeholder="What did you like or dislike about this product?"></textarea>
+                                        <label class="form-label small fw-bold text-muted">Your Experience / Review</label>
+                                        <textarea name="comment" rows="4" class="form-control form-control-sm rounded-3" required placeholder="What did you like or dislike about this product? How was the quality?"></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
-                                        Submit Review
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold shadow-sm w-100 py-2">
+                                        <i class="bi bi-send-fill me-1"></i> Submit Review
                                     </button>
                                 </form>
+                            {% elif request.user.is_authenticated and request.user.is_staff %}
+                                <div class="alert alert-info border-0 rounded-3 small mb-0">
+                                    <i class="bi bi-info-circle me-1"></i> Staff and administrators cannot submit customer reviews.
+                                </div>
                             {% else %}
-                                <p class="small text-muted mb-3">Please sign in to your customer account to submit a review.</p>
-                                <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-outline-primary btn-sm rounded-pill">
-                                    Sign In to Review
-                                </a>
+                                <div class="text-center py-4">
+                                    <i class="bi bi-shield-lock display-4 text-muted opacity-50 d-block mb-3"></i>
+                                    <p class="small text-muted mb-3">Please sign in to your customer account to submit a review.</p>
+                                    <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-semibold">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Review
+                                    </a>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
@@ -335,15 +1241,127 @@
         </div>
     </div>
 
+    <!-- Frequently Bought Together Bundle Card -->
+    {% if bundle_items %}
+    <div class="card product-detail-card p-4 p-md-5 mb-5" id="frequentlyBoughtTogether">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <div>
+                <h3 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                    <i class="bi bi-collection-fill text-primary"></i>
+                    {% if IS_BANGLA %}একসাথে প্রায়শই কেনা হয়{% else %}Frequently Bought Together{% endif %}
+                </h3>
+                <p class="text-muted small mb-0">{% if IS_BANGLA %}বান্ডেল অফার: একসাথে কিনলে অতিরিক্ত ৫% ছাড় পান{% else %}Bundle & Save: Get an extra {{ bundle_discount_percent }}% off when purchased together{% endif %}</p>
+            </div>
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fw-bold">
+                <i class="bi bi-tag-fill me-1"></i> {{ bundle_discount_percent }}% Bundle Savings
+            </span>
+        </div>
+
+        <div class="row g-4 align-items-center">
+            <!-- Left: Products Gallery & Checkboxes Flow -->
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4 mb-4">
+                    <!-- Main Product Visual Box -->
+                    <div class="bundle-product-visual position-relative text-center">
+                        <div class="bundle-img-box mb-2">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3">
+                            {% else %}
+                                <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
+                            {% endif %}
+                        </div>
+                        <div class="badge bg-primary rounded-pill px-2 py-1 small">This Item</div>
+                    </div>
+
+                    {% for item in bundle_items %}
+                        <div class="bundle-plus-icon text-muted fs-3 fw-bold">+</div>
+                        <!-- Bundle Item Visual Box -->
+                        <div class="bundle-product-visual position-relative text-center">
+                            <div class="bundle-img-box mb-2">
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded-3">
+                                {% else %}
+                                    <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
+                                {% endif %}
+                            </div>
+                            <div class="small fw-semibold text-truncate" style="max-width: 110px;">{{ item.name }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Checkbox List of Items -->
+                <div class="bundle-items-checklist d-flex flex-column gap-2 pt-3 border-top">
+                    <!-- Main Product Checkbox Item -->
+                    <div class="form-check bundle-item-check d-flex align-items-center gap-2">
+                        <input class="form-check-input bundle-checkbox" type="checkbox" value="{{ product.pk }}" id="bundleItem{{ product.pk }}" checked data-price="{{ product.effective_price }}" data-name="{{ product.name }}" onchange="recalculateBundle()">
+                        <label class="form-check-label small" for="bundleItem{{ product.pk }}">
+                            <strong class="text-primary me-1">This item:</strong> {{ product.name }} &mdash; <span class="fw-bold text-dark">৳{{ product.effective_price }}</span>
+                        </label>
+                    </div>
+
+                    <!-- Additional Bundle Items -->
+                    {% for item in bundle_items %}
+                        <div class="form-check bundle-item-check d-flex align-items-center gap-2">
+                            <input class="form-check-input bundle-checkbox" type="checkbox" value="{{ item.pk }}" id="bundleItem{{ item.pk }}" checked data-price="{{ item.effective_price }}" data-name="{{ item.name }}" onchange="recalculateBundle()">
+                            <label class="form-check-label small" for="bundleItem{{ item.pk }}">
+                                <a href="{% url 'product_detail' item.pk %}" class="text-decoration-none fw-medium text-main">{{ item.name }}</a> &mdash; <span class="fw-bold text-dark">৳{{ item.effective_price }}</span>
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Right: Live Pricing Summary & Action -->
+            <div class="col-lg-4">
+                <div class="bundle-summary-card p-4 rounded-4 border">
+                    <div class="small text-muted mb-2 fw-semibold" id="bundleItemsCountLabel">
+                        Total for <span id="bundleSelectedCount">{{ bundle_items|length|add:1 }}</span> items:
+                    </div>
+
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="fs-2 fw-bold text-primary" id="bundleDiscountedPrice">৳{{ bundle_discount_price }}</span>
+                        <span class="fs-5 text-decoration-line-through text-muted" id="bundleOriginalPrice">৳{{ bundle_total }}</span>
+                    </div>
+
+                    <div class="alert alert-success border-0 py-2 px-3 small rounded-pill d-inline-flex align-items-center gap-1 mb-3" id="bundleSavingsAlert">
+                        <i class="bi bi-tag-fill text-success"></i>
+                        <span>Save <strong id="bundleSavingsAmount">৳{{ bundle_savings }}</strong> (5% Bundle Discount)</span>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-lg rounded-pill fw-bold w-100 shadow-sm py-3 d-flex align-items-center justify-content-center" id="addBundleBtn" onclick="addBundleToCart()">
+                        <i class="bi bi-bag-plus-fill me-2 fs-5"></i>
+                        <span id="addBundleBtnText">{% if IS_BANGLA %}বান্ডেল ব্যাগে যোগ করুন{% else %}Add Bundle to Bag{% endif %}</span>
+                    </button>
+                    <div class="small text-muted text-center mt-2">
+                        <i class="bi bi-lightning-charge text-warning"></i> Instant bundle add to your cart drawer
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Related Products -->
     {% if related_products %}
         <div class="mb-5">
-            <h4 class="fw-bold mb-4">You May Also Like</h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">You May Also Like</h3>
+                {% if product.category %}
+                    <a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="text-decoration-none small fw-semibold">
+                        View More <i class="bi bi-arrow-right"></i>
+                    </a>
+                {% endif %}
+            </div>
             <div class="row g-4">
                 {% for item in related_products %}
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-3 col-md-6 col-6">
                         <div class="card product-card border-0 shadow-sm h-100">
-                            <div class="product-img-wrapper">
+                            <div class="product-img-wrapper position-relative">
+                                {% if item.has_discount %}
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2 rounded-pill px-2 py-1 small">
+                                        -{{ item.discount_percent }}%
+                                    </span>
+                                {% endif %}
                                 {% if item.image %}
                                     <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid" style="max-height: 100%;">
                                 {% else %}
@@ -352,7 +1370,7 @@
                             </div>
                             <div class="card-body p-3 d-flex flex-column">
                                 <h6 class="fw-bold text-truncate mb-1">
-                                    <a href="{% url 'product_detail' item.pk %}" class="text-dark text-decoration-none">
+                                    <a href="{% url 'product_detail' item.pk %}" class="text-dark text-decoration-none" title="{{ item.name }}">
                                         {{ item.name }}
                                     </a>
                                 </h6>
@@ -381,7 +1399,7 @@ const circleLens = document.getElementById('circleLens');
 const ZOOM_LEVEL = 2.4; // 2.4x magnification factor
 
 function initCircleZoom() {
-    if (!mainImg || !circleLens) return;
+    if (!mainImg || !circleLens || !zoomContainer) return;
 
     // Set background image of circle lens to matching main photo
     circleLens.style.backgroundImage = `url("${mainImg.src}")`;
@@ -402,7 +1420,7 @@ function initCircleZoom() {
 
         const lensRadius = circleLens.offsetWidth / 2;
 
-        // Position the circle lens centered on the cursor
+        // Position the circle lens centered on cursor
         circleLens.style.left = `${x - lensRadius}px`;
         circleLens.style.top = `${y - lensRadius}px`;
 
@@ -414,7 +1432,7 @@ function initCircleZoom() {
 }
 
 function updateLensBackground() {
-    if (!mainImg || !circleLens) return;
+    if (!mainImg || !circleLens || !zoomContainer) return;
     circleLens.style.backgroundImage = `url("${mainImg.src}")`;
     const rect = zoomContainer.getBoundingClientRect();
     circleLens.style.backgroundSize = `${rect.width * ZOOM_LEVEL}px ${rect.height * ZOOM_LEVEL}px`;
@@ -432,6 +1450,231 @@ function switchProductImage(url, thumbElem) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initCircleZoom);
+// ==========================================
+// QUANTITY STEPPER CONTROLLER
+// ==========================================
+function changeDetailQty(delta) {
+    const qtyInput = document.getElementById('productQtyInput');
+    if (!qtyInput || qtyInput.disabled) return;
+    let currentVal = parseInt(qtyInput.value) || 1;
+    const minVal = parseInt(qtyInput.min) || 1;
+    const maxVal = parseInt(qtyInput.max) || 999;
+    
+    currentVal = Math.max(minVal, Math.min(maxVal, currentVal + delta));
+    qtyInput.value = currentVal;
+}
+
+// ==========================================
+// TAB ACTIVATION HELPER (e.g. from reviews link)
+// ==========================================
+function activateTab(tabId) {
+    const triggerEl = document.getElementById(tabId);
+    if (triggerEl && window.bootstrap && window.bootstrap.Tab) {
+        const tab = new bootstrap.Tab(triggerEl);
+        tab.show();
+    }
+}
+
+// ==========================================
+// FREQUENTLY BOUGHT TOGETHER BUNDLE ENGINE
+// ==========================================
+function recalculateBundle() {
+    const checkboxes = document.querySelectorAll('.bundle-checkbox:checked');
+    const selectedCount = checkboxes.length;
+    let total = 0;
+
+    checkboxes.forEach(cb => {
+        const price = parseFloat(cb.dataset.price) || 0;
+        total += price;
+    });
+
+    const countLabel = document.getElementById('bundleSelectedCount');
+    if (countLabel) countLabel.textContent = selectedCount;
+
+    const originalPriceEl = document.getElementById('bundleOriginalPrice');
+    const discountedPriceEl = document.getElementById('bundleDiscountedPrice');
+    const savingsAlertEl = document.getElementById('bundleSavingsAlert');
+    const savingsAmountEl = document.getElementById('bundleSavingsAmount');
+    const addBtn = document.getElementById('addBundleBtn');
+    const btnText = document.getElementById('addBundleBtnText');
+
+    if (selectedCount === 0) {
+        if (discountedPriceEl) discountedPriceEl.textContent = '৳0.00';
+        if (originalPriceEl) originalPriceEl.style.display = 'none';
+        if (savingsAlertEl) savingsAlertEl.style.display = 'none';
+        if (addBtn) addBtn.disabled = true;
+        return;
+    }
+
+    if (addBtn) addBtn.disabled = false;
+
+    // Apply 5% discount if 2 or more items are selected
+    if (selectedCount >= 2) {
+        const discounted = Math.round(total * 0.95 * 100) / 100;
+        const savings = Math.round((total - discounted) * 100) / 100;
+
+        if (discountedPriceEl) discountedPriceEl.textContent = '৳' + discounted.toFixed(2);
+        if (originalPriceEl) {
+            originalPriceEl.style.display = 'inline';
+            originalPriceEl.textContent = '৳' + total.toFixed(2);
+        }
+        if (savingsAlertEl) {
+            savingsAlertEl.style.display = 'inline-flex';
+            if (savingsAmountEl) savingsAmountEl.textContent = '৳' + savings.toFixed(2);
+        }
+        if (btnText) btnText.textContent = "{% if IS_BANGLA %}বান্ডেল ব্যাগে যোগ করুন{% else %}Add Bundle to Bag{% endif %}";
+    } else {
+        // Single item, regular price
+        if (discountedPriceEl) discountedPriceEl.textContent = '৳' + total.toFixed(2);
+        if (originalPriceEl) originalPriceEl.style.display = 'none';
+        if (savingsAlertEl) savingsAlertEl.style.display = 'none';
+        if (btnText) btnText.textContent = "{% if IS_BANGLA %}নির্বাচিত আইটেম ব্যাগে যোগ করুন{% else %}Add Item to Bag{% endif %}";
+    }
+}
+
+function addBundleToCart() {
+    const checkboxes = document.querySelectorAll('.bundle-checkbox:checked');
+    const checkedIds = Array.from(checkboxes).map(cb => cb.value);
+
+    if (checkedIds.length === 0) return;
+
+    const addBtn = document.getElementById('addBundleBtn');
+    const originalHtml = addBtn ? addBtn.innerHTML : '';
+
+    if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Adding Bundle...';
+    }
+
+    const formData = new FormData();
+    checkedIds.forEach(id => {
+        formData.append('product_ids[]', id);
+    });
+    formData.append('product_ids', checkedIds.join(','));
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || (typeof getCookie === 'function' ? getCookie('csrftoken') : '');
+
+    fetch('/cart/add-bundle/', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(async response => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data || !data.success) {
+            const errorMsg = (data && data.message) ? data.message : 'Could not add bundle to cart.';
+            if (typeof showToast === 'function') showToast(errorMsg);
+            else alert(errorMsg);
+            if (addBtn) {
+                addBtn.disabled = false;
+                addBtn.innerHTML = originalHtml;
+            }
+            return;
+        }
+
+        // 1. Update cart badges
+        if (typeof updateCartBadges === 'function') {
+            updateCartBadges(data.total_items, data.grand_total);
+        }
+
+        // 2. Refresh cart drawer
+        if (typeof refreshCartDrawer === 'function') {
+            refreshCartDrawer();
+        }
+
+        // 3. Show Toast notification
+        if (typeof showToast === 'function') {
+            showToast(data.message || 'Bundle added to shopping bag!');
+        }
+
+        // 4. Slide open the cart offcanvas drawer
+        const cartOffcanvasEl = document.getElementById('cartOffcanvas');
+        if (cartOffcanvasEl && window.bootstrap && window.bootstrap.Offcanvas) {
+            const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(cartOffcanvasEl);
+            offcanvas.show();
+        }
+
+        // Temporary success state on button
+        if (addBtn) {
+            addBtn.classList.replace('btn-primary', 'btn-success');
+            addBtn.innerHTML = '<i class="bi bi-check-lg me-2 fs-5"></i> Added to Bag!';
+
+            setTimeout(() => {
+                addBtn.disabled = false;
+                addBtn.classList.replace('btn-success', 'btn-primary');
+                addBtn.innerHTML = originalHtml;
+            }, 2000);
+        }
+    })
+    .catch(err => {
+        console.error('Error adding bundle:', err);
+        if (typeof showToast === 'function') showToast('An unexpected error occurred adding the bundle.');
+        if (addBtn) {
+            addBtn.disabled = false;
+            addBtn.innerHTML = originalHtml;
+        }
+    });
+}
+
+// ==========================================
+// INSTANT BUY NOW / ORDER NOW SUBMISSION HANDLER
+// ==========================================
+function initOrderNowHandler() {
+    const addForm = document.getElementById('productAddToCartForm');
+    if (!addForm) return;
+
+    addForm.addEventListener('submit', function(e) {
+        const buyNowVal = document.getElementById('buyNowInput')?.value;
+        if (buyNowVal === '1') {
+            // Intercept submit before base.html offcanvas handling
+            e.stopImmediatePropagation();
+            e.preventDefault();
+
+            const submitBtn = addForm.querySelector('button[name="buy_now"]');
+            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
+            }
+
+            const formData = new FormData(addForm);
+            formData.set('buy_now', '1');
+            const csrfToken = formData.get('csrfmiddlewaretoken') || (typeof getCookie === 'function' ? getCookie('csrftoken') : '');
+
+            fetch(addForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            })
+            .then(async res => {
+                const data = await res.json().catch(() => null);
+                if (data && data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                    return;
+                }
+                if (res.redirected) {
+                    window.location.href = res.url;
+                    return;
+                }
+                window.location.href = '/orders/checkout/';
+            })
+            .catch(() => {
+                // Fallback to native form submission
+                addForm.submit();
+            });
+        }
+    }, true);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initCircleZoom();
+    initOrderNowHandler();
+});
 </script>
 {% endblock %}

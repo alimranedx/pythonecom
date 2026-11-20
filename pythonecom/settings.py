@@ -157,6 +157,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Media files (uploaded by users/admin)
 MEDIA_URL = 'media/'
@@ -181,11 +184,14 @@ X_FRAME_OPTIONS = 'DENY'
 # MIME-Sniffing & XSS Protection Headers
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
 # Session & Cookie Hardening
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_FAILURE_VIEW = 'core.views.custom_csrf_failure_view'
 
 # Denial of Service (DoS) & Memory Exhaustion Safeguards
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024   # 5 MB maximum request payload
@@ -246,6 +252,11 @@ LOGGING = {
         'django.request': {
             'handlers': ['console', 'file_errors'],
             'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['console', 'file_errors'],
+            'level': 'WARNING',
             'propagate': False,
         },
         'core': {

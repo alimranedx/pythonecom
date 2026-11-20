@@ -16,6 +16,16 @@
         {% endif %}
     </div>
 
+    <!-- Transparent Delivery Estimate Section -->
+    <div class="px-2 py-1 mb-2 text-muted small bg-light rounded-2 border d-flex align-items-center justify-content-between" style="font-size: 0.74rem;">
+        <span class="d-flex align-items-center gap-1">
+            <i class="bi bi-truck text-primary"></i>
+            <span>Inside Dhaka: <strong class="text-dark">৳49</strong> <span class="text-success fw-semibold">(Free over ৳500)</span></span>
+        </span>
+        <span class="text-secondary opacity-50">|</span>
+        <span>Outside Dhaka: <strong class="text-dark">৳99</strong></span>
+    </div>
+
     <!-- Scrollable Items List -->
     <div class="flex-grow-1 overflow-auto pe-1">
         {% for item in global_cart.items.all %}
@@ -63,6 +73,43 @@
 
     <!-- Cart Bottom Totals & CTA -->
     <div class="border-top pt-3 mt-auto">
+        <!-- Collapsible Coupon Accordion in Drawer -->
+        <div class="accordion accordion-flush mb-2 border rounded-2 overflow-hidden" id="drawerCouponAccordion">
+            <div class="accordion-item bg-light border-0">
+                <h2 class="accordion-header" id="drawerCouponHeading">
+                    <button class="accordion-button collapsed py-2 px-3 bg-light text-dark small fw-semibold shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#drawerCouponCollapse" aria-expanded="{% if global_cart.coupon %}true{% else %}false{% endif %}" aria-controls="drawerCouponCollapse" style="font-size: 0.78rem;">
+                        <i class="bi bi-tag-fill text-primary me-2"></i>
+                        {% if global_cart.coupon %}
+                            <span>Coupon: <strong class="text-success">{{ global_cart.coupon.code }}</strong></span>
+                        {% else %}
+                            <span>Have a Promo / Coupon Code?</span>
+                        {% endif %}
+                    </button>
+                </h2>
+                <div id="drawerCouponCollapse" class="accordion-collapse collapse {% if global_cart.coupon %}show{% endif %}" aria-labelledby="drawerCouponHeading">
+                    <div class="accordion-body p-2 pt-0 bg-light">
+                        {% if global_cart.coupon %}
+                            <div class="d-flex justify-content-between align-items-center bg-white p-2 rounded border border-success">
+                                <div class="small">
+                                    <span class="badge bg-success rounded-pill me-1"><i class="bi bi-tag-fill me-1"></i>{{ global_cart.coupon.code }}</span>
+                                    <strong class="text-success">-৳{{ global_cart.discount_amount }}</strong>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 drawer-remove-coupon-btn" title="Remove coupon">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        {% else %}
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="drawerCouponCodeInput" class="form-control text-uppercase" placeholder="e.g. SAVE10">
+                                <button class="btn btn-primary drawer-apply-coupon-btn" type="button">Apply</button>
+                            </div>
+                            <div id="drawerCouponMessage" class="small mt-1" style="display: none;"></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-between mb-1 small">
             <span class="text-muted">{{ tr.subtotal }} ({{ global_cart.total_items }} {{ tr.items_count }}):</span>
             <span class="fw-semibold">৳{{ global_cart.subtotal }}</span>

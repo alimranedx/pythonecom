@@ -1,3 +1,4 @@
+import logging
 import re
 import secrets
 import urllib.parse
@@ -12,6 +13,7 @@ from django.http import JsonResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
+from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from core.validators import get_safe_redirect_url
 from .forms import CustomerRegistrationForm, CustomerLoginForm, UserProfileForm, AddressForm
@@ -19,6 +21,17 @@ from .models import CustomerProfile, Address, Wishlist
 from orders.models import Order
 from product.models import Product
 from cart.services import CartService
+
+auth_logger = logging.getLogger('django.security.Auth')
+
+
+def get_client_ip(request):
+    """Safely extracts client IP address from HTTP headers or remote address."""
+    meta = getattr(request, 'META', {})
+    x_forwarded = meta.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded:
+        return x_forwarded.split(',')[0].strip()
+    return meta.get('REMOTE_ADDR') or '127.0.0.1'
 
 
 def customer_required(view_func):
@@ -48,8 +61,17 @@ def customer_register(request):
 
     if request.method == 'POST':
         form = CustomerRegistrationForm(request.POST)
+        client_ip = get_client_ip(request)
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        timestamp = timezone.now().isoformat()
+
         if form.is_valid():
             user = form.save()
+            auth_logger.info(
+                f"Customer registration footprint: username='{user.username}', email='{user.email}', "
+                f"client_ip='{client_ip}', user_agent='{user_agent}', timestamp='{timestamp}'"
+            )
+
             guest_session_key = request.session.session_key
             login(request, user, backend='accounts.backends.PhoneOrUsernameBackend')
             if guest_session_key:
@@ -57,6 +79,12 @@ def customer_register(request):
 
             messages.success(request, f"Welcome to Easy Purchase, {user.first_name or user.username}!")
             return redirect('customer_dashboard')
+        else:
+            target_phone = request.POST.get('phone', '').strip()
+            auth_logger.warning(
+                f"Customer registration attempt failed: target='{target_phone}', client_ip='{client_ip}', "
+                f"user_agent='{user_agent}', timestamp='{timestamp}'"
+            )
     else:
         form = CustomerRegistrationForm()
 
@@ -74,10 +102,18 @@ def customer_login(request):
 
     if request.method == 'POST':
         form = CustomerLoginForm(request, data=request.POST)
+        client_ip = get_client_ip(request)
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        timestamp = timezone.now().isoformat()
+
         if form.is_valid():
             user = form.get_user()
             # Enforce panel isolation: staff cannot log in through customer storefront
             if user.is_staff:
+                auth_logger.warning(
+                    f"Authentication rejected (staff panel isolation attempt): target='{user.username}', "
+                    f"client_ip='{client_ip}', user_agent='{user_agent}', timestamp='{timestamp}'"
+                )
                 messages.error(request, "This account is for administrative staff. Please sign in via the Admin portal.")
                 return redirect('admin_login')
 
@@ -90,6 +126,11 @@ def customer_login(request):
                 return redirect(next_url)
             return redirect('customer_dashboard')
         else:
+            target_identifier = request.POST.get('username', '').strip()
+            auth_logger.warning(
+                f"Authentication failed: target='{target_identifier}', client_ip='{client_ip}', "
+                f"user_agent='{user_agent}', timestamp='{timestamp}'"
+            )
             messages.error(request, "Invalid mobile number, email, or password.")
     else:
         form = CustomerLoginForm()
@@ -450,6 +491,13 @@ def google_callback(request):
         picture_url = user_info.get('picture')
         if picture_url:
             _sync_google_avatar(profile, picture_url, user.pk)
+
+        client_ip = get_client_ip(request)
+        timestamp = timezone.now().isoformat()
+        auth_logger.info(
+            f"Customer registration footprint (Google OAuth): username='{user.username}', email='{email}', "
+            f"client_ip='{client_ip}', timestamp='{timestamp}'"
+        )
 
     # Log in the user
     guest_session_key = request.session.session_key

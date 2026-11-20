@@ -1,7 +1,7 @@
-from django.contrib.auth.forms import PasswordChangeForm
-# -*- coding: utf-8 -*-
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
+from core.validators import validate_image_file
 from rbac.models import Role, UserRole
 from core.models import SiteSetting
 
@@ -147,6 +147,18 @@ class SiteSettingForm(forms.ModelForm):
             'copyright_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '© 2026 Easy Purchase. All rights reserved.'}),
             'subfooter_notice': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Engineered with Clean Architecture'}),
         }
+
+    def clean_brand_logo(self):
+        logo = self.cleaned_data.get('brand_logo')
+        if logo:
+            validate_image_file(logo)
+        return logo
+
+    def clean_brand_favicon(self):
+        favicon = self.cleaned_data.get('brand_favicon')
+        if favicon:
+            validate_image_file(favicon)
+        return favicon
 
 class AdminProfileUpdateForm(forms.ModelForm):
     class Meta:

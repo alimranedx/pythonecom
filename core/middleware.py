@@ -105,7 +105,11 @@ class SystemExceptionLoggingMiddleware:
         try:
             from core.models import SystemErrorLog
             SystemErrorLog.log_exception(request, exception)
-        except Exception:
-            pass
+        except Exception as exc:
+            import logging
+            logging.getLogger('django.request').error(
+                f"Graceful fallback: DB unreachable in SystemExceptionLoggingMiddleware: {exception}. Logging error: {exc}",
+                exc_info=True
+            )
 
         return None

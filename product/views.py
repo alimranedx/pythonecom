@@ -159,11 +159,36 @@ def product_detail(request, pk):
         category=product.category, is_active=True
     ).exclude(pk=product.pk)[:4]
 
+    bundle_items = list(
+        Product.objects.filter(
+            category=product.category, is_active=True, stock__gt=0
+        ).exclude(pk=product.pk)[:2]
+    ) if product.category else []
+
+    bundle_discount_percent = 5
+    bundle_total = product.effective_price
+    if bundle_items:
+        bundle_total += sum(item.effective_price for item in bundle_items)
+
+    bundle_discount_price = round(bundle_total * Decimal('0.95'), 2)
+    bundle_savings = bundle_total - bundle_discount_price
+
+    user_wishlist_ids = set()
+    if request.user.is_authenticated:
+        from accounts.models import Wishlist
+        user_wishlist_ids = set(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+
     return render(request, 'product/detail.html', {
         'product': product,
         'related_products': related_products,
         'reviews': product.reviews.select_related('user').all(),
         'gallery_images': product.images.all(),
+        'bundle_items': bundle_items,
+        'bundle_discount_percent': bundle_discount_percent,
+        'bundle_total': bundle_total,
+        'bundle_discount_price': bundle_discount_price,
+        'bundle_savings': bundle_savings,
+        'user_wishlist_ids': user_wishlist_ids,
     })
 
 
@@ -174,26 +199,63 @@ def product_add_review(request, pk):
         return redirect('account_login')
 
     product = get_object_or_404(Product, pk=pk)
-    if request.method == 'POST':
-        from django.contrib import messages
-        from .models import ProductReview
-        try:
-            rating = max(1, min(int(request.POST.get('rating', 5)), 5))
-        except (ValueError, TypeError):
+    if request.method != 'POST':
+        return redirect('product_detail', pk=product.pk)
+
+    from django.contrib import messages
+    from django.utils.html import strip_tags
+    from django.utils import timezone
+    from datetime import timedelta
+    import html as html_lib
+    import re
+    from .models import ProductReview
+
+    # Prevent review spamming / rate limiting: 1 review per user per product, throttled updates
+    existing_review = ProductReview.objects.filter(product=product, user=request.user).first()
+    if existing_review and existing_review.updated_at:
+        if (timezone.now() - existing_review.updated_at) < timedelta(seconds=15):
+            messages.warning(request, "Please wait a moment before updating your review again.")
+            return redirect('product_detail', pk=product.pk)
+
+    # Validate rating strictly between 1 and 5
+    try:
+        rating = int(request.POST.get('rating', 5))
+        if rating < 1:
+            rating = 1
+        elif rating > 5:
             rating = 5
-        comment = request.POST.get('comment', '').strip()[:1000]
-        if comment:
-            ProductReview.objects.update_or_create(
-                product=product,
-                user=request.user,
-                defaults={
-                    'rating': rating,
-                    'comment': comment,
-                }
-            )
-            messages.success(request, "Thank you! Your product review has been published.")
-        else:
-            messages.error(request, "Please write a comment for your review.")
+    except (ValueError, TypeError):
+        rating = 5
+
+    # Sanitize review comment to block XSS attacks and strip dangerous tags
+    raw_comment = request.POST.get('comment', '').strip()
+    raw_comment = re.sub(
+        r'<(script|style|iframe|object|embed|applet|noscript)[^>]*>.*?</\1>',
+        '',
+        raw_comment,
+        flags=re.IGNORECASE | re.DOTALL
+    )
+    raw_comment = re.sub(
+        r'<(script|style|iframe|object|embed|applet|noscript)[^>]*\/?>',
+        '',
+        raw_comment,
+        flags=re.IGNORECASE
+    )
+    clean_comment = strip_tags(raw_comment).strip()
+    clean_comment = html_lib.unescape(clean_comment).strip()[:1000]
+
+    if clean_comment and len(clean_comment) >= 2:
+        ProductReview.objects.update_or_create(
+            product=product,
+            user=request.user,
+            defaults={
+                'rating': rating,
+                'comment': clean_comment,
+            }
+        )
+        messages.success(request, "Thank you! Your product review has been published.")
+    else:
+        messages.error(request, "Please write a valid comment for your review.")
 
     return redirect('product_detail', pk=product.pk)
 

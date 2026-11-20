@@ -633,6 +633,7 @@ class SystemExceptionLoggingAndNotificationTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'admin_panel/settings/system_errors.html')
 
+
     def test_staff_with_site_settings_fallback_perm_can_access(self):
         """Staff user with settings.site_settings.view backward compatibility can access error logs."""
         from rbac.models import Module, Submodule, Permission, Role, UserRole
@@ -648,3 +649,227 @@ class SystemExceptionLoggingAndNotificationTests(TestCase):
         resp = self.client.get('/app-admin/system-errors/')
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'admin_panel/settings/system_errors.html')
+
+
+class SecurityAuditFootprintAndHeadersTests(TestCase):
+    """
+    Verification of security headers, CSRF failure handling, production error
+    views, and security audit footprint logging across all HTTP error handlers.
+    """
+
+    def setUp(self):
+        from django.test import RequestFactory
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(username='audit_tester', password='Password123!')
+
+    def test_security_headers_and_settings(self):
+        """Verify strict referrer policy, opener policy, upload limit, and CSRF failure view setting."""
+        from django.conf import settings
+        self.assertEqual(settings.SECURE_REFERRER_POLICY, 'strict-origin-when-cross-origin')
+        self.assertEqual(settings.SECURE_CROSS_ORIGIN_OPENER_POLICY, 'same-origin-allow-popups')
+        self.assertEqual(settings.DATA_UPLOAD_MAX_NUMBER_FIELDS, 1000)
+        self.assertEqual(settings.CSRF_FAILURE_VIEW, 'core.views.custom_csrf_failure_view')
+
+        # Live HTTP request check via SecurityMiddleware
+        response = self.client.get('/')
+        self.assertEqual(response.headers.get('Referrer-Policy'), 'strict-origin-when-cross-origin')
+        self.assertEqual(response.headers.get('Cross-Origin-Opener-Policy'), 'same-origin-allow-popups')
+
+    def test_custom_bad_request_view_audit_logging(self):
+        """400 view logs footprint to django.security.SuspiciousOperation with IP, path, method, user, and reason."""
+        from core.views import custom_bad_request_view
+
+        req = self.factory.get('/product/malformed-query/?foo=bar', HTTP_X_FORWARDED_FOR='192.168.1.50')
+        req.user = self.user
+
+        with self.assertLogs('django.security.SuspiciousOperation', level='WARNING') as cm:
+            resp = custom_bad_request_view(req, exception=Exception("Invalid request parameter encoding"))
+
+        self.assertEqual(resp.status_code, 400)
+        log_output = " ".join(cm.output)
+        self.assertIn('192.168.1.50', log_output)
+        self.assertIn('/product/malformed-query/', log_output)
+        self.assertIn('GET', log_output)
+        self.assertIn('audit_tester', log_output)
+        self.assertIn('Invalid request parameter encoding', log_output)
+
+        # Admin route check
+        req_admin = self.factory.get('/app-admin/invalid-route/')
+        req_admin.user = self.user
+        resp_admin = custom_bad_request_view(req_admin, exception=Exception("Bad Admin Token"))
+        self.assertEqual(resp_admin.status_code, 400)
+        self.assertIn(b'400', resp_admin.content)
+
+    def test_custom_permission_denied_view_audit_logging(self):
+        """403 view logs footprint to django.security.PermissionDenied with IP, path, method, user, and exception."""
+        from core.views import custom_permission_denied_view
+
+        req = self.factory.post('/orders/sensitive-export/', HTTP_X_FORWARDED_FOR='10.0.0.99')
+        req.user = self.user
+
+        with self.assertLogs('django.security.PermissionDenied', level='WARNING') as cm:
+            resp = custom_permission_denied_view(req, exception=Exception("IDOR attempt: unauthorized order ID access"))
+
+        self.assertEqual(resp.status_code, 403)
+        log_output = " ".join(cm.output)
+        self.assertIn('10.0.0.99', log_output)
+        self.assertIn('/orders/sensitive-export/', log_output)
+        self.assertIn('POST', log_output)
+        self.assertIn('audit_tester', log_output)
+        self.assertIn('IDOR attempt: unauthorized order ID access', log_output)
+
+        # Admin route check
+        req_admin = self.factory.get('/app-admin/secret-settings/')
+        req_admin.user = self.user
+        resp_admin = custom_permission_denied_view(req_admin, exception=Exception("Staff role required"))
+        self.assertEqual(resp_admin.status_code, 403)
+        self.assertIn(b'ACCESS RESTRICTED', resp_admin.content)
+
+    def test_custom_csrf_failure_view_audit_logging_and_branding(self):
+        """Dedicated CSRF failure view logs footprint and renders user-friendly 403 error page."""
+        from core.views import custom_csrf_failure_view
+
+        req = self.factory.post(
+            '/account/login/',
+            HTTP_X_FORWARDED_FOR='203.0.113.195',
+            HTTP_USER_AGENT='Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        )
+        req.user = self.user
+
+        with self.assertLogs('django.security.csrf', level='WARNING') as cm:
+            resp = custom_csrf_failure_view(req, reason="CSRF cookie not set.")
+
+        self.assertEqual(resp.status_code, 403)
+        log_output = " ".join(cm.output)
+        self.assertIn('203.0.113.195', log_output)
+        self.assertIn('/account/login/', log_output)
+        self.assertIn('POST', log_output)
+        self.assertIn('Mozilla/5.0', log_output)
+        self.assertIn('CSRF cookie not set.', log_output)
+
+        # Confirm user-friendly message rendered in page content
+        content = resp.content.decode('utf-8')
+        self.assertIn('Session security token expired. Please refresh the page and try again.', content)
+
+        # Admin route check
+        req_admin = self.factory.post('/app-admin/login/', HTTP_USER_AGENT='TestAgent')
+        req_admin.user = self.user
+        resp_admin = custom_csrf_failure_view(req_admin, reason="CSRF token missing.")
+        self.assertEqual(resp_admin.status_code, 403)
+        content_admin = resp_admin.content.decode('utf-8')
+        self.assertIn('Session security token expired. Please refresh the page and try again.', content_admin)
+
+    def test_custom_page_not_found_scanner_probe_detection(self):
+        """Scanner probe paths log security footprint to django.security.ScannerProbe with IP and path."""
+        from core.views import custom_page_not_found_view
+
+        probe_paths = [
+            '/.env',
+            '/.git/config',
+            '/wp-login.php',
+            '/phpmyadmin/index.php',
+            '/shell.php',
+            '/etc/passwd',
+            '/static/../../etc/passwd',
+            '/cgi-bin/vulnerable.cgi',
+        ]
+
+        for probe in probe_paths:
+            req = self.factory.get(probe, HTTP_X_FORWARDED_FOR='198.51.100.42')
+            with self.assertLogs('django.security.ScannerProbe', level='WARNING') as cm:
+                resp = custom_page_not_found_view(req)
+            self.assertEqual(resp.status_code, 404)
+            log_output = " ".join(cm.output)
+            self.assertIn('198.51.100.42', log_output)
+            self.assertIn('Scanner probe footprint detected', log_output)
+
+        # Legitimate 404 path should NOT trigger scanner probe logging
+        req_legit = self.factory.get('/nonexistent-catalog-item-12345/', HTTP_X_FORWARDED_FOR='198.51.100.42')
+        # Custom logging check to ensure ScannerProbe is NOT called
+        import logging
+        probe_logger = logging.getLogger('django.security.ScannerProbe')
+        captured = []
+        handler = logging.Handler()
+        handler.emit = lambda record: captured.append(record.getMessage())
+        probe_logger.addHandler(handler)
+        try:
+            resp_legit = custom_page_not_found_view(req_legit)
+            self.assertEqual(resp_legit.status_code, 404)
+            self.assertEqual(len(captured), 0, f"Expected no probe logs for legit path, got {captured}")
+        finally:
+            probe_logger.removeHandler(handler)
+
+    def test_custom_server_error_graceful_fallback_when_db_unreachable(self):
+        """500 handler logs to django.request and recovers gracefully when database is completely down."""
+        from unittest.mock import patch
+        from django.db import OperationalError
+        from core.views import custom_server_error_view
+
+        req = self.factory.get('/checkout/process/', HTTP_X_FORWARDED_FOR='172.16.0.5')
+
+        # Simulate total database outage for both SystemErrorLog and SiteSetting
+        with patch('core.models.SystemErrorLog.log_exception', side_effect=OperationalError("MySQL server has gone away")):
+            with patch('core.models.SiteSetting.get_settings', side_effect=OperationalError("Can't connect to MySQL server")):
+                with self.assertLogs('django.request', level='ERROR') as cm:
+                    # Provide an active exception via sys.exc_info() simulation
+                    import sys
+                    try:
+                        raise ValueError("Checkout calculation error")
+                    except ValueError:
+                        resp = custom_server_error_view(req)
+
+                self.assertEqual(resp.status_code, 500)
+                log_output = " ".join(cm.output)
+                self.assertIn('Graceful fallback: DB unreachable when recording SystemErrorLog', log_output)
+                self.assertIn('MySQL server has gone away', log_output)
+                # Confirm 500 HTML still rendered cleanly
+                content = resp.content.decode('utf-8')
+                self.assertIn('500', content)
+                self.assertIn('Internal Server Error', content)
+
+    def test_add_bundle_to_cart_clamps_oversized_product_ids_to_15(self):
+        """
+        Verify that cart/views.py:add_bundle_to_cart properly clamps oversized
+        product ID lists to a maximum of 15 items without error (DoS mitigation).
+        """
+        import json
+        bundle_cat = Category.objects.create(name='DoS Bundle Cat', slug='dos-bundle-cat')
+        prods = [
+            Product.objects.create(
+                name=f"Bulk Protection Item {i}",
+                slug=f"bulk-protection-item-{i}",
+                category=bundle_cat,
+                price=Decimal("25.00"),
+                stock=10,
+                is_active=True,
+            )
+            for i in range(25)
+        ]
+        oversized_ids = [p.pk for p in prods]  # 25 IDs submitted
+
+        # 1. Test POST with array parameter product_ids[] via AJAX
+        res_ajax = self.client.post(
+            '/cart/add-bundle/',
+            {'product_ids[]': oversized_ids},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(res_ajax.status_code, 200)
+        data_ajax = res_ajax.json()
+        self.assertTrue(data_ajax['success'])
+        self.assertEqual(data_ajax['added_count'], 15)
+        self.assertEqual(data_ajax['total_items'], 15)
+
+        # 2. Test JSON body payload with oversized list
+        res_json = self.client.post(
+            '/cart/add-bundle/',
+            json.dumps({'product_ids': oversized_ids}),
+            content_type='application/json',
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(res_json.status_code, 200)
+        data_json = res_json.json()
+        self.assertTrue(data_json['success'])
+        # Confirms no crash and strictly clamped to 15 items
+        self.assertLessEqual(data_json['added_count'], 15)
+
+

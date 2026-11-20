@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" width="100%" height="100%">
+  <defs>
+    <linearGradient id="logoDarkBagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="50%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+
+    <linearGradient id="logoDarkHandleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#93C5FD" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+
+    <linearGradient id="logoDarkAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB7185" />
+      <stop offset="50%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#E11D48" />
+    </linearGradient>
+
+    <filter id="logoDarkShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#3B82F6" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- EMBLEM -->
+  <g transform="translate(6, 4)">
+    <path d="M 23 23 C 23 11 41 11 41 23" 
+          fill="none" 
+          stroke="url(#logoDarkHandleGrad)" 
+          stroke-width="5" 
+          stroke-linecap="round" />
+
+    <rect x="10" y="20" width="44" height="40" rx="12" 
+          fill="url(#logoDarkBagGrad)" 
+          filter="url(#logoDarkShadow)" />
+
+    <path d="M 15 21 L 49 21 C 45 28 19 28 15 21 Z" 
+          fill="#FFFFFF" 
+          opacity="0.25" />
+
+    <path d="M 21 40 L 29 47 L 44 32" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="4.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+
+    <path d="M 46 29 C 46.5 25 49 24.5 50 24 C 49 23.5 46.5 23 46 19 C 45.5 23 43 23.5 42 24 C 43 24.5 45.5 25 46 29 Z" 
+          fill="url(#logoDarkAccentGrad)" />
+  </g>
+
+  <!-- WORDMARK (White + Bright Blue for Dark Backgrounds) -->
+  <g transform="translate(74, 43)">
+    <text x="0" y="0" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+          font-size="28" 
+          font-weight="800" 
+          letter-spacing="-0.5px" 
+          fill="#FFFFFF">Easy</text>
+
+    <text x="65" y="0" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+          font-size="28" 
+          font-weight="800" 
+          letter-spacing="-0.5px" 
+          fill="#60A5FA">Purchase</text>
+
+    <circle cx="187" cy="-21" r="3.5" fill="url(#logoDarkAccentGrad)" />
+
+    <text x="2" y="16" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+          font-size="9" 
+          font-weight="700" 
+          letter-spacing="2.8px" 
+          fill="#94A3B8">EXPRESS SHOPPING</text>
+  </g>
+</svg>
