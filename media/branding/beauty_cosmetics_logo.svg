@@ -13,6 +13,6 @@
             <circle cx="22" cy="30" r="2.5" fill="#ffffff"/>
         </g>
         
-            <text x="60" y="27" class="brand-title">GLOW & GLAM</text>
-            <text x="60" y="42" class="brand-sub">BEAUTY & SKINCARE</text>
+            <text x="60" y="27" class="brand-title">GLOW &amp; GLAM</text>
+            <text x="60" y="42" class="brand-sub">BEAUTY &amp; SKINCARE</text>
         </svg>

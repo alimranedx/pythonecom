@@ -25,7 +25,7 @@ THEME_CONFIGS = {
     },
     'tech_gadgets': {
         'name': 'TECHVERSE',
-        'sub': 'GADGETS & PRO GEAR',
+        'sub': 'GADGETS &amp; PRO GEAR',
         'primary': '#0284c7',
         'accent': '#38bdf8',
         'dark_text': '#0f172a',
@@ -34,8 +34,8 @@ THEME_CONFIGS = {
         'symbol_type': 'chip',
     },
     'beauty_cosmetics': {
-        'name': 'GLOW & GLAM',
-        'sub': 'BEAUTY & SKINCARE',
+        'name': 'GLOW &amp; GLAM',
+        'sub': 'BEAUTY &amp; SKINCARE',
         'primary': '#db2777',
         'accent': '#f43f5e',
         'dark_text': '#4c0519',
@@ -45,7 +45,7 @@ THEME_CONFIGS = {
     },
     'fashion_lifestyle': {
         'name': 'HERITAGE',
-        'sub': 'FASHION & COUTURE',
+        'sub': 'FASHION &amp; COUTURE',
         'primary': '#9a3412',
         'accent': '#d97706',
         'dark_text': '#451a03',
@@ -55,7 +55,7 @@ THEME_CONFIGS = {
     },
     'grocery_organic': {
         'name': 'PURE HARVEST',
-        'sub': 'ORGANIC & GROCERIES',
+        'sub': 'ORGANIC &amp; GROCERIES',
         'primary': '#16a34a',
         'accent': '#eab308',
         'dark_text': '#14532d',
@@ -65,7 +65,7 @@ THEME_CONFIGS = {
     },
     'pharmacy_health': {
         'name': 'AROGYA MEDS',
-        'sub': 'PHARMACY & HEALTHCARE',
+        'sub': 'PHARMACY &amp; HEALTHCARE',
         'primary': '#0d9488',
         'accent': '#0284c7',
         'dark_text': '#134e4a',
