@@ -10,7 +10,7 @@
                 </button>
                 <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                     {% if site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
                     {% elif CURRENT_THEME_DATA.logo_url %}
                         <!-- Light theme logo (shown in light mode) -->
                         <picture class="d-flex align-items-center logo-light">
@@ -68,7 +68,7 @@
                 <div class="dropdown d-none d-sm-block">
                     <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
                         {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
-                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 26px; height: 26px;">
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 26px; height: 26px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                         {% else %}
                             <i class="bi bi-person-circle fs-5 text-secondary"></i>
                         {% endif %}
@@ -84,7 +84,7 @@
                         {% if request.user.is_authenticated and not request.user.is_staff %}
                             <li class="px-3 py-2 border-bottom d-flex align-items-center gap-2">
                                 {% if request.user.profile.avatar %}
-                                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 36px; height: 36px;">
+                                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 36px; height: 36px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                                 {% else %}
                                     <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px;">
                                         <i class="bi bi-person-fill fs-5"></i>

@@ -44,7 +44,7 @@
         <!-- Product Image Link with Gentle Hover Zoom -->
         <a href="{% url 'product_detail' product.pk %}" class="d-flex align-items-center justify-content-center w-100 h-100 text-decoration-none">
             {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid grocery-card-img" style="max-height: 165px; width: auto; object-fit: contain; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.05)); transition: transform 0.35s ease;" loading="lazy">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid grocery-card-img" style="max-height: 165px; width: auto; object-fit: contain; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.05)); transition: transform 0.35s ease;" loading="lazy" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
             {% else %}
                 <div class="text-secondary opacity-40 py-4"><i class="bi bi-basket display-4"></i></div>
             {% endif %}

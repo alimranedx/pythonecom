@@ -27,11 +27,11 @@
                 </button>
                 <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'Arogya Healthcare' }}">
                     {% if site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/pharmacy_health/logo.png';">
                     {% elif CURRENT_THEME_DATA.logo_url %}
                         <picture class="d-flex align-items-center logo-light">
                             <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
-                            <img src="{{ CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                            <img src="{{ CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/pharmacy_health/logo.png';">
                         </picture>
                     {% else %}
                         <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center" style="background: #059669; width: 40px; height: 40px;">
@@ -76,7 +76,7 @@
                 <div class="dropdown d-none d-sm-block">
                     <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
                         {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
-                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-success" style="width: 26px; height: 26px;">
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-success" style="width: 26px; height: 26px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                         {% else %}
                             <i class="bi bi-person-badge fs-5" style="color: #059669;"></i>
                         {% endif %}

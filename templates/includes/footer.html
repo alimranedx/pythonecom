@@ -6,9 +6,9 @@
             <div class="col-lg-4 col-md-6">
                 <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                     {% if site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);">
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);" onerror="this.closest('a').classList.add('use-text-fallback');">
                     {% elif CURRENT_THEME_DATA.logo_dark_url %}
-                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);">
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);" onerror="this.closest('a').classList.add('use-text-fallback');">
                     {% else %}
                         <picture class="d-flex align-items-center">
                             <source srcset="{% static 'images/logo_dark.svg' %}" type="image/svg+xml">

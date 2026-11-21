@@ -288,7 +288,7 @@
                     <!-- Main Image Display with Zoom -->
                     <div class="mkt-gallery-main shadow-xs" id="mainGalleryBox">
                         {% if product.image and product.image.name %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" id="marketplaceMainImg" class="img-fluid" data-zoom-src="{{ product.image.url }}">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" id="marketplaceMainImg" class="img-fluid" data-zoom-src="{{ product.image.url }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         {% else %}
                             <i class="bi bi-box-seam display-1 text-secondary opacity-50"></i>
                         {% endif %}
@@ -298,13 +298,13 @@
                     <div class="mkt-thumb-strip">
                         {% if product.image and product.image.name %}
                             <div class="mkt-thumb-item active" onclick="swapMainImage('{{ product.image.url }}', this)">
-                                <img src="{{ product.image.url }}" alt="{{ product.name }} main thumbnail">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }} main thumbnail" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                             </div>
                         {% endif %}
                         {% for gallery_img in gallery_images %}
                             {% if gallery_img.image and gallery_img.image.name %}
                                 <div class="mkt-thumb-item" onclick="swapMainImage('{{ gallery_img.image.url }}', this)">
-                                    <img src="{{ gallery_img.image.url }}" alt="{{ gallery_img.alt_text|default:product.name }}">
+                                    <img src="{{ gallery_img.image.url }}" alt="{{ gallery_img.alt_text|default:product.name }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -552,7 +552,7 @@
                     <div class="bundle-product-visual position-relative text-center">
                         <div class="bundle-img-box mb-2" style="width: 100px; height: 90px; border: 1px solid var(--border-color, #e2e8f0); border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fff;">
                             {% if product.image and product.image.name %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3" style="max-height: 80px; object-fit: contain;">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3" style="max-height: 80px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                             {% else %}
                                 <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
                             {% endif %}
@@ -566,7 +566,7 @@
                         <div class="bundle-product-visual position-relative text-center">
                             <div class="bundle-img-box mb-2" style="width: 100px; height: 90px; border: 1px solid var(--border-color, #e2e8f0); border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fff;">
                                 {% if item.image and item.image.name %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded-3" style="max-height: 80px; object-fit: contain;">
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded-3" style="max-height: 80px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
                                 {% endif %}

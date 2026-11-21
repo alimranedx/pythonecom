@@ -39,7 +39,7 @@
             <div class="col-lg-4 col-md-6">
                 <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none">
                     {% if site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;">
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/pharmacy_health/logo_dark.png';">
                     {% else %}
                         <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center me-2" style="background: #059669; width: 36px; height: 36px;">
                             <i class="bi bi-capsule-pill fs-5"></i>

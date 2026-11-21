@@ -654,7 +654,7 @@
                                     <div class="text-center py-2">
                                         <a href="{% url 'product_detail' daily_farm_pick.pk %}" class="d-inline-block text-decoration-none">
                                             {% if daily_farm_pick.image %}
-                                                <img src="{{ daily_farm_pick.image.url }}" alt="{{ daily_farm_pick.name }}" class="img-fluid rounded" style="max-height: 120px; object-fit: contain;">
+                                                <img src="{{ daily_farm_pick.image.url }}" alt="{{ daily_farm_pick.name }}" class="img-fluid rounded" style="max-height: 120px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                             {% else %}
                                                 <i class="bi bi-basket2 text-success display-4"></i>
                                             {% endif %}

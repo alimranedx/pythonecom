@@ -596,7 +596,7 @@
                         <div class="d-flex align-items-center gap-3 my-auto py-2">
                             <div class="rounded-3 p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 90px; height: 90px; background: linear-gradient(135deg, #faf8f5 0%, #f4eee7 100%); border: 1px solid var(--beauty-border-subtle);">
                                 {% if daily_glow_highlight and daily_glow_highlight.image %}
-                                    <img src="{{ daily_glow_highlight.image.url }}" alt="{{ daily_glow_highlight.name }}" class="img-fluid" style="max-height: 80px; object-fit: contain;">
+                                    <img src="{{ daily_glow_highlight.image.url }}" alt="{{ daily_glow_highlight.name }}" class="img-fluid" style="max-height: 80px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <i class="bi bi-droplet-half fs-1" style="color: #b45309;"></i>
                                 {% endif %}

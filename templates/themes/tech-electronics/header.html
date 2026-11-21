@@ -72,15 +72,15 @@
             <div class="col-auto">
                 <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'TechVerse Electronics' }}">
                     {% if site_settings.get_brand_logo_url %}
-                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
                     {% elif site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
                     {% elif CURRENT_THEME_DATA.logo_dark_url %}
-                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
                     {% elif CURRENT_THEME_DATA.logo_url %}
                         <picture class="d-flex align-items-center">
                             <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
-                            <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                            <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
                         </picture>
                     {% else %}
                         <!-- Sleek High-Precision Fallback Logo -->
@@ -139,7 +139,7 @@
                 <div class="dropdown">
                     <button class="btn rounded-pill px-3 py-2 d-flex align-items-center gap-2 text-white border tech-account-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #1e293b; border-color: rgba(56, 189, 248, 0.25) !important;">
                         {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
-                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 28px; height: 28px;">
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 28px; height: 28px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                         {% else %}
                             <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 28px; height: 28px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
                                 <i class="bi bi-person-fill small" style="color: #38bdf8;"></i>
@@ -167,7 +167,7 @@
                         {% if request.user.is_authenticated and not request.user.is_staff %}
                             <li class="px-3 py-2 border-bottom border-secondary d-flex align-items-center gap-2 mb-1">
                                 {% if request.user.profile.avatar %}
-                                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 38px; height: 38px;">
+                                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 38px; height: 38px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                                 {% else %}
                                     <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); width: 38px; height: 38px;">
                                         <i class="bi bi-person-check-fill fs-5" style="color: #38bdf8;"></i>
@@ -411,11 +411,11 @@
             <!-- Mobile Tech Logo -->
             <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-1 flex-grow-1 text-truncate" title="{{ site_settings.get_effective_site_name|default:'TechVerse' }}">
                 {% if site_settings.get_brand_logo_url %}
-                    <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store' }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;">
+                    <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store' }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
                 {% elif site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;">
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
                 {% elif CURRENT_THEME_DATA.logo_dark_url %}
-                    <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="30" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;">
+                    <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="30" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
                 {% else %}
                     <div class="rounded-2 p-1 text-white d-flex align-items-center justify-content-center" style="background-color: #0284c7; width: 28px; height: 28px;">
                         <i class="bi bi-cpu fs-6" style="color: #38bdf8;"></i>
@@ -510,7 +510,7 @@
     <div class="offcanvas-header text-white" style="background: linear-gradient(135deg, #070d19 0%, #0f172a 100%); border-bottom: 1px solid rgba(56, 189, 248, 0.2);">
         <div class="d-flex align-items-center gap-2">
             {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
-                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 38px; height: 38px;">
+                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 38px; height: 38px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
             {% else %}
                 <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
                     <i class="bi bi-cpu fs-5" style="color: #38bdf8;"></i>

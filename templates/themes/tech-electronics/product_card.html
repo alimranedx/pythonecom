@@ -41,7 +41,7 @@
         <!-- Product Image Link with Zoom on Hover -->
         <a href="{% url 'product_detail' product.pk %}" class="d-flex align-items-center justify-content-center w-100 h-100 text-decoration-none">
             {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid tech-card-img" style="max-height: 155px; width: auto; object-fit: contain; transition: transform 0.28s ease;" loading="lazy">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid tech-card-img" style="max-height: 155px; width: auto; object-fit: contain; transition: transform 0.28s ease;" loading="lazy" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
             {% else %}
                 <div class="text-secondary opacity-50 py-4"><i class="bi bi-laptop display-4"></i></div>
             {% endif %}

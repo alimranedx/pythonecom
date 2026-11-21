@@ -584,9 +584,9 @@
         <div class="offcanvas-header border-bottom">
             <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                 {% if site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="36" class="brand-logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;">
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="36" class="brand-logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
                 {% elif CURRENT_THEME_DATA.logo_url %}
-                    <img src="{{ CURRENT_THEME_DATA.logo_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="36" class="brand-logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;">
+                    <img src="{{ CURRENT_THEME_DATA.logo_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="36" class="brand-logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
                 {% else %}
                     <!-- Light theme logo (shown in light mode) -->
                     <picture class="d-flex align-items-center logo-light">
@@ -613,7 +613,7 @@
                 {% if request.user.is_authenticated and not request.user.is_staff %}
                     <div class="d-flex align-items-center gap-3">
                         {% if request.user.profile.avatar %}
-                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle shadow-sm" style="width: 44px; height: 44px;">
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle shadow-sm" style="width: 44px; height: 44px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                         {% else %}
                             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
                                 <i class="bi bi-person-fill fs-5"></i>
@@ -760,7 +760,7 @@
                     {% if request.user.is_authenticated and not request.user.is_staff %}
                         <a href="{% url 'customer_dashboard' %}" class="mobile-nav-link text-decoration-none d-flex flex-column align-items-center {% if '/account/' in request.path %}text-primary fw-bold active{% else %}text-secondary{% endif %}">
                             {% if request.user.profile.avatar %}
-                                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-primary-subtle" style="width: 22px; height: 22px; margin-bottom: 2px;">
+                                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-primary-subtle" style="width: 22px; height: 22px; margin-bottom: 2px;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                             {% else %}
                                 <i class="bi bi-person-circle fs-5 lh-1 text-primary"></i>
                             {% endif %}

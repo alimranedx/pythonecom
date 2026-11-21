@@ -347,7 +347,7 @@
                 <div class="beauty-gallery-main shadow-xs" id="beautyGalleryContainer">
                     <div id="zoomContainer" class="w-100 h-100 d-flex align-items-center justify-content-center">
                         {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" id="beautyMainImg" loading="eager" onclick="openLightboxModal('{{ product.image.url }}')">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" id="beautyMainImg" loading="eager" onclick="openLightboxModal('{{ product.image.url }}')" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         {% else %}
                             <div class="text-secondary opacity-40 py-5"><i class="bi bi-droplet display-1"></i></div>
                         {% endif %}
@@ -369,13 +369,15 @@
                 <div class="gallery-thumbnails-strip beauty-thumb-strip" id="galleryThumbs">
                     {% if product.image %}
                         <div class="beauty-thumb-item active" onclick="switchBeautyImage('{{ product.image.url }}', this); switchProductImage('{{ product.image.url }}', this, 0);">
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         </div>
                     {% endif %}
                     {% for img_obj in gallery_images %}
+                        {% if img_obj.image %}
                         <div class="beauty-thumb-item" onclick="switchBeautyImage('{{ img_obj.image.url }}', this); switchProductImage('{{ img_obj.image.url }}', this, {{ forloop.counter }});">
-                            <img src="{{ img_obj.image.url }}" alt="{{ img_obj.alt_text|default:product.name }}">
+                            <img src="{{ img_obj.image.url }}" alt="{{ img_obj.alt_text|default:product.name }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
 
@@ -700,7 +702,7 @@
                     <!-- Current Product -->
                     <div class="border rounded-3 p-2.5 text-center shadow-xs" style="width: 145px; background: #ffffff;">
                         {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 85px; max-width: 100%; object-fit: contain;">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 85px; max-width: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         {% endif %}
                         <div class="fw-semibold text-truncate small mt-1.5" title="{{ product.name }}">{{ product.name }}</div>
                         <div class="fw-bold small" style="color: #1c1917;">৳{{ product.effective_price }}</div>
@@ -712,7 +714,7 @@
                         <div class="border rounded-3 p-2.5 text-center shadow-xs" style="width: 145px; background: #ffffff;">
                             <a href="{% url 'product_detail' item.pk %}" class="text-decoration-none text-dark">
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" style="max-height: 85px; max-width: 100%; object-fit: contain;">
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" style="max-height: 85px; max-width: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <div class="text-muted py-3"><i class="bi bi-droplet"></i></div>
                                 {% endif %}
@@ -1124,7 +1126,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-4">
-                <img src="" id="lightboxImg" class="img-fluid rounded" style="max-height: 80vh; object-fit: contain;" alt="{{ product.name }}">
+                <img src="{% if product.image %}{{ product.image.url }}{% else %}/static/images/placeholder.svg{% endif %}" id="lightboxImg" class="img-fluid rounded" style="max-height: 80vh; object-fit: contain;" alt="{{ product.name }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
             </div>
         </div>
     </div>

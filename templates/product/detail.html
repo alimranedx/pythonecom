@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load product_tags %}
 
 {% block title %}{{ product.name }} | {{ site_settings.site_name|default:'Easy Purchase' }}{% endblock %}
@@ -944,7 +945,7 @@
                     {% endif %}
 
                     {% if product.image %}
-                        <img src="{{ product.image.url }}?v=2" alt="{{ product.name }}" id="mainProductImg" onclick="openLightboxModal()" style="cursor: zoom-in;">
+                        <img src="{{ product.image.url }}?v=2" alt="{{ product.name }}" id="mainProductImg" onclick="openLightboxModal()" style="cursor: zoom-in;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                     {% else %}
                         <div class="text-center text-muted" id="placeholderImgBox">
                             <i class="bi bi-box-seam display-1 opacity-50 d-block mb-2 text-primary"></i>
@@ -966,10 +967,10 @@
                 <!-- Gallery Thumbnails Strip -->
                 <div class="gallery-thumbnails-strip justify-content-start justify-content-sm-center mt-3" id="galleryThumbs">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}?v=2" class="thumb-btn active" data-index="0" data-caption="{{ product.name }}" onclick="switchProductImage('{{ product.image.url }}?v=2', this, 0)" alt="{{ product.name }}">
+                        <img src="{{ product.image.url }}?v=2" class="thumb-btn active" data-index="0" data-caption="{{ product.name }}" onclick="switchProductImage('{{ product.image.url }}?v=2', this, 0)" alt="{{ product.name }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                     {% endif %}
                     {% for g in gallery_images %}
-                        <img src="{{ g.image.url }}?v=2" class="thumb-btn" data-index="{% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}" data-caption="{{ g.alt_text|default:product.name }}" onclick="switchProductImage('{{ g.image.url }}?v=2', this, {% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %})" alt="{{ g.alt_text|default:'Gallery Angle' }}">
+                        <img src="{{ g.image.url }}?v=2" class="thumb-btn" data-index="{% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}" data-caption="{{ g.alt_text|default:product.name }}" onclick="switchProductImage('{{ g.image.url }}?v=2', this, {% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %})" alt="{{ g.alt_text|default:'Gallery Angle' }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                     {% endfor %}
                 </div>
             </div>
@@ -1447,7 +1448,7 @@
                     <div class="bundle-product-visual position-relative text-center">
                         <div class="bundle-img-box mb-2">
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                             {% else %}
                                 <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
                             {% endif %}
@@ -1461,7 +1462,7 @@
                         <div class="bundle-product-visual position-relative text-center">
                             <div class="bundle-img-box mb-2">
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded-3">
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded-3" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
                                 {% endif %}
@@ -1545,7 +1546,7 @@
                                     </span>
                                 {% endif %}
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid" style="max-height: 100%;">
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid" style="max-height: 100%;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <i class="bi bi-box-seam display-4 text-primary opacity-50"></i>
                                 {% endif %}
@@ -1589,7 +1590,7 @@
                         <button type="button" class="lightbox-nav-btn lightbox-nav-prev" onclick="prevLightboxImage()" aria-label="Previous image">
                             <i class="bi bi-chevron-left"></i>
                         </button>
-                        <img src="" alt="{{ product.name }}" id="lightboxImg" class="lightbox-main-img img-fluid">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}/static/images/placeholder.svg{% endif %}" alt="{{ product.name }}" id="lightboxImg" class="lightbox-main-img img-fluid" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         <button type="button" class="lightbox-nav-btn lightbox-nav-next" onclick="nextLightboxImage()" aria-label="Next image">
                             <i class="bi bi-chevron-right"></i>
                         </button>
@@ -1618,7 +1619,7 @@ const ZOOM_LEVEL = 2.4; // 2.4x magnification factor
 // Collect all image URLs for multi-angle lightbox
 const galleryImagesList = [
     {% if product.image %}'{{ product.image.url }}',{% endif %}
-    {% for g in gallery_images %}'{{ g.image.url }}',{% endfor %}
+    {% for g in gallery_images %}{% if g.image %}'{{ g.image.url }}',{% endif %}{% endfor %}
 ];
 let currentImageIndex = 0;
 

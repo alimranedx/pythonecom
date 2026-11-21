@@ -269,7 +269,7 @@
                     </button>
 
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" id="techMainImg">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" id="techMainImg" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                     {% else %}
                         <div class="text-secondary opacity-50 py-5"><i class="bi bi-laptop display-1"></i></div>
                     {% endif %}
@@ -279,13 +279,15 @@
                 <div class="tech-thumb-strip" id="techThumbStrip">
                     {% if product.image %}
                         <div class="tech-thumb-item active" onclick="switchTechGalleryImage('{{ product.image.url }}', this)">
-                            <img src="{{ product.image.url }}" alt="{{ product.name }} primary">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }} primary" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         </div>
                     {% endif %}
                     {% for img in gallery_images %}
+                        {% if img.image %}
                         <div class="tech-thumb-item" onclick="switchTechGalleryImage('{{ img.image.url }}', this)">
-                            <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}">
+                            <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
 
@@ -540,7 +542,7 @@
                     <!-- Base Product -->
                     <div class="border rounded-3 p-2 text-center" style="width: 140px; background: #ffffff;">
                         {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 80px; max-width: 100%; object-fit: contain;">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 80px; max-width: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         {% endif %}
                         <div class="fw-semibold text-truncate small mt-1" title="{{ product.name }}">{{ product.name }}</div>
                         <div class="text-primary fw-bold small">৳{{ product.effective_price }}</div>
@@ -552,7 +554,7 @@
                         <div class="border rounded-3 p-2 text-center" style="width: 140px; background: #ffffff;">
                             <a href="{% url 'product_detail' item.pk %}" class="text-decoration-none text-dark">
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" style="max-height: 80px; max-width: 100%; object-fit: contain;">
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" style="max-height: 80px; max-width: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <div class="text-muted py-3"><i class="bi bi-box"></i></div>
                                 {% endif %}

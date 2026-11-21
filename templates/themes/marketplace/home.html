@@ -507,7 +507,7 @@
                         <div class="col-4 text-center">
                             <a href="{% url 'product_detail' deal_of_the_day.pk %}" class="d-block">
                                 {% if deal_of_the_day.image %}
-                                    <img src="{{ deal_of_the_day.image.url }}" alt="{{ deal_of_the_day.name }}" class="img-fluid rounded" style="max-height: 85px; object-fit: contain;">
+                                    <img src="{{ deal_of_the_day.image.url }}" alt="{{ deal_of_the_day.name }}" class="img-fluid rounded" style="max-height: 85px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <div class="p-3 bg-light rounded text-secondary"><i class="bi bi-box-seam fs-3"></i></div>
                                 {% endif %}
@@ -554,7 +554,7 @@
                         <div class="col-4 text-center">
                             <a href="{% url 'product_detail' weekly_saver.pk %}" class="d-block">
                                 {% if weekly_saver.image %}
-                                    <img src="{{ weekly_saver.image.url }}" alt="{{ weekly_saver.name }}" class="img-fluid rounded" style="max-height: 85px; object-fit: contain;">
+                                    <img src="{{ weekly_saver.image.url }}" alt="{{ weekly_saver.name }}" class="img-fluid rounded" style="max-height: 85px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <div class="p-3 bg-light rounded text-secondary"><i class="bi bi-box-seam fs-3"></i></div>
                                 {% endif %}
@@ -823,7 +823,7 @@
                     <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="mkt-brand-card h-100">
                         <div class="mkt-brand-logo-wrap">
                             {% if brand.logo %}
-                                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="img-fluid" style="max-height: 52px; object-fit: contain;">
+                                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="img-fluid" style="max-height: 52px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                             {% else %}
                                 <i class="bi bi-building fs-3 text-primary"></i>
                             {% endif %}
