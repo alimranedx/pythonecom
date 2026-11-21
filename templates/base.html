@@ -1,4 +1,4 @@
-{% load static %}
+{% load static theme_tags %}
 <!DOCTYPE html>
 <html lang="{{ CURRENT_LANGUAGE|default:'en' }}" data-bs-theme="light">
 <head>
@@ -451,6 +451,34 @@
 </head>
 <body>
 
+    <!-- Sticky Theme Preview Top Bar (Isolated from live customers) -->
+    {% if IS_THEME_PREVIEW %}
+    <div class="theme-preview-top-bar text-white py-2 px-3 shadow position-sticky top-0" style="z-index: 1060; background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%); border-bottom: 2px solid #f59e0b;">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning text-dark fw-bold px-2 py-1 shadow-sm" style="font-size: 0.75rem; letter-spacing: 0.04em;">
+                    <i class="bi bi-eye-fill me-1"></i> PREVIEW MODE
+                </span>
+                <span class="small">
+                    Previewing Theme: <strong>{{ CURRENT_THEME_DATA.name|default:CURRENT_THEME_ID|default:CURRENT_THEME_KEY }}</strong>
+                    <span class="d-none d-md-inline text-white-50 ms-2">(Isolated from live customers)</span>
+                </span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'admin_theme_exit_preview' %}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1 fw-semibold" style="font-size: 0.78rem;">
+                    <i class="bi bi-x-circle me-1"></i> Exit Preview
+                </a>
+                <form action="{% url 'admin_theme_activate' CURRENT_THEME_ID|default:CURRENT_THEME_KEY %}" method="post" class="d-inline m-0" onsubmit="return confirm('Activate this theme as the live storefront theme for all customers?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3 py-1 shadow-sm" style="font-size: 0.78rem;">
+                        <i class="bi bi-check2-circle me-1"></i> Activate Theme
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Admin Emergency Exception Notification Bar -->
     {% load rbac_tags %}
     {% has_perm request.user 'settings.system_errors' 'view' as can_view_system_errors %}
@@ -522,189 +550,12 @@
     </div>
     {% endif %}
 
-    <!-- Main Navigation Header -->
-    <header class="bg-white border-bottom sticky-top shadow-sm">
-        <div class="container py-2">
-            <div class="row align-items-center g-2">
-                <!-- Left: Mobile Menu Trigger & Logo -->
-                <div class="col-auto d-flex align-items-center gap-2">
-                    <button class="btn btn-light rounded-pill p-2 d-md-none border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas" aria-label="Open Navigation Menu">
-                        <i class="bi bi-list fs-5"></i>
-                    </button>
-                    <a href="{% url 'home' %}" class="navbar-brand text-primary text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
-                        {% if site_settings.brand_logo %}
-                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
-                        {% elif CURRENT_THEME_DATA.logo_url %}
-                            <!-- Light theme logo (shown in light mode) -->
-                            <picture class="d-flex align-items-center logo-light">
-                                <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
-                                <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" class="brand-logo-img" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
-                            </picture>
-                            <!-- Dark theme logo (shown in dark mode) -->
-                            <picture class="d-flex align-items-center logo-dark">
-                                <source srcset="{{ CURRENT_THEME_DATA.logo_dark_url }}" type="image/svg+xml">
-                                <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" class="brand-logo-img" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
-                            </picture>
-                            <!-- Guaranteed minimum project logo fallback -->
-                            <span class="brand-logo-fallback align-items-center gap-2">
-                                <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-bag-check-fill' }} fs-3 text-primary"></i>
-                                <span class="fw-bold fs-5 text-dark brand-dark">{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}</span>
-                            </span>
-                        {% else %}
-                            <!-- Light theme logo (shown in light mode) -->
-                            <picture class="d-flex align-items-center logo-light">
-                                <source srcset="{% static 'images/logo.svg' %}" type="image/svg+xml">
-                                <img src="{% static 'images/logo.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="42" width="200" style="height: 42px; width: auto; max-width: 210px; object-fit: contain;" class="brand-logo-img" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
-                            </picture>
-                            <!-- Dark theme logo (shown in dark mode) -->
-                            <picture class="d-flex align-items-center logo-dark">
-                                <source srcset="{% static 'images/logo_dark.svg' %}" type="image/svg+xml">
-                                <img src="{% static 'images/logo_dark.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="42" width="200" style="height: 42px; width: auto; max-width: 210px; object-fit: contain;" class="brand-logo-img" onerror="this.closest('.navbar-brand').classList.add('use-text-fallback');">
-                            </picture>
-                            <!-- Guaranteed minimum project logo fallback -->
-                            <span class="brand-logo-fallback align-items-center gap-2">
-                                <i class="bi bi-bag-check-fill fs-3 text-primary"></i>
-                                <span class="fw-bold fs-5 text-dark brand-dark">{{ site_settings.site_name|default:'Easy Purchase' }}</span>
-                            </span>
-                        {% endif %}
-                    </a>
-                </div>
-
-                <!-- Live Search Bar: Full-width row on mobile (order-3), inline on desktop (order-md-2) -->
-                <div class="col-12 col-md my-1 my-md-0 order-3 order-md-2">
-                    <form action="{% url 'product_list' %}" method="get" class="d-flex">
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0 text-muted">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" name="q" class="form-control bg-light border-start-0" 
-                                   placeholder="{{ tr.search_placeholder }}" 
-                                   value="{{ request.GET.q }}">
-                            <button class="btn btn-primary px-3" type="submit">{{ tr.search_btn }}</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Right Controls: User, Wishlist, Cart -->
-                <div class="col-auto ms-auto d-flex align-items-center gap-2 order-2 order-md-3">
-                    <!-- User Account Dropdown (Desktop) -->
-                    <div class="dropdown d-none d-sm-block">
-                        <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-                            {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
-                                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 26px; height: 26px;">
-                            {% else %}
-                                <i class="bi bi-person-circle fs-5 text-secondary"></i>
-                            {% endif %}
-                            <span class="d-none d-lg-inline small fw-semibold">
-                                {% if request.user.is_authenticated and not request.user.is_staff %}
-                                    {{ request.user.first_name|default:request.user.username }}
-                                {% else %}
-                                    {{ tr.account }}
-                                {% endif %}
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="min-width: 220px;">
-                            {% if request.user.is_authenticated and not request.user.is_staff %}
-                                <li class="px-3 py-2 border-bottom d-flex align-items-center gap-2">
-                                    {% if request.user.profile.avatar %}
-                                        <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover flex-shrink-0 border border-primary-subtle" style="width: 36px; height: 36px;">
-                                    {% else %}
-                                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px;">
-                                            <i class="bi bi-person-fill fs-5"></i>
-                                        </div>
-                                    {% endif %}
-                                    <div class="overflow-hidden">
-                                        <small class="text-muted d-block" style="font-size: 0.72rem; line-height: 1.2;">{{ tr.signed_in_as }}</small>
-                                        <strong class="text-truncate d-block small">{{ request.user.get_full_name|default:request.user.username }}</strong>
-                                    </div>
-                                </li>
-                                <li><a class="dropdown-item py-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-grid me-2"></i> {{ tr.dashboard }}</a></li>
-                                <li><a class="dropdown-item py-2" href="{% url 'customer_profile_edit' %}"><i class="bi bi-person-gear me-2"></i> {{ tr.edit_profile }}</a></li>
-                                <li><a class="dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-receipt me-2"></i> {{ tr.my_orders }}</a></li>
-                                <li><a class="dropdown-item py-2" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
-                                <li><a class="dropdown-item py-2" href="{% url 'address_list' %}"><i class="bi bi-geo-alt me-2 text-primary"></i> {{ tr.address_book }}</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item py-2 text-danger" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right me-2"></i> {{ tr.logout }}</a></li>
-                            {% else %}
-                                <li><a class="dropdown-item py-2" href="{% url 'account_login' %}"><i class="bi bi-box-arrow-in-right me-2"></i> {{ tr.sign_in }}</a></li>
-                                <li><a class="dropdown-item py-2" href="{% url 'account_register' %}"><i class="bi bi-person-plus me-2"></i> {{ tr.create_account }}</a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
-
-                    <!-- Wishlist Trigger -->
-                    <a href="{% url 'wishlist_view' %}" class="btn btn-light rounded-pill px-2 px-sm-3 d-flex align-items-center gap-2 position-relative" title="{{ tr.wishlist }}">
-                        <i class="bi bi-heart fs-5 text-danger"></i>
-                        <span class="d-none d-lg-inline small fw-semibold">{{ tr.wishlist }}</span>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="navWishlistBadge">
-                            {{ global_wishlist_count|default:0 }}
-                        </span>
-                    </a>
-
-                    <!-- Off-Canvas Cart Trigger -->
-                    <button class="btn btn-outline-primary rounded-pill px-2 px-sm-3 d-flex align-items-center gap-2 position-relative" 
-                            type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
-                        <i class="bi bi-cart3 fs-5"></i>
-                        <span class="d-none d-lg-inline small fw-semibold">{{ tr.cart }}</span>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="navCartBadge">
-                            {{ global_cart_items_count|default:0 }}
-                        </span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sub Navigation Bar (Desktop) -->
-        <div class="bg-light border-top py-1 d-none d-md-block">
-            <div class="container d-flex align-items-center justify-content-between small">
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Dynamic All Categories Dropdown -->
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-1 px-2 fw-semibold d-flex align-items-center gap-1 border-0 bg-transparent text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.82rem;">
-                            <i class="bi bi-grid-fill text-primary"></i>
-                            <span>{{ tr.all_categories|default:'All Categories' }}</span>
-                        </button>
-                        <ul class="dropdown-menu shadow border-0 py-2 mt-1" style="max-height: 400px; overflow-y: auto; min-width: 250px;">
-                            <li>
-                                <a class="dropdown-item fw-semibold text-primary py-2 d-flex align-items-center gap-2" href="{% url 'product_list' %}">
-                                    <i class="bi bi-grid-3x3-gap-fill"></i>
-                                    <span>{{ tr.all_products }}</span>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider my-1"></li>
-                            {% for cat in all_categories %}
-                                <li>
-                                    <a class="dropdown-item py-1 px-3 d-flex align-items-center gap-2 text-secondary" href="{% url 'product_list' %}?category={{ cat.slug }}">
-                                        <i class="bi {{ cat.icon|default:'bi-tag' }} text-muted"></i>
-                                        <span class="text-truncate">{{ cat.name }}</span>
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <span class="text-muted opacity-25">|</span>
-
-                    <a href="{% url 'product_list' %}" class="text-decoration-none fw-semibold text-dark">{{ tr.products }}</a>
-
-                    <!-- Featured Categories Quick Links (Dynamically loaded from database) -->
-                    {% for cat in nav_categories %}
-                        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none text-secondary text-nowrap">
-                            {{ cat.name }}
-                        </a>
-                    {% endfor %}
-                </div>
-                <div class="text-muted d-flex align-items-center gap-2">
-                    {% if CURRENT_THEME_DATA.tag %}
-                        <span class="badge border d-none d-lg-inline-flex align-items-center gap-1" style="background-color: var(--primary-light, #f0f9ff); color: var(--primary-color); border-color: rgba(37, 99, 235, 0.2) !important; border-radius: var(--badge-border-radius, 9999px); font-size: 0.75rem;">
-                            <i class="bi {{ CURRENT_THEME_DATA.icon|default:'bi-shop' }}"></i> {{ CURRENT_THEME_DATA.tag }}
-                        </span>
-                    {% endif %}
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="border-radius: var(--badge-border-radius, 9999px);">{{ tr.flash_sale_active }}</span>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Modular Theme Navigation Header -->
+    {% if CURRENT_THEME_DATA.template_mapping.header and CURRENT_THEME_DATA.template_mapping.header|template_exists %}
+        {% include CURRENT_THEME_DATA.template_mapping.header %}
+    {% else %}
+        {% include 'includes/header.html' %}
+    {% endif %}
 
     <!-- Global Toast & Alert Notification Container -->
     <div class="container mt-3">
@@ -950,140 +801,12 @@
         </div>
     </div>
 
-    <!-- Modern Marketplace Footer -->
-    <footer class="bg-dark text-light pt-5 pb-4 mt-auto">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
-                        {% if site_settings.brand_logo %}
-                            <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);">
-                        {% elif CURRENT_THEME_DATA.logo_dark_url %}
-                            <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.1);">
-                        {% else %}
-                            <picture class="d-flex align-items-center">
-                                <source srcset="{% static 'images/logo_dark.svg' %}" type="image/svg+xml">
-                                <img src="{% static 'images/logo_dark.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="38" width="180" style="height: 38px; width: 180px; max-width: 100%; object-fit: contain;" class="brand-logo-img" onerror="this.closest('a').classList.add('use-text-fallback');">
-                            </picture>
-                            <span class="brand-logo-fallback align-items-center gap-2 text-white">
-                                <i class="bi bi-bag-check-fill fs-4 text-primary"></i>
-                                <span class="fw-bold fs-5 text-white">{{ site_settings.site_name|default:'Easy Purchase' }}</span>
-                            </span>
-                        {% endif %}
-                    </a>
-                    <p class="text-secondary small">
-                        {% if IS_BANGLA %}
-                            {{ site_settings.about_text_bn|default:site_settings.about_text_en }}
-                        {% else %}
-                            {{ site_settings.about_text_en }}
-                        {% endif %}
-                    </p>
-                    <div class="d-flex gap-3 text-secondary fs-5 mt-3">
-                        {% if site_settings.social_facebook %}
-                            <a href="{{ site_settings.social_facebook }}" target="_blank" rel="noopener" class="text-secondary" title="Facebook"><i class="bi bi-facebook"></i></a>
-                        {% endif %}
-                        {% if site_settings.social_twitter %}
-                            <a href="{{ site_settings.social_twitter }}" target="_blank" rel="noopener" class="text-secondary" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
-                        {% endif %}
-                        {% if site_settings.social_instagram %}
-                            <a href="{{ site_settings.social_instagram }}" target="_blank" rel="noopener" class="text-secondary" title="Instagram"><i class="bi bi-instagram"></i></a>
-                        {% endif %}
-                        {% if site_settings.social_github %}
-                            <a href="{{ site_settings.social_github }}" target="_blank" rel="noopener" class="text-secondary" title="GitHub"><i class="bi bi-github"></i></a>
-                        {% endif %}
-                        {% if site_settings.social_linkedin %}
-                            <a href="{{ site_settings.social_linkedin }}" target="_blank" rel="noopener" class="text-secondary" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                        {% endif %}
-                    </div>
-
-                    <!-- Accepted Payment Methods -->
-                    <div class="mt-4 pt-1">
-                        <span class="d-block text-white-50 small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
-                            <i class="bi bi-credit-card-2-back text-primary me-1"></i>
-                            {% if IS_BANGLA %}অনুমোদিত পেমেন্ট মাধ্যম{% else %}Accepted Payment Methods{% endif %}
-                        </span>
-                        <div class="d-flex flex-wrap gap-2 align-items-center">
-                            <!-- bKash (Active) -->
-                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm" title="bKash Online Payment (Active)">
-                                <span class="payment-indicator bg-success"></span>
-                                <span class="fw-bold" style="color: #e2136e; font-size: 0.8rem; font-family: system-ui, -apple-system, sans-serif;">bKash</span>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Active</span>
-                            </div>
-
-                            <!-- Cash on Delivery (Active) -->
-                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm" title="Cash on Delivery (Active)">
-                                <i class="bi bi-cash-stack text-success" style="font-size: 0.85rem;"></i>
-                                <span class="fw-bold text-dark" style="font-size: 0.78rem;">COD</span>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Active</span>
-                            </div>
-
-                            <!-- Nagad (Coming Soon) -->
-                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 shadow-sm border" style="background-color: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.18) !important;" title="Nagad Mobile Payment (Coming Soon)">
-                                <span class="fw-bold" style="color: #f7941d; font-size: 0.8rem; font-family: system-ui, -apple-system, sans-serif;">Nagad</span>
-                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Coming Soon</span>
-                            </div>
-
-                            <!-- Card Payment (Coming Soon) -->
-                            <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 shadow-sm border" style="background-color: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.18) !important;" title="Debit / Credit Card (Visa, Mastercard - Coming Soon)">
-                                <i class="bi bi-credit-card-2-front text-light opacity-75" style="font-size: 0.85rem;"></i>
-                                <span class="fw-semibold text-light" style="font-size: 0.78rem;">Card Payment</span>
-                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Coming Soon</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <h6 class="fw-bold text-white mb-3">{{ tr.quick_links }}</h6>
-                    <ul class="list-unstyled small text-secondary">
-                        <li class="mb-2"><a href="{% url 'home' %}" class="text-decoration-none text-secondary">{{ tr.home }}</a></li>
-                        <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-secondary">{{ tr.all_products }}</a></li>
-                        <li class="mb-2"><a href="{% url 'cart_detail' %}" class="text-decoration-none text-secondary">{{ tr.cart }}</a></li>
-                        <li class="mb-2"><a href="{% url 'customer_orders' %}" class="text-decoration-none text-secondary">{{ tr.track_orders }}</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <h6 class="fw-bold text-white mb-3">{{ tr.customer_care }}</h6>
-                    <ul class="list-unstyled small text-secondary">
-                        <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-secondary">{{ tr.shop_catalog }}</a></li>
-                        <li class="mb-2"><a href="{% url 'customer_orders' %}" class="text-decoration-none text-secondary">{{ tr.order_history }}</a></li>
-                        <li class="mb-2"><a href="{% url 'wishlist_view' %}" class="text-decoration-none text-secondary">{{ tr.wishlist }}</a></li>
-                        <li class="mb-2"><a href="{% url 'cart_detail' %}" class="text-decoration-none text-secondary">{{ tr.cart_checkout }}</a></li>
-                        {% if site_settings.contact_phone %}
-                            <li class="mt-3 text-white-50"><i class="bi bi-telephone text-primary me-1"></i> {{ site_settings.contact_phone }}</li>
-                        {% endif %}
-                        {% if site_settings.contact_email %}
-                            <li class="text-white-50"><i class="bi bi-envelope text-primary me-1"></i> {{ site_settings.contact_email }}</li>
-                        {% endif %}
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-md-12">
-                    <h6 class="fw-bold text-white mb-3">
-                        {% if IS_BANGLA %}{{ site_settings.newsletter_title_bn|default:'নিউজলেটার' }}{% else %}{{ site_settings.newsletter_title_en|default:'Newsletter' }}{% endif %}
-                    </h6>
-                    <p class="text-secondary small">
-                        {% if IS_BANGLA %}
-                            {{ site_settings.newsletter_text_bn|default:'বিশেষ মূল্যছাড় ও নতুন পণ্যের আপডেট পেতে ইমেইল সাবস্ক্রাইব করুন।' }}
-                        {% else %}
-                            {{ site_settings.newsletter_text_en|default:'Subscribe to get special discounts and exclusive product launches.' }}
-                        {% endif %}
-                    </p>
-                    <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email">
-                        <button class="btn btn-primary" type="button">Subscribe</button>
-                    </div>
-                    <div class="mt-3 text-secondary small d-flex align-items-center gap-2">
-                        <i class="bi bi-shield-check text-success fs-5"></i>
-                        <span>{% if IS_BANGLA %}১০০% নিরাপদ ও সুরক্ষিত পেমেন্ট{% else %}100% Safe & Secure Checkout{% endif %}</span>
-                    </div>
-                </div>
-            </div>
-            <hr class="border-secondary my-4">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
-                <div>{{ site_settings.copyright_text }}</div>
-                <div class="mt-2 mt-md-0">{{ site_settings.subfooter_notice }}</div>
-            </div>
-        </div>
-    </footer>
+    <!-- Modular Theme Footer -->
+    {% if CURRENT_THEME_DATA.template_mapping.footer and CURRENT_THEME_DATA.template_mapping.footer|template_exists %}
+        {% include CURRENT_THEME_DATA.template_mapping.footer %}
+    {% else %}
+        {% include 'includes/footer.html' %}
+    {% endif %}
 
     <!-- Floating Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">

@@ -1,0 +1,860 @@
+{% load static %}
+<!-- Tech & Electronics Custom Flagship Navigation Header (Star Tech / Apple Style) -->
+<header class="tech-header sticky-top shadow-lg" style="background-color: #0b1120; border-bottom: 1px solid rgba(56, 189, 248, 0.2); z-index: 1030;">
+    <!-- 1. Top Tech Announcement & Assurance Bar -->
+    <div class="tech-top-bar py-1 px-3 text-white small" style="background: linear-gradient(90deg, #070d19 0%, #0f172a 50%, #070d19 100%); font-size: 0.76rem; border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Left: Official Warranty, 0% EMI & Express Delivery -->
+            <div class="d-flex align-items-center gap-3 text-truncate">
+                <span class="d-inline-flex align-items-center gap-1 text-cyan-glow">
+                    <i class="bi bi-patch-check-fill text-info" style="color: #38bdf8 !important;"></i>
+                    <strong>{% if IS_BANGLA %}১০০% অফিসিয়াল ব্র্যান্ড ওয়ারেন্টি{% else %}100% Official Brand Warranty{% endif %}</strong>
+                </span>
+                <span class="d-none d-md-inline text-white-50">•</span>
+                <span class="d-none d-md-inline-flex align-items-center gap-1">
+                    <i class="bi bi-credit-card-2-front text-warning"></i>
+                    <span>{% if IS_BANGLA %}৩৬ মাস পর্যন্ত ০% সুদে ইএমআই{% else %}0% EMI Financing Up to 36 Months{% endif %}</span>
+                </span>
+                <span class="d-none d-lg-inline text-white-50">•</span>
+                <span class="d-none d-lg-inline-flex align-items-center gap-1 text-white-50">
+                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                    <span>{% if IS_BANGLA %}সেম-ডে এক্সপ্রেস কুরিয়ার ডিসপ্যাচ{% else %}Same-Day Express Dispatch{% endif %}</span>
+                </span>
+            </div>
+
+            <!-- Right: Support Hotline, Track Order, Theme Toggle, Language Switcher -->
+            <div class="d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
+                <!-- 24/7 Tech Support Hotline -->
+                <a href="tel:{{ site_settings.contact_phone|default:'+880 1700-000000' }}" class="text-decoration-none d-none d-sm-inline-flex align-items-center gap-1 text-light-hover" style="color: #94a3b8; font-size: 0.74rem;">
+                    <i class="bi bi-telephone-inbound-fill text-info" style="color: #38bdf8 !important;"></i>
+                    <span>{% if IS_BANGLA %}২৪/৭ হেল্পলাইন:{% else %}24/7 Support:{% endif %} <strong class="text-white">{{ site_settings.contact_phone|default:'+880 1700-000000' }}</strong></span>
+                </a>
+
+                <span class="text-white-50 opacity-50 d-none d-sm-inline">|</span>
+
+                <!-- Quick Track Order Link -->
+                <a href="{% url 'customer_orders' %}" class="text-decoration-none d-none d-md-inline-flex align-items-center gap-1 text-light-hover" style="color: #94a3b8; font-size: 0.74rem;" title="{% if IS_BANGLA %}অর্ডার স্ট্যাটাস দেখুন{% else %}Track Tech Order{% endif %}">
+                    <i class="bi bi-truck text-warning"></i>
+                    <span>{% if IS_BANGLA %}অর্ডার ট্র্যাক{% else %}Track Order{% endif %}</span>
+                </a>
+
+                <span class="text-white-50 opacity-50 d-none d-md-inline">|</span>
+
+                <!-- Dark / Light Mode Switcher Toggle -->
+                <button type="button" class="btn btn-xs btn-outline-secondary text-white-50 theme-toggle-btn py-0 px-2 rounded-pill d-inline-flex align-items-center" onclick="toggleTheme()" title="Toggle Dark/Light Mode" style="font-size: 0.72rem; line-height: 1.6; border-color: rgba(255,255,255,0.2);">
+                    <i class="bi bi-moon-stars-fill theme-icon me-1 text-info" style="color: #38bdf8 !important;"></i>
+                    <span class="theme-text text-white">Dark</span>
+                </button>
+
+                <!-- Language Switcher Pill (EN / BN) -->
+                <div class="btn-group btn-group-sm lang-toggle-pill" role="group" aria-label="Language Selector">
+                    <a href="{% url 'set_language' 'en' %}" 
+                       class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}btn-primary active fw-bold text-white{% else %}btn-outline-secondary text-white-50{% endif %} py-0 px-2 rounded-start-pill" 
+                       style="font-size: 0.72rem; line-height: 1.6; {% if CURRENT_LANGUAGE == 'en' %}background-color: #0284c7; border-color: #0284c7;{% else %}border-color: rgba(255,255,255,0.2);{% endif %}" 
+                       title="Switch to English">
+                        EN
+                    </a>
+                    <a href="{% url 'set_language' 'bn' %}" 
+                       class="btn btn-xs {% if CURRENT_LANGUAGE == 'bn' %}btn-primary active fw-bold text-white{% else %}btn-outline-secondary text-white-50{% endif %} py-0 px-2 rounded-end-pill" 
+                       style="font-size: 0.72rem; line-height: 1.6; {% if CURRENT_LANGUAGE == 'bn' %}background-color: #0284c7; border-color: #0284c7;{% else %}border-color: rgba(255,255,255,0.2);{% endif %}" 
+                       title="বাংলা ভাষায় দেখুন">
+                        বাং
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Main Desktop Tech Header (Midnight Slate / High Precision) -->
+    <div class="container py-2 d-none d-md-block">
+        <div class="row align-items-center g-3">
+            <!-- Tech Store Branding with Logo -->
+            <div class="col-auto">
+                <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'TechVerse Electronics' }}">
+                    {% if site_settings.get_brand_logo_url %}
+                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                    {% elif site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                    {% elif CURRENT_THEME_DATA.logo_dark_url %}
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                    {% elif CURRENT_THEME_DATA.logo_url %}
+                        <picture class="d-flex align-items-center">
+                            <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
+                            <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;">
+                        </picture>
+                    {% else %}
+                        <!-- Sleek High-Precision Fallback Logo -->
+                        <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%); width: 44px; height: 44px; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);">
+                            <i class="bi bi-cpu fs-3" style="color: #38bdf8;"></i>
+                        </div>
+                        <div>
+                            <span class="fw-bold fs-4 d-block lh-1 text-white" style="letter-spacing: -0.02em;">{{ site_settings.get_effective_site_name|default:'TECH' }}<span style="color: #38bdf8;">VERSE</span></span>
+                            <small class="text-white-50 d-block text-uppercase fw-semibold" style="font-size: 0.62rem; letter-spacing: 0.12em; color: #94a3b8 !important;">PRO GADGETS &amp; HARDWARE</small>
+                        </div>
+                    {% endif %}
+                </a>
+            </div>
+
+            <!-- Tech Search Bar with Category Selector Prefix & High-Precision Search Button -->
+            <div class="col">
+                <form action="{% url 'product_list' %}" method="get" class="tech-search-form">
+                    <div class="input-group shadow-sm rounded-pill overflow-hidden border" style="border-color: rgba(56, 189, 248, 0.4) !important; background-color: #0f172a;">
+                        <!-- Category Selector Dropdown Prefix -->
+                        <div class="col-auto d-none d-lg-block" style="max-width: 170px;">
+                            <select name="category" class="form-select border-0 text-light small fw-semibold text-truncate ps-3 pe-4" style="cursor: pointer; height: 42px; border-right: 1px solid rgba(56, 189, 248, 0.2) !important; background-color: #1e293b; color: #e2e8f0;" aria-label="Select Tech Category">
+                                <option value="">{% if IS_BANGLA %}সকল টেক ক্যাটাগরি{% else %}All Tech Categories{% endif %}</option>
+                                <option value="laptops" {% if request.GET.category == 'laptops' %}selected{% endif %}>Laptops &amp; MacBooks</option>
+                                <option value="smartphones" {% if request.GET.category == 'smartphones' %}selected{% endif %}>Smartphones</option>
+                                <option value="pc-hardware" {% if request.GET.category == 'pc-hardware' %}selected{% endif %}>PC Hardware</option>
+                                <option value="audio-gear" {% if request.GET.category == 'audio-gear' %}selected{% endif %}>Audio Gear</option>
+                                <option value="gaming" {% if request.GET.category == 'gaming' %}selected{% endif %}>Gaming Gear</option>
+                                <option value="mobile-accessories" {% if request.GET.category == 'mobile-accessories' %}selected{% endif %}>Accessories</option>
+                                {% for cat in all_categories %}
+                                    {% if cat.slug not in "laptops smartphones pc-hardware audio-gear mobile-accessories" %}
+                                        <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Search Input Field -->
+                        <input type="text" name="q" class="form-control border-0 py-2 px-3 text-white" 
+                               placeholder="{% if IS_BANGLA %}ল্যাপটপ, ফোন, জিপিইউ, প্রসেসর দিয়ে সার্চ করুন...{% else %}Search laptops, phones, GPUs, processors...{% endif %}" 
+                               value="{{ request.GET.q|default:'' }}" 
+                               style="height: 42px; font-size: 0.88rem; background-color: #0f172a; color: #f8fafc;" 
+                               aria-label="Search laptops, phones, GPUs, processors">
+
+                        <!-- Electric Cyan High-Precision Search Button -->
+                        <button class="btn text-white fw-bold px-4 d-flex align-items-center gap-2 tech-search-btn" type="submit" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border: none; height: 42px;" aria-label="Search Tech Store">
+                            <i class="bi bi-search text-cyan" style="color: #38bdf8;"></i>
+                            <span class="d-none d-xl-inline">{% if IS_BANGLA %}খুঁজুন{% else %}Search{% endif %}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Controls: Account, Wishlist, Cart Drawer Trigger -->
+            <div class="col-auto d-flex align-items-center gap-2">
+                <!-- Tech Account Dropdown -->
+                <div class="dropdown">
+                    <button class="btn rounded-pill px-3 py-2 d-flex align-items-center gap-2 text-white border tech-account-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #1e293b; border-color: rgba(56, 189, 248, 0.25) !important;">
+                        {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 28px; height: 28px;">
+                        {% else %}
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 28px; height: 28px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                                <i class="bi bi-person-fill small" style="color: #38bdf8;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="text-start d-none d-lg-block lh-sm">
+                            <span class="text-white-50 d-block" style="font-size: 0.68rem;">
+                                {% if request.user.is_authenticated and not request.user.is_staff %}
+                                    {% if IS_BANGLA %}স্বাগতম{% else %}Signed In{% endif %}
+                                {% else %}
+                                    {% if IS_BANGLA %}লগইন করুন{% else %}Tech Account{% endif %}
+                                {% endif %}
+                            </span>
+                            <strong class="d-block text-white fw-bold text-truncate" style="font-size: 0.82rem; max-width: 110px;">
+                                {% if request.user.is_authenticated and not request.user.is_staff %}
+                                    {{ request.user.first_name|default:request.user.username }}
+                                {% else %}
+                                    {{ tr.sign_in }}
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <i class="bi bi-chevron-down small text-white-50 d-none d-lg-inline"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2 dropdown-menu-dark" style="min-width: 240px; border-radius: 12px; background-color: #0f172a; border: 1px solid rgba(56, 189, 248, 0.25) !important;">
+                        {% if request.user.is_authenticated and not request.user.is_staff %}
+                            <li class="px-3 py-2 border-bottom border-secondary d-flex align-items-center gap-2 mb-1">
+                                {% if request.user.profile.avatar %}
+                                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 38px; height: 38px;">
+                                {% else %}
+                                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); width: 38px; height: 38px;">
+                                        <i class="bi bi-person-check-fill fs-5" style="color: #38bdf8;"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="overflow-hidden">
+                                    <small class="text-white-50 d-block" style="font-size: 0.72rem;">{{ tr.signed_in_as }}</small>
+                                    <strong class="text-truncate d-block small text-white">{{ request.user.get_full_name|default:request.user.username }}</strong>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-light" href="{% url 'customer_dashboard' %}"><i class="bi bi-speedometer2 me-2 text-info" style="color: #38bdf8 !important;"></i> {{ tr.dashboard }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-light" href="{% url 'customer_orders' %}"><i class="bi bi-box-seam me-2 text-warning"></i> {{ tr.my_orders }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-light" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-light" href="{% url 'address_list' %}"><i class="bi bi-geo-alt me-2 text-success"></i> {{ tr.address_book }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-light" href="{% url 'customer_profile_edit' %}"><i class="bi bi-sliders me-2 text-secondary"></i> {{ tr.edit_profile }}</a></li>
+                            <li><hr class="dropdown-divider border-secondary my-1"></li>
+                            <!-- Warranty Claim Trigger -->
+                            <li>
+                                <button type="button" class="dropdown-item py-2 rounded-2 text-info d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#warrantyClaimModal" style="color: #38bdf8 !important;">
+                                    <i class="bi bi-patch-check-fill text-info" style="color: #38bdf8 !important;"></i>
+                                    <span>{% if IS_BANGLA %}ওয়ারেন্টি ক্লেইম পোর্টাল{% else %}Warranty Claim Portal{% endif %}</span>
+                                </button>
+                            </li>
+                            <li><hr class="dropdown-divider border-secondary my-1"></li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-danger fw-semibold" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right me-2"></i> {{ tr.logout }}</a></li>
+                        {% else %}
+                            <li class="p-2 text-center border-bottom border-secondary mb-2">
+                                <a href="{% url 'account_login' %}" class="btn text-white w-100 fw-bold py-2 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-size: 0.85rem;">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> {{ tr.sign_in }}
+                                </a>
+                                <small class="text-white-50 d-block mt-2" style="font-size: 0.75rem;">
+                                    {% if IS_BANGLA %}নতুন কাস্টমার?{% else %}New to Tech Store?{% endif %} 
+                                    <a href="{% url 'account_register' %}" class="text-decoration-none fw-bold" style="color: #38bdf8;">{{ tr.create_account }}</a>
+                                </small>
+                            </li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-light" href="{% url 'customer_orders' %}"><i class="bi bi-truck me-2 text-warning"></i> {% if IS_BANGLA %}অর্ডার স্ট্যাটাস দেখুন{% else %}Track Order Status{% endif %}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-light" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
+                            <!-- Warranty Claim Portal Trigger -->
+                            <li>
+                                <button type="button" class="dropdown-item py-2 rounded-2 text-info d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#warrantyClaimModal" style="color: #38bdf8 !important;">
+                                    <i class="bi bi-patch-check-fill text-info" style="color: #38bdf8 !important;"></i>
+                                    <span>{% if IS_BANGLA %}ওয়ারেন্টি ক্লেইম পোর্টাল{% else %}Warranty Claim Portal{% endif %}</span>
+                                </button>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Tech Wishlist Button with Live Badge -->
+                <a href="{% url 'wishlist_view' %}" class="btn rounded-pill px-3 py-2 d-flex align-items-center gap-2 position-relative border text-white tech-wishlist-btn" title="{{ tr.wishlist }}" style="background-color: #1e293b; border-color: rgba(56, 189, 248, 0.25) !important;">
+                    <i class="bi bi-heart-fill fs-5 text-danger"></i>
+                    <div class="text-start d-none d-xl-block lh-sm">
+                        <span class="text-white-50 d-block" style="font-size: 0.68rem;">{% if IS_BANGLA %}পছন্দ{% else %}Saved{% endif %}</span>
+                        <strong class="d-block text-white fw-bold" style="font-size: 0.82rem;">{{ tr.wishlist }}</strong>
+                    </div>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-dark" id="navWishlistBadge" style="font-size: 0.65rem;">
+                        {{ global_wishlist_count|default:0 }}
+                    </span>
+                </a>
+
+                <!-- Tech Cart Widget with Subtotal Preview and Offcanvas Drawer Trigger -->
+                <button class="btn text-white rounded-pill px-3 py-2 d-flex align-items-center gap-2 position-relative shadow-sm border-0 tech-cart-btn" 
+                        type="button" 
+                        id="cartDrawerTrigger"
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#cartOffcanvas" 
+                        data-cart-drawer="#cartDrawer"
+                        onclick="if (typeof openCartDrawer === 'function') { openCartDrawer(); } else if (document.getElementById('cartDrawer') && document.getElementById('cartDrawer').classList.contains('offcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartDrawer')).show(); } else if (document.getElementById('cartOffcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartOffcanvas')).show(); }"
+                        style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);">
+                    <i class="bi bi-cart3 fs-5" style="color: #38bdf8;"></i>
+                    <div class="text-start d-none d-lg-block lh-sm text-white">
+                        <span class="d-block opacity-75" style="font-size: 0.68rem;">
+                            <span id="navCartItemsLabel">{% if IS_BANGLA %}কার্ট সাবটোটাল{% else %}Cart Subtotal{% endif %}</span>
+                        </span>
+                        <strong class="d-block fw-bold text-nowrap text-cyan" id="navCartSubtotal" style="font-size: 0.82rem; color: #e0f2fe;">
+                            ৳{{ global_cart.subtotal|floatformat:2|default:'0.00' }}
+                        </strong>
+                    </div>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info text-dark border border-dark shadow-sm" id="navCartBadge" style="font-size: 0.68rem; font-weight: 700; background-color: #38bdf8 !important;">
+                        {{ global_cart_items_count|default:0 }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Specialized Electronics Navigation Bar (Desktop Pro Bar) -->
+    <div class="tech-sub-navbar py-1 d-none d-md-block" style="background-color: #070d19; border-top: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(56, 189, 248, 0.15); color: #ffffff;">
+        <div class="container d-flex align-items-center justify-content-between small">
+            <!-- Left Side: "Browse All Tech" Mega Menu Toggle & Hardware Category Links -->
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <!-- "Browse All Tech" Mega Menu Toggle -->
+                <div class="dropdown">
+                    <button class="btn btn-sm text-white fw-bold py-1 px-3 d-flex align-items-center gap-2 border-0 shadow-sm tech-mega-btn" 
+                            type="button" 
+                            id="techMegaMenuDropdown"
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false" 
+                            style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-radius: 6px; font-size: 0.82rem;">
+                        <i class="bi bi-grid-3x3-gap-fill text-info" style="color: #38bdf8 !important;"></i>
+                        <span>{% if IS_BANGLA %}সকল টেক প্রোডাক্ট{% else %}Browse All Tech{% endif %}</span>
+                        <i class="bi bi-chevron-down small ms-1"></i>
+                    </button>
+                    <!-- Mega Menu Dropdown -->
+                    <ul class="dropdown-menu shadow-lg border-0 py-2 mt-1 dropdown-menu-dark" aria-labelledby="techMegaMenuDropdown" style="max-height: 520px; overflow-y: auto; min-width: 300px; border-radius: 8px; background-color: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3) !important;">
+                        <li>
+                            <a class="dropdown-item fw-bold py-2 d-flex align-items-center gap-2 border-bottom border-secondary text-info" href="{% url 'product_list' %}" style="color: #38bdf8 !important;">
+                                <i class="bi bi-laptop-fill"></i>
+                                <span>{% if IS_BANGLA %}সকল কম্পিউটার ও গ্যাজেট ব্রাউজ করুন{% else %}All Tech &amp; Hardware Catalog{% endif %}</span>
+                            </a>
+                        </li>
+                        <li><h6 class="dropdown-header text-uppercase text-white-50 small mt-2" style="font-size: 0.7rem; letter-spacing: 0.05em;">Flagship Hardware Departments</h6></li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-light" href="{% url 'product_list' %}?category=laptops">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-laptop text-info" style="color: #38bdf8 !important;"></i> Laptops &amp; MacBooks</span>
+                                <span class="badge bg-secondary-subtle text-light" style="font-size: 0.65rem;">Apple, Asus, Dell</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-light" href="{% url 'product_list' %}?category=smartphones">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-phone text-info" style="color: #38bdf8 !important;"></i> Smartphones &amp; Tablets</span>
+                                <span class="badge bg-secondary-subtle text-light" style="font-size: 0.65rem;">iPhone, Samsung</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-light" href="{% url 'product_list' %}?category=pc-hardware">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-cpu text-info" style="color: #38bdf8 !important;"></i> PC Hardware &amp; GPUs</span>
+                                <span class="badge bg-secondary-subtle text-light" style="font-size: 0.65rem;">RTX 4090, Intel</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-light" href="{% url 'product_list' %}?q=gaming">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-controller text-warning"></i> Gaming Gear &amp; Consoles</span>
+                                <span class="badge bg-secondary-subtle text-light" style="font-size: 0.65rem;">PS5, ROG, Razer</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-light" href="{% url 'product_list' %}?category=audio-gear">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-headphones text-info" style="color: #38bdf8 !important;"></i> Audio &amp; Soundbars</span>
+                                <span class="badge bg-secondary-subtle text-light" style="font-size: 0.65rem;">Sony, Bose</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-light" href="{% url 'product_list' %}?category=mobile-accessories">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-smartwatch text-info" style="color: #38bdf8 !important;"></i> Smart Home &amp; Accessories</span>
+                                <span class="badge bg-secondary-subtle text-light" style="font-size: 0.65rem;">Anker, Apple</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-light" href="{% url 'product_list' %}#brands">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-patch-check-fill text-info" style="color: #38bdf8 !important;"></i> Official Brand Stores</span>
+                                <span class="badge bg-primary text-white" style="font-size: 0.65rem; background-color: #0284c7 !important;">Verified</span>
+                            </a>
+                        </li>
+                        {% if all_categories %}
+                            <li><hr class="dropdown-divider border-secondary my-1"></li>
+                            <li><h6 class="dropdown-header text-uppercase text-white-50 small" style="font-size: 0.7rem;">More Categories</h6></li>
+                            {% for cat in all_categories %}
+                                {% if cat.slug not in "laptops smartphones pc-hardware audio-gear mobile-accessories" %}
+                                    <li>
+                                        <a class="dropdown-item py-1 px-3 text-secondary text-light-hover" href="{% url 'product_list' %}?category={{ cat.slug }}">
+                                            <i class="bi {{ cat.icon|default:'bi-chevron-right' }} me-2 text-info" style="font-size: 0.75rem; color: #38bdf8 !important;"></i>
+                                            {{ cat.name }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <span class="text-white-50 opacity-25">|</span>
+
+                <!-- Quick Specialized Electronics Category Navigation Links -->
+                <a href="{% url 'product_list' %}?category=laptops" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 tech-nav-link" style="font-size: 0.82rem;">
+                    <i class="bi bi-laptop text-info" style="color: #38bdf8 !important;"></i>
+                    <span>{% if IS_BANGLA %}ল্যাপটপ ও ম্যাকবুক{% else %}Laptops &amp; MacBooks{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=smartphones" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 tech-nav-link" style="font-size: 0.82rem;">
+                    <i class="bi bi-phone text-info" style="color: #38bdf8 !important;"></i>
+                    <span>{% if IS_BANGLA %}স্মার্টফোন ও ট্যাব{% else %}Smartphones &amp; Tablets{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=pc-hardware" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 tech-nav-link" style="font-size: 0.82rem;">
+                    <i class="bi bi-gpu-card text-info" style="color: #38bdf8 !important;"></i>
+                    <span>{% if IS_BANGLA %}পিসি কম্পোনেন্টস ও জিপিইউ{% else %}PC Hardware &amp; GPUs{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?q=gaming" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 tech-nav-link" style="font-size: 0.82rem;">
+                    <i class="bi bi-controller text-warning"></i>
+                    <span>{% if IS_BANGLA %}গেমিং গিয়ার{% else %}Gaming Gear{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=audio-gear" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 d-none d-lg-flex tech-nav-link" style="font-size: 0.82rem;">
+                    <i class="bi bi-headphones text-info" style="color: #38bdf8 !important;"></i>
+                    <span>{% if IS_BANGLA %}অডিও ও সাউন্ডবার{% else %}Audio &amp; Soundbars{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=mobile-accessories" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 d-none d-xl-flex tech-nav-link" style="font-size: 0.82rem;">
+                    <i class="bi bi-smartwatch text-info" style="color: #38bdf8 !important;"></i>
+                    <span>{% if IS_BANGLA %}স্মার্ট হোম ও এক্সেসরিজ{% else %}Smart Home &amp; Accessories{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}#brands" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 d-none d-xxl-flex tech-nav-link" style="font-size: 0.82rem;">
+                    <i class="bi bi-patch-check-fill text-info" style="color: #38bdf8 !important;"></i>
+                    <span>{% if IS_BANGLA %}অফিশিয়াল ব্র্যান্ড স্টোর{% else %}Official Brand Stores{% endif %}</span>
+                </a>
+            </div>
+
+            <!-- Right-Side Callout Badges: 0% EMI Available & Official Warranty Guarantee -->
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <!-- 0% EMI Available Badge / Calculator Trigger -->
+                <button type="button" class="badge border d-inline-flex align-items-center gap-1 btn btn-xs py-1 px-2 text-decoration-none" data-bs-toggle="modal" data-bs-target="#emiCalculatorModal" style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3) !important; border-radius: 9999px; font-size: 0.72rem; cursor: pointer;" title="Calculate 0% EMI monthly installments">
+                    <i class="bi bi-credit-card-2-front-fill text-warning"></i>
+                    <span>0% EMI Available</span>
+                </button>
+
+                <!-- Official Warranty Guarantee Badge -->
+                <span class="badge d-none d-lg-inline-flex align-items-center gap-1" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border-radius: 9999px; font-size: 0.72rem; padding: 4px 10px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);">
+                    <i class="bi bi-shield-fill-check" style="color: #38bdf8;"></i> Official Warranty Guarantee
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Dedicated Mobile Tech Header (Star Tech / Compact Dark Pro) -->
+    <div class="tech-mobile-header d-md-none py-2 px-2" style="background-color: #0b1120; border-bottom: 1px solid rgba(56, 189, 248, 0.2);">
+        <!-- Mobile Top Row: Drawer Trigger, Brand Logo, Language Toggle, Wishlist, Cart -->
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+            <!-- Mobile Offcanvas Menu Trigger -->
+            <button class="btn btn-outline-secondary rounded-circle p-2 border-0 flex-shrink-0 text-white" 
+                    type="button" 
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#mobileTechOffcanvas" 
+                    aria-label="Open Electronics Menu"
+                    style="width: 38px; height: 38px; background-color: #1e293b; border-color: rgba(56, 189, 248, 0.2) !important;">
+                <i class="bi bi-list fs-5" style="color: #38bdf8;"></i>
+            </button>
+
+            <!-- Mobile Tech Logo -->
+            <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-1 flex-grow-1 text-truncate" title="{{ site_settings.get_effective_site_name|default:'TechVerse' }}">
+                {% if site_settings.get_brand_logo_url %}
+                    <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store' }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;">
+                {% elif site_settings.brand_logo %}
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;">
+                {% elif CURRENT_THEME_DATA.logo_dark_url %}
+                    <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="30" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;">
+                {% else %}
+                    <div class="rounded-2 p-1 text-white d-flex align-items-center justify-content-center" style="background-color: #0284c7; width: 28px; height: 28px;">
+                        <i class="bi bi-cpu fs-6" style="color: #38bdf8;"></i>
+                    </div>
+                    <span class="fw-bold fs-6 text-white text-truncate">{{ site_settings.get_effective_site_name|default:'TECH' }}<span style="color: #38bdf8;">VERSE</span></span>
+                {% endif %}
+            </a>
+
+            <!-- Mobile Right Controls -->
+            <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                <!-- Mobile Language Mini Toggle -->
+                {% if CURRENT_LANGUAGE == 'en' %}
+                    <a href="{% url 'set_language' 'bn' %}" class="btn btn-sm btn-outline-secondary py-1 px-2 rounded-pill fw-bold text-white-50" style="font-size: 0.68rem; border-color: rgba(255,255,255,0.2);" title="বাংলায় দেখুন">বাং</a>
+                {% else %}
+                    <a href="{% url 'set_language' 'en' %}" class="btn btn-sm btn-outline-secondary py-1 px-2 rounded-pill fw-bold text-white-50" style="font-size: 0.68rem; border-color: rgba(255,255,255,0.2);" title="View in English">EN</a>
+                {% endif %}
+
+                <!-- Mobile Wishlist Button -->
+                <a href="{% url 'wishlist_view' %}" class="btn btn-outline-secondary rounded-circle p-2 border position-relative text-white" style="width: 36px; height: 36px; background-color: #1e293b; border-color: rgba(56, 189, 248, 0.2) !important;" title="{{ tr.wishlist }}">
+                    <i class="bi bi-heart fs-6 text-danger"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; padding: 2px 4px;">
+                        {{ global_wishlist_count|default:0 }}
+                    </span>
+                </a>
+
+                <!-- Mobile Cart Button -->
+                <button class="btn text-white rounded-circle p-2 position-relative shadow-sm" 
+                        type="button" 
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#cartOffcanvas" 
+                        data-cart-drawer="#cartDrawer"
+                        onclick="if (typeof openCartDrawer === 'function') { openCartDrawer(); } else if (document.getElementById('cartDrawer') && document.getElementById('cartDrawer').classList.contains('offcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartDrawer')).show(); } else if (document.getElementById('cartOffcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartOffcanvas')).show(); }"
+                        style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); width: 36px; height: 36px; box-shadow: 0 0 10px rgba(2, 132, 199, 0.4);" 
+                        title="{{ tr.cart }}">
+                    <i class="bi bi-cart3 fs-6" style="color: #38bdf8;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info text-dark" style="font-size: 0.6rem; padding: 2px 4px; background-color: #38bdf8 !important;">
+                        {{ global_cart_items_count|default:0 }}
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Compact Tech Search Bar -->
+        <form action="{% url 'product_list' %}" method="get" class="w-100 mb-2">
+            <div class="input-group input-group-sm rounded-pill overflow-hidden border" style="border-color: rgba(56, 189, 248, 0.35) !important; background-color: #0f172a;">
+                <input type="text" name="q" class="form-control border-0 py-2 px-3 text-white" 
+                       placeholder="{% if IS_BANGLA %}ল্যাপটপ, ফোন, জিপিইউ খুঁজুন...{% else %}Search laptops, phones, GPUs...{% endif %}" 
+                       value="{{ request.GET.q|default:'' }}" 
+                       style="font-size: 0.85rem; background-color: #0f172a; color: #f8fafc;" 
+                       aria-label="Search Tech Store Mobile">
+                <button class="btn text-white px-3 fw-bold" type="submit" style="background-color: #0284c7; border: none;">
+                    <i class="bi bi-search text-cyan" style="color: #38bdf8;"></i>
+                </button>
+            </div>
+        </form>
+
+        <!-- Quick Tech Pills Horizontal Scrollbar -->
+        <div class="tech-mobile-pills d-flex align-items-center gap-1 overflow-x-auto pt-1 pb-1 text-nowrap no-scrollbar" style="font-size: 0.75rem;">
+            <a href="{% url 'product_list' %}" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold text-white" style="border-color: rgba(56, 189, 248, 0.3); background-color: #1e293b;">
+                <i class="bi bi-grid me-1 text-info" style="color: #38bdf8 !important;"></i>{% if IS_BANGLA %}সকল টেক{% else %}All Tech{% endif %}
+            </a>
+            <a href="{% url 'product_list' %}?category=laptops" class="btn btn-xs py-1 px-2 rounded-pill fw-semibold text-white" style="background-color: #0284c7;">
+                <i class="bi bi-laptop me-1"></i>Laptops
+            </a>
+            <a href="{% url 'product_list' %}?category=smartphones" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold text-white" style="border-color: rgba(56, 189, 248, 0.3); background-color: #1e293b;">
+                <i class="bi bi-phone me-1 text-info" style="color: #38bdf8 !important;"></i>Phones
+            </a>
+            <a href="{% url 'product_list' %}?category=pc-hardware" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold text-white" style="border-color: rgba(56, 189, 248, 0.3); background-color: #1e293b;">
+                <i class="bi bi-gpu-card me-1 text-warning"></i>GPUs &amp; PC
+            </a>
+            <a href="{% url 'product_list' %}?q=gaming" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold text-white" style="border-color: rgba(56, 189, 248, 0.3); background-color: #1e293b;">
+                <i class="bi bi-controller me-1 text-danger"></i>Gaming
+            </a>
+            <a href="{% url 'product_list' %}?category=audio-gear" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold text-white" style="border-color: rgba(56, 189, 248, 0.3); background-color: #1e293b;">
+                <i class="bi bi-headphones me-1 text-info" style="color: #38bdf8 !important;"></i>Audio
+            </a>
+            <button type="button" class="btn btn-xs btn-outline-warning py-1 px-2 rounded-pill fw-semibold text-warning" data-bs-toggle="modal" data-bs-target="#emiCalculatorModal">
+                <i class="bi bi-credit-card-2-front me-1"></i>0% EMI
+            </button>
+            <button type="button" class="btn btn-xs btn-outline-info py-1 px-2 rounded-pill fw-semibold text-info" data-bs-toggle="modal" data-bs-target="#warrantyClaimModal" style="color: #38bdf8 !important; border-color: #38bdf8 !important;">
+                <i class="bi bi-patch-check me-1"></i>Warranty
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Compatibility Anchor for Cart Drawer Selector -->
+<div id="cartDrawer" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-hidden="true"></div>
+
+<!-- 5. Dedicated Mobile Tech Offcanvas Drawer (#mobileTechOffcanvas) -->
+<div class="offcanvas offcanvas-start shadow-lg text-white" tabindex="-1" id="mobileTechOffcanvas" aria-labelledby="mobileTechOffcanvasLabel" style="background-color: #0b1120; border-right: 1px solid rgba(56, 189, 248, 0.25);">
+    <div class="offcanvas-header text-white" style="background: linear-gradient(135deg, #070d19 0%, #0f172a 100%); border-bottom: 1px solid rgba(56, 189, 248, 0.2);">
+        <div class="d-flex align-items-center gap-2">
+            {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
+                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-info" style="width: 38px; height: 38px;">
+            {% else %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                    <i class="bi bi-cpu fs-5" style="color: #38bdf8;"></i>
+                </div>
+            {% endif %}
+            <div>
+                <span class="d-block text-white-50 small" style="font-size: 0.72rem;">
+                    {% if request.user.is_authenticated and not request.user.is_staff %}
+                        {{ tr.signed_in_as }}
+                    {% else %}
+                        {% if IS_BANGLA %}স্বাগতম টেক স্টোরে{% else %}Welcome to TechVerse{% endif %}
+                    {% endif %}
+                </span>
+                <strong class="text-white d-block text-truncate" style="font-size: 0.9rem; max-width: 180px;">
+                    {% if request.user.is_authenticated and not request.user.is_staff %}
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="text-info text-decoration-none fw-bold" style="color: #38bdf8 !important;">{% if IS_BANGLA %}লগইন / রেজিস্টার করুন{% else %}Sign In / Register{% endif %}</a>
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0">
+        <!-- Quick Tech Actions -->
+        <div class="p-3 border-bottom border-secondary" style="background-color: #0f172a;">
+            <div class="row g-2">
+                <div class="col-6">
+                    <button type="button" class="btn btn-sm btn-outline-info w-100 d-flex align-items-center justify-content-center gap-1 rounded-3 py-2 text-truncate" data-bs-toggle="modal" data-bs-target="#warrantyClaimModal" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                        <i class="bi bi-patch-check-fill"></i>
+                        <span style="font-size: 0.75rem;">Claim Warranty</span>
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-sm btn-outline-warning w-100 d-flex align-items-center justify-content-center gap-1 rounded-3 py-2 text-truncate" data-bs-toggle="modal" data-bs-target="#emiCalculatorModal" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">
+                        <i class="bi bi-credit-card-2-front"></i>
+                        <span style="font-size: 0.75rem;">0% EMI Calculator</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Links & Categories -->
+        <div class="p-3">
+            <h6 class="text-uppercase text-white-50 fw-bold small mb-2" style="font-size: 0.7rem; letter-spacing: 0.08em;">
+                Hardware Categories
+            </h6>
+            <div class="list-group list-group-flush mb-3">
+                <a href="{% url 'product_list' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-grid-fill text-info" style="color: #38bdf8 !important;"></i>
+                        <span>{% if IS_BANGLA %}সকল পণ্য ব্রাউজ করুন{% else %}Browse All Tech Hardware{% endif %}</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+                <a href="{% url 'product_list' %}?category=laptops" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-laptop text-info" style="color: #38bdf8 !important;"></i>
+                        <span>Laptops &amp; MacBooks</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+                <a href="{% url 'product_list' %}?category=smartphones" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-phone text-info" style="color: #38bdf8 !important;"></i>
+                        <span>Smartphones &amp; Tablets</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+                <a href="{% url 'product_list' %}?category=pc-hardware" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-gpu-card text-info" style="color: #38bdf8 !important;"></i>
+                        <span>PC Hardware &amp; GPUs</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+                <a href="{% url 'product_list' %}?q=gaming" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-controller text-warning"></i>
+                        <span>Gaming Gear &amp; Consoles</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+                <a href="{% url 'product_list' %}?category=audio-gear" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-headphones text-info" style="color: #38bdf8 !important;"></i>
+                        <span>Audio &amp; Soundbars</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+                <a href="{% url 'product_list' %}?category=mobile-accessories" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-smartwatch text-info" style="color: #38bdf8 !important;"></i>
+                        <span>Smart Home &amp; Accessories</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+                <a href="{% url 'product_list' %}#brands" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-patch-check-fill text-info" style="color: #38bdf8 !important;"></i>
+                        <span>Official Brand Stores</span>
+                    </span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </a>
+            </div>
+
+            <!-- Customer Account Menu Items -->
+            <h6 class="text-uppercase text-white-50 fw-bold small mb-2" style="font-size: 0.7rem; letter-spacing: 0.08em;">
+                Account &amp; Orders
+            </h6>
+            <div class="list-group list-group-flush mb-3">
+                {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <a href="{% url 'customer_dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-speedometer2 text-info" style="color: #38bdf8 !important;"></i> {{ tr.dashboard }}
+                    </a>
+                    <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-box-seam text-warning"></i> {{ tr.my_orders }}
+                    </a>
+                    <a href="{% url 'wishlist_view' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-heart text-danger"></i> {{ tr.wishlist }} ({{ global_wishlist_count|default:0 }})
+                    </a>
+                    <a href="{% url 'address_list' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-geo-alt text-success"></i> {{ tr.address_book }}
+                    </a>
+                    <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action bg-transparent text-danger border-0 py-2 d-flex align-items-center gap-2 fw-semibold">
+                        <i class="bi bi-box-arrow-right"></i> {{ tr.logout }}
+                    </a>
+                {% else %}
+                    <a href="{% url 'account_login' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-box-arrow-in-right text-info" style="color: #38bdf8 !important;"></i> {{ tr.sign_in }}
+                    </a>
+                    <a href="{% url 'account_register' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-plus text-info" style="color: #38bdf8 !important;"></i> {{ tr.create_account }}
+                    </a>
+                    <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-truck text-warning"></i> {% if IS_BANGLA %}অর্ডার স্ট্যাটাস দেখুন{% else %}Track Order{% endif %}
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Hotline Support Contact -->
+            <div class="p-3 rounded-3 text-center" style="background-color: #0f172a; border: 1px solid rgba(56, 189, 248, 0.2);">
+                <small class="text-white-50 d-block mb-1">{% if IS_BANGLA %}২৪/৭ সার্টিফাইড টেক সাপোর্ট{% else %}24/7 Certified Tech Support{% endif %}</small>
+                <a href="tel:{{ site_settings.contact_phone|default:'+880 1700-000000' }}" class="text-info fw-bold text-decoration-none fs-6 d-flex align-items-center justify-content-center gap-2" style="color: #38bdf8 !important;">
+                    <i class="bi bi-telephone-inbound-fill"></i>
+                    <span>{{ site_settings.contact_phone|default:'+880 1700-000000' }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. Interactive Warranty Claim Portal Modal (#warrantyClaimModal) -->
+<div class="modal fade" id="warrantyClaimModal" tabindex="-1" aria-labelledby="warrantyClaimModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white border-0 shadow-lg" style="background-color: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3) !important;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #070d19 0%, #0284c7 100%); border-bottom: 1px solid rgba(56, 189, 248, 0.3);">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background-color: rgba(255, 255, 255, 0.15);">
+                        <i class="bi bi-patch-check-fill text-warning fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-white mb-0" id="warrantyClaimModalLabel" style="font-size: 1rem;">
+                            {% if IS_BANGLA %}অফিসিয়াল ওয়ারেন্টি ক্লেইম পোর্টাল{% else %}Official Tech Warranty Claim Portal{% endif %}
+                        </h5>
+                        <small class="text-white-50" style="font-size: 0.72rem;">Authorized Brand Care &amp; Service Network BD</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="techWarrantyForm" onsubmit="event.preventDefault(); alert('Warranty Verification Successful! Your claim ticket has been created. A certified technician will call you within 2 hours.'); bootstrap.Modal.getInstance(document.getElementById('warrantyClaimModal')).hide();">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white-50">Select Device Brand</label>
+                        <select class="form-select bg-dark text-white border-secondary small" required>
+                            <option value="">Choose manufacturer...</option>
+                            <option value="apple">Apple (iPhone, MacBook, iPad)</option>
+                            <option value="asus">ASUS / ROG Gaming</option>
+                            <option value="dell">Dell Technologies</option>
+                            <option value="hp">HP / Omen</option>
+                            <option value="lenovo">Lenovo / Legion</option>
+                            <option value="samsung">Samsung Official</option>
+                            <option value="sony">Sony PlayStation / Audio</option>
+                            <option value="logitech">Logitech G</option>
+                            <option value="other">Other Brand Device</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white-50">Device Serial Number / IMEI</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-secondary border-secondary text-white"><i class="bi bi-upc-scan"></i></span>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="e.g. C02G80XYZ89 or 356891234567890" required>
+                        </div>
+                        <small class="text-white-50" style="font-size: 0.7rem;">Found on device chassis, original box packaging, or Settings > About.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white-50">Order Invoice / Purchase ID (Optional)</label>
+                        <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="e.g. ORD-2026-9812">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white-50">Issue Description</label>
+                        <textarea class="form-control form-control-sm bg-dark text-white border-secondary" rows="2" placeholder="Briefly describe the hardware issue or malfunction..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white-50">Preferred Authorized Service Center</label>
+                        <select class="form-select form-select-sm bg-dark text-white border-secondary">
+                            <option value="dhaka-idb">Star Tech Service Center - IDB Bhaban, Agargaon, Dhaka</option>
+                            <option value="dhaka-multiplan">Multiplan Center Hardware Hub - Elephant Road, Dhaka</option>
+                            <option value="dhaka-banani">Apple Authorized Care Center - Banani, Dhaka</option>
+                            <option value="dhaka-uttara">Samsung Official Care Center - Sector 3, Uttara, Dhaka</option>
+                            <option value="ctg-agrabad">Chattogram Regional Tech Care - Agrabad, Chattogram</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-white-50">Contact Phone Number</label>
+                        <input type="tel" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="+880 1XXXXXXXXX" value="{{ request.user.profile.phone|default:'' }}" required>
+                    </div>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn text-white fw-bold py-2 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                            <i class="bi bi-shield-check me-1"></i> Verify Warranty &amp; Submit Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary py-2" style="background-color: #070d19;">
+                <small class="text-white-50" style="font-size: 0.72rem;">
+                    <i class="bi bi-info-circle text-info me-1" style="color: #38bdf8 !important;"></i> Warranty is fulfilled strictly per manufacturer terms in Bangladesh.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. Interactive 0% EMI Installment Calculator Modal (#emiCalculatorModal) -->
+<div class="modal fade" id="emiCalculatorModal" tabindex="-1" aria-labelledby="emiCalculatorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white border-0 shadow-lg" style="background-color: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3) !important;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #070d19 0%, #0369a1 100%); border-bottom: 1px solid rgba(56, 189, 248, 0.3);">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background-color: rgba(255, 255, 255, 0.15);">
+                        <i class="bi bi-credit-card-2-front-fill text-warning fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-white mb-0" id="emiCalculatorModalLabel" style="font-size: 1rem;">
+                            0% EMI Installment Calculator
+                        </h5>
+                        <small class="text-white-50" style="font-size: 0.72rem;">Up to 36 Months Zero-Interest Financing with Leading BD Banks</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-white-50">Device Price (৳ BDT)</label>
+                    <input type="number" id="emiProductPrice" class="form-control bg-dark text-white border-secondary" value="95000" min="5000" step="1000" oninput="calculateEMI()">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-white-50">Select Tenure (Months)</label>
+                    <div class="btn-group w-100" role="group" id="emiTenureGroup">
+                        <input type="radio" class="btn-check" name="emiTenure" id="emi3" value="3" onchange="calculateEMI()">
+                        <label class="btn btn-outline-info btn-sm" for="emi3">3 Mo</label>
+
+                        <input type="radio" class="btn-check" name="emiTenure" id="emi6" value="6" onchange="calculateEMI()">
+                        <label class="btn btn-outline-info btn-sm" for="emi6">6 Mo</label>
+
+                        <input type="radio" class="btn-check" name="emiTenure" id="emi12" value="12" checked onchange="calculateEMI()">
+                        <label class="btn btn-outline-info btn-sm" for="emi12">12 Mo</label>
+
+                        <input type="radio" class="btn-check" name="emiTenure" id="emi24" value="24" onchange="calculateEMI()">
+                        <label class="btn btn-outline-info btn-sm" for="emi24">24 Mo</label>
+
+                        <input type="radio" class="btn-check" name="emiTenure" id="emi36" value="36" onchange="calculateEMI()">
+                        <label class="btn btn-outline-info btn-sm" for="emi36">36 Mo</label>
+                    </div>
+                </div>
+                <!-- Calculated Result Box -->
+                <div class="p-3 rounded-3 text-center mb-3" style="background-color: #070d19; border: 1px dashed rgba(56, 189, 248, 0.4);">
+                    <span class="text-white-50 small d-block mb-1">Estimated Monthly Installment</span>
+                    <h3 class="fw-bold mb-0 text-info" id="emiMonthlyAmount" style="color: #38bdf8 !important;">৳7,917 <span class="fs-6 text-white-50">/month</span></h3>
+                    <small class="text-success d-block mt-1"><i class="bi bi-check-circle-fill me-1"></i> 0% Interest (Zero Extra Markup)</small>
+                </div>
+                <!-- Supported Banks -->
+                <div class="small">
+                    <span class="text-white-50 d-block fw-semibold mb-2">Supported Banking Partners (Credit Cards):</span>
+                    <div class="d-flex flex-wrap gap-2 text-white-50" style="font-size: 0.75rem;">
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1">Standard Chartered</span>
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1">City Bank Amex</span>
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1">BRAC Bank</span>
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1">Eastern Bank (EBL)</span>
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1">Dutch-Bangla Bank</span>
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1">MTB</span>
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1">Dhaka Bank</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary py-2" style="background-color: #070d19;">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculateEMI() {
+    var priceInput = document.getElementById('emiProductPrice');
+    var price = parseFloat(priceInput ? priceInput.value : 95000) || 0;
+    var tenureRadio = document.querySelector('input[name="emiTenure"]:checked');
+    var tenure = parseInt(tenureRadio ? tenureRadio.value : 12, 10) || 12;
+    var monthly = Math.round(price / tenure);
+    var target = document.getElementById('emiMonthlyAmount');
+    if (target) {
+        target.innerHTML = '৳' + monthly.toLocaleString() + ' <span class="fs-6 text-white-50">/month</span>';
+    }
+}
+</script>
+
+<style>
+/* Tech & Electronics Header High-Precision Styling */
+.tech-header .text-cyan {
+    color: #38bdf8 !important;
+}
+.tech-header .text-cyan-glow {
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+.tech-header .text-light-hover:hover {
+    color: #38bdf8 !important;
+}
+.tech-header .tech-nav-link:hover {
+    color: #ffffff !important;
+}
+.tech-header .tech-search-btn:hover {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+}
+.tech-header .tech-cart-btn:hover {
+    box-shadow: 0 0 18px rgba(2, 132, 199, 0.6) !important;
+}
+.tech-mobile-pills::-webkit-scrollbar {
+    display: none;
+}
+.tech-mobile-pills {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+</style>

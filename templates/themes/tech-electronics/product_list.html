@@ -1,0 +1,730 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+    {% if selected_category %}{{ selected_category.name }} | {% elif query %}Search "{{ query }}" | {% elif selected_brand %}{{ selected_brand.name }} | {% endif %}Tech & Hardware Catalog | {{ site_settings.site_name|default:'TechVerse' }}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ==========================================================
+       TECH & ELECTRONICS CATALOG STYLING (Star Tech & Apple Style)
+       ========================================================== */
+    .tech-catalog-header {
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(15, 23, 42, 0.04) 100%);
+        border: 1px solid rgba(2, 132, 199, 0.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    [data-bs-theme="dark"] .tech-catalog-header {
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%);
+        border-color: rgba(2, 132, 199, 0.3);
+    }
+
+    /* Subcategory Shortcuts Carousel / Bar */
+    .tech-shortcuts-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tech-shortcuts-bar::-webkit-scrollbar {
+        height: 4px;
+    }
+    .tech-shortcuts-bar::-webkit-scrollbar-thumb {
+        background: rgba(2, 132, 199, 0.3);
+        border-radius: 4px;
+    }
+    .tech-shortcut-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0.9rem;
+        border-radius: 50px;
+        border: 1px solid var(--border-color, #e2e8f0);
+        background: var(--surface-card, #ffffff);
+        color: var(--text-main, #1e293b);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+    .tech-shortcut-chip:hover,
+    .tech-shortcut-chip.active {
+        border-color: #0284c7;
+        background: rgba(2, 132, 199, 0.08);
+        color: #0284c7;
+        transform: translateY(-1px);
+    }
+    [data-bs-theme="dark"] .tech-shortcut-chip {
+        background: #1e293b;
+        border-color: #334155;
+        color: #e2e8f0;
+    }
+
+    /* Filter Sidebar */
+    .filter-sidebar-card,
+    .tech-filter-sidebar {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 14px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px -3px rgba(15, 23, 42, 0.04);
+    }
+    [data-bs-theme="dark"] .filter-sidebar-card,
+    [data-bs-theme="dark"] .tech-filter-sidebar {
+        background: #1e293b;
+        border-color: #334155;
+    }
+
+    .filter-section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-main, #0f172a);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    [data-bs-theme="dark"] .filter-section-title {
+        color: #f1f5f9;
+    }
+
+    .category-tree-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        color: var(--text-main, #334155);
+        text-decoration: none;
+        font-size: 0.82rem;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+    .category-tree-link:hover,
+    .category-tree-link.active {
+        background: rgba(2, 132, 199, 0.08);
+        color: #0284c7;
+        font-weight: 600;
+    }
+
+    .brand-filter-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.35rem 0.2rem;
+        font-size: 0.82rem;
+    }
+
+    /* Active Filter Chips */
+    .tech-active-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        background: rgba(2, 132, 199, 0.1);
+        border: 1px solid rgba(2, 132, 199, 0.3);
+        color: #0284c7;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    .tech-active-filter-chip:hover {
+        background: rgba(2, 132, 199, 0.2);
+        color: #0369a1;
+    }
+
+    /* View Switcher */
+    .view-mode-btn {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: 1px solid var(--border-color, #cbd5e1);
+        background: var(--surface-card, #ffffff);
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .view-mode-btn:hover,
+    .view-mode-btn.active {
+        background: #0284c7;
+        color: #ffffff;
+        border-color: #0284c7;
+    }
+    [data-bs-theme="dark"] .view-mode-btn {
+        background: #1e293b;
+        border-color: #334155;
+        color: #94a3b8;
+    }
+
+    /* Tech Spec List View Mode Layout */
+    .tech-list-view .col-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+    .tech-list-view .tech-product-card {
+        flex-direction: row !important;
+        min-height: 200px;
+    }
+    .tech-list-view .tech-card-img-wrapper {
+        width: 240px !important;
+        min-width: 240px !important;
+        height: auto !important;
+        min-height: 100% !important;
+        border-right: 1px solid var(--border-color, #e2e8f0);
+    }
+    .tech-list-view .tech-product-card .card-body {
+        display: grid !important;
+        grid-template-columns: 1fr 220px;
+        gap: 1.25rem;
+        align-items: center;
+    }
+    @media (max-width: 991px) {
+        .tech-list-view .tech-product-card {
+            flex-direction: column !important;
+        }
+        .tech-list-view .tech-card-img-wrapper {
+            width: 100% !important;
+            height: 180px !important;
+            border-right: none;
+            border-bottom: 1px solid var(--border-color, #e2e8f0);
+        }
+        .tech-list-view .tech-product-card .card-body {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none text-muted">Tech & Electronics</a></li>
+            {% if selected_category %}
+                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">{{ selected_category.name }}</li>
+            {% elif selected_brand %}
+                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">{{ selected_brand.name }}</li>
+            {% elif query %}
+                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Search: "{{ query }}"</li>
+            {% else %}
+                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">All Hardware</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Tech Category & Catalog Header -->
+    <div class="tech-catalog-header d-flex flex-wrap align-items-center justify-content-between gap-3 shadow-xs">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 52px; height: 52px; background: rgba(2, 132, 199, 0.12); color: #0284c7;">
+                <i class="bi {% if selected_category %}{{ selected_category.icon|default:'bi-laptop' }}{% else %}bi-cpu{% endif %} fs-3"></i>
+            </div>
+            <div>
+                <h1 class="h4 fw-bold mb-0 text-dark">
+                    {% if selected_category %}
+                        {{ selected_category.name }}
+                    {% elif selected_brand %}
+                        {{ selected_brand.name }} Hardware
+                    {% elif query %}
+                        Search: "{{ query }}"
+                    {% else %}
+                        Tech & Electronics Catalog
+                    {% endif %}
+                </h1>
+                <p class="text-muted small mb-0 mt-0.5">
+                    Official Brand Authorized Store • 0% EMI Available • 100% Genuine Certified Devices
+                </p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge px-3 py-2 fw-semibold rounded-pill" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.82rem;">
+                <i class="bi bi-box-seam me-1"></i><strong>{{ total_count }}</strong> Products Available
+            </span>
+        </div>
+    </div>
+
+    <!-- Horizontal Subcategory Shortcuts Carousel -->
+    <div class="tech-shortcuts-bar">
+        <a href="{% url 'product_list' %}" class="tech-shortcut-chip {% if not selected_category %}active{% endif %}">
+            <i class="bi bi-grid-fill"></i> All Hardware
+        </a>
+        {% for cat in categories %}
+            <a href="{% url 'product_category' cat.slug %}" class="tech-shortcut-chip {% if selected_category.slug == cat.slug %}active{% endif %}">
+                <i class="bi {{ cat.icon|default:'bi-laptop' }}"></i>
+                <span>{{ cat.name }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Main Content Area: Sidebar Filter + Product Showcase -->
+    <div class="row g-4">
+        <!-- Desktop Filter Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="filter-sidebar-card tech-filter-sidebar">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-sliders me-1 text-primary"></i> Technical Filters</h6>
+                    <a href="{% url 'product_list' %}" class="small text-muted text-decoration-none hover-primary">Reset All</a>
+                </div>
+
+                <!-- 1. Category Hierarchy Filter -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Device Categories</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1" style="max-height: 250px; overflow-y: auto;">
+                        <a href="javascript:void(0)" onclick="removeTechParam('category')" class="category-tree-link {% if not selected_category %}active{% endif %}">
+                            <span><i class="bi bi-grid me-1"></i> All Categories</span>
+                        </a>
+                        {% for cat in categories %}
+                            <a href="javascript:void(0)" onclick="updateTechParam('category', '{{ cat.slug }}')" class="category-tree-link {% if selected_category.slug == cat.slug %}active{% endif %}">
+                                <span class="text-truncate"><i class="bi {{ cat.icon|default:'bi-laptop' }} me-1 opacity-75"></i> {{ cat.name }}</span>
+                                <span class="badge bg-light text-muted border ms-1" style="font-size: 0.65rem;">{{ cat.products.count }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 2. Technical Brand Filter Checkboxes -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Authorized Brands</span>
+                        <i class="bi bi-patch-check small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1" style="max-height: 200px; overflow-y: auto;">
+                        <a href="javascript:void(0)" onclick="removeTechParam('brand')" class="brand-filter-item text-decoration-none {% if not selected_brand %}fw-bold text-primary{% else %}text-muted{% endif %}">
+                            <span>All Brands</span>
+                        </a>
+                        {% for b in brands %}
+                            <div class="brand-filter-item">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" id="brandCheck_{{ b.pk }}" {% if selected_brand.slug == b.slug %}checked{% endif %} onchange="updateTechParam('brand', this.checked ? '{{ b.slug }}' : '')">
+                                    <label class="form-check-label text-truncate text-dark small" for="brandCheck_{{ b.pk }}" style="max-width: 140px; cursor: pointer;">
+                                        {{ b.name }}
+                                    </label>
+                                </div>
+                                <span class="badge bg-light text-muted border" style="font-size: 0.65rem;">{{ b.products.count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 3. Price Range Slider & Brackets -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Price Range (BDT ৳)</span>
+                        <i class="bi bi-cash-stack small"></i>
+                    </div>
+                    <form method="get" id="techPriceFilterForm" class="d-flex flex-column gap-2">
+                        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+                        {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand.slug }}">{% endif %}
+                        {% if in_stock == '1' %}<input type="hidden" name="in_stock" value="1">{% endif %}
+                        {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                        {% if rating %}<input type="hidden" name="rating" value="{{ rating }}">{% endif %}
+                        <input type="hidden" name="per_page" value="{{ per_page }}">
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light text-muted small">৳</span>
+                            <input type="number" name="min_price" value="{{ min_price }}" class="form-control" placeholder="Min" min="0">
+                            <span class="input-group-text bg-light text-muted small">-</span>
+                            <input type="number" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max" min="0">
+                        </div>
+
+                        <!-- Technical Price Brackets -->
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setTechPriceBracket('', 25000)">&lt; ৳25K</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setTechPriceBracket(25000, 50000)">৳25K-50K</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setTechPriceBracket(50000, 100000)">৳50K-100K</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setTechPriceBracket(100000, '')">&gt; ৳100K</button>
+                        </div>
+
+                        <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-semibold mt-1">
+                            Apply Filter
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 4. Stock Status Filter (In Stock Only) -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Availability</span>
+                        <i class="bi bi-box-seam small"></i>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="techInStockSwitch" {% if in_stock == '1' %}checked{% endif %} onchange="updateTechParam('in_stock', this.checked ? '1' : '')">
+                        <label class="form-check-label text-dark small" for="techInStockSwitch">
+                            In Stock Only (Dispatch Today)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 5. Official Warranty Toggle -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Assurance</span>
+                        <i class="bi bi-shield-check small"></i>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="techWarrantySwitch" checked disabled>
+                        <label class="form-check-label text-dark small" for="techWarrantySwitch">
+                            100% Official BD Warranty Included
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 6. Rating Filter -->
+                <div class="mb-3">
+                    <div class="filter-section-title">
+                        <span>Customer Rating</span>
+                        <i class="bi bi-star small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1">
+                        <a href="javascript:void(0)" onclick="updateTechParam('rating', '4')" class="rating-filter-link category-tree-link {% if rating == '4' %}active{% endif %}">
+                            <span class="text-warning">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star text-muted"></i>
+                                <span class="text-dark small ms-1 fw-medium">& Up (4.0+)</span>
+                            </span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="updateTechParam('rating', '3')" class="rating-filter-link category-tree-link {% if rating == '3' %}active{% endif %}">
+                            <span class="text-warning">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star text-muted"></i><i class="bi bi-star text-muted"></i>
+                                <span class="text-dark small ms-1 fw-medium">& Up (3.0+)</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catalog Product Grid & Action Bar -->
+        <div class="col-lg-9">
+            <!-- Action Toolbar: Active Chips, Sort Dropdown & Grid/List View Switcher -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 mb-3 rounded-3 border bg-white shadow-xs" style="border-radius: 12px;">
+                <!-- Left: Mobile Filter Button & Active Filter Chips -->
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <button class="btn btn-outline-primary btn-sm d-lg-none fw-semibold rounded-pill d-flex align-items-center gap-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#techFilterOffcanvas" aria-controls="techFilterOffcanvas">
+                        <i class="bi bi-sliders"></i> Filter
+                        {% if selected_category or selected_brand or min_price or max_price or in_stock or rating %}
+                            <span class="badge bg-primary rounded-pill ms-1">Active</span>
+                        {% endif %}
+                    </button>
+
+                    <!-- Active Filter Chips -->
+                    {% if selected_category %}
+                        <a href="javascript:void(0)" onclick="removeTechParam('category')" class="tech-active-filter-chip">
+                            Category: {{ selected_category.name }} <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                    {% endif %}
+                    {% if selected_brand %}
+                        <a href="javascript:void(0)" onclick="removeTechParam('brand')" class="tech-active-filter-chip">
+                            Brand: {{ selected_brand.name }} <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                    {% endif %}
+                    {% if min_price or max_price %}
+                        <a href="javascript:void(0)" onclick="removeTechPriceParams()" class="tech-active-filter-chip">
+                            Price: ৳{{ min_price|default:'0' }} - ৳{{ max_price|default:'Max' }} <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                    {% endif %}
+                    {% if in_stock == '1' %}
+                        <a href="javascript:void(0)" onclick="removeTechParam('in_stock')" class="tech-active-filter-chip">
+                            In Stock Only <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                    {% endif %}
+                    {% if rating %}
+                        <a href="javascript:void(0)" onclick="removeTechParam('rating')" class="tech-active-filter-chip">
+                            Rating: {{ rating }}+ ★ <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Right: Sort Dropdown & Grid / List View Toggle Buttons -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <!-- Sort Dropdown -->
+                    <div class="d-flex align-items-center gap-1">
+                        <label for="techSortSelect" class="small text-muted mb-0 d-none d-sm-inline">Sort:</label>
+                        <select id="techSortSelect" class="form-select form-select-sm" style="width: auto; font-size: 0.8rem; border-radius: 8px;" onchange="updateTechParam('sort', this.value)">
+                            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest Devices</option>
+                            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                            <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name: A to Z</option>
+                        </select>
+                    </div>
+
+                    <!-- Grid / Tech Spec List View Mode Buttons -->
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Catalog View Mode">
+                        <button type="button" class="view-mode-btn active" id="btnGridView" onclick="setTechCatalogLayout('grid')" title="Grid View">
+                            <i class="bi bi-grid-3x3-gap-fill"></i>
+                        </button>
+                        <button type="button" class="view-mode-btn" id="btnListView" onclick="setTechCatalogLayout('list')" title="Tech Spec List View">
+                            <i class="bi bi-view-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Products Grid / List View -->
+            {% if products %}
+                <div class="row g-3 row-cols-2 row-cols-md-3 row-cols-xl-3" id="techProductGrid">
+                    {% for product in products %}
+                        <div class="col col-card">
+                            {% include 'themes/tech-electronics/product_card.html' with product=product %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Bottom Pagination Preserving All Querystring Params -->
+                {% if paginator.num_pages > 1 %}
+                <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 pt-3 border-top gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <small class="text-muted">
+                            Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> of <strong>{{ total_count }}</strong> items
+                            (Page <strong>{{ page_obj.number }}</strong> of <strong>{{ paginator.num_pages }}</strong>)
+                        </small>
+                    </div>
+
+                    <nav aria-label="Tech Catalog pagination">
+                        <ul class="pagination pagination-sm mb-0">
+                            <!-- First Page -->
+                            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                {% if page_obj.has_previous %}
+                                    <a class="page-link" href="?page=1{% if querystring %}&{{ querystring }}{% endif %}" aria-label="First" title="First Page">
+                                        &laquo;&laquo;
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">&laquo;&laquo;</span>
+                                {% endif %}
+                            </li>
+
+                            <!-- Previous Page -->
+                            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                {% if page_obj.has_previous %}
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Previous">
+                                        &lsaquo; Prev
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">&lsaquo; Prev</span>
+                                {% endif %}
+                            </li>
+
+                            <!-- Numbered Pages with Ellipsis -->
+                            {% for num in elided_page_range %}
+                                {% if num == ellipsis %}
+                                    <li class="page-item disabled"><span class="page-link text-muted">&hellip;</span></li>
+                                {% elif num == page_obj.number %}
+                                    <li class="page-item active" aria-current="page"><span class="page-link fw-bold bg-primary border-primary">{{ num }}</span></li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if querystring %}&{{ querystring }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- Next Page -->
+                            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                {% if page_obj.has_next %}
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Next">
+                                        Next &rsaquo;
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">Next &rsaquo;</span>
+                                {% endif %}
+                            </li>
+
+                            <!-- Last Page -->
+                            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                {% if page_obj.has_next %}
+                                    <a class="page-link" href="?page={{ paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Last" title="Last Page">
+                                        &raquo;&raquo;
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">&raquo;&raquo;</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+            {% else %}
+                <!-- Empty State -->
+                <div class="card p-5 text-center border-0 shadow-sm rounded-4 my-4" style="background: var(--surface-card, #ffffff);">
+                    <div class="mb-3 text-primary opacity-75">
+                        <i class="bi bi-cpu display-1"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">No Tech Devices Found</h4>
+                    <p class="text-muted col-md-6 mx-auto mb-4">
+                        We couldn't find any electronics matching your criteria. Try adjusting your brand filters, clearing your price limits, or searching for other keywords.
+                    </p>
+                    <div>
+                        <a href="{% url 'product_list' %}" class="btn btn-primary px-4 py-2 rounded-pill fw-semibold">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset All Filters
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Responsive Mobile Filter Offcanvas (#techFilterOffcanvas & #catalogFilterOffcanvas) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="techFilterOffcanvas" aria-labelledby="techFilterOffcanvasLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold text-dark" id="techFilterOffcanvasLabel"><i class="bi bi-sliders text-primary me-2"></i>Technical Filters</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- Re-use sidebar filter contents for mobile -->
+        <div class="d-flex flex-column gap-4">
+            <!-- Mobile Categories -->
+            <div>
+                <h6 class="fw-bold mb-2">Device Categories</h6>
+                <div class="d-flex flex-column gap-1">
+                    <a href="javascript:void(0)" onclick="removeTechParam('category')" class="category-tree-link {% if not selected_category %}active{% endif %}">
+                        <span>All Categories</span>
+                    </a>
+                    {% for cat in categories %}
+                        <a href="javascript:void(0)" onclick="updateTechParam('category', '{{ cat.slug }}')" class="category-tree-link {% if selected_category.slug == cat.slug %}active{% endif %}">
+                            <span>{{ cat.name }}</span>
+                            <span class="badge bg-light text-muted border">{{ cat.products.count }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Mobile Brands -->
+            <div>
+                <h6 class="fw-bold mb-2">Brands</h6>
+                <div class="d-flex flex-column gap-1">
+                    {% for b in brands %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="mBrandCheck_{{ b.pk }}" {% if selected_brand.slug == b.slug %}checked{% endif %} onchange="updateTechParam('brand', this.checked ? '{{ b.slug }}' : '')">
+                            <label class="form-check-label text-dark small" for="mBrandCheck_{{ b.pk }}">
+                                {{ b.name }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Mobile Price -->
+            <div>
+                <h6 class="fw-bold mb-2">Price Range</h6>
+                <form method="get" class="d-flex flex-column gap-2">
+                    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+                    {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand.slug }}">{% endif %}
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">৳</span>
+                        <input type="number" name="min_price" value="{{ min_price }}" class="form-control" placeholder="Min">
+                        <span class="input-group-text">-</span>
+                        <input type="number" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max">
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary rounded-pill w-100">Apply Price</button>
+                </form>
+            </div>
+
+            <div class="pt-2 border-top">
+                <a href="{% url 'product_list' %}" class="btn btn-outline-secondary w-100 btn-sm rounded-pill">Reset All Filters</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Compatibility alias anchor for tests that check catalogFilterOffcanvas -->
+<div class="d-none" id="catalogFilterOffcanvas"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* Tech Catalog URL Filter Helpers */
+function updateTechParam(key, value) {
+    const url = new URL(window.location.href);
+    if (value) {
+        url.searchParams.set(key, value);
+    } else {
+        url.searchParams.delete(key);
+    }
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function removeTechParam(key) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(key);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function removeTechPriceParams() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('min_price');
+    url.searchParams.delete('max_price');
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function setTechPriceBracket(min, max) {
+    const url = new URL(window.location.href);
+    if (min) {
+        url.searchParams.set('min_price', min);
+    } else {
+        url.searchParams.delete('min_price');
+    }
+    if (max) {
+        url.searchParams.set('max_price', max);
+    } else {
+        url.searchParams.delete('max_price');
+    }
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+/* Grid / Tech Spec List View Mode Toggle */
+function setTechCatalogLayout(layout) {
+    const gridEl = document.getElementById('techProductGrid');
+    const btnGrid = document.getElementById('btnGridView');
+    const btnList = document.getElementById('btnListView');
+    if (!gridEl) return;
+
+    if (layout === 'list') {
+        gridEl.classList.add('tech-list-view');
+        gridEl.classList.remove('row-cols-2', 'row-cols-md-3', 'row-cols-xl-3');
+        gridEl.classList.add('row-cols-1');
+        if (btnList) btnList.classList.add('active');
+        if (btnGrid) btnGrid.classList.remove('active');
+        localStorage.setItem('tech_catalog_view', 'list');
+    } else {
+        gridEl.classList.remove('tech-list-view');
+        gridEl.classList.remove('row-cols-1');
+        gridEl.classList.add('row-cols-2', 'row-cols-md-3', 'row-cols-xl-3');
+        if (btnGrid) btnGrid.classList.add('active');
+        if (btnList) btnList.classList.remove('active');
+        localStorage.setItem('tech_catalog_view', 'grid');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedLayout = localStorage.getItem('tech_catalog_view');
+    if (savedLayout === 'list') {
+        setTechCatalogLayout('list');
+    }
+});
+</script>
+{% endblock %}

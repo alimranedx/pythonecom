@@ -3,9 +3,9 @@ from django.utils.text import slugify
 from django.contrib.auth.models import User
 from core.models import TimeStampedModel
 from core.validators import validate_image_file
-from core.themes import THEME_CHOICES as BASE_THEME_CHOICES
+from core.themes import THEME_CHOICES as BASE_THEME_CHOICES, LEGACY_THEME_CHOICES
 
-THEME_CHOICES = BASE_THEME_CHOICES + (
+THEME_CHOICES = BASE_THEME_CHOICES + LEGACY_THEME_CHOICES + (
     ('all', 'All Themes (Universal)'),
 )
 

@@ -273,7 +273,18 @@
                     <i class="bi {{ item.module.icon }} me-1"></i> {{ item.module.name }}
                 </div>
                 {% for sub in item.submodules %}
-                    {% if sub.url_name %}
+                    {% if sub.menu_url and sub.menu_url != '#' %}
+                        <a href="{{ sub.menu_url }}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name or request.resolver_match.url_name|slice:':12' == sub.url_name|slice:':12' %}active{% endif %}">
+                            <i class="bi bi-chevron-right me-2 small"></i> {{ sub.name }}
+                            {% if sub.code == 'settings.system_errors' and has_system_errors %}
+                                <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.65rem;">{{ unresolved_error_count }}</span>
+                            {% endif %}
+                        </a>
+                    {% elif sub.menu_url == '#' %}
+                        <a href="#" class="sidebar-link opacity-75" title="{{ sub.name }}">
+                            <i class="bi bi-chevron-right me-2 small"></i> {{ sub.name }}
+                        </a>
+                    {% elif sub.url_name %}
                         <a href="{% url sub.url_name %}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name or request.resolver_match.url_name|slice:':12' == sub.url_name|slice:':12' %}active{% endif %}">
                             <i class="bi bi-chevron-right me-2 small"></i> {{ sub.name }}
                             {% if sub.code == 'settings.system_errors' and has_system_errors %}

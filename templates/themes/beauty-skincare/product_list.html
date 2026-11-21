@@ -1,0 +1,735 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+    {% if selected_category %}{{ selected_category.name }} | {% elif query %}Search "{{ query }}" | {% elif selected_brand %}{{ selected_brand.name }} | {% endif %}Beauty & Skincare Atelier | {{ site_settings.site_name|default:'LUNA Beauty' }}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ==========================================================
+       BEAUTY & SKINCARE CATALOG STYLING (LUNA / ssèraskin Style)
+       ========================================================== */
+    :root {
+        --beauty-bg-alabaster: #faf8f5;
+        --beauty-card-bg: #ffffff;
+        --beauty-sand: #f4ede4;
+        --beauty-border: #e7ded5;
+        --beauty-charcoal: #1c1917;
+        --beauty-gold: #c59b6d;
+        --beauty-gold-subtle: rgba(197, 155, 109, 0.12);
+        --beauty-rose: #be7575;
+    }
+
+    .beauty-catalog-header {
+        background: linear-gradient(135deg, #fdfbf9 0%, #f6efe8 100%);
+        border: 1px solid var(--beauty-border);
+        border-radius: 18px;
+        padding: 2rem 2.25rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .beauty-catalog-header::after {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(197, 155, 109, 0.12) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    [data-bs-theme="dark"] .beauty-catalog-header {
+        background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+        border-color: #44403c;
+    }
+
+    /* Subcategory Shortcuts Bar */
+    .beauty-shortcuts-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        overflow-x: auto;
+        padding-bottom: 0.75rem;
+        margin-bottom: 2rem;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .beauty-shortcuts-bar::-webkit-scrollbar {
+        height: 4px;
+    }
+    .beauty-shortcuts-bar::-webkit-scrollbar-thumb {
+        background: #d6cdbe;
+        border-radius: 4px;
+    }
+    .beauty-shortcut-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.15rem;
+        border-radius: 50px;
+        border: 1px solid var(--beauty-border);
+        background: var(--surface-card, #ffffff);
+        color: #44403c;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: all 0.22s ease;
+        letter-spacing: 0.2px;
+    }
+    .beauty-shortcut-pill:hover,
+    .beauty-shortcut-pill.active {
+        border-color: #1c1917;
+        background: #1c1917;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(28, 25, 23, 0.12);
+    }
+    [data-bs-theme="dark"] .beauty-shortcut-pill {
+        background: #292524;
+        border-color: #44403c;
+        color: #d6d3d1;
+    }
+    [data-bs-theme="dark"] .beauty-shortcut-pill:hover,
+    [data-bs-theme="dark"] .beauty-shortcut-pill.active {
+        background: #f5f5f4;
+        color: #1c1917;
+        border-color: #f5f5f4;
+    }
+
+    /* Beauty Filter Sidebar */
+    .beauty-filter-sidebar {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--beauty-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px -4px rgba(28, 25, 23, 0.04);
+    }
+    [data-bs-theme="dark"] .beauty-filter-sidebar {
+        background: #1c1917;
+        border-color: #44403c;
+    }
+
+    .beauty-filter-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #78716c;
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Category Link in Sidebar */
+    .beauty-cat-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.45rem 0.65rem;
+        border-radius: 8px;
+        font-size: 0.84rem;
+        color: #44403c;
+        text-decoration: none;
+        transition: all 0.18s ease;
+    }
+    .beauty-cat-link:hover,
+    .beauty-cat-link.active {
+        background: #f5efe6;
+        color: #1c1917;
+        font-weight: 600;
+    }
+    [data-bs-theme="dark"] .beauty-cat-link {
+        color: #d6d3d1;
+    }
+    [data-bs-theme="dark"] .beauty-cat-link:hover,
+    [data-bs-theme="dark"] .beauty-cat-link.active {
+        background: #292524;
+        color: #f5f5f4;
+    }
+
+    /* Checkbox & Switch Customization */
+    .beauty-form-check .form-check-input:checked {
+        background-color: #1c1917;
+        border-color: #1c1917;
+    }
+
+    /* Active Filter Badges */
+    .beauty-active-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 50px;
+        background: #f5efe6;
+        border: 1px solid #e2d7cb;
+        color: #44403c;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+    .beauty-active-chip a {
+        color: #78716c;
+        text-decoration: none;
+    }
+    .beauty-active-chip a:hover {
+        color: #e11d48;
+    }
+
+    /* Quick Price Brackets */
+    .price-bracket-pill {
+        display: inline-block;
+        padding: 0.3rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        background: #fbf9f6;
+        border: 1px solid #ebd9c8;
+        color: #78716c;
+        text-decoration: none;
+        transition: all 0.18s ease;
+    }
+    .price-bracket-pill:hover {
+        background: #1c1917;
+        color: #ffffff;
+        border-color: #1c1917;
+    }
+
+    /* Editorial List View Toggle */
+    .beauty-list-view .product-card {
+        flex-direction: row !important;
+        align-items: stretch;
+    }
+    .beauty-list-view .beauty-card-img-wrapper {
+        width: 240px !important;
+        height: auto !important;
+        min-height: 220px !important;
+        flex-shrink: 0;
+        border-right: 1px solid var(--beauty-border);
+    }
+    .beauty-list-view .beauty-title {
+        height: auto !important;
+        -webkit-line-clamp: 2 !important;
+        font-size: 1.05rem !important;
+    }
+    @media (max-width: 768px) {
+        .beauty-list-view .product-card {
+            flex-direction: column !important;
+        }
+        .beauty-list-view .beauty-card-img-wrapper {
+            width: 100% !important;
+            height: 220px !important;
+            border-right: none;
+            border-bottom: 1px solid var(--beauty-border);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none text-muted">Beauty & Skincare</a></li>
+            {% if selected_category %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ selected_category.name }}</li>
+            {% elif selected_brand %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ selected_brand.name }}</li>
+            {% elif query %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Search: "{{ query }}"</li>
+            {% else %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">All Beauty Formulas</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Editorial Category / Search Header -->
+    <div class="beauty-catalog-header shadow-xs">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div style="max-width: 680px;">
+                <span class="badge fw-semibold px-2.5 py-1 rounded-pill mb-2" style="background: rgba(197, 155, 109, 0.18); color: #854d0e; font-size: 0.72rem; letter-spacing: 0.6px; text-transform: uppercase;">
+                    <i class="bi bi-flower1 me-1"></i>Curated Botanical & Clean Formulas
+                </span>
+                <h1 class="h3 fw-bold mb-1.5" style="letter-spacing: -0.5px; color: #1c1917;">
+                    {% if selected_category %}
+                        {{ selected_category.name }}
+                    {% elif selected_brand %}
+                        {{ selected_brand.name }} Collection
+                    {% elif query %}
+                        Search Results for "{{ query }}"
+                    {% else %}
+                        The Skincare & Beauty Atelier
+                    {% endif %}
+                </h1>
+                <p class="text-muted small mb-0" style="line-height: 1.6;">
+                    {% if selected_category %}
+                        Explore dermatologist-tested {{ selected_category.name|lower }}, formulated with clinically backed active ingredients to replenish, balance, and illuminate your complexion.
+                    {% elif selected_brand %}
+                        Discover authentic formulas from {{ selected_brand.name }}. 100% direct authentic import with verified batch freshness.
+                    {% else %}
+                        Conscious skincare rituals, dermatologist-approved essentials, and luxury cosmetics curated for Bangladeshi climate and sensitive skin profiles.
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <span class="badge px-3.5 py-2 fw-semibold rounded-pill shadow-xs" style="background: #1c1917; color: #ffffff; font-size: 0.82rem; letter-spacing: 0.3px;">
+                    <i class="bi bi-box2-heart me-1.5 text-warning"></i><strong>{{ total_count }}</strong> Formulas Available
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subcategory Shortcuts Bar (Cleansers, Toners, Serums, Moisturizers, Sunscreens, Sheet Masks) -->
+    <div class="beauty-shortcuts-bar">
+        <a href="{% url 'product_list' %}" class="beauty-shortcut-pill {% if not selected_category %}active{% endif %}">
+            <i class="bi bi-grid-3x3-gap"></i> All Formulas
+        </a>
+        {% for cat in categories %}
+            <a href="{% url 'product_category' cat.slug %}" class="beauty-shortcut-pill {% if selected_category.slug == cat.slug %}active{% endif %}">
+                <i class="bi {{ cat.icon|default:'bi-droplet' }}"></i>
+                <span>{{ cat.name }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Main Content Area: Filter Sidebar + Catalog Showcase -->
+    <div class="row g-4">
+        <!-- Desktop Filter Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="beauty-filter-sidebar">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark" style="letter-spacing: 0.3px;">
+                        <i class="bi bi-sliders me-1.5 text-muted"></i> Skincare Filters
+                    </h6>
+                    <a href="{% url 'product_list' %}" class="small text-muted text-decoration-none hover-dark">Clear All</a>
+                </div>
+
+                <!-- 1. Category Hierarchy Filter -->
+                <div class="mb-4">
+                    <div class="beauty-filter-title">
+                        <span>Regimen Categories</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1" style="max-height: 230px; overflow-y: auto;">
+                        <a href="javascript:void(0)" onclick="removeBeautyParam('category')" class="beauty-cat-link {% if not selected_category %}active{% endif %}">
+                            <span><i class="bi bi-collection me-1.5 opacity-75"></i> All Categories</span>
+                        </a>
+                        {% for cat in categories %}
+                            <a href="javascript:void(0)" onclick="updateBeautyParam('category', '{{ cat.slug }}')" class="beauty-cat-link {% if selected_category.slug == cat.slug %}active{% endif %}">
+                                <span class="text-truncate"><i class="bi {{ cat.icon|default:'bi-droplet' }} me-1.5 opacity-75"></i> {{ cat.name }}</span>
+                                <span class="badge rounded-pill bg-light text-muted border ms-1" style="font-size: 0.65rem;">{{ cat.products.count }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 2. Brand Checkboxes -->
+                <div class="mb-4">
+                    <div class="beauty-filter-title">
+                        <span>Curated Brands</span>
+                        <i class="bi bi-shield-check text-success small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-2 beauty-form-check" style="max-height: 220px; overflow-y: auto;">
+                        {% for b in brands %}
+                            <div class="form-check small">
+                                <input class="form-check-input" type="checkbox" name="brand_filter" value="{{ b.slug }}" id="brand_{{ b.pk }}" {% if selected_brand.slug == b.slug %}checked{% endif %} onchange="toggleBeautyBrand('{{ b.slug }}')">
+                                <label class="form-check-label text-dark d-flex justify-content-between align-items-center cursor-pointer" for="brand_{{ b.pk }}">
+                                    <span>{{ b.name }}</span>
+                                    <span class="text-muted" style="font-size: 0.72rem;">{{ b.products.count }}</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 3. Price Range & Quick Brackets -->
+                <div class="mb-4">
+                    <div class="beauty-filter-title">
+                        <span>Price Range (৳)</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <input type="number" id="minPriceInput" class="form-control form-control-sm rounded-2" placeholder="Min ৳" value="{{ min_price|default:'' }}">
+                        <span class="text-muted">-</span>
+                        <input type="number" id="maxPriceInput" class="form-control form-control-sm rounded-2" placeholder="Max ৳" value="{{ max_price|default:'' }}">
+                        <button type="button" class="btn btn-dark btn-sm rounded-2 px-2.5" onclick="applyBeautyPriceRange()" title="Apply Price">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Quick Price Brackets -->
+                    <div class="d-flex flex-wrap gap-1 mt-2">
+                        <a href="javascript:void(0)" onclick="setBeautyPriceRange('', '1000')" class="price-bracket-pill">Under ৳1,000</a>
+                        <a href="javascript:void(0)" onclick="setBeautyPriceRange('1000', '2000')" class="price-bracket-pill">৳1k - ৳2k</a>
+                        <a href="javascript:void(0)" onclick="setBeautyPriceRange('2000', '3500')" class="price-bracket-pill">৳2k - ৳3.5k</a>
+                        <a href="javascript:void(0)" onclick="setBeautyPriceRange('3500', '')" class="price-bracket-pill">Above ৳3.5k</a>
+                    </div>
+                </div>
+
+                <!-- 4. Stock & Clean Beauty Toggles -->
+                <div class="mb-4">
+                    <div class="beauty-filter-title">
+                        <span>Availability & Purity</span>
+                    </div>
+                    <div class="form-check form-switch small mb-2 beauty-form-check">
+                        <input class="form-check-input" type="checkbox" id="inStockToggle" {% if in_stock == '1' %}checked{% endif %} onchange="toggleBeautyInStock(this)">
+                        <label class="form-check-label text-dark" for="inStockToggle">
+                            In Stock Ready to Dispatch
+                        </label>
+                    </div>
+                    <div class="form-check form-switch small mb-2 beauty-form-check">
+                        <input class="form-check-input" type="checkbox" id="cleanBeautyToggle" checked>
+                        <label class="form-check-label text-dark" for="cleanBeautyToggle">
+                            Clean & Cruelty-Free Verified
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 5. Customer Rating Filter (4.5★+, 4.0★+) -->
+                <div class="mb-2">
+                    <div class="beauty-filter-title">
+                        <span>Client Ratings</span>
+                    </div>
+                    <div class="d-flex flex-column gap-1.5">
+                        <a href="javascript:void(0)" onclick="updateBeautyParam('rating', '4.5')" class="beauty-cat-link {% if rating == '4.5' %}active{% endif %}">
+                            <span class="d-inline-flex align-items-center gap-1 text-warning">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                                <span class="text-dark small ms-1 fw-medium">4.5 & Above</span>
+                            </span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="updateBeautyParam('rating', '4.0')" class="beauty-cat-link {% if rating == '4.0' %}active{% endif %}">
+                            <span class="d-inline-flex align-items-center gap-1 text-warning">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i>
+                                <span class="text-dark small ms-1 fw-medium">4.0 & Above</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catalog Content Showcase -->
+        <div class="col-lg-9">
+            <!-- Filter Bar: Active Chips, Product Count, Sort & View Toggles -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 rounded-3 mb-4" style="background: var(--surface-card, #ffffff); border: 1px solid var(--beauty-border);">
+                <!-- Left: Mobile Filter Button & Active Filter Chips -->
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <!-- Mobile Filter Trigger -->
+                    <button class="btn btn-outline-dark btn-sm rounded-pill d-lg-none d-flex align-items-center gap-1.5" type="button" data-bs-toggle="offcanvas" data-bs-target="#beautyFilterOffcanvas">
+                        <i class="bi bi-sliders"></i> Filters
+                    </button>
+
+                    <!-- Active Filter Chips -->
+                    {% if selected_category %}
+                        <span class="beauty-active-chip">
+                            Category: {{ selected_category.name }}
+                            <a href="javascript:void(0)" onclick="removeBeautyParam('category')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+                    {% if selected_brand %}
+                        <span class="beauty-active-chip">
+                            Brand: {{ selected_brand.name }}
+                            <a href="javascript:void(0)" onclick="removeBeautyParam('brand')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+                    {% if min_price or max_price %}
+                        <span class="beauty-active-chip">
+                            ৳{{ min_price|default:'0' }} - ৳{{ max_price|default:'Max' }}
+                            <a href="javascript:void(0)" onclick="clearBeautyPriceParams()"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+                    {% if rating %}
+                        <span class="beauty-active-chip">
+                            ★ {{ rating }}+
+                            <a href="javascript:void(0)" onclick="removeBeautyParam('rating')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+                    {% if in_stock == '1' %}
+                        <span class="beauty-active-chip">
+                            In Stock Only
+                            <a href="javascript:void(0)" onclick="removeBeautyParam('in_stock')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+                    {% if query %}
+                        <span class="beauty-active-chip">
+                            "{{ query }}"
+                            <a href="javascript:void(0)" onclick="removeBeautyParam('q')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Right: Sort Dropdown & Grid / List Toggle -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <!-- Sort Dropdown -->
+                    <div class="d-flex align-items-center gap-1.5">
+                        <label for="beautySortSelect" class="small text-muted mb-0 d-none d-sm-inline">Sort:</label>
+                        <select id="beautySortSelect" class="form-select form-select-sm rounded-pill" style="min-width: 170px; font-size: 0.8rem;" onchange="updateBeautyParam('sort', this.value)">
+                            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
+                            <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Bestselling & Top Rated</option>
+                            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Formula Name (A-Z)</option>
+                        </select>
+                    </div>
+
+                    <!-- View Switcher -->
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Layout View">
+                        <button type="button" class="btn btn-outline-secondary rounded-start-pill active" id="beautyGridViewBtn" onclick="setBeautyView('grid')" title="Grid View">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary rounded-end-pill" id="beautyListViewBtn" onclick="setBeautyView('list')" title="Editorial List View">
+                            <i class="bi bi-view-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Cards Grid / List Container -->
+            <div id="beautyProductContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 g-md-4">
+                {% for product in products %}
+                    <div class="col beauty-product-item">
+                        {% include 'themes/beauty-skincare/product_card.html' with product=product user_wishlist_ids=user_wishlist_ids %}
+                    </div>
+                {% empty %}
+                    <div class="col-12 py-5 text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; background: #faf5ee; color: #854d0e;">
+                            <i class="bi bi-droplet fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark">No Beauty Formulas Found</h5>
+                        <p class="text-muted small mb-3">Try adjusting your filters, selecting a different skincare category, or searching for other active ingredients.</p>
+                        <a href="{% url 'product_list' %}" class="btn btn-dark btn-sm rounded-pill px-4">Browse All Skincare</a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Full Pagination Preserving Querystring -->
+            {% if paginator.num_pages > 1 %}
+                <nav class="mt-5 d-flex justify-content-center" aria-label="Beauty catalog pagination">
+                    <ul class="pagination pagination-sm flex-wrap justify-content-center gap-1">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link rounded-pill px-3" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Previous">
+                                    <i class="bi bi-chevron-left me-1"></i> Prev
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link rounded-pill px-3"><i class="bi bi-chevron-left me-1"></i> Prev</span>
+                            </li>
+                        {% endif %}
+
+                        {% for page_num in elided_page_range %}
+                            {% if page_num == ellipsis %}
+                                <li class="page-item disabled"><span class="page-link border-0">{{ ellipsis }}</span></li>
+                            {% elif page_num == page_obj.number %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: #1c1917; border-color: #1c1917;">{{ page_num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;" href="?page={{ page_num }}{% if querystring %}&{{ querystring }}{% endif %}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link rounded-pill px-3" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Next">
+                                    Next <i class="bi bi-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link rounded-pill px-3">Next <i class="bi bi-chevron-right ms-1"></i></span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Filter Offcanvas (#beautyFilterOffcanvas) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="beautyFilterOffcanvas" aria-labelledby="beautyFilterOffcanvasLabel" style="width: 320px;">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold text-dark h6 mb-0" id="beautyFilterOffcanvasLabel">
+            <i class="bi bi-sliders me-1.5 text-muted"></i> Beauty & Skincare Filters
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- 1. Categories -->
+        <div class="mb-4">
+            <div class="beauty-filter-title">
+                <span>Categories</span>
+            </div>
+            <div class="d-flex flex-column gap-1">
+                <a href="javascript:void(0)" onclick="removeBeautyParam('category')" class="beauty-cat-link {% if not selected_category %}active{% endif %}">
+                    <span>All Categories</span>
+                </a>
+                {% for cat in categories %}
+                    <a href="javascript:void(0)" onclick="updateBeautyParam('category', '{{ cat.slug }}')" class="beauty-cat-link {% if selected_category.slug == cat.slug %}active{% endif %}">
+                        <span class="text-truncate">{{ cat.name }}</span>
+                        <span class="badge rounded-pill bg-light text-muted border">{{ cat.products.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 2. Brands -->
+        <div class="mb-4">
+            <div class="beauty-filter-title">
+                <span>Brands</span>
+            </div>
+            <div class="d-flex flex-column gap-2 beauty-form-check">
+                {% for b in brands %}
+                    <div class="form-check small">
+                        <input class="form-check-input" type="checkbox" name="m_brand" value="{{ b.slug }}" id="m_brand_{{ b.pk }}" {% if selected_brand.slug == b.slug %}checked{% endif %} onchange="toggleBeautyBrand('{{ b.slug }}')">
+                        <label class="form-check-label text-dark" for="m_brand_{{ b.pk }}">{{ b.name }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 3. Price -->
+        <div class="mb-4">
+            <div class="beauty-filter-title">
+                <span>Price (৳)</span>
+            </div>
+            <div class="d-flex gap-2">
+                <input type="number" id="mMinPrice" class="form-control form-control-sm" placeholder="Min" value="{{ min_price|default:'' }}">
+                <input type="number" id="mMaxPrice" class="form-control form-control-sm" placeholder="Max" value="{{ max_price|default:'' }}">
+                <button type="button" class="btn btn-dark btn-sm" onclick="applyMobileBeautyPrice()">Apply</button>
+            </div>
+        </div>
+
+        <!-- 4. Stock -->
+        <div class="mb-4">
+            <div class="form-check form-switch small beauty-form-check">
+                <input class="form-check-input" type="checkbox" id="mInStock" {% if in_stock == '1' %}checked{% endif %} onchange="toggleBeautyInStock(this)">
+                <label class="form-check-label text-dark" for="mInStock">In Stock Only</label>
+            </div>
+        </div>
+
+        <div class="d-grid mt-4">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-dark btn-sm rounded-pill">Reset All Filters</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // URL Query Parameter Helpers for Beauty Catalog
+    function getBeautyParams() {
+        return new URLSearchParams(window.location.search);
+    }
+
+    function applyBeautyParams(params) {
+        params.delete('page'); // Always reset to page 1 on filter alteration
+        window.location.search = params.toString();
+    }
+
+    function updateBeautyParam(key, value) {
+        const params = getBeautyParams();
+        if (value) {
+            params.set(key, value);
+        } else {
+            params.delete(key);
+        }
+        applyBeautyParams(params);
+    }
+
+    function removeBeautyParam(key) {
+        const params = getBeautyParams();
+        params.delete(key);
+        applyBeautyParams(params);
+    }
+
+    function toggleBeautyBrand(brandSlug) {
+        const params = getBeautyParams();
+        const current = params.get('brand');
+        if (current === brandSlug) {
+            params.delete('brand');
+        } else {
+            params.set('brand', brandSlug);
+        }
+        applyBeautyParams(params);
+    }
+
+    function applyBeautyPriceRange() {
+        const minVal = document.getElementById('minPriceInput').value.trim();
+        const maxVal = document.getElementById('maxPriceInput').value.trim();
+        const params = getBeautyParams();
+        if (minVal) params.set('min_price', minVal); else params.delete('min_price');
+        if (maxVal) params.set('max_price', maxVal); else params.delete('max_price');
+        applyBeautyParams(params);
+    }
+
+    function applyMobileBeautyPrice() {
+        const minVal = document.getElementById('mMinPrice').value.trim();
+        const maxVal = document.getElementById('mMaxPrice').value.trim();
+        const params = getBeautyParams();
+        if (minVal) params.set('min_price', minVal); else params.delete('min_price');
+        if (maxVal) params.set('max_price', maxVal); else params.delete('max_price');
+        applyBeautyParams(params);
+    }
+
+    function setBeautyPriceRange(min, max) {
+        const params = getBeautyParams();
+        if (min) params.set('min_price', min); else params.delete('min_price');
+        if (max) params.set('max_price', max); else params.delete('max_price');
+        applyBeautyParams(params);
+    }
+
+    function clearBeautyPriceParams() {
+        const params = getBeautyParams();
+        params.delete('min_price');
+        params.delete('max_price');
+        applyBeautyParams(params);
+    }
+
+    function toggleBeautyInStock(checkbox) {
+        const params = getBeautyParams();
+        if (checkbox.checked) {
+            params.set('in_stock', '1');
+        } else {
+            params.delete('in_stock');
+        }
+        applyBeautyParams(params);
+    }
+
+    // Grid vs Editorial List View Toggle
+    function setBeautyView(viewMode) {
+        const container = document.getElementById('beautyProductContainer');
+        const gridBtn = document.getElementById('beautyGridViewBtn');
+        const listBtn = document.getElementById('beautyListViewBtn');
+
+        if (viewMode === 'list') {
+            container.classList.remove('row-cols-sm-2', 'row-cols-md-3');
+            container.classList.add('row-cols-1', 'beauty-list-view');
+            listBtn.classList.add('active');
+            gridBtn.classList.remove('active');
+            localStorage.setItem('beauty_view_pref', 'list');
+        } else {
+            container.classList.remove('row-cols-1', 'beauty-list-view');
+            container.classList.add('row-cols-sm-2', 'row-cols-md-3');
+            gridBtn.classList.add('active');
+            listBtn.classList.remove('active');
+            localStorage.setItem('beauty_view_pref', 'grid');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedView = localStorage.getItem('beauty_view_pref');
+        if (savedView === 'list') {
+            setBeautyView('list');
+        }
+    });
+</script>
+{% endblock %}

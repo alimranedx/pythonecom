@@ -208,3 +208,188 @@ class AdminPasswordChangeForm(PasswordChangeForm):
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'})
 
+
+class ThemeCustomizeForm(forms.Form):
+    """
+    Dynamic configuration form generated from a theme's customization_schema.
+    Supports typed setting definitions (boolean, select, text, color, number)
+    organized by sections (header, homepage, product_display, footer, etc.)
+    and custom CSS overrides.
+    """
+    custom_css = forms.CharField(
+        required=False,
+        label="Custom CSS Overrides",
+        widget=forms.Textarea(attrs={
+            'class': 'form-control font-monospace',
+            'rows': 6,
+            'placeholder': '/* Enter custom CSS rules to override theme styling */'
+        }),
+        help_text="Custom scoped CSS rules applied specifically when this theme is active."
+    )
+
+    def __init__(self, schema=None, initial_data=None, initial_css='', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema = schema or {}
+        self.section_groups = []
+        self._schema_field_names = set()
+
+        if initial_css:
+            self.fields['custom_css'].initial = initial_css
+
+        # Normalize schema into list of section dicts:
+        # Each section: {'id': ..., 'title': ..., 'icon': ..., 'description': ..., 'fields': [...]}
+        normalized_sections = self._parse_schema(self.schema)
+
+        for sec in normalized_sections:
+            sec_fields = []
+            for item in sec.get('settings', []):
+                key = item.get('key')
+                if not key:
+                    continue
+                self._schema_field_names.add(key)
+                field_type = item.get('type', 'text').lower()
+                label = item.get('label', key.replace('_', ' ').title())
+                help_text = item.get('help_text', item.get('description', ''))
+                default_val = item.get('default')
+
+                # Determine initial value: initial_data takes priority, then default_val
+                curr_val = None
+                if initial_data and key in initial_data:
+                    curr_val = initial_data[key]
+                elif default_val is not None:
+                    curr_val = default_val
+
+                if field_type == 'boolean':
+                    field = forms.BooleanField(
+                        required=False,
+                        label=label,
+                        initial=bool(curr_val) if curr_val is not None else False,
+                        help_text=help_text,
+                        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+                    )
+                elif field_type == 'select':
+                    raw_choices = item.get('choices', [])
+                    choices = []
+                    for c in raw_choices:
+                        if isinstance(c, (list, tuple)) and len(c) >= 2:
+                            choices.append((str(c[0]), str(c[1])))
+                        else:
+                            choices.append((str(c), str(c).replace('_', ' ').title()))
+                    field = forms.ChoiceField(
+                        required=False,
+                        label=label,
+                        choices=choices,
+                        initial=str(curr_val) if curr_val is not None else '',
+                        help_text=help_text,
+                        widget=forms.Select(attrs={'class': 'form-select'})
+                    )
+                elif field_type == 'color':
+                    field = forms.CharField(
+                        required=False,
+                        label=label,
+                        initial=str(curr_val) if curr_val is not None else '#000000',
+                        help_text=help_text,
+                        widget=forms.TextInput(attrs={'type': 'color', 'class': 'form-control form-control-color', 'style': 'width: 60px; height: 38px; padding: 4px;'})
+                    )
+                elif field_type in ('number', 'integer'):
+                    field = forms.IntegerField(
+                        required=False,
+                        label=label,
+                        initial=curr_val,
+                        help_text=help_text,
+                        widget=forms.NumberInput(attrs={'class': 'form-control'})
+                    )
+                elif field_type == 'textarea':
+                    field = forms.CharField(
+                        required=False,
+                        label=label,
+                        initial=str(curr_val) if curr_val is not None else '',
+                        help_text=help_text,
+                        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
+                    )
+                else:  # default text
+                    field = forms.CharField(
+                        required=False,
+                        label=label,
+                        initial=str(curr_val) if curr_val is not None else '',
+                        help_text=help_text,
+                        widget=forms.TextInput(attrs={'class': 'form-control'})
+                    )
+
+                self.fields[key] = field
+                sec_fields.append({
+                    'key': key,
+                    'type': field_type,
+                    'label': label,
+                    'help_text': help_text,
+                    'bound_field': self[key],
+                })
+
+            self.section_groups.append({
+                'id': sec.get('id', 'general'),
+                'title': sec.get('title', 'General'),
+                'icon': sec.get('icon', 'bi-sliders'),
+                'description': sec.get('description', ''),
+                'fields': sec_fields
+            })
+
+    def _parse_schema(self, schema):
+        sections = []
+        if isinstance(schema, list):
+            for sec in schema:
+                if isinstance(sec, dict):
+                    settings_list = sec.get('settings') or sec.get('fields') or []
+                    if isinstance(settings_list, dict):
+                        transformed = []
+                        for k, v in settings_list.items():
+                            item = dict(v) if isinstance(v, dict) else {'type': 'text'}
+                            item['key'] = k
+                            transformed.append(item)
+                        settings_list = transformed
+                    sections.append({
+                        'id': sec.get('id', 'section'),
+                        'title': sec.get('title', sec.get('name', 'Section')),
+                        'icon': sec.get('icon', 'bi-sliders'),
+                        'description': sec.get('description', ''),
+                        'settings': settings_list
+                    })
+        elif isinstance(schema, dict):
+            # Dict of sections e.g. {'header': {'title': '...', 'fields': {...}}} or {'sections': [...]}
+            if 'sections' in schema and isinstance(schema['sections'], list):
+                return self._parse_schema(schema['sections'])
+            for sec_id, sec_data in schema.items():
+                if isinstance(sec_data, dict):
+                    title = sec_data.get('title', sec_id.replace('_', ' ').title())
+                    icon = sec_data.get('icon', 'bi-sliders')
+                    desc = sec_data.get('description', '')
+                    settings_list = sec_data.get('settings') or sec_data.get('fields') or []
+                    if isinstance(settings_list, dict):
+                        transformed = []
+                        for k, v in settings_list.items():
+                            item = dict(v) if isinstance(v, dict) else {'type': 'text'}
+                            item['key'] = k
+                            transformed.append(item)
+                        settings_list = transformed
+                    sections.append({
+                        'id': sec_id,
+                        'title': title,
+                        'icon': icon,
+                        'description': desc,
+                        'settings': settings_list
+                    })
+        return sections
+
+    def get_customization_data(self):
+        """
+        Extracts cleaned values belonging to schema fields as a JSON-serializable dict.
+        """
+        data = {}
+        for key in self._schema_field_names:
+            if key in self.cleaned_data:
+                data[key] = self.cleaned_data[key]
+        return data
+
+    def get_custom_css(self):
+        return self.cleaned_data.get('custom_css', '').strip()
+
+

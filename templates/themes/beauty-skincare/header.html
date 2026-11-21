@@ -1,0 +1,955 @@
+{% load static %}
+<!-- Beauty & Skincare Flagship Editorial Header (LUNA / ssèraskin / NUORI / PIBU Inspired) -->
+<header class="beauty-header sticky-top shadow-sm" style="background-color: #faf8f5; border-bottom: 1px solid #ebdcd4; z-index: 1030;">
+    <!-- Scoped Header Styles -->
+    <style>
+        .beauty-header {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #1c1917;
+            background: #faf8f5;
+            transition: all 0.25s ease-in-out;
+        }
+        .beauty-serif {
+            font-family: 'Playfair Display', Didot, 'Bodoni MT', Georgia, serif;
+            letter-spacing: 0.02em;
+        }
+        .beauty-top-bar {
+            background: linear-gradient(90deg, #f5ebe6 0%, #faeee9 50%, #f5ebe6 100%);
+            border-bottom: 1px solid #eadad2;
+            color: #44403c;
+            font-size: 0.77rem;
+            letter-spacing: 0.02em;
+        }
+        .beauty-nav-link {
+            color: #292524;
+            font-weight: 500;
+            font-size: 0.84rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 0.4rem 0.65rem;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .beauty-nav-link:hover {
+            color: #be185d;
+            background-color: rgba(232, 180, 184, 0.2);
+        }
+        .beauty-nav-link.active {
+            color: #be185d;
+            font-weight: 600;
+        }
+        .beauty-btn-pill {
+            background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
+            color: #ffffff !important;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            border: none;
+            box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2);
+            transition: all 0.2s ease;
+        }
+        .beauty-btn-pill:hover {
+            background: linear-gradient(135deg, #9f1239 0%, #881337 100%);
+            box-shadow: 0 4px 14px rgba(190, 24, 93, 0.3);
+            transform: translateY(-1px);
+        }
+        .beauty-search-wrap {
+            border: 1px solid #e2d2c8;
+            background: #ffffff;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+        }
+        .beauty-search-wrap:focus-within {
+            border-color: #be185d;
+            box-shadow: 0 0 0 3px rgba(190, 24, 93, 0.12);
+        }
+        .beauty-dropdown-menu {
+            border-radius: 14px;
+            border: 1px solid #ebdcd4;
+            background: #ffffff;
+            box-shadow: 0 12px 30px rgba(28, 25, 23, 0.08);
+            font-size: 0.85rem;
+        }
+        .beauty-dropdown-item {
+            color: #292524;
+            padding: 0.55rem 1rem;
+            transition: all 0.15s ease;
+            border-radius: 8px;
+            margin: 0.1rem 0.35rem;
+        }
+        .beauty-dropdown-item:hover {
+            background-color: #faf5f3;
+            color: #be185d;
+        }
+        .beauty-badge-counter {
+            font-size: 0.65rem;
+            font-weight: 700;
+            background-color: #be185d !important;
+            color: #ffffff;
+            padding: 0.25em 0.55em;
+        }
+        .beauty-routine-btn {
+            background: #fff0f3;
+            color: #be185d;
+            border: 1px solid #fbcfe8;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 0.35rem 0.85rem;
+            transition: all 0.2s ease;
+        }
+        .beauty-routine-btn:hover {
+            background: #be185d;
+            color: #ffffff;
+            border-color: #be185d;
+            box-shadow: 0 2px 10px rgba(190, 24, 93, 0.25);
+        }
+        /* Dark Mode Theme Support */
+        [data-bs-theme="dark"] .beauty-header {
+            background-color: #191517 !important;
+            border-color: #2e2629 !important;
+            color: #f5f0ea !important;
+        }
+        [data-bs-theme="dark"] .beauty-top-bar {
+            background: linear-gradient(90deg, #1f191c 0%, #261f23 50%, #1f191c 100%) !important;
+            border-color: #33272d !important;
+            color: #d6cbcf !important;
+        }
+        [data-bs-theme="dark"] .beauty-search-wrap {
+            background: #231d20 !important;
+            border-color: #3d3036 !important;
+        }
+        [data-bs-theme="dark"] .beauty-search-wrap input,
+        [data-bs-theme="dark"] .beauty-search-wrap select {
+            background-color: #231d20 !important;
+            color: #f5f0ea !important;
+        }
+        [data-bs-theme="dark"] .beauty-dropdown-menu {
+            background: #231d20 !important;
+            border-color: #3d3036 !important;
+            color: #f5f0ea !important;
+        }
+        [data-bs-theme="dark"] .beauty-dropdown-item {
+            color: #e7dedb !important;
+        }
+        [data-bs-theme="dark"] .beauty-dropdown-item:hover {
+            background-color: #31262b !important;
+            color: #f472b6 !important;
+        }
+        [data-bs-theme="dark"] .beauty-nav-link {
+            color: #d6cbcf !important;
+        }
+        [data-bs-theme="dark"] .beauty-nav-link:hover {
+            color: #f472b6 !important;
+            background-color: rgba(244, 114, 182, 0.15) !important;
+        }
+        [data-bs-theme="dark"] .beauty-routine-btn {
+            background: #311c25 !important;
+            color: #f472b6 !important;
+            border-color: #70244d !important;
+        }
+        [data-bs-theme="dark"] .beauty-routine-btn:hover {
+            background: #be185d !important;
+            color: #ffffff !important;
+        }
+    </style>
+
+    <!-- 1. Top Beauty Announcement & Concierge Bar -->
+    <div class="beauty-top-bar py-1 px-3 d-none d-sm-block">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Left: Complimentary Luxury Samples & Authenticity Ribbon -->
+            <div class="d-flex align-items-center gap-3 text-truncate">
+                <span class="d-inline-flex align-items-center gap-1 fw-semibold text-truncate" style="color: #be185d;">
+                    <i class="bi bi-sparkles"></i>
+                    {% if IS_BANGLA %}
+                        <span>১৫০০ টাকার অধিক অর্ডারে কমপ্লিমেন্টারি লাক্সারি স্যাম্পল</span>
+                    {% else %}
+                        <span>Complimentary Luxury Beauty Samples on orders over ৳1,500</span>
+                    {% endif %}
+                </span>
+                <span class="opacity-50 d-none d-md-inline">•</span>
+                <span class="d-none d-md-inline-flex align-items-center gap-1 opacity-90">
+                    <i class="bi bi-patch-check-fill" style="color: #be185d;"></i>
+                    {% if IS_BANGLA %}১০০% অথেনটিক ডিরেক্ট ব্র্যান্ড সোর্সড{% else %}100% Authentic Direct from Brands{% endif %}
+                </span>
+            </div>
+
+            <!-- Right: Beauty Consultation Hotline, Mode Toggle, Language Switcher -->
+            <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                <!-- Beauty Consultation Hotline -->
+                <a href="tel:{{ site_settings.contact_phone|default:'+880 1700-000000' }}" class="text-decoration-none text-reset d-none d-lg-inline-flex align-items-center gap-1 hover-rose" title="{% if IS_BANGLA %}বিউটি কনসালটেশন হেল্পলাইন{% else %}Beauty Consultation Hotline{% endif %}" style="font-size: 0.74rem;">
+                    <i class="bi bi-telephone-inbound-fill" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}বিউটি কনসালটেশন হেল্পলাইন:{% else %}Beauty Hotline:{% endif %} <strong>{{ site_settings.contact_phone|default:'+880 1700-000000' }}</strong></span>
+                </a>
+
+                <span class="opacity-40 d-none d-lg-inline">|</span>
+
+                <!-- Dark / Light Theme Toggle -->
+                <button type="button" class="btn btn-xs btn-outline-secondary theme-toggle-btn py-0 px-2 rounded-pill d-inline-flex align-items-center" onclick="toggleTheme()" title="Toggle Dark/Light Mode" style="font-size: 0.72rem; line-height: 1.6; border-color: #d6c5bb;">
+                    <i class="bi bi-moon-stars-fill theme-icon me-1" style="color: #be185d;"></i>
+                    <span class="theme-text">Mode</span>
+                </button>
+
+                <!-- Language Switcher Pill (EN / BN) -->
+                <div class="btn-group btn-group-sm lang-toggle-pill" role="group" aria-label="Language Selector">
+                    <a href="{% url 'set_language' 'en' %}" 
+                       class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}btn-primary active fw-bold text-white{% else %}btn-outline-secondary{% endif %} py-0 px-2 rounded-start-pill" 
+                       style="font-size: 0.72rem; line-height: 1.6; {% if CURRENT_LANGUAGE == 'en' %}background-color: #be185d; border-color: #be185d;{% else %}border-color: #d6c5bb; color: #57534e;{% endif %}" 
+                       title="Switch to English">
+                        EN
+                    </a>
+                    <a href="{% url 'set_language' 'bn' %}" 
+                       class="btn btn-xs {% if CURRENT_LANGUAGE == 'bn' %}btn-primary active fw-bold text-white{% else %}btn-outline-secondary{% endif %} py-0 px-2 rounded-end-pill" 
+                       style="font-size: 0.72rem; line-height: 1.6; {% if CURRENT_LANGUAGE == 'bn' %}background-color: #be185d; border-color: #be185d;{% else %}border-color: #d6c5bb; color: #57534e;{% endif %}" 
+                       title="বাংলায় দেখুন">
+                        বাং
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Main Desktop Header (LUNA / ssèraskin Refined Luxury Layout) -->
+    <div class="container py-3 d-none d-md-block">
+        <div class="row align-items-center g-3">
+            <!-- Left: Store Logo & Brand Monogram -->
+            <div class="col-auto">
+                <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'Glow & Glam Beauty' }}">
+                    {% if site_settings.get_brand_logo_url %}
+                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Beauty Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 210px; object-fit: contain;">
+                    {% elif site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Beauty Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 210px; object-fit: contain;">
+                    {% elif CURRENT_THEME_DATA.logo_url %}
+                        <picture class="d-flex align-items-center">
+                            <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
+                            <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 210px; object-fit: contain;">
+                        </picture>
+                    {% else %}
+                        <!-- Editorial Botanical Rose-Gold Monogram -->
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0 shadow-sm" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%); width: 42px; height: 42px; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <i class="bi bi-flower1 fs-4" style="color: #fdf2f8;"></i>
+                        </div>
+                        <div class="lh-sm">
+                            <span class="beauty-serif fw-bold fs-4 d-block" style="color: #1c1917; letter-spacing: 0.04em;">
+                                {{ site_settings.get_effective_site_name|default:'GLOW & GLAM' }}
+                            </span>
+                            <small class="text-uppercase fw-semibold" style="font-size: 0.62rem; letter-spacing: 0.16em; color: #be185d;">
+                                BEAUTÉ &amp; SKINCARE
+                            </small>
+                        </div>
+                    {% endif %}
+                </a>
+            </div>
+
+            <!-- Middle: Beauty Search Bar with Category Selector Prefix -->
+            <div class="col">
+                <form action="{% url 'product_list' %}" method="get" class="beauty-search-form">
+                    <div class="input-group beauty-search-wrap p-1 shadow-sm">
+                        <!-- Category Selector Prefix -->
+                        <div class="col-auto d-none d-lg-block" style="max-width: 150px;">
+                            <select name="category" class="form-select border-0 bg-transparent small fw-semibold text-truncate ps-3 pe-4" style="cursor: pointer; height: 38px; color: #44403c; border-right: 1px solid #ebdcd4 !important;" aria-label="Select Beauty Category">
+                                <option value="">{% if IS_BANGLA %}সকল বিউটি{% else %}All Beauty{% endif %}</option>
+                                <option value="skin-care" {% if request.GET.category == 'skin-care' or request.GET.category == 'skincare' %}selected{% endif %}>Skincare</option>
+                                <option value="makeup" {% if request.GET.category == 'makeup' %}selected{% endif %}>Makeup</option>
+                                <option value="hair-care" {% if request.GET.category == 'hair-care' or request.GET.category == 'haircare' %}selected{% endif %}>Haircare</option>
+                                <option value="fragrances" {% if request.GET.category == 'fragrances' or request.GET.category == 'fragrance' %}selected{% endif %}>Fragrance</option>
+                                <option value="body-care" {% if request.GET.category == 'body-care' %}selected{% endif %}>Body Care</option>
+                                {% for cat in all_categories %}
+                                    {% if cat.slug not in "skin-care skincare makeup hair-care haircare fragrances fragrance body-care" %}
+                                        <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Search Input -->
+                        <input type="text" name="q" class="form-control border-0 bg-transparent px-3" 
+                               placeholder="{% if IS_BANGLA %}সেরাম, সানস্ক্রিন, ময়েশ্চারাইজার, লিপস্টিক খুঁজুন...{% else %}Search serums, sunscreens, moisturizers, lipsticks...{% endif %}" 
+                               value="{{ request.GET.q|default:'' }}" 
+                               style="height: 38px; font-size: 0.88rem; color: #1c1917;" 
+                               aria-label="Search serums, sunscreens, moisturizers, lipsticks">
+
+                        <!-- Elegant Pill Search Button -->
+                        <button class="btn beauty-btn-pill px-4 d-flex align-items-center gap-2" type="submit" style="height: 38px;" aria-label="Search Beauty Products">
+                            <i class="bi bi-search text-white"></i>
+                            <span class="d-none d-xl-inline">{% if IS_BANGLA %}খুঁজুন{% else %}Search{% endif %}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right: Account, Wishlist, Beauty Bag -->
+            <div class="col-auto d-flex align-items-center gap-2">
+                <!-- Customer Account Dropdown -->
+                <div class="dropdown">
+                    <button class="btn rounded-pill px-3 py-2 d-flex align-items-center gap-2 border bg-white shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #e2d2c8 !important;">
+                        {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border" style="width: 28px; height: 28px; border-color: #be185d !important;">
+                        {% else %}
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 28px; height: 28px; background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);">
+                                <i class="bi bi-person-heart small"></i>
+                            </div>
+                        {% endif %}
+                        <div class="text-start d-none d-lg-block lh-sm">
+                            <span class="text-muted d-block" style="font-size: 0.68rem;">
+                                {% if request.user.is_authenticated and not request.user.is_staff %}
+                                    {% if IS_BANGLA %}স্বাগতম{% else %}My Profile{% endif %}
+                                {% else %}
+                                    {% if IS_BANGLA %}সাইন ইন{% else %}Beauty Account{% endif %}
+                                {% endif %}
+                            </span>
+                            <strong class="d-block text-truncate" style="font-size: 0.82rem; max-width: 110px; color: #1c1917;">
+                                {% if request.user.is_authenticated and not request.user.is_staff %}
+                                    {{ request.user.first_name|default:request.user.username }}
+                                {% else %}
+                                    {{ tr.sign_in }}
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <i class="bi bi-chevron-down small text-muted d-none d-lg-inline"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end beauty-dropdown-menu mt-2 p-2" style="min-width: 235px;">
+                        {% if request.user.is_authenticated and not request.user.is_staff %}
+                            <li class="px-3 py-2 border-bottom d-flex align-items-center gap-2 mb-1" style="border-color: #ebdcd4 !important;">
+                                {% if request.user.profile.avatar %}
+                                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px; border-color: #be185d;">
+                                {% else %}
+                                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%); width: 36px; height: 36px;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="overflow-hidden">
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">{{ tr.signed_in_as }}</small>
+                                    <strong class="text-truncate d-block small" style="color: #1c1917;">{{ request.user.get_full_name|default:request.user.username }}</strong>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item beauty-dropdown-item py-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-person-lines-fill me-2" style="color: #be185d;"></i> {% if IS_BANGLA %}মাই বিউটি প্রোফাইল{% else %}My Beauty Profile{% endif %}</a></li>
+                            <li><a class="dropdown-item beauty-dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-bag-heart me-2" style="color: #be185d;"></i> {% if IS_BANGLA %}অর্ডার হিস্ট্রি{% else %}Order History{% endif %}</a></li>
+                            <li><a class="dropdown-item beauty-dropdown-item py-2" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
+                            <li><a class="dropdown-item beauty-dropdown-item py-2" href="{% url 'address_list' %}"><i class="bi bi-geo-alt me-2" style="color: #be185d;"></i> {{ tr.address_book }}</a></li>
+                            <li><hr class="dropdown-divider my-1" style="border-color: #ebdcd4;"></li>
+                            <!-- Interactive Skin Consultation Trigger -->
+                            <li>
+                                <button type="button" class="dropdown-item beauty-dropdown-item py-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#skinConsultationModal" style="color: #be185d; font-weight: 600;">
+                                    <i class="bi bi-magic" style="color: #be185d;"></i>
+                                    <span>{% if IS_BANGLA %}স্কিন ও রুটিন কনসালটেশন{% else %}Skin &amp; Routine Consultation{% endif %}</span>
+                                </button>
+                            </li>
+                            <li><hr class="dropdown-divider my-1" style="border-color: #ebdcd4;"></li>
+                            <li><a class="dropdown-item beauty-dropdown-item py-2 text-danger fw-semibold" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right me-2"></i> {{ tr.logout }}</a></li>
+                        {% else %}
+                            <li class="p-2 text-center border-bottom mb-2" style="border-color: #ebdcd4 !important;">
+                                <a href="{% url 'account_login' %}" class="btn beauty-btn-pill w-100 py-2 shadow-sm" style="font-size: 0.85rem;">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> {{ tr.sign_in }}
+                                </a>
+                                <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
+                                    {% if IS_BANGLA %}নতুন মেম্বার?{% else %}New to Glow &amp; Glam?{% endif %} 
+                                    <a href="{% url 'account_register' %}" class="text-decoration-none fw-bold" style="color: #be185d;">{{ tr.create_account }}</a>
+                                </small>
+                            </li>
+                            <li><a class="dropdown-item beauty-dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-truck me-2" style="color: #be185d;"></i> {% if IS_BANGLA %}অর্ডার ট্র্যাক করুন{% else %}Track Order{% endif %}</a></li>
+                            <li><a class="dropdown-item beauty-dropdown-item py-2" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
+                            <!-- Skin Consultation Modal Trigger -->
+                            <li>
+                                <button type="button" class="dropdown-item beauty-dropdown-item py-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#skinConsultationModal" style="color: #be185d; font-weight: 600;">
+                                    <i class="bi bi-magic" style="color: #be185d;"></i>
+                                    <span>{% if IS_BANGLA %}স্কিন কনসালটেশন শুরু করুন{% else %}Free Skin Consultation{% endif %}</span>
+                                </button>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Wishlist Button with Live Count Badge -->
+                <a href="{% url 'wishlist_view' %}" class="btn rounded-pill px-3 py-2 d-flex align-items-center gap-2 position-relative border bg-white shadow-sm" title="{{ tr.wishlist }}" style="border-color: #e2d2c8 !important;">
+                    <i class="bi bi-heart-fill fs-5" style="color: #be185d;"></i>
+                    <div class="text-start d-none d-xl-block lh-sm">
+                        <span class="text-muted d-block" style="font-size: 0.68rem;">{% if IS_BANGLA %}পছন্দ{% else %}Saved{% endif %}</span>
+                        <strong class="d-block" style="font-size: 0.82rem; color: #1c1917;">{{ tr.wishlist }}</strong>
+                    </div>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill beauty-badge-counter border border-white" id="navWishlistBadge">
+                        {{ global_wishlist_count|default:0 }}
+                    </span>
+                </a>
+
+                <!-- Beauty Shopping Bag with Item Count Badge & Subtotal Preview -->
+                <button class="btn beauty-btn-pill px-3 py-2 d-flex align-items-center gap-2 position-relative shadow-sm" 
+                        type="button" 
+                        id="cartDrawerTrigger"
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#cartOffcanvas" 
+                        data-cart-drawer="#cartDrawer"
+                        onclick="if (typeof openCartDrawer === 'function') { openCartDrawer(); } else if (document.getElementById('cartDrawer') && document.getElementById('cartDrawer').classList.contains('offcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartDrawer')).show(); } else if (document.getElementById('cartOffcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartOffcanvas')).show(); }"
+                        aria-label="Open Beauty Shopping Bag">
+                    <i class="bi bi-bag-heart-fill fs-5 text-white"></i>
+                    <div class="text-start d-none d-lg-block lh-sm text-white">
+                        <span class="d-block opacity-75" style="font-size: 0.68rem;">
+                            <span id="navCartItemsLabel">{% if IS_BANGLA %}ব্যাগ সাবটোটাল{% else %}Bag Subtotal{% endif %}</span>
+                        </span>
+                        <strong class="d-block fw-bold text-nowrap" id="navCartSubtotal" style="font-size: 0.82rem; color: #ffffff;">
+                            ৳{{ global_cart.subtotal|floatformat:2|default:'0.00' }}
+                        </strong>
+                    </div>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-white text-dark fw-bold border shadow-sm" id="navCartBadge" style="font-size: 0.68rem; color: #be185d !important; border-color: #be185d !important;">
+                        {{ global_cart_items_count|default:0 }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Specialized Beauty Navigation Bar (Editorial Departures & Routine Callout) -->
+    <div class="beauty-sub-navbar py-1 d-none d-md-block" style="background-color: #faf8f5; border-top: 1px solid #ebdcd4; border-bottom: 1px solid #ebdcd4;">
+        <div class="container d-flex align-items-center justify-content-between small">
+            <!-- Left Side: "Explore Categories" Menu Toggle & Department Links -->
+            <div class="d-flex align-items-center gap-2 gap-lg-3 flex-wrap">
+                <!-- "Explore Categories" Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm beauty-btn-pill py-1 px-3 d-flex align-items-center gap-2 border-0 shadow-sm" 
+                            type="button" 
+                            id="beautyExploreDropdown"
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false" 
+                            style="font-size: 0.82rem;">
+                        <i class="bi bi-grid-fill text-white"></i>
+                        <span>{% if IS_BANGLA %}সকল ক্যাটাগরি{% else %}Explore Categories{% endif %}</span>
+                        <i class="bi bi-chevron-down small ms-1"></i>
+                    </button>
+                    <ul class="dropdown-menu shadow-lg border-0 py-2 mt-1 beauty-dropdown-menu" aria-labelledby="beautyExploreDropdown" style="max-height: 480px; overflow-y: auto; min-width: 270px;">
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item fw-bold py-2 d-flex align-items-center gap-2 border-bottom" href="{% url 'product_list' %}" style="color: #be185d; border-color: #ebdcd4 !important;">
+                                <i class="bi bi-sparkles"></i>
+                                <span>{% if IS_BANGLA %}সকল বিউটি পণ্য দেখুন{% else %}All Beauty &amp; Skincare Catalog{% endif %}</span>
+                            </a>
+                        </li>
+                        <li><h6 class="dropdown-header text-uppercase text-muted small mt-2" style="font-size: 0.7rem; letter-spacing: 0.08em;">Curated Departments</h6></li>
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item py-2 px-3 d-flex align-items-center justify-content-between" href="{% url 'product_list' %}?category=skin-care">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-droplet-half" style="color: #be185d;"></i> Skincare (Serums &amp; Moistures)</span>
+                                <span class="badge rounded-pill bg-light text-muted" style="font-size: 0.65rem;">Trending</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item py-2 px-3 d-flex align-items-center justify-content-between" href="{% url 'product_list' %}?category=makeup">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-brush" style="color: #be185d;"></i> Makeup &amp; Lip Tints</span>
+                                <span class="badge rounded-pill bg-light text-muted" style="font-size: 0.65rem;">Glow</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item py-2 px-3 d-flex align-items-center justify-content-between" href="{% url 'product_list' %}?category=hair-care">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-scissors" style="color: #be185d;"></i> Haircare &amp; Scalp Care</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item py-2 px-3 d-flex align-items-center justify-content-between" href="{% url 'product_list' %}?category=fragrances">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-gem" style="color: #be185d;"></i> Luxury Fragrances</span>
+                                <span class="badge rounded-pill bg-light text-muted" style="font-size: 0.65rem;">Import</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item py-2 px-3 d-flex align-items-center justify-content-between" href="{% url 'product_list' %}?category=body-care">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-flower2" style="color: #be185d;"></i> Body &amp; Bath Spa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item py-2 px-3 d-flex align-items-center justify-content-between" href="{% url 'product_list' %}?q=clean+beauty">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-shield-check text-success"></i> Clean &amp; Organic Beauty</span>
+                                <span class="badge rounded-pill bg-success-subtle text-success" style="font-size: 0.65rem;">Non-Toxic</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item beauty-dropdown-item py-2 px-3 d-flex align-items-center justify-content-between" href="{% url 'product_list' %}#brands">
+                                <span class="d-flex align-items-center gap-2"><i class="bi bi-patch-check-fill" style="color: #be185d;"></i> Official Brand Boutiques</span>
+                                <span class="badge rounded-pill text-white" style="font-size: 0.65rem; background: #be185d;">100% Genuine</span>
+                            </a>
+                        </li>
+                        {% if all_categories %}
+                            <li><hr class="dropdown-divider my-1" style="border-color: #ebdcd4;"></li>
+                            <li><h6 class="dropdown-header text-uppercase text-muted small" style="font-size: 0.7rem;">More Categories</h6></li>
+                            {% for cat in all_categories %}
+                                {% if cat.slug not in "skin-care skincare makeup hair-care haircare fragrances fragrance body-care" %}
+                                    <li>
+                                        <a class="dropdown-item beauty-dropdown-item py-1 px-3 text-secondary" href="{% url 'product_list' %}?category={{ cat.slug }}">
+                                            <i class="bi {{ cat.icon|default:'bi-flower1' }} me-2" style="font-size: 0.75rem; color: #be185d;"></i>
+                                            {{ cat.name }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <span class="text-muted opacity-40">|</span>
+
+                <!-- Specialized Beauty Departments -->
+                <a href="{% url 'product_list' %}?category=skin-care" class="beauty-nav-link text-nowrap d-flex align-items-center gap-1">
+                    <i class="bi bi-droplet-half" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}স্কিনকেয়ার{% else %}Skincare{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=makeup" class="beauty-nav-link text-nowrap d-flex align-items-center gap-1">
+                    <i class="bi bi-brush" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}মেকআপ ও লিপস{% else %}Makeup &amp; Lips{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=hair-care" class="beauty-nav-link text-nowrap d-flex align-items-center gap-1">
+                    <i class="bi bi-scissors" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}হেয়ারকেয়ার{% else %}Haircare{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=fragrances" class="beauty-nav-link text-nowrap d-flex align-items-center gap-1">
+                    <i class="bi bi-gem" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}সুগন্ধি{% else %}Fragrance{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?category=body-care" class="beauty-nav-link text-nowrap d-flex align-items-center gap-1 d-none d-lg-flex">
+                    <i class="bi bi-flower2" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}বডি ও বাথ{% else %}Body &amp; Bath{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?q=clean+beauty" class="beauty-nav-link text-nowrap d-flex align-items-center gap-1 d-none d-xl-flex">
+                    <i class="bi bi-shield-check text-success"></i>
+                    <span>{% if IS_BANGLA %}ক্লিন বিউটি{% else %}Clean Beauty{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}#brands" class="beauty-nav-link text-nowrap d-flex align-items-center gap-1 d-none d-xxl-flex">
+                    <i class="bi bi-patch-check-fill" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}অফিশিয়াল ব্র্যান্ডস{% else %}Official Brands{% endif %}</span>
+                </a>
+            </div>
+
+            <!-- Right Callout: Interactive "Find Your Routine" Modal Trigger -->
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <button type="button" class="beauty-routine-btn d-inline-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#skinConsultationModal" title="Take our 60-second Skin & Routine Consultation">
+                    <i class="bi bi-stars"></i>
+                    <span>{% if IS_BANGLA %}আপনার রুটিন খুঁজুন{% else %}Find Your Routine{% endif %}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Dedicated Mobile Beauty Header & Drawer Trigger -->
+    <div class="beauty-mobile-header d-md-none py-2 px-3" style="background-color: #faf8f5; border-bottom: 1px solid #ebdcd4;">
+        <!-- Mobile Top Row: Drawer Toggle, Store Brand, Wishlist, Bag -->
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+            <!-- Mobile Offcanvas Menu Toggle -->
+            <button class="btn btn-sm btn-outline-secondary rounded-pill p-2 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileBeautyOffcanvas" aria-controls="mobileBeautyOffcanvas" aria-label="Open Beauty Menu" style="background-color: #f5ebe6; color: #1c1917;">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+
+            <!-- Store Brand Logo / Title -->
+            <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mx-auto" title="{{ site_settings.get_effective_site_name|default:'Glow & Glam Beauty' }}">
+                {% if site_settings.get_brand_logo_url %}
+                    <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Beauty Store Logo' }}" height="32" style="height: 32px; width: auto; max-width: 170px; object-fit: contain;">
+                {% elif site_settings.brand_logo %}
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Beauty Store Logo' }}" height="32" style="height: 32px; width: auto; max-width: 170px; object-fit: contain;">
+                {% elif CURRENT_THEME_DATA.logo_url %}
+                    <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="32" style="height: 32px; width: auto; max-width: 170px; object-fit: contain;">
+                {% else %}
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%); width: 30px; height: 30px;">
+                        <i class="bi bi-flower1 small"></i>
+                    </div>
+                    <span class="beauty-serif fw-bold fs-5 text-dark" style="letter-spacing: 0.02em;">
+                        {{ site_settings.get_effective_site_name|default:'GLOW & GLAM' }}
+                    </span>
+                {% endif %}
+            </a>
+
+            <!-- Right Controls: Wishlist & Bag -->
+            <div class="d-flex align-items-center gap-1">
+                <!-- Mobile Wishlist Button -->
+                <a href="{% url 'wishlist_view' %}" class="btn btn-sm btn-light rounded-circle position-relative p-2" title="{{ tr.wishlist }}" style="background-color: #f5ebe6; color: #be185d;">
+                    <i class="bi bi-heart-fill"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill beauty-badge-counter" style="font-size: 0.58rem; padding: 2px 5px;">
+                        {{ global_wishlist_count|default:0 }}
+                    </span>
+                </a>
+
+                <!-- Mobile Cart Trigger -->
+                <button class="btn btn-sm beauty-btn-pill rounded-circle position-relative p-2" 
+                        type="button" 
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#cartOffcanvas" 
+                        data-cart-drawer="#cartDrawer"
+                        onclick="if (typeof openCartDrawer === 'function') { openCartDrawer(); } else if (document.getElementById('cartDrawer') && document.getElementById('cartDrawer').classList.contains('offcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartDrawer')).show(); } else if (document.getElementById('cartOffcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartOffcanvas')).show(); }"
+                        aria-label="Open Bag">
+                    <i class="bi bi-bag-heart-fill"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-white text-dark fw-bold border" style="font-size: 0.58rem; padding: 2px 5px; color: #be185d !important;">
+                        {{ global_cart_items_count|default:0 }}
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <form action="{% url 'product_list' %}" method="get" class="beauty-mobile-search-form mt-1">
+            <div class="input-group beauty-search-wrap p-1 shadow-sm">
+                <input type="text" name="q" class="form-control border-0 bg-transparent px-3 py-1 small" 
+                       placeholder="{% if IS_BANGLA %}সেরাম, সানস্ক্রিন, লিপস্টিক...{% else %}Search serums, sunscreens, lipsticks...{% endif %}" 
+                       value="{{ request.GET.q|default:'' }}" 
+                       style="font-size: 0.84rem; color: #1c1917;">
+                <button class="btn beauty-btn-pill px-3 py-1 d-flex align-items-center" type="submit">
+                    <i class="bi bi-search small"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 5. Dedicated Mobile Beauty Drawer (#mobileBeautyOffcanvas) -->
+    <div class="offcanvas offcanvas-start shadow" tabindex="-1" id="mobileBeautyOffcanvas" aria-labelledby="mobileBeautyOffcanvasLabel" style="max-width: 330px; background-color: #faf8f5;">
+        <div class="offcanvas-header border-bottom py-3" style="border-color: #ebdcd4 !important; background-color: #f5ebe6;">
+            <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%); width: 34px; height: 34px;">
+                    <i class="bi bi-flower1"></i>
+                </div>
+                <h5 class="offcanvas-title beauty-serif fw-bold mb-0 text-dark" id="mobileBeautyOffcanvasLabel" style="font-size: 1.1rem;">
+                    {{ site_settings.get_effective_site_name|default:'GLOW & GLAM' }}
+                </h5>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+
+        <div class="offcanvas-body p-3">
+            <!-- Routine Consultation Quick Banner -->
+            <div class="p-3 rounded-3 mb-3 text-white shadow-sm" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="bi bi-stars fs-5"></i>
+                    <strong class="small">{% if IS_BANGLA %}স্কিন কনসালটেশন কুইজ{% else %}Find Your 3-Step Routine{% endif %}</strong>
+                </div>
+                <p class="small text-white-50 mb-2" style="font-size: 0.74rem;">
+                    {% if IS_BANGLA %}আপনার স্কিন টাইপ অনুযায়ী বিশেষজ্ঞ পরামর্শ ও প্রোডাক্ট সাজেস্ট নিন।{% else %}Take our 60-second quiz for personalized dermatologist-approved beauty recommendations.{% endif %}
+                </p>
+                <button type="button" class="btn btn-sm btn-light fw-bold w-100 rounded-pill" data-bs-toggle="modal" data-bs-target="#skinConsultationModal" data-bs-dismiss="offcanvas" style="color: #be185d; font-size: 0.78rem;">
+                    {% if IS_BANGLA %}কনসালটেশন শুরু করুন{% else %}Start Skin Consultation{% endif %}
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="mb-3">
+                <div class="text-uppercase text-muted fw-bold mb-2 ps-1" style="font-size: 0.7rem; letter-spacing: 0.08em;">
+                    {% if IS_BANGLA %}বিউটি বিভাগসমূহ{% else %}Beauty Departments{% endif %}
+                </div>
+                <div class="list-group list-group-flush rounded-3 overflow-hidden border" style="border-color: #ebdcd4;">
+                    <a href="{% url 'product_list' %}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 fw-semibold" style="color: #be185d; background-color: #fdf2f8;">
+                        <span><i class="bi bi-sparkles me-2"></i> {% if IS_BANGLA %}সকল পণ্য ক্যাটালগ{% else %}All Beauty Catalog{% endif %}</span>
+                        <i class="bi bi-chevron-right small"></i>
+                    </a>
+                    <a href="{% url 'product_list' %}?category=skin-care" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 text-dark">
+                        <span><i class="bi bi-droplet-half me-2" style="color: #be185d;"></i> Skincare</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{% url 'product_list' %}?category=makeup" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 text-dark">
+                        <span><i class="bi bi-brush me-2" style="color: #be185d;"></i> Makeup &amp; Lips</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{% url 'product_list' %}?category=hair-care" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 text-dark">
+                        <span><i class="bi bi-scissors me-2" style="color: #be185d;"></i> Haircare</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{% url 'product_list' %}?category=fragrances" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 text-dark">
+                        <span><i class="bi bi-gem me-2" style="color: #be185d;"></i> Luxury Fragrance</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{% url 'product_list' %}?category=body-care" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 text-dark">
+                        <span><i class="bi bi-flower2 me-2" style="color: #be185d;"></i> Body &amp; Bath Spa</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{% url 'product_list' %}?q=clean+beauty" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 text-dark">
+                        <span><i class="bi bi-shield-check me-2 text-success"></i> Clean &amp; Organic</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{% url 'product_list' %}#brands" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 text-dark">
+                        <span><i class="bi bi-patch-check-fill me-2" style="color: #be185d;"></i> Official Brand Stores</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Client Account & Services -->
+            <div class="mb-3">
+                <div class="text-uppercase text-muted fw-bold mb-2 ps-1" style="font-size: 0.7rem; letter-spacing: 0.08em;">
+                    {% if IS_BANGLA %}কাস্টমার সার্ভিস ও অ্যাকাউন্ট{% else %}Client Account &amp; Care{% endif %}
+                </div>
+                <div class="list-group list-group-flush rounded-3 border" style="border-color: #ebdcd4;">
+                    {% if request.user.is_authenticated and not request.user.is_staff %}
+                        <a href="{% url 'customer_dashboard' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-dark">
+                            <i class="bi bi-person-circle" style="color: #be185d;"></i>
+                            <span>{{ tr.dashboard }}</span>
+                        </a>
+                        <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-dark">
+                            <i class="bi bi-box-seam" style="color: #be185d;"></i>
+                            <span>{{ tr.my_orders }}</span>
+                        </a>
+                        <a href="{% url 'wishlist_view' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-dark">
+                            <i class="bi bi-heart text-danger"></i>
+                            <span>{{ tr.wishlist }} ({{ global_wishlist_count|default:0 }})</span>
+                        </a>
+                        <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-danger fw-semibold">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>{{ tr.logout }}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-dark">
+                            <i class="bi bi-box-arrow-in-right" style="color: #be185d;"></i>
+                            <span>{{ tr.sign_in }}</span>
+                        </a>
+                        <a href="{% url 'account_register' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-dark">
+                            <i class="bi bi-person-plus" style="color: #be185d;"></i>
+                            <span>{{ tr.create_account }}</span>
+                        </a>
+                        <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-dark">
+                            <i class="bi bi-truck" style="color: #be185d;"></i>
+                            <span>{% if IS_BANGLA %}অর্ডার ট্র্যাকিং{% else %}Track Order{% endif %}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Language & Support Hotline in Drawer -->
+            <div class="p-3 rounded-3 mt-3 border" style="background-color: #f5ebe6; border-color: #ebdcd4 !important;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="small fw-semibold text-muted">{% if IS_BANGLA %}ভাষা পরিবর্তন:{% else %}Language:{% endif %}</span>
+                    <div class="btn-group btn-group-sm">
+                        <a href="{% url 'set_language' 'en' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}btn-primary active{% else %}btn-outline-secondary{% endif %} py-0 px-2" style="{% if CURRENT_LANGUAGE == 'en' %}background-color: #be185d; border-color: #be185d;{% endif %}">EN</a>
+                        <a href="{% url 'set_language' 'bn' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'bn' %}btn-primary active{% else %}btn-outline-secondary{% endif %} py-0 px-2" style="{% if CURRENT_LANGUAGE == 'bn' %}background-color: #be185d; border-color: #be185d;{% endif %}">বাং</a>
+                    </div>
+                </div>
+                <div class="small text-muted d-flex align-items-center gap-2">
+                    <i class="bi bi-telephone-fill" style="color: #be185d;"></i>
+                    <span>{{ site_settings.contact_phone|default:'+880 1700-000000' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 6. Interactive Skin & Routine Consultation Modal (#skinConsultationModal) -->
+<div class="modal fade" id="skinConsultationModal" tabindex="-1" aria-labelledby="skinConsultationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; background-color: #faf8f5;">
+            <!-- Modal Header -->
+            <div class="modal-header text-white p-4" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; color: #be185d !important;">
+                        <i class="bi bi-stars fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title beauty-serif fw-bold mb-0 text-white" id="skinConsultationModalLabel">
+                            {% if IS_BANGLA %}পার্সোনালাইজড স্কিন ও রুটিন কনসালটেশন{% else %}Personalized Skin &amp; Routine Consultation{% endif %}
+                        </h5>
+                        <small class="text-white-50" style="font-size: 0.78rem;">
+                            {% if IS_BANGLA %}ক্লিনিক্যাল ফরম্যুলেশন ও ডার্মাটোলজিক্যাল গাইডেন্স{% else %}Dermatologist-formulated clean beauty recommendations in 60 seconds{% endif %}
+                        </small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body: Interactive Quiz Steps -->
+            <div class="modal-body p-4" id="skinConsultationContent">
+                <!-- Step 1: Skin Type -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold d-flex align-items-center gap-2 text-dark mb-2" style="font-size: 0.92rem;">
+                        <span class="badge rounded-circle text-white" style="background-color: #be185d; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem;">1</span>
+                        <span>{% if IS_BANGLA %}আপনার ত্বকের ধরন কেমন? (Select Your Skin Type){% else %}What is your current skin type?{% endif %}</span>
+                    </label>
+                    <div class="row g-2" id="skinTypeOptions">
+                        <div class="col-6 col-md-3">
+                            <input type="radio" class="btn-check" name="skin_type" id="skinDry" value="dry" autocomplete="off" checked>
+                            <label class="btn btn-outline-secondary w-100 p-3 text-start rounded-3 h-100 skin-type-card" for="skinDry" style="border-color: #ebdcd4;">
+                                <i class="bi bi-droplet d-block fs-4 mb-1" style="color: #be185d;"></i>
+                                <strong class="d-block text-dark small">Dry / Dehydrated</strong>
+                                <small class="text-muted" style="font-size: 0.7rem;">Tight, flaky, dull texture</small>
+                            </label>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <input type="radio" class="btn-check" name="skin_type" id="skinOily" value="oily" autocomplete="off">
+                            <label class="btn btn-outline-secondary w-100 p-3 text-start rounded-3 h-100 skin-type-card" for="skinOily" style="border-color: #ebdcd4;">
+                                <i class="bi bi-sun d-block fs-4 mb-1" style="color: #be185d;"></i>
+                                <strong class="d-block text-dark small">Oily / Acne-Prone</strong>
+                                <small class="text-muted" style="font-size: 0.7rem;">Excess sebum &amp; large pores</small>
+                            </label>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <input type="radio" class="btn-check" name="skin_type" id="skinCombo" value="combination" autocomplete="off">
+                            <label class="btn btn-outline-secondary w-100 p-3 text-start rounded-3 h-100 skin-type-card" for="skinCombo" style="border-color: #ebdcd4;">
+                                <i class="bi bi-circle-half d-block fs-4 mb-1" style="color: #be185d;"></i>
+                                <strong class="d-block text-dark small">Combination</strong>
+                                <small class="text-muted" style="font-size: 0.7rem;">Oily T-zone, normal cheeks</small>
+                            </label>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <input type="radio" class="btn-check" name="skin_type" id="skinSensitive" value="sensitive" autocomplete="off">
+                            <label class="btn btn-outline-secondary w-100 p-3 text-start rounded-3 h-100 skin-type-card" for="skinSensitive" style="border-color: #ebdcd4;">
+                                <i class="bi bi-flower1 d-block fs-4 mb-1" style="color: #be185d;"></i>
+                                <strong class="d-block text-dark small">Sensitive &amp; Red</strong>
+                                <small class="text-muted" style="font-size: 0.7rem;">Easily irritated, weak barrier</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Primary Concerns -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold d-flex align-items-center gap-2 text-dark mb-2" style="font-size: 0.92rem;">
+                        <span class="badge rounded-circle text-white" style="background-color: #be185d; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem;">2</span>
+                        <span>{% if IS_BANGLA %}প্রধান ত্বকের সমস্যা বা লক্ষ্য (Primary Concerns){% else %}What is your main skin goal or concern?{% endif %}</span>
+                    </label>
+                    <div class="d-flex flex-wrap gap-2" id="skinConcernsOptions">
+                        <input type="checkbox" class="btn-check" id="concernHydration" value="hydration" checked autocomplete="off">
+                        <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2" for="concernHydration" style="border-color: #ebdcd4; font-size: 0.8rem;">
+                            <i class="bi bi-droplet-fill me-1" style="color: #be185d;"></i> Deep Hydration
+                        </label>
+
+                        <input type="checkbox" class="btn-check" id="concernAging" value="aging" autocomplete="off">
+                        <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2" for="concernAging" style="border-color: #ebdcd4; font-size: 0.8rem;">
+                            <i class="bi bi-hourglass-split me-1" style="color: #be185d;"></i> Anti-Aging &amp; Peptides
+                        </label>
+
+                        <input type="checkbox" class="btn-check" id="concernAcne" value="acne" autocomplete="off">
+                        <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2" for="concernAcne" style="border-color: #ebdcd4; font-size: 0.8rem;">
+                            <i class="bi bi-shield-slash me-1" style="color: #be185d;"></i> Acne &amp; Blemishes
+                        </label>
+
+                        <input type="checkbox" class="btn-check" id="concernDarkSpots" value="spots" autocomplete="off">
+                        <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2" for="concernDarkSpots" style="border-color: #ebdcd4; font-size: 0.8rem;">
+                            <i class="bi bi-brightness-high me-1" style="color: #be185d;"></i> Dark Spots &amp; Melasma
+                        </label>
+
+                        <input type="checkbox" class="btn-check" id="concernGlow" value="glow" autocomplete="off">
+                        <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2" for="concernGlow" style="border-color: #ebdcd4; font-size: 0.8rem;">
+                            <i class="bi bi-stars me-1" style="color: #be185d;"></i> Glass Skin Radiance
+                        </label>
+
+                        <input type="checkbox" class="btn-check" id="concernBarrier" value="barrier" autocomplete="off">
+                        <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2" for="concernBarrier" style="border-color: #ebdcd4; font-size: 0.8rem;">
+                            <i class="bi bi-heart-pulse-fill me-1" style="color: #be185d;"></i> Barrier Repair &amp; Calming
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 3: Interactive Results Container (Updated in Real-Time by JS) -->
+                <div class="p-3 rounded-3 border" id="routineResultBox" style="background-color: #ffffff; border-color: #ebdcd4 !important;">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                            <h6 class="mb-0 fw-bold text-dark" id="routineResultTitle">Recommended 3-Step Daily Routine</h6>
+                        </div>
+                        <span class="badge rounded-pill bg-light text-muted" style="font-size: 0.72rem;">Clean &amp; Dermatologically Tested</span>
+                    </div>
+
+                    <div class="row g-3" id="routineStepsContainer">
+                        <!-- Step 1 -->
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-2 h-100 border" style="background-color: #faf8f5; border-color: #ebdcd4 !important;">
+                                <span class="badge rounded-pill text-white mb-2" style="background-color: #be185d; font-size: 0.65rem;">STEP 1: CLEANSE</span>
+                                <strong class="d-block small text-dark" id="recStep1Name">Gentle Botanical Amino Cleanser</strong>
+                                <small class="text-muted d-block" id="recStep1Desc" style="font-size: 0.72rem;">Low-pH hydrating foam that preserves acid mantle.</small>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-2 h-100 border" style="background-color: #faf8f5; border-color: #ebdcd4 !important;">
+                                <span class="badge rounded-pill text-white mb-2" style="background-color: #be185d; font-size: 0.65rem;">STEP 2: TARGET ACTIVE</span>
+                                <strong class="d-block small text-dark" id="recStep2Name">Hyaluronic Acid + B5 Barrier Serum</strong>
+                                <small class="text-muted d-block" id="recStep2Desc" style="font-size: 0.72rem;">Multi-depth moisture infusion with provitamin soothing.</small>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-2 h-100 border" style="background-color: #faf8f5; border-color: #ebdcd4 !important;">
+                                <span class="badge rounded-pill text-white mb-2" style="background-color: #be185d; font-size: 0.65rem;">STEP 3: SEAL &amp; PROTECT</span>
+                                <strong class="d-block small text-dark" id="recStep3Name">Ceramide Cashmere Cream + SPF 50</strong>
+                                <small class="text-muted d-block" id="recStep3Desc" style="font-size: 0.72rem;">Locks hydration and shields from UV cellular damage.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer border-0 p-3 px-4 d-flex justify-content-between align-items-center" style="background-color: #f5ebe6;">
+                <div class="small text-muted d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check" style="color: #be185d;"></i>
+                    <span>{% if IS_BANGLA %}১০০% অথেনটিক ফরম্যুলেশন ও অ্যালার্জি টেস্টেড{% else %}100% Authentic formulations &amp; allergy tested{% endif %}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                    <a href="{% url 'product_list' %}?category=skin-care" class="btn beauty-btn-pill btn-sm px-4" id="consultationShopBtn">
+                        {% if IS_BANGLA %}সংশ্লিষ্ট পণ্য দেখুন{% else %}Shop Routine Products{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Routine Recommendation Script -->
+<script>
+    (function() {
+        function updateBeautyRoutine() {
+            var selectedSkin = document.querySelector('input[name="skin_type"]:checked');
+            var skinVal = selectedSkin ? selectedSkin.value : 'dry';
+            
+            var step1Title = document.getElementById('recStep1Name');
+            var step1Desc = document.getElementById('recStep1Desc');
+            var step2Title = document.getElementById('recStep2Name');
+            var step2Desc = document.getElementById('recStep2Desc');
+            var step3Title = document.getElementById('recStep3Name');
+            var step3Desc = document.getElementById('recStep3Desc');
+            var shopBtn = document.getElementById('consultationShopBtn');
+
+            if (!step1Title) return;
+
+            if (skinVal === 'dry') {
+                step1Title.textContent = 'Gentle Botanical Cream-to-Oil Cleanser';
+                step1Desc.textContent = 'Preserves natural lipid barrier while dissolving impurities.';
+                step2Title.textContent = 'Triple Hyaluronic Acid + Squalane Serum';
+                step2Desc.textContent = 'Deep multi-layer cellular hydration with bio-fermented lipids.';
+                step3Title.textContent = 'Rich Ceramide Peptide Cream & Dewy SPF 50';
+                step3Desc.textContent = 'Seals moisture for 48 hours and guards against moisture evaporation.';
+                if (shopBtn) shopBtn.href = '{% url "product_list" %}?q=hydrating+dry+skin';
+            } else if (skinVal === 'oily') {
+                step1Title.textContent = 'Purifying Salicylic Acid (BHA) Gel Wash';
+                step1Desc.textContent = 'Clears pore congestion and regulates excess midday sebum.';
+                step2Title.textContent = '10% Niacinamide + Zinc Sebum Regulator';
+                step2Desc.textContent = 'Minimizes enlarged pores and fades residual post-acne marks.';
+                step3Title.textContent = 'Weightless Oil-Free Water Gel + Matte Sun Fluid';
+                step3Desc.textContent = 'Non-comedogenic hydration with zero shine or heavy residue.';
+                if (shopBtn) shopBtn.href = '{% url "product_list" %}?q=niacinamide+salicylic';
+            } else if (skinVal === 'combination') {
+                step1Title.textContent = 'Balanced Amino Acid Foaming Cleanser';
+                step1Desc.textContent = 'Cleanses T-zone thoroughly without parching cheeks.';
+                step2Title.textContent = 'Centella Asiatica + Vitamin B5 Essence';
+                step2Desc.textContent = 'Harmonizes moisture equilibrium across different facial zones.';
+                step3Title.textContent = 'Sheer Botanical Lotion & Invisible SPF 50';
+                step3Desc.textContent = 'Adapts to local humidity, balancing moisture and shine control.';
+                if (shopBtn) shopBtn.href = '{% url "product_list" %}?q=centella+barrier';
+            } else if (skinVal === 'sensitive') {
+                step1Title.textContent = 'Ultra-Gentle Calming Milk Cleanser';
+                step1Desc.textContent = 'Zero fragrance, hypoallergenic rinse that calms active redness.';
+                step2Title.textContent = 'Cica + Madecassoside Barrier Ampoule';
+                step2Desc.textContent = 'Repairs compromised stratum corneum and soothes inflammation.';
+                step3Title.textContent = 'Colloidal Oat Recovery Balm & Mineral UV Shield';
+                step3Desc.textContent = 'Physical non-nano zinc barrier safe for rosacea and reactive skin.';
+                if (shopBtn) shopBtn.href = '{% url "product_list" %}?q=cica+calming+sensitive';
+            }
+        }
+
+        // Attach listeners to skin consultation radio buttons and checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            var radios = document.querySelectorAll('input[name="skin_type"]');
+            radios.forEach(function(r) {
+                r.addEventListener('change', updateBeautyRoutine);
+            });
+            var checks = document.querySelectorAll('#skinConcernsOptions input[type="checkbox"]');
+            checks.forEach(function(c) {
+                c.addEventListener('change', updateBeautyRoutine);
+            });
+        });
+    })();
+</script>

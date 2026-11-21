@@ -1,0 +1,338 @@
+{% load static %}
+<!-- Tech & Electronics Multi-Column Flagship Footer (Star Tech / Apple Style) -->
+<footer class="tech-footer text-light pt-5 pb-3 mt-auto" style="background-color: #070d19; border-top: 3px solid #0284c7; box-shadow: 0 -4px 20px rgba(2, 132, 199, 0.15);">
+    <div class="container">
+        <!-- 1. 4 Tech Assurance Pillars -->
+        <div class="row g-3 p-3 rounded-3 mb-5 align-items-center" style="background-color: #0f172a; border: 1px solid rgba(56, 189, 248, 0.2);">
+            <!-- Pillar 1: Official Brand Warranty -->
+            <div class="col-6 col-lg-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(2, 132, 199, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="bi bi-patch-check-fill fs-4 text-info" style="color: #38bdf8 !important;"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">{% if IS_BANGLA %}১০০% অফিশিয়াল ব্র্যান্ড ওয়ারেন্টি{% else %}100% Official Warranty{% endif %}</h6>
+                    <small class="text-white-50" style="font-size: 0.73rem;">{% if IS_BANGLA %}বাংলাদেশে অনুমোদিত সার্ভিস সেন্টারে ক্লেইমেবল{% else %}Claimable across BD authorized care centers{% endif %}</small>
+                </div>
+            </div>
+
+            <!-- Pillar 2: 0% EMI Financing -->
+            <div class="col-6 col-lg-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(2, 132, 199, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="bi bi-credit-card-2-front fs-4 text-warning"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">{% if IS_BANGLA %}০% সুদে ইএমআই সুবিধা{% else %}0% EMI Financing{% endif %}</h6>
+                    <small class="text-white-50" style="font-size: 0.73rem;">{% if IS_BANGLA %}৩৬ মাস পর্যন্ত জিরো-ইন্টারেস্ট কিস্তি{% else %}Up to 36 months zero-interest installments{% endif %}</small>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Same-Day / Express Courier Dispatch -->
+            <div class="col-6 col-lg-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(2, 132, 199, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="bi bi-lightning-charge fs-4 text-info" style="color: #38bdf8 !important;"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">{% if IS_BANGLA %}সেম-ডে এক্সপ্রেস কুরিয়ার ডিসপ্যাচ{% else %}Same-Day / Express Dispatch{% endif %}</h6>
+                    <small class="text-white-50" style="font-size: 0.73rem;">{% if IS_BANGLA %}ঢাকা সিটিতে দ্রুততম ডেলিভারি ও সুরক্ষিত প্যাকেজিং{% else %}Express courier with shockproof packaging{% endif %}</small>
+                </div>
+            </div>
+
+            <!-- Pillar 4: Certified Tech Specialist Support -->
+            <div class="col-6 col-lg-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(2, 132, 199, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="bi bi-cpu fs-4 text-success"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">{% if IS_BANGLA %}সার্টিফাইড টেক স্পেশালিস্ট{% else %}Certified Tech Specialist Support{% endif %}</h6>
+                    <small class="text-white-50" style="font-size: 0.73rem;">{% if IS_BANGLA %}অভিজ্ঞ হার্ডওয়্যার ইঞ্জিনিয়ারদের সার্বক্ষণিক সহায়তা{% else %}Expert advice from certified hardware engineers{% endif %}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Multi-Column Layout Grid -->
+        <div class="row g-4 pb-4">
+            <!-- Column 1: Store info, site name, authorized distributor badge, support phone, email, tech hub address, social channels -->
+            <div class="col-lg-4 col-md-6">
+                <!-- Brand Logo / Identity -->
+                <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none" title="{{ site_settings.get_effective_site_name|default:'TechVerse Electronics' }}">
+                    {% if site_settings.get_brand_logo_url %}
+                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.15);">
+                    {% elif site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.15);">
+                    {% elif CURRENT_THEME_DATA.logo_dark_url %}
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain; filter: brightness(1.15);">
+                    {% else %}
+                        <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center me-2 shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); width: 38px; height: 38px; border: 1px solid rgba(56, 189, 248, 0.4);">
+                            <i class="bi bi-cpu fs-5" style="color: #38bdf8;"></i>
+                        </div>
+                        <span class="fw-bold fs-5 text-white">{{ site_settings.get_effective_site_name|default:'TECH' }}<span style="color: #38bdf8;">VERSE</span></span>
+                    {% endif %}
+                </a>
+
+                <!-- Authorized Distributor Badge -->
+                <div class="mb-3">
+                    <span class="badge py-1 px-2 d-inline-flex align-items-center gap-1" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); font-size: 0.72rem; border-radius: 6px;">
+                        <i class="bi bi-shield-check"></i> Authorized Electronics &amp; IT Distributor
+                    </span>
+                </div>
+
+                <!-- Store Description -->
+                <p class="text-white-50 small mb-3" style="line-height: 1.6;">
+                    {% if IS_BANGLA %}
+                        {{ site_settings.about_text_bn|default:'বাংলাদেশের প্রিমিয়াম কনজিউমার ইলেকট্রনিক্স ও আইটি হার্ডওয়্যার প্ল্যাটফর্ম। ১০০% অফিসিয়াল ব্র্যান্ড ওয়ারেন্টি, ০% সহজ কিস্তি এবং আসল পণ্যের নিশ্চয়তা।' }}
+                    {% else %}
+                        {{ site_settings.about_text_en|default:'Bangladesh’s premier destination for high-performance laptops, flagship smartphones, GPUs, and precision computer hardware with 100% official brand warranties and 0% EMI financing.' }}
+                    {% endif %}
+                </p>
+
+                <!-- Hotline, Email, & Tech Hub Address -->
+                <div class="small text-white-50 d-flex flex-column gap-2 mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-telephone-inbound-fill text-info" style="color: #38bdf8 !important;"></i>
+                        <span>{% if IS_BANGLA %}টেক সাপোর্ট হেল্পলাইন:{% else %}Tech Support Hotline:{% endif %} <strong class="text-white">{{ site_settings.contact_phone|default:'+880 1700-000000' }}</strong> (24/7 Specialized)</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-envelope-fill text-info" style="color: #38bdf8 !important;"></i>
+                        <span>{% if IS_BANGLA %}ইমেইল সহায়তা:{% else %}Email Support:{% endif %} <a href="mailto:{{ site_settings.contact_email|default:'tech@easypurchase.com' }}" class="text-white-50 text-decoration-none hover-cyan">{{ site_settings.contact_email|default:'tech@easypurchase.com' }}</a></span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-geo-alt-fill text-info mt-1" style="color: #38bdf8 !important;"></i>
+                        <span>{% if IS_BANGLA %}কেন্দ্রীয় টেক হাব ও সার্ভিস লাউঞ্জ:{% else %}Central Tech Hub &amp; Experience Center:{% endif %} Tech Commercial Center, IDB Bhaban / Multiplan, Dhaka 1205, Bangladesh</span>
+                    </div>
+                </div>
+
+                <!-- Social Channels -->
+                <div class="d-flex gap-3 text-white-50 fs-5 mt-3">
+                    {% if site_settings.social_facebook %}
+                        <a href="{{ site_settings.social_facebook }}" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    {% else %}
+                        <a href="https://facebook.com" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    {% endif %}
+                    {% if site_settings.social_twitter %}
+                        <a href="{{ site_settings.social_twitter }}" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+                    {% else %}
+                        <a href="https://twitter.com" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+                    {% endif %}
+                    {% if site_settings.social_instagram %}
+                        <a href="{{ site_settings.social_instagram }}" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    {% else %}
+                        <a href="https://instagram.com" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    {% endif %}
+                    <a href="https://youtube.com" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    {% if site_settings.social_linkedin %}
+                        <a href="{{ site_settings.social_linkedin }}" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    {% endif %}
+                    {% if site_settings.social_github %}
+                        <a href="{{ site_settings.social_github }}" target="_blank" rel="noopener" class="text-white-50 hover-cyan" title="GitHub"><i class="bi bi-github"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Column 2: Hardware Categories (Laptops, Desktops, PC Components, Gaming, Smart Devices, Accessories) -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="fw-bold text-white mb-3 text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.05em; border-bottom: 2px solid #0284c7; display: inline-block; padding-bottom: 4px;">
+                    {% if IS_BANGLA %}হার্ডওয়্যার ক্যাটাগরি{% else %}Hardware Categories{% endif %}
+                </h6>
+                <ul class="list-unstyled small text-white-50">
+                    <li class="mb-2">
+                        <a href="{% url 'product_list' %}" class="text-decoration-none text-info fw-semibold d-flex align-items-center gap-1" style="color: #38bdf8 !important;">
+                            <i class="bi bi-grid-fill small"></i>
+                            <span>{% if IS_BANGLA %}সকল টেক প্রোডাক্ট{% else %}All Hardware Catalog{% endif %}</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'product_list' %}?category=laptops" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-laptop text-info" style="color: #38bdf8 !important;"></i>
+                            <span>Laptops &amp; MacBooks</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'product_list' %}?category=desktops" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-pc-display text-info" style="color: #38bdf8 !important;"></i>
+                            <span>Desktops &amp; All-in-One</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'product_list' %}?category=pc-hardware" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-gpu-card text-info" style="color: #38bdf8 !important;"></i>
+                            <span>PC Components &amp; GPUs</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'product_list' %}?q=gaming" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-controller text-warning"></i>
+                            <span>Gaming Gear &amp; Consoles</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'product_list' %}?category=smartphones" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-phone text-info" style="color: #38bdf8 !important;"></i>
+                            <span>Smart Devices &amp; Phones</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'product_list' %}?category=mobile-accessories" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-smartwatch text-info" style="color: #38bdf8 !important;"></i>
+                            <span>Peripherals &amp; Accessories</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Tech Customer Services (Warranty policy & claim check, EMI terms, return & replacement, track order, device trade-in) -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="fw-bold text-white mb-3 text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.05em; border-bottom: 2px solid #0284c7; display: inline-block; padding-bottom: 4px;">
+                    {% if IS_BANGLA %}কাস্টমার সার্ভিসেস{% else %}Tech Services{% endif %}
+                </h6>
+                <ul class="list-unstyled small text-white-50">
+                    <li class="mb-2">
+                        <!-- Warranty Claim Portal Trigger -->
+                        <button type="button" class="btn btn-link text-decoration-none text-info hover-cyan p-0 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#warrantyClaimModal" style="color: #38bdf8 !important;">
+                            <i class="bi bi-patch-check-fill text-info" style="color: #38bdf8 !important;"></i>
+                            <span>{% if IS_BANGLA %}ওয়ারেন্টি ক্লেইম ও স্ট্যাটাস{% else %}Warranty Policy &amp; Claim{% endif %}</span>
+                        </button>
+                    </li>
+                    <li class="mb-2">
+                        <!-- EMI Calculator Trigger -->
+                        <button type="button" class="btn btn-link text-decoration-none text-white-50 hover-cyan p-0 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#emiCalculatorModal">
+                            <i class="bi bi-credit-card-2-front text-warning"></i>
+                            <span>{% if IS_BANGLA %}০% ইএমআই শর্তাবলী ও ব্যাংক{% else %}0% EMI Terms &amp; Banks{% endif %}</span>
+                        </button>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'customer_orders' %}" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-truck text-info" style="color: #38bdf8 !important;"></i>
+                            <span>{% if IS_BANGLA %}অর্ডার ট্র্যাকিং{% else %}Track Tech Order{% endif %}</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'customer_orders' %}" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-counterclockwise text-info" style="color: #38bdf8 !important;"></i>
+                            <span>{% if IS_BANGLA %}৭ দিনে হার্ডওয়্যার রিপ্লেসমেন্ট{% else %}7-Day Hardware Replacement{% endif %}</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2" onclick="event.preventDefault(); alert('Device Trade-In: Bring your old laptop or smartphone to our IDB/Multiplan branch for instant evaluation and upgrade voucher!');">
+                            <i class="bi bi-arrow-repeat text-success"></i>
+                            <span>{% if IS_BANGLA %}ডিভাইস এক্সচেঞ্জ ও ট্রেড-ইন{% else %}Device Trade-In / Exchange{% endif %}</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'wishlist_view' %}" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-heart text-danger"></i>
+                            <span>{{ tr.wishlist }}</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'cart_detail' %}" class="text-decoration-none text-white-50 hover-cyan d-flex align-items-center gap-2">
+                            <i class="bi bi-cart3 text-info" style="color: #38bdf8 !important;"></i>
+                            <span>{{ tr.cart_checkout }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Newsletter for flash tech drops & driver/firmware alerts, accepted payment methods (bKash, Credit Cards, Nagad, COD), and SSL 256-bit security seal -->
+            <div class="col-lg-4 col-md-12">
+                <!-- Newsletter for Tech Drops & Firmware Alerts -->
+                <h6 class="fw-bold text-white mb-2 text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.05em;">
+                    {% if IS_BANGLA %}টেক ড্রপস ও ফার্মওয়্যার অ্যালার্ট{% else %}Tech Drops &amp; Firmware Alerts{% endif %}
+                </h6>
+                <p class="text-white-50 small mb-3">
+                    {% if IS_BANGLA %}
+                        {{ site_settings.newsletter_text_bn|default:'লেটেস্ট জিপিইউ রিস্টক, ফ্ল্যাগশিপ গ্যাজেট লঞ্চ এবং এক্সক্লুসিভ টেক ভাউচার সবার আগে পেতে সাবস্ক্রাইব করুন।' }}
+                    {% else %}
+                        {{ site_settings.newsletter_text_en|default:'Subscribe to receive real-time alerts for GPU restocks, Apple & Samsung product drops, driver updates, and VIP hardware pricing.' }}
+                    {% endif %}
+                </p>
+                <div class="input-group mb-3 shadow-sm rounded-pill overflow-hidden border" style="border-color: rgba(56, 189, 248, 0.4) !important; background-color: #0f172a;">
+                    <input type="email" class="form-control border-0 py-2 px-3 text-white" placeholder="{% if IS_BANGLA %}আপনার ইমেইল দিন...{% else %}Enter your tech email...{% endif %}" style="background-color: #0f172a; font-size: 0.85rem;" aria-label="Email for Tech Newsletter">
+                    <button class="btn text-white fw-bold px-3" type="button" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" onclick="alert('Thank you for subscribing to TechVerse Drops & Firmware Alerts!');">
+                        {% if IS_BANGLA %}সাবস্ক্রাইব{% else %}Subscribe{% endif %}
+                    </button>
+                </div>
+
+                <!-- Accepted Payment Methods -->
+                <div class="mt-4 pt-1">
+                    <span class="d-block text-white-50 small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                        <i class="bi bi-credit-card-2-back text-info me-1" style="color: #38bdf8 !important;"></i>
+                        {% if IS_BANGLA %}অনুমোদিত পেমেন্ট মাধ্যম ও কিস্তি{% else %}Accepted Payment Methods &amp; 0% EMI{% endif %}
+                    </span>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <!-- bKash (Active) -->
+                        <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm" title="bKash Online Payment (Active)">
+                            <span class="payment-indicator bg-success" style="display:inline-block; width:6px; height:6px; border-radius:50%; background-color:#22c55e;"></span>
+                            <span class="fw-bold" style="color: #e2136e; font-size: 0.8rem; font-family: system-ui, -apple-system, sans-serif;">bKash</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.58rem; padding: 2px 4px;">Active</span>
+                        </div>
+
+                        <!-- Cash on Delivery (Active) -->
+                        <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm" title="Cash on Delivery (Active)">
+                            <i class="bi bi-cash-stack text-success" style="font-size: 0.85rem;"></i>
+                            <span class="fw-bold text-dark" style="font-size: 0.78rem;">COD</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.58rem; padding: 2px 4px;">Active</span>
+                        </div>
+
+                        <!-- Credit Cards with 0% EMI -->
+                        <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 shadow-sm border" style="background-color: rgba(2, 132, 199, 0.15); border-color: rgba(56, 189, 248, 0.3) !important;" title="Credit Cards (Visa, Mastercard, Amex - 0% EMI Available)">
+                            <i class="bi bi-credit-card-2-front text-info" style="font-size: 0.85rem; color: #38bdf8 !important;"></i>
+                            <span class="fw-bold text-white" style="font-size: 0.78rem;">Cards / 0% EMI</span>
+                            <span class="badge bg-info text-dark" style="font-size: 0.58rem; padding: 2px 4px; background-color: #38bdf8 !important;">36 Mo</span>
+                        </div>
+
+                        <!-- Nagad (Coming Soon) -->
+                        <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 shadow-sm border" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15) !important;" title="Nagad Mobile Banking (Coming Soon)">
+                            <span class="fw-bold" style="color: #f7941d; font-size: 0.8rem; font-family: system-ui, -apple-system, sans-serif;">Nagad</span>
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.58rem; padding: 2px 4px;">Soon</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 256-Bit SSL & Certified Retailer Seals -->
+                <div class="mt-3 pt-1 d-flex flex-wrap align-items-center gap-3 text-white-50 small" style="font-size: 0.76rem;">
+                    <div class="d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-shield-lock-fill text-info fs-5" style="color: #38bdf8 !important;"></i>
+                        <span>{% if IS_BANGLA %}২৫৬-বিট হার্ডওয়্যার এসএসএল এনক্রিপ্টেড{% else %}256-Bit Hardware Encrypted SSL{% endif %}</span>
+                    </div>
+                    <div class="d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-patch-check-fill text-warning fs-5"></i>
+                        <span>{% if IS_BANGLA %}অথেনটিক ব্র্যান্ড ডিস্ট্রিবিউটর ভেরিফাইড{% else %}Authorized Distributor Verified{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-secondary opacity-25 my-4">
+
+        <!-- 3. Bottom Sub-footer with Copyright, Trust Notice & Back to Top -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50 gap-2">
+            <div>
+                {{ site_settings.copyright_text|default:'© 2026 TechVerse Electronics. All Rights Reserved.' }}
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                {% if site_settings.subfooter_notice %}
+                    <span>{{ site_settings.subfooter_notice }}</span>
+                {% else %}
+                    <span>{% if IS_BANGLA %}বাংলাদেশের প্রিমিয়াম কনজিউমার ইলেকট্রনিক্স ও আইটি সমাধান{% else %}Bangladesh’s Premier High-Performance Electronics &amp; Computing Destination{% endif %}</span>
+                {% endif %}
+                <button type="button" class="btn btn-sm btn-outline-secondary text-white-50 border-secondary rounded-pill py-0 px-2" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" title="Back to Top">
+                    <i class="bi bi-arrow-up-short"></i> Top
+                </button>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+/* Tech & Electronics Footer Custom Styling */
+.tech-footer .hover-cyan:hover {
+    color: #38bdf8 !important;
+}
+.tech-footer .payment-chip {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.tech-footer .payment-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
+}
+</style>

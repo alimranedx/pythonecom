@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from core.validators import validate_image_file
-from core.themes import THEME_CHOICES, get_theme_data
+from core.themes import THEME_CHOICES, LEGACY_THEME_CHOICES, get_theme_data
 
 
 class TimeStampedModel(models.Model):
@@ -16,6 +16,87 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+class ThemeCustomization(TimeStampedModel):
+    """
+    Persists theme-specific layout overrides, visual configuration tokens,
+    and custom CSS. Strictly isolated per theme ID so customizing or resetting
+    one theme does not affect other themes or store-wide branding.
+    """
+    theme_id = models.CharField(
+        max_length=64,
+        unique=True,
+        db_index=True,
+        help_text="Canonical theme ID (e.g. 'pharmacy-healthcare', 'marketplace')"
+    )
+    is_active = models.BooleanField(
+        default=False,
+        help_text="True if this theme is currently the active storefront theme"
+    )
+    settings_data = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Theme-specific dynamic customization settings dictionary"
+    )
+    custom_css = models.TextField(
+        blank=True,
+        default="",
+        help_text="Custom scoped or global CSS overrides for this theme"
+    )
+
+    class Meta:
+        ordering = ['theme_id']
+        verbose_name = "Theme Customization"
+        verbose_name_plural = "Theme Customizations"
+
+    def __str__(self):
+        status = "Active" if self.is_active else "Inactive"
+        return f"ThemeCustomization: {self.theme_id} ({status})"
+
+    def get_effective_config(self):
+        """
+        Loads default settings from ThemeRegistry and deep/shallow merges settings_data.
+        """
+        config = {}
+        try:
+            from core.theme_registry import theme_registry
+            theme = theme_registry.get(self.theme_id, fallback=False)
+            if theme:
+                config = theme.get_default_settings()
+        except Exception:
+            pass
+
+        if isinstance(self.settings_data, dict):
+            config.update(self.settings_data)
+        return config
+
+    def reset_to_defaults(self):
+        """
+        Clears custom settings_data and custom_css and saves.
+        Does NOT affect store branding, contacts, social media, or catalog products.
+        """
+        self.settings_data = {}
+        self.custom_css = ""
+        self.save(update_fields=['settings_data', 'custom_css', 'updated_at'])
+        return self.get_effective_config()
+
+    @classmethod
+    def get_for_theme(cls, theme_id):
+        """
+        Retrieves or initializes a ThemeCustomization instance for a canonical theme ID.
+        """
+        try:
+            from core.theme_registry import theme_registry
+            canonical_id = theme_registry.normalize_id(theme_id) or theme_id
+        except Exception:
+            canonical_id = theme_id
+
+        customization, _ = cls.objects.get_or_create(
+            theme_id=canonical_id,
+            defaults={'settings_data': {}, 'is_active': False}
+        )
+        return customization
+
+
 class SiteSetting(TimeStampedModel):
     """
     Singleton model representing dynamic store branding,
@@ -24,8 +105,8 @@ class SiteSetting(TimeStampedModel):
     """
     # 0. Active Storefront Theme Architecture
     active_theme = models.CharField(
-        max_length=50,
-        choices=THEME_CHOICES,
+        max_length=64,
+        choices=THEME_CHOICES + LEGACY_THEME_CHOICES,
         default='mega_market',
         blank=True,
         help_text="Active niche storefront theme design and color scheme"
@@ -92,6 +173,29 @@ class SiteSetting(TimeStampedModel):
     def __str__(self):
         return f"Site Configuration ({self.site_name})"
 
+    def get_canonical_theme_id(self):
+        """
+        Returns normalized canonical theme ID (e.g. 'pharmacy-healthcare', 'marketplace').
+        """
+        raw = getattr(self, 'active_theme', None) or 'pharmacy-healthcare'
+        try:
+            from core.theme_registry import theme_registry
+            canonical = theme_registry.normalize_id(raw)
+            if canonical:
+                return canonical
+            return theme_registry.default_theme_id
+        except Exception:
+            pass
+        mapping = {
+            'pharmacy_health': 'pharmacy-healthcare',
+            'mega_market': 'marketplace',
+            'tech_gadgets': 'tech-electronics',
+            'beauty_cosmetics': 'beauty-skincare',
+            'fashion_lifestyle': 'fashion-lifestyle',
+            'grocery_organic': 'organic-grocery',
+        }
+        return mapping.get(raw, 'pharmacy-healthcare')
+
     def get_brand_logo_url(self, theme_key=None):
         """
         Returns custom uploaded brand logo if present, otherwise returns
@@ -102,7 +206,7 @@ class SiteSetting(TimeStampedModel):
                 return self.brand_logo.url
             except Exception:
                 pass
-        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        target_key = theme_key or self.get_canonical_theme_id()
         from core.themes import get_theme
         theme = get_theme(target_key)
         return theme.get('logo_url', '/static/images/logo.svg')
@@ -111,7 +215,7 @@ class SiteSetting(TimeStampedModel):
         """
         Returns active theme's dark-mode brand logo.
         """
-        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        target_key = theme_key or self.get_canonical_theme_id()
         from core.themes import get_theme
         theme = get_theme(target_key)
         return theme.get('logo_dark_url', '/static/images/logo_dark.svg')
@@ -126,7 +230,7 @@ class SiteSetting(TimeStampedModel):
                 return self.brand_favicon.url
             except Exception:
                 pass
-        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        target_key = theme_key or self.get_canonical_theme_id()
         from core.themes import get_theme
         theme = get_theme(target_key)
         return theme.get('favicon_url', '/static/images/favicon.svg')
@@ -140,7 +244,7 @@ class SiteSetting(TimeStampedModel):
                 return self.brand_favicon.url
             except Exception:
                 pass
-        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        target_key = theme_key or self.get_canonical_theme_id()
         from core.themes import get_theme
         theme = get_theme(target_key)
         return theme.get('favicon_ico_url', '/static/images/favicon.ico')
@@ -152,7 +256,7 @@ class SiteSetting(TimeStampedModel):
         """
         if self.site_name and self.site_name not in ['Easy Purchase', 'ShopBusket Ecommerce', 'PythonEcom', '']:
             return self.site_name
-        target_key = theme_key or getattr(self, 'active_theme', 'mega_market') or 'mega_market'
+        target_key = theme_key or self.get_canonical_theme_id()
         from core.themes import get_theme
         theme = get_theme(target_key)
         return theme.get('brand_name', self.site_name or 'Easy Purchase')
@@ -210,7 +314,15 @@ class SiteSetting(TimeStampedModel):
         return self.newsletter_text_en or ""
 
     def get_theme_data(self, is_bangla=False):
-        return get_theme_data(self.active_theme, is_bangla=is_bangla)
+        custom_config = None
+        try:
+            canonical_id = self.get_canonical_theme_id()
+            customization = ThemeCustomization.objects.filter(theme_id=canonical_id).first()
+            if customization and customization.settings_data:
+                custom_config = customization.get_effective_config()
+        except Exception:
+            pass
+        return get_theme_data(self.active_theme, is_bangla=is_bangla, custom_config=custom_config)
 
 
 class SystemErrorLog(TimeStampedModel):

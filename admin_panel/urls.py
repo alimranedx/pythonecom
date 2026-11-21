@@ -62,6 +62,14 @@ urlpatterns = [
     # Site & Brand Settings (Header, Footer, Announcements, Contacts)
     path('settings/', views.admin_site_settings, name='admin_site_settings'),
 
+    # Theme Management (Multi-Niche Theme Engine)
+    path('themes/', views.admin_theme_manager, name='admin_theme_manager'),
+    path('themes/<str:theme_id>/activate/', views.admin_theme_activate, name='admin_theme_activate'),
+    path('themes/<str:theme_id>/preview/', views.admin_theme_preview, name='admin_theme_preview'),
+    path('themes/preview/exit/', views.admin_theme_exit_preview, name='admin_theme_exit_preview'),
+    path('themes/<str:theme_id>/customize/', views.admin_theme_customize, name='admin_theme_customize'),
+    path('themes/<str:theme_id>/reset/', views.admin_theme_reset_customization, name='admin_theme_reset_customization'),
+
     # System Error Monitoring & Exception Logs
     path('system-errors/', views.admin_system_errors, name='admin_system_errors'),
     path('system-errors/<int:pk>/resolve/', views.admin_resolve_error, name='admin_resolve_error'),

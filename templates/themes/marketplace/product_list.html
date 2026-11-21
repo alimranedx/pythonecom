@@ -1,0 +1,750 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+    {% if selected_category %}{{ selected_category.name }} | {% elif query %}Search "{{ query }}" | {% elif selected_brand %}{{ selected_brand.name }} | {% endif %}Marketplace Catalog | {{ site_settings.site_name|default:'Easy Purchase' }}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ==========================================================
+       MARKETPLACE CATALOG MODERN STYLING
+       ========================================================== */
+    .marketplace-catalog-header {
+        background: linear-gradient(135deg, rgba(255, 87, 34, 0.06) 0%, rgba(245, 158, 11, 0.04) 100%);
+        border: 1px solid rgba(255, 87, 34, 0.12);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    [data-bs-theme="dark"] .marketplace-catalog-header {
+        background: linear-gradient(135deg, rgba(255, 87, 34, 0.12) 0%, rgba(30, 41, 59, 0.8) 100%);
+        border-color: rgba(255, 87, 34, 0.25);
+    }
+
+    /* Category Shortcuts Bar */
+    .category-shortcuts-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .category-shortcuts-bar::-webkit-scrollbar {
+        height: 4px;
+    }
+    .category-shortcuts-bar::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.4);
+        border-radius: 4px;
+    }
+    .category-shortcut-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        color: var(--text-main, #334155);
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .category-shortcut-chip:hover,
+    .category-shortcut-chip.active {
+        background: #ff5722;
+        color: #ffffff !important;
+        border-color: #ff5722;
+        box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25);
+        transform: translateY(-1px);
+    }
+    .category-shortcut-chip.active i {
+        color: #ffffff !important;
+    }
+
+    /* Filter Sidebar */
+    .filter-sidebar-card {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 14px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    [data-bs-theme="dark"] .filter-sidebar-card {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    .filter-section-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted, #64748b);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Category Tree styling */
+    .category-tree-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.35rem 0.6rem;
+        border-radius: 8px;
+        color: var(--text-main, #334155);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .category-tree-link:hover {
+        background-color: rgba(255, 87, 34, 0.08);
+        color: #ff5722;
+    }
+    .category-tree-link.active {
+        background-color: #ff5722;
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+    .category-tree-link.active .badge {
+        background-color: rgba(255,255,255,0.25) !important;
+        color: #ffffff !important;
+    }
+
+    /* Brand checkbox items */
+    .brand-filter-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+        font-size: 0.85rem;
+    }
+
+    /* Rating stars filter */
+    .rating-filter-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.35rem 0.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--text-main, #334155);
+        font-size: 0.84rem;
+        transition: background-color 0.15s ease;
+    }
+    .rating-filter-link:hover,
+    .rating-filter-link.active {
+        background-color: rgba(245, 158, 11, 0.12);
+        color: #d97706;
+    }
+
+    /* View mode toggles */
+    .layout-toggle-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: 1px solid var(--border-color, #e2e8f0);
+        background: var(--surface-card, #ffffff);
+        color: var(--text-muted, #64748b);
+        transition: all 0.15s ease;
+    }
+    .layout-toggle-btn.active,
+    .layout-toggle-btn:hover {
+        background: #ff5722;
+        color: #ffffff;
+        border-color: #ff5722;
+    }
+
+    /* List View mode adaptations */
+    .marketplace-list-view .col-card {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    .marketplace-list-view .marketplace-product-card {
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+    .marketplace-list-view .marketplace-card-img-wrapper {
+        width: 200px !important;
+        min-width: 200px !important;
+        height: 180px !important;
+        border-right: 1px solid var(--border-color, #e2e8f0);
+    }
+    .marketplace-list-view .card-body {
+        flex: 1 1 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb small mb-1">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted">{{ tr.home|default:'Home' }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none text-muted">{{ tr.all_products|default:'Marketplace' }}</a></li>
+            {% if selected_category %}
+                {% if selected_category.parent %}
+                    <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ selected_category.parent.slug }}" class="text-decoration-none text-muted">{{ selected_category.parent.name }}</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active fw-semibold text-danger" aria-current="page">{{ selected_category.name }}</li>
+            {% elif query %}
+                <li class="breadcrumb-item active fw-semibold text-danger" aria-current="page">Search: "{{ query }}"</li>
+            {% elif selected_brand %}
+                <li class="breadcrumb-item active fw-semibold text-danger" aria-current="page">{{ selected_brand.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item active fw-semibold text-danger" aria-current="page">All Categories</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Category / Search Header Banner -->
+    <div class="marketplace-catalog-header shadow-xs">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle p-3 d-flex align-items-center justify-content-center shadow-xs" style="width: 54px; height: 54px; background: #ff5722; color: #ffffff;">
+                    {% if selected_category %}
+                        <i class="bi {{ selected_category.icon|default:'bi-grid-fill' }} fs-4"></i>
+                    {% elif query %}
+                        <i class="bi bi-search fs-4"></i>
+                    {% elif selected_brand %}
+                        <i class="bi bi-patch-check-fill fs-4"></i>
+                    {% else %}
+                        <i class="bi bi-shop fs-4"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0" style="font-size: 1.45rem;">
+                        {% if selected_category %}
+                            {{ selected_category.name }}
+                        {% elif query %}
+                            Search Results for "{{ query }}"
+                        {% elif selected_brand %}
+                            Official {{ selected_brand.name }} Store
+                        {% else %}
+                            {% if IS_BANGLA %}সকল পণ্য{% else %}All Products{% endif %}
+                        {% endif %}
+                    </h2>
+                    <p class="text-muted small mb-0">
+                        Showing <strong>{{ page_obj.start_index|default:0 }}</strong> to <strong>{{ page_obj.end_index|default:0 }}</strong> of <strong>{{ total_count }}</strong> verified products
+                        {% if paginator.num_pages > 1 %}(Page <strong>{{ page_obj.number }}</strong> of <strong>{{ paginator.num_pages }}</strong>){% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Header Quick Actions: View Toggle & Sort -->
+            <div class="d-flex align-items-center gap-3">
+                <!-- Grid / List Layout Switcher -->
+                <div class="d-flex align-items-center gap-1">
+                    <button type="button" class="layout-toggle-btn active" id="btnGridView" onclick="setCatalogLayout('grid')" title="Grid View" aria-label="Grid View">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+                    <button type="button" class="layout-toggle-btn" id="btnListView" onclick="setCatalogLayout('list')" title="List View" aria-label="List View">
+                        <i class="bi bi-list-ul fs-5"></i>
+                    </button>
+                </div>
+
+                <!-- Per-Page Selector -->
+                <div class="d-none d-md-flex align-items-center gap-1">
+                    <label for="mktPerPageSelect" class="small text-muted text-nowrap mb-0">{% if IS_BANGLA %}দেখান:{% else %}Show:{% endif %}</label>
+                    <select id="mktPerPageSelect" class="form-select form-select-sm shadow-none" style="width: 105px; height: 34px; font-size: 0.82rem; cursor: pointer;" onchange="updateCatalogParam('per_page', this.value)">
+                        {% for opt in per_page_options %}
+                            <option value="{{ opt }}" {% if per_page == opt %}selected{% endif %}>{{ opt }} items</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Sort Selector -->
+                <div class="d-flex align-items-center gap-1">
+                    <label for="mktSortSelect" class="small text-muted text-nowrap mb-0 d-none d-sm-inline">{% if IS_BANGLA %}সাজান:{% else %}Sort:{% endif %}</label>
+                    <select id="mktSortSelect" class="form-select form-select-sm shadow-none" style="min-width: 155px; height: 34px; font-size: 0.82rem; cursor: pointer;" onchange="updateCatalogParam('sort', this.value)">
+                        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{{ tr.newest_arrivals|default:'Newest Arrivals' }}</option>
+                        <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Highest Customer Rating</option>
+                        <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Product Name: A to Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Shortcuts Carousel / Bar -->
+    <div class="category-shortcuts-bar">
+        <a href="{% url 'product_list' %}" class="category-shortcut-chip {% if not selected_category and not selected_brand and not query %}active{% endif %}">
+            <i class="bi bi-grid-fill"></i>
+            <span>All Categories</span>
+        </a>
+        {% for cat in categories %}
+            <a href="javascript:void(0)" onclick="updateCatalogParam('category', '{{ cat.slug }}')" class="category-shortcut-chip {% if selected_category.slug == cat.slug %}active{% endif %}">
+                <i class="bi {{ cat.icon|default:'bi-tag-fill' }} text-danger"></i>
+                <span>{{ cat.name }}</span>
+                {% if cat.products.count %}
+                    <span class="badge rounded-pill bg-light text-dark ms-1" style="font-size: 0.65rem;">{{ cat.products.count }}</span>
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Active Filter Pills -->
+    {% if selected_category or selected_brand or query or in_stock == '1' or min_price or max_price or request.GET.rating %}
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3 p-2 bg-light rounded-3 border">
+        <span class="small text-muted fw-semibold me-1"><i class="bi bi-funnel-fill text-danger"></i> Active Filters:</span>
+        {% if selected_category %}
+            <span class="badge bg-white text-dark border rounded-pill py-1 px-2.5 d-flex align-items-center gap-1 shadow-xs">
+                Category: <strong>{{ selected_category.name }}</strong>
+                <a href="javascript:void(0)" onclick="removeCatalogParam('category')" class="text-danger text-decoration-none ms-1 fw-bold">&times;</a>
+            </span>
+        {% endif %}
+        {% if selected_brand %}
+            <span class="badge bg-white text-dark border rounded-pill py-1 px-2.5 d-flex align-items-center gap-1 shadow-xs">
+                Brand: <strong>{{ selected_brand.name }}</strong>
+                <a href="javascript:void(0)" onclick="removeCatalogParam('brand')" class="text-danger text-decoration-none ms-1 fw-bold">&times;</a>
+            </span>
+        {% endif %}
+        {% if query %}
+            <span class="badge bg-white text-dark border rounded-pill py-1 px-2.5 d-flex align-items-center gap-1 shadow-xs">
+                Keyword: <strong>"{{ query }}"</strong>
+                <a href="javascript:void(0)" onclick="removeCatalogParam('q')" class="text-danger text-decoration-none ms-1 fw-bold">&times;</a>
+            </span>
+        {% endif %}
+        {% if in_stock == '1' %}
+            <span class="badge bg-white text-dark border rounded-pill py-1 px-2.5 d-flex align-items-center gap-1 shadow-xs">
+                <i class="bi bi-check2-circle text-success me-0.5"></i> In Stock Only
+                <a href="javascript:void(0)" onclick="removeCatalogParam('in_stock')" class="text-danger text-decoration-none ms-1 fw-bold">&times;</a>
+            </span>
+        {% endif %}
+        {% if min_price or max_price %}
+            <span class="badge bg-white text-dark border rounded-pill py-1 px-2.5 d-flex align-items-center gap-1 shadow-xs">
+                Price: <strong>৳{{ min_price|default:"0" }} – ৳{{ max_price|default:"∞" }}</strong>
+                <a href="javascript:void(0)" onclick="removeCatalogPriceParams()" class="text-danger text-decoration-none ms-1 fw-bold">&times;</a>
+            </span>
+        {% endif %}
+        {% if request.GET.rating %}
+            <span class="badge bg-white text-dark border rounded-pill py-1 px-2.5 d-flex align-items-center gap-1 shadow-xs">
+                Rating: <strong>{{ request.GET.rating }}★ & above</strong>
+                <a href="javascript:void(0)" onclick="removeCatalogParam('rating')" class="text-danger text-decoration-none ms-1 fw-bold">&times;</a>
+            </span>
+        {% endif %}
+        <a href="{% url 'product_list' %}" class="small text-danger text-decoration-none ms-auto fw-semibold">
+            <i class="bi bi-trash3 me-1"></i>Clear All Filters
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Main Content Layout: Sidebar + Product Grid -->
+    <div class="row g-4">
+        <!-- Desktop Filter Sidebar (Screen >= 992px) -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="filter-sidebar-card">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-funnel me-1 text-danger"></i> {% if IS_BANGLA %}ফিল্টার{% else %}Filters{% endif %}</h6>
+                    <a href="{% url 'product_list' %}" class="small text-muted text-decoration-none hover-danger">Reset</a>
+                </div>
+
+                <!-- 1. Category Tree Filter -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Categories</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1" style="max-height: 250px; overflow-y: auto;">
+                        <a href="javascript:void(0)" onclick="removeCatalogParam('category')" class="category-tree-link {% if not selected_category %}active{% endif %}">
+                            <span><i class="bi bi-grid me-1"></i> All Categories</span>
+                        </a>
+                        {% for cat in categories %}
+                            <a href="javascript:void(0)" onclick="updateCatalogParam('category', '{{ cat.slug }}')" class="category-tree-link {% if selected_category.slug == cat.slug %}active{% endif %}">
+                                <span class="text-truncate"><i class="bi {{ cat.icon|default:'bi-folder' }} me-1 opacity-75"></i> {{ cat.name }}</span>
+                                <span class="badge bg-light text-muted border ms-1" style="font-size: 0.65rem;">{{ cat.products.count }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 2. Price Range Slider & Inputs -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Price Range (BDT ৳)</span>
+                        <i class="bi bi-cash-stack small"></i>
+                    </div>
+                    <form method="get" id="priceFilterFormDesktop" class="d-flex flex-column gap-2">
+                        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+                        {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand.slug }}">{% endif %}
+                        {% if in_stock == '1' %}<input type="hidden" name="in_stock" value="1">{% endif %}
+                        {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                        {% if request.GET.rating %}<input type="hidden" name="rating" value="{{ request.GET.rating }}">{% endif %}
+                        <input type="hidden" name="per_page" value="{{ per_page }}">
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light text-muted small">৳</span>
+                            <input type="number" name="min_price" value="{{ min_price }}" class="form-control" placeholder="Min" min="0">
+                            <span class="input-group-text bg-light text-muted small">-</span>
+                            <input type="number" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max" min="0">
+                        </div>
+
+                        <!-- Quick Price Brackets -->
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setPriceBracket('', 500)">&lt; ৳500</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setPriceBracket(500, 2000)">৳500-2K</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setPriceBracket(2000, 10000)">৳2K-10K</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.72rem;" onclick="setPriceBracket(10000, '')">&gt; ৳10K</button>
+                        </div>
+
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill w-100 fw-semibold mt-1">
+                            Apply Price
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 3. Brand Checkboxes Filter -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Brands</span>
+                        <i class="bi bi-patch-check small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1" style="max-height: 200px; overflow-y: auto;">
+                        <a href="javascript:void(0)" onclick="removeCatalogParam('brand')" class="brand-filter-item text-decoration-none {% if not selected_brand %}fw-bold text-danger{% else %}text-muted{% endif %}">
+                            <span>All Brands</span>
+                        </a>
+                        {% for b in brands %}
+                            <div class="brand-filter-item">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" id="brandCheck_{{ b.pk }}" {% if selected_brand.slug == b.slug %}checked{% endif %} onchange="updateCatalogParam('brand', this.checked ? '{{ b.slug }}' : '')">
+                                    <label class="form-check-label text-truncate text-dark small" for="brandCheck_{{ b.pk }}" style="max-width: 140px; cursor: pointer;">
+                                        {{ b.name }}
+                                    </label>
+                                </div>
+                                <span class="badge bg-light text-muted border" style="font-size: 0.65rem;">{{ b.products.count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 4. Rating Stars Filter -->
+                <div class="mb-4">
+                    <div class="filter-section-title">
+                        <span>Customer Rating</span>
+                        <i class="bi bi-star small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1">
+                        <a href="javascript:void(0)" onclick="updateCatalogParam('rating', '4')" class="rating-filter-link {% if request.GET.rating == '4' %}active{% endif %}">
+                            <span class="text-warning">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star text-muted"></i>
+                                <span class="text-dark small ms-1 fw-medium">& Up (4.0+)</span>
+                            </span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="updateCatalogParam('rating', '3')" class="rating-filter-link {% if request.GET.rating == '3' %}active{% endif %}">
+                            <span class="text-warning">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star text-muted"></i><i class="bi bi-star text-muted"></i>
+                                <span class="text-dark small ms-1 fw-medium">& Up (3.0+)</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 5. Stock Filter -->
+                <div>
+                    <div class="filter-section-title">
+                        <span>Availability</span>
+                        <i class="bi bi-box-seam small"></i>
+                    </div>
+                    <div class="form-check form-switch small">
+                        <input class="form-check-input" type="checkbox" role="switch" id="stockFilterSwitchDesktop" {% if in_stock == '1' %}checked{% endif %} onchange="updateCatalogParam('in_stock', this.checked ? '1' : '')">
+                        <label class="form-check-label text-dark fw-medium" for="stockFilterSwitchDesktop" style="cursor: pointer;">
+                            In Stock Only
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Filter Offcanvas Trigger Button -->
+        <div class="col-12 d-lg-none mb-2">
+            <button class="btn btn-outline-danger w-100 rounded-pill py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-xs" type="button" data-bs-toggle="offcanvas" data-bs-target="#catalogFilterOffcanvas">
+                <i class="bi bi-funnel-fill"></i>
+                <span>Filter Marketplace Products</span>
+                {% if selected_category or selected_brand or in_stock == '1' or min_price or max_price or request.GET.rating %}
+                    <span class="badge bg-danger rounded-pill ms-1">Active</span>
+                {% endif %}
+            </button>
+        </div>
+
+        <!-- Main Products Grid / List View -->
+        <div class="col-lg-9">
+            {% if products %}
+                <div class="row g-3 row-cols-2 row-cols-md-3 row-cols-xl-3" id="marketplaceProductGrid">
+                    {% for product in products %}
+                        <div class="col col-card">
+                            {% include 'themes/marketplace/product_card.html' with product=product %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Bottom Pagination Matching Existing Architecture -->
+                {% if paginator.num_pages > 1 %}
+                <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 pt-3 border-top gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <small class="text-muted">
+                            Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> of <strong>{{ total_count }}</strong> items
+                            (Page <strong>{{ page_obj.number }}</strong> of <strong>{{ paginator.num_pages }}</strong>)
+                        </small>
+                    </div>
+
+                    <nav aria-label="Marketplace Catalog pagination">
+                        <ul class="pagination pagination-sm mb-0">
+                            <!-- First Page -->
+                            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                {% if page_obj.has_previous %}
+                                    <a class="page-link" href="?page=1{% if querystring %}&{{ querystring }}{% endif %}" aria-label="First" title="First Page">
+                                        &laquo;&laquo;
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">&laquo;&laquo;</span>
+                                {% endif %}
+                            </li>
+
+                            <!-- Previous Page -->
+                            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                {% if page_obj.has_previous %}
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Previous">
+                                        &lsaquo; {{ tr.prev|default:'Prev' }}
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">&lsaquo; {{ tr.prev|default:'Prev' }}</span>
+                                {% endif %}
+                            </li>
+
+                            <!-- Numbered Pages with Ellipsis -->
+                            {% for num in elided_page_range %}
+                                {% if num == ellipsis %}
+                                    <li class="page-item disabled"><span class="page-link text-muted">&hellip;</span></li>
+                                {% elif num == page_obj.number %}
+                                    <li class="page-item active" aria-current="page"><span class="page-link fw-bold bg-danger border-danger">{{ num }}</span></li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if querystring %}&{{ querystring }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- Next Page -->
+                            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                {% if page_obj.has_next %}
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Next">
+                                        {{ tr.next|default:'Next' }} &rsaquo;
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">{{ tr.next|default:'Next' }} &rsaquo;</span>
+                                {% endif %}
+                            </li>
+
+                            <!-- Last Page -->
+                            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                {% if page_obj.has_next %}
+                                    <a class="page-link" href="?page={{ paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}" aria-label="Last" title="Last Page">
+                                        &raquo;&raquo;
+                                    </a>
+                                {% else %}
+                                    <span class="page-link text-muted" aria-hidden="true">&raquo;&raquo;</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+            {% else %}
+                <!-- Empty State -->
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center text-muted">
+                    <div class="mb-3">
+                        <i class="bi bi-search display-3 text-danger opacity-50"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">No products found</h4>
+                    <p class="small mb-4 text-muted" style="max-width: 420px; margin: 0 auto;">
+                        We couldn't find any products matching your current search or filter criteria in the marketplace.
+                    </p>
+                    <div>
+                        <a href="{% url 'product_list' %}" class="btn btn-danger rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset All Filters
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Catalog Filter Offcanvas Drawer -->
+<div class="offcanvas offcanvas-start shadow d-lg-none" tabindex="-1" id="catalogFilterOffcanvas" aria-labelledby="catalogFilterLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold" id="catalogFilterLabel">
+            <i class="bi bi-funnel text-danger me-2"></i>Filter Marketplace
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-3">
+        <!-- Categories Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Categories</h6>
+            <div class="list-group list-group-flush small" style="max-height: 220px; overflow-y: auto;">
+                <a href="javascript:void(0)" onclick="removeCatalogParam('category')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded {% if not selected_category %}fw-bold text-danger bg-danger-subtle{% else %}text-secondary{% endif %}">
+                    <span>All Categories</span>
+                </a>
+                {% for cat in categories %}
+                    <a href="javascript:void(0)" onclick="updateCatalogParam('category', '{{ cat.slug }}')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if selected_category.slug == cat.slug %}fw-bold text-danger bg-danger-subtle{% else %}text-secondary{% endif %}">
+                        <span class="text-truncate"><i class="bi {{ cat.icon|default:'bi-folder' }} me-1"></i> {{ cat.name }}</span>
+                        <span class="badge bg-light text-muted border ms-1">{{ cat.products.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Brands Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Brands</h6>
+            <div class="list-group list-group-flush small" style="max-height: 180px; overflow-y: auto;">
+                <a href="javascript:void(0)" onclick="removeCatalogParam('brand')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded {% if not selected_brand %}fw-bold text-danger bg-danger-subtle{% else %}text-secondary{% endif %}">
+                    <span>All Brands</span>
+                </a>
+                {% for b in brands %}
+                    <a href="javascript:void(0)" onclick="updateCatalogParam('brand', '{{ b.slug }}')" class="list-group-item list-group-item-action border-0 px-2 py-1 rounded d-flex justify-content-between align-items-center {% if selected_brand.slug == b.slug %}fw-bold text-danger bg-danger-subtle{% else %}text-secondary{% endif %}">
+                        <span class="text-truncate">{{ b.name }}</span>
+                        <span class="badge bg-light text-muted border ms-1">{{ b.products.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Price Range Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Price Range</h6>
+            <form method="get" class="d-flex flex-column gap-2">
+                {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+                {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand.slug }}">{% endif %}
+                {% if in_stock == '1' %}<input type="hidden" name="in_stock" value="1">{% endif %}
+                {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                {% if request.GET.rating %}<input type="hidden" name="rating" value="{{ request.GET.rating }}">{% endif %}
+                <input type="hidden" name="per_page" value="{{ per_page }}">
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light">৳</span>
+                    <input type="number" name="min_price" value="{{ min_price }}" class="form-control" placeholder="Min" min="0">
+                    <span class="input-group-text bg-light">-</span>
+                    <input type="number" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max" min="0">
+                </div>
+                <button type="submit" class="btn btn-sm btn-danger rounded-pill w-100 fw-semibold">
+                    Apply Price
+                </button>
+            </form>
+        </div>
+
+        <!-- Availability Filter -->
+        <div class="mb-4">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Availability</h6>
+            <div class="form-check form-switch small">
+                <input class="form-check-input" type="checkbox" id="inStockCheckMobile" {% if in_stock == '1' %}checked{% endif %} onchange="updateCatalogParam('in_stock', this.checked ? '1' : '')">
+                <label class="form-check-label text-secondary" for="inStockCheckMobile">
+                    In Stock Only
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-3 border-top d-flex gap-2">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary flex-grow-1 rounded-pill">
+                Reset All
+            </a>
+            <button type="button" class="btn btn-danger flex-grow-1 rounded-pill" data-bs-dismiss="offcanvas">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateCatalogParam(key, value) {
+    const url = new URL(window.location.href);
+    if (value) {
+        url.searchParams.set(key, value);
+    } else {
+        url.searchParams.delete(key);
+    }
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function removeCatalogParam(key) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(key);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function removeCatalogPriceParams() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('min_price');
+    url.searchParams.delete('max_price');
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function setPriceBracket(min, max) {
+    const url = new URL(window.location.href);
+    if (min) {
+        url.searchParams.set('min_price', min);
+    } else {
+        url.searchParams.delete('min_price');
+    }
+    if (max) {
+        url.searchParams.set('max_price', max);
+    } else {
+        url.searchParams.delete('max_price');
+    }
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function setCatalogLayout(layout) {
+    const gridEl = document.getElementById('marketplaceProductGrid');
+    const btnGrid = document.getElementById('btnGridView');
+    const btnList = document.getElementById('btnListView');
+    if (!gridEl) return;
+
+    if (layout === 'list') {
+        gridEl.classList.add('marketplace-list-view');
+        gridEl.classList.remove('row-cols-2', 'row-cols-md-3', 'row-cols-xl-3');
+        gridEl.classList.add('row-cols-1');
+        if (btnList) btnList.classList.add('active');
+        if (btnGrid) btnGrid.classList.remove('active');
+        localStorage.setItem('mkt_catalog_view', 'list');
+    } else {
+        gridEl.classList.remove('marketplace-list-view');
+        gridEl.classList.remove('row-cols-1');
+        gridEl.classList.add('row-cols-2', 'row-cols-md-3', 'row-cols-xl-3');
+        if (btnGrid) btnGrid.classList.add('active');
+        if (btnList) btnList.classList.remove('active');
+        localStorage.setItem('mkt_catalog_view', 'grid');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedLayout = localStorage.getItem('mkt_catalog_view');
+    if (savedLayout === 'list') {
+        setCatalogLayout('list');
+    }
+});
+</script>
+{% endblock %}

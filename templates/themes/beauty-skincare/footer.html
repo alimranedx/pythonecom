@@ -1,0 +1,433 @@
+{% load static %}
+<!-- Beauty & Skincare Multi-Column Editorial Flagship Footer (LUNA / ssèraskin / NUORI / PIBU Inspired) -->
+<footer class="beauty-footer pt-5 pb-3 mt-auto" style="background-color: #faf8f5; border-top: 1px solid #ebdcd4; color: #292524;">
+    <!-- Scoped Footer Styles -->
+    <style>
+        .beauty-footer {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 0.88rem;
+        }
+        .beauty-footer .beauty-serif {
+            font-family: 'Playfair Display', Didot, 'Bodoni MT', Georgia, serif;
+            letter-spacing: 0.02em;
+        }
+        .beauty-pillar-card {
+            background-color: #ffffff;
+            border: 1px solid #ebdcd4;
+            border-radius: 16px;
+            padding: 1.25rem 1rem;
+            transition: all 0.25s ease;
+        }
+        .beauty-pillar-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(190, 24, 93, 0.08);
+            border-color: #e8b4b8;
+        }
+        .beauty-pillar-icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #fff0f3;
+            color: #be185d;
+            border: 1px solid #fbcfe8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .beauty-pillar-card:hover .beauty-pillar-icon-wrap {
+            background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
+            color: #ffffff;
+            border-color: #be185d;
+        }
+        .beauty-footer-heading {
+            font-size: 0.86rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #1c1917;
+            margin-bottom: 1.15rem;
+            position: relative;
+        }
+        .beauty-footer-link {
+            color: #57534e;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-block;
+            margin-bottom: 0.55rem;
+            font-size: 0.84rem;
+        }
+        .beauty-footer-link:hover {
+            color: #be185d;
+            transform: translateX(3px);
+        }
+        .beauty-social-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 1px solid #ebdcd4;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #57534e;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .beauty-social-icon:hover {
+            background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
+            color: #ffffff;
+            border-color: #be185d;
+            transform: translateY(-2px);
+        }
+        .beauty-payment-chip {
+            padding: 0.35rem 0.65rem;
+            border-radius: 8px;
+            background-color: #ffffff;
+            border: 1px solid #ebdcd4;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: #44403c;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .beauty-newsletter-input {
+            border: 1px solid #ebdcd4;
+            border-radius: 9999px 0 0 9999px;
+            padding: 0.55rem 1rem;
+            font-size: 0.84rem;
+            background: #ffffff;
+            color: #1c1917;
+        }
+        .beauty-newsletter-input:focus {
+            border-color: #be185d;
+            box-shadow: 0 0 0 3px rgba(190, 24, 93, 0.12);
+            outline: none;
+        }
+        .beauty-newsletter-btn {
+            background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 0 9999px 9999px 0;
+            padding: 0.55rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.82rem;
+            transition: all 0.2s ease;
+        }
+        .beauty-newsletter-btn:hover {
+            background: linear-gradient(135deg, #9f1239 0%, #881337 100%);
+            color: #ffffff;
+        }
+        .beauty-back-to-top {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 1px solid #ebdcd4;
+            color: #be185d;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .beauty-back-to-top:hover {
+            background-color: #be185d;
+            color: #ffffff;
+            border-color: #be185d;
+            transform: translateY(-2px);
+        }
+        /* Dark Mode Theme Support */
+        [data-bs-theme="dark"] .beauty-footer {
+            background-color: #141012 !important;
+            border-color: #261f22 !important;
+            color: #d6cbcf !important;
+        }
+        [data-bs-theme="dark"] .beauty-pillar-card {
+            background-color: #1c1719 !important;
+            border-color: #2e2428 !important;
+        }
+        [data-bs-theme="dark"] .beauty-pillar-icon-wrap {
+            background: #2a1b22 !important;
+            border-color: #521c33 !important;
+            color: #f472b6 !important;
+        }
+        [data-bs-theme="dark"] .beauty-footer-heading {
+            color: #f5f0ea !important;
+        }
+        [data-bs-theme="dark"] .beauty-footer-link {
+            color: #a89fa3 !important;
+        }
+        [data-bs-theme="dark"] .beauty-footer-link:hover {
+            color: #f472b6 !important;
+        }
+        [data-bs-theme="dark"] .beauty-social-icon {
+            background-color: #1c1719 !important;
+            border-color: #2e2428 !important;
+            color: #d6cbcf !important;
+        }
+        [data-bs-theme="dark"] .beauty-payment-chip {
+            background-color: #1c1719 !important;
+            border-color: #2e2428 !important;
+            color: #d6cbcf !important;
+        }
+        [data-bs-theme="dark"] .beauty-newsletter-input {
+            background-color: #1c1719 !important;
+            border-color: #2e2428 !important;
+            color: #f5f0ea !important;
+        }
+        [data-bs-theme="dark"] .beauty-back-to-top {
+            background-color: #1c1719 !important;
+            border-color: #2e2428 !important;
+            color: #f472b6 !important;
+        }
+    </style>
+
+    <div class="container">
+        <!-- 1. 4 Clean Beauty Assurance Pillars -->
+        <div class="row g-3 mb-5">
+            <!-- Pillar 1: 100% Authentic & Direct from Brands -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="beauty-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="beauty-pillar-icon-wrap">
+                        <i class="bi bi-patch-check-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold small text-dark">
+                            {% if IS_BANGLA %}১০০% আসল ও অনুমোদিত ব্র্যান্ড{% else %}100% Authentic &amp; Direct{% endif %}
+                        </h6>
+                        <small class="text-muted" style="font-size: 0.74rem;">
+                            {% if IS_BANGLA %}জিরো কাউন্টারফিট পলিসি ও ভেরিফায়েড ব্যাচ কোড{% else %}Zero counterfeit policy &amp; direct brand imports{% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 2: Dermatologically Tested & Certified Clean -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="beauty-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="beauty-pillar-icon-wrap">
+                        <i class="bi bi-shield-heart-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold small text-dark">
+                            {% if IS_BANGLA %}ডার্মাটোলজিস্ট সার্টিফাইড ক্লিন{% else %}Dermatologically Tested{% endif %}
+                        </h6>
+                        <small class="text-muted" style="font-size: 0.74rem;">
+                            {% if IS_BANGLA %}নন-কমেডোজেনিক ও ক্ষতিকর প্যারাবেন মুক্ত{% else %}Safe for sensitive skin &amp; cruelty-free{% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Fresh Batch Guarantee -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="beauty-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="beauty-pillar-icon-wrap">
+                        <i class="bi bi-hourglass-top fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold small text-dark">
+                            {% if IS_BANGLA %}ফ্রেশ ব্যাচ গ্যারান্টি{% else %}Fresh Batch Guarantee{% endif %}
+                        </h6>
+                        <small class="text-muted" style="font-size: 0.74rem;">
+                            {% if IS_BANGLA %}সর্বোচ্চ মেয়াদ ও ক্লাইমেট-কন্ট্রোল্ড সংরক্ষণাগার{% else %}Climate-controlled storage at 20°-24°C{% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 4: Complimentary Samples with Every Order -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="beauty-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="beauty-pillar-icon-wrap">
+                        <i class="bi bi-gift-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold small text-dark">
+                            {% if IS_BANGLA %}কমপ্লিমেন্টারি লাক্সারি স্যাম্পল{% else %}Complimentary Samples{% endif %}
+                        </h6>
+                        <small class="text-muted" style="font-size: 0.74rem;">
+                            {% if IS_BANGLA %}১৫০০+ টাকার অর্ডারে কিউরেটেড মিনি গিফট{% else %}Deluxe mini samples with orders over ৳1,500{% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Multi-Column Layout Grid -->
+        <div class="row g-4 pb-4">
+            <!-- Column 1: Store info, site name, Clean Beauty philosophy, phone, email, studio address, social channels -->
+            <div class="col-lg-4 col-md-6">
+                <!-- Brand Logo / Editorial Typography -->
+                <a href="{% url 'home' %}" class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none" title="{{ site_settings.get_effective_site_name|default:'Glow & Glam Beauty' }}">
+                    {% if site_settings.get_brand_logo_url %}
+                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Beauty Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;">
+                    {% elif site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Beauty Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;">
+                    {% elif CURRENT_THEME_DATA.logo_url %}
+                        <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;">
+                    {% else %}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%); width: 36px; height: 36px;">
+                            <i class="bi bi-flower1"></i>
+                        </div>
+                        <span class="beauty-serif fw-bold fs-5 text-dark" style="letter-spacing: 0.04em;">
+                            {{ site_settings.get_effective_site_name|default:'GLOW & GLAM' }}
+                        </span>
+                    {% endif %}
+                </a>
+
+                <!-- Clean Beauty Badge -->
+                <div class="mb-3">
+                    <span class="badge py-1 px-2 d-inline-flex align-items-center gap-1" style="background: #fff0f3; color: #be185d; border: 1px solid #fbcfe8; font-size: 0.72rem; border-radius: 9999px;">
+                        <i class="bi bi-stars"></i> Clean Luxury Skincare &amp; Botanicals
+                    </span>
+                </div>
+
+                <!-- Clean Beauty Philosophy Description -->
+                <p class="text-muted small mb-3" style="line-height: 1.65;">
+                    {% if IS_BANGLA %}
+                        {{ site_settings.about_text_bn|default:'বাংলাদেশের প্রিমিয়াম ক্লিন স্কিনকেয়ার ও বিউটি বুটিক। ১০০% অথেনটিক আন্তর্জাতিক ব্র্যান্ড, ডার্মাটোলজিক্যালি পরীক্ষিত উপাদান এবং কোমল কার্যকরী রূপচর্চা সলিউশন।' }}
+                    {% else %}
+                        {{ site_settings.about_text_en|default:'A curated luxury beauty & skincare sanctuary celebrating clean, dermatologist-formulated actives and imported authentic formulations for timeless radiant skin.' }}
+                    {% endif %}
+                </p>
+
+                <!-- Customer Care Hotline, Email, & Flagship Studio Address -->
+                <div class="small text-muted d-flex flex-column gap-2 mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-telephone-inbound-fill" style="color: #be185d;"></i>
+                        <span>{% if IS_BANGLA %}বিউটি কনসালটেশন হেল্পলাইন:{% else %}Beauty Consultation Care:{% endif %} <strong class="text-dark">{{ site_settings.contact_phone|default:'+880 1700-000000' }}</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-envelope-fill" style="color: #be185d;"></i>
+                        <span>{% if IS_BANGLA %}ইমেইল সহায়তা:{% else %}Email Inquiries:{% endif %} <a href="mailto:{{ site_settings.contact_email|default:'care@glowandglam.test' }}" class="text-decoration-none text-muted hover-rose">{{ site_settings.contact_email|default:'care@glowandglam.test' }}</a></span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-geo-alt-fill mt-1" style="color: #be185d;"></i>
+                        <span>{% if IS_BANGLA %}ফ্ল্যাগশিপ বিউটি স্টুডিও:{% else %}Flagship Beauty Studio:{% endif %} {{ site_settings.contact_address|default:'Gulshan Avenue, Road 11, Banani / Gulshan-2, Dhaka 1212, Bangladesh' }}</span>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="d-flex align-items-center gap-2 mt-3">
+                    <a href="https://instagram.com" target="_blank" rel="noopener" class="beauty-social-icon" title="Follow us on Instagram">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="https://facebook.com" target="_blank" rel="noopener" class="beauty-social-icon" title="Follow us on Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="https://pinterest.com" target="_blank" rel="noopener" class="beauty-social-icon" title="Pin on Pinterest">
+                        <i class="bi bi-pinterest"></i>
+                    </a>
+                    <a href="https://youtube.com" target="_blank" rel="noopener" class="beauty-social-icon" title="Watch on YouTube">
+                        <i class="bi bi-youtube"></i>
+                    </a>
+                    <a href="https://tiktok.com" target="_blank" rel="noopener" class="beauty-social-icon" title="Find us on TikTok">
+                        <i class="bi bi-tiktok"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Column 2: Beauty Categories (Serums, Cleansers, Moisturizers, SPF, Makeup, Haircare) -->
+            <div class="col-lg-2 col-md-6 col-6">
+                <h6 class="beauty-footer-heading">{% if IS_BANGLA %}বিউটি ক্যাটাগরি{% else %}Beauty Categories{% endif %}</h6>
+                <ul class="list-unstyled mb-0">
+                    <li><a href="{% url 'product_list' %}?q=serum" class="beauty-footer-link">Serums &amp; Actives</a></li>
+                    <li><a href="{% url 'product_list' %}?q=cleanser" class="beauty-footer-link">Cleansers &amp; Toners</a></li>
+                    <li><a href="{% url 'product_list' %}?q=moisturizer" class="beauty-footer-link">Moisturizers &amp; Creams</a></li>
+                    <li><a href="{% url 'product_list' %}?q=sunscreen" class="beauty-footer-link">Sun Protection &amp; SPF</a></li>
+                    <li><a href="{% url 'product_list' %}?category=makeup" class="beauty-footer-link">Makeup &amp; Lip Tints</a></li>
+                    <li><a href="{% url 'product_list' %}?category=hair-care" class="beauty-footer-link">Haircare &amp; Scalp</a></li>
+                    <li><a href="{% url 'product_list' %}?q=clean+beauty" class="beauty-footer-link">Clean Organic Care</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Client Services (Skin consultation, authenticity check, order tracking, returns, shipping guide) -->
+            <div class="col-lg-2 col-md-6 col-6">
+                <h6 class="beauty-footer-heading">{% if IS_BANGLA %}ক্লায়েন্ট সার্ভিস{% else %}Client Services{% endif %}</h6>
+                <ul class="list-unstyled mb-0">
+                    <li>
+                        <a href="#" class="beauty-footer-link" data-bs-toggle="modal" data-bs-target="#skinConsultationModal">
+                            <i class="bi bi-stars me-1" style="color: #be185d;"></i> Skin Consultation
+                        </a>
+                    </li>
+                    <li><a href="{% url 'customer_orders' %}" class="beauty-footer-link">{% if IS_BANGLA %}অর্ডার ট্র্যাকিং{% else %}Track Your Order{% endif %}</a></li>
+                    <li><a href="{% url 'wishlist_view' %}" class="beauty-footer-link">{% if IS_BANGLA %}সেভড উইশলিস্ট{% else %}Saved Wishlist{% endif %}</a></li>
+                    <li><a href="{% url 'product_list' %}#brands" class="beauty-footer-link">Authenticity &amp; Batch Codes</a></li>
+                    <li><a href="{% url 'home' %}#shipping-guide" class="beauty-footer-link">Climate-Safe Shipping</a></li>
+                    <li><a href="{% url 'home' %}#returns-policy" class="beauty-footer-link">Clean Exchange &amp; Returns</a></li>
+                    <li><a href="{% url 'home' %}#beauty-faqs" class="beauty-footer-link">Beauty FAQs</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Inner Glow Circle Newsletter & Payment Chips & SSL Security -->
+            <div class="col-lg-4 col-md-6">
+                <h6 class="beauty-footer-heading">{% if IS_BANGLA %}ইনার গ্লো সার্কেল{% else %}Join the Inner Glow Circle{% endif %}</h6>
+                <p class="text-muted small mb-3" style="line-height: 1.6;">
+                    {% if IS_BANGLA %}
+                        আমাদের এক্সক্লুসিভ সার্কেলে যোগ দিন এবং প্রথম বিউটি অর্ডারে পেয়ে যান <strong>১০% ছাড়</strong>, ডার্মাটোলজিস্ট টিপস ও প্রাইভেট অফার।
+                    {% else %}
+                        Subscribe to receive <strong>10% off</strong> your first beauty order, personalized routine tips, and private access to limited batch releases.
+                    {% endif %}
+                </p>
+
+                <!-- Newsletter Subscription Form -->
+                <form action="#" method="post" onsubmit="event.preventDefault(); alert('Welcome to the Inner Glow Circle! Your 10% beauty welcome code is GLOW10'); this.reset();" class="mb-3">
+                    <div class="input-group shadow-sm">
+                        <input type="email" class="form-control beauty-newsletter-input" placeholder="{% if IS_BANGLA %}আপনার ইমেইল ঠিকানা দিন...{% else %}Enter your email address...{% endif %}" required aria-label="Enter your email for beauty newsletter">
+                        <button class="btn beauty-newsletter-btn" type="submit">
+                            {% if IS_BANGLA %}সাবস্ক্রাইব{% else %}Join{% endif %}
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Accepted Payment Chips -->
+                <div class="mb-3">
+                    <span class="d-block text-muted small fw-semibold mb-2" style="font-size: 0.76rem;">
+                        {% if IS_BANGLA %}নিরাপদ পেমেন্ট মাধ্যমসমূহ:{% else %}Verified Secure Payment Options:{% endif %}
+                    </span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="beauty-payment-chip"><i class="bi bi-wallet2 text-danger"></i> bKash</span>
+                        <span class="beauty-payment-chip"><i class="bi bi-cash-stack text-success"></i> Cash on Delivery</span>
+                        <span class="beauty-payment-chip"><i class="bi bi-phone-fill text-warning"></i> Nagad</span>
+                        <span class="beauty-payment-chip"><i class="bi bi-credit-card-2-front text-primary"></i> Visa / Mastercard</span>
+                        <span class="beauty-payment-chip"><i class="bi bi-credit-card text-info"></i> Amex</span>
+                    </div>
+                </div>
+
+                <!-- 256-Bit SSL Security Guarantee -->
+                <div class="d-flex align-items-center gap-2 text-muted small" style="font-size: 0.74rem;">
+                    <i class="bi bi-shield-lock-fill text-success fs-5"></i>
+                    <span>256-Bit Bank-Grade SSL Encrypted Checkout &amp; Data Protection</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Sub-Footer (Copyright, Back to Top, Legal Links) -->
+        <div class="pt-3 border-top d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" style="border-color: #ebdcd4 !important; font-size: 0.78rem;">
+            <!-- Copyright Notice -->
+            <div class="text-muted text-center text-md-start">
+                © {% now "Y" %} <strong>{{ site_settings.get_effective_site_name|default:'Glow & Glam' }}</strong>. 
+                {% if IS_BANGLA %}সর্বস্বত্ব সংরক্ষিত। ক্লিন লাক্সারি স্কিনকেয়ার অ্যান্ড কসমেটিক্স।{% else %}All rights reserved. Clean Luxury Skincare &amp; Cosmetics.{% endif %}
+            </div>
+
+            <!-- Legal Links -->
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="text-muted text-decoration-none hover-rose">Privacy Policy</a>
+                <span class="text-muted opacity-40">•</span>
+                <a href="#" class="text-muted text-decoration-none hover-rose">Terms of Service</a>
+                <span class="text-muted opacity-40">•</span>
+                <a href="#" class="text-muted text-decoration-none hover-rose">Authenticity Guarantee</a>
+            </div>
+
+            <!-- Smooth "Back to Top" Navigation Button -->
+            <button type="button" class="beauty-back-to-top shadow-sm" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" title="Back to Top" aria-label="Scroll back to top">
+                <i class="bi bi-arrow-up"></i>
+            </button>
+        </div>
+    </div>
+</footer>

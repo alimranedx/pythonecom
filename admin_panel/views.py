@@ -10,10 +10,15 @@ from django.contrib import messages
 from django.db.models import Sum, Count, Q
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db import transaction
 from core.validators import validate_image_file
 from rbac.decorators import require_permission, require_superuser
-from .forms import StaffUserCreateForm, StaffUserEditForm, SiteSettingForm, AdminProfileUpdateForm, AdminPasswordChangeForm
+from .forms import (
+    StaffUserCreateForm, StaffUserEditForm, SiteSettingForm,
+    AdminProfileUpdateForm, AdminPasswordChangeForm, ThemeCustomizeForm
+)
 from core.models import SiteSetting, SystemErrorLog
+from core.theme_registry import theme_registry, ThemeDefinition
 from rbac.services import RBACService
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
 from product.models import Product, Category, Brand, ProductImage, ProductReview
@@ -1182,3 +1187,288 @@ def admin_clear_resolved_errors(request):
         deleted, _ = SystemErrorLog.objects.filter(is_resolved=True).delete()
         messages.success(request, f"Deleted {deleted} resolved error log(s).")
     return redirect('admin_system_errors')
+
+
+# ==============================================================================
+# THEME MANAGER & CUSTOMIZATION ENGINE VIEWS
+# ==============================================================================
+
+def _get_theme_customization_model():
+    try:
+        from core.models import ThemeCustomization
+        return ThemeCustomization
+    except (ImportError, AttributeError):
+        return None
+
+
+@require_permission('settings.themes', 'view')
+def admin_theme_manager(request):
+    """
+    Back-Office Theme Management Dashboard.
+    Visual grid of theme cards displaying metadata, active status,
+    preview status, design tokens, capabilities, and management actions.
+    """
+    setting = SiteSetting.get_settings()
+    active_theme_id = theme_registry.normalize_id(setting.active_theme) or theme_registry.default_theme_id
+    preview_theme_id = request.session.get('admin_preview_theme')
+    if preview_theme_id:
+        preview_theme_id = theme_registry.normalize_id(preview_theme_id)
+
+    ThemeCustomization = _get_theme_customization_model()
+    customizations_map = {}
+    if ThemeCustomization is not None:
+        try:
+            for cust in ThemeCustomization.objects.all():
+                customizations_map[cust.theme_id] = cust
+        except Exception:
+            pass
+
+    all_themes = theme_registry.get_all()
+    themes_data = []
+
+    for theme_def in all_themes:
+        tid = theme_def.id
+        legacy = theme_def.legacy_key
+        cust_obj = customizations_map.get(tid)
+        has_customization = bool(cust_obj and (cust_obj.settings_data or cust_obj.custom_css))
+
+        is_active = (tid == active_theme_id or legacy == active_theme_id)
+        is_previewing = (tid == preview_theme_id or legacy == preview_theme_id)
+
+        customizable_count = 0
+        schema = theme_def.customization_schema or {}
+        for sec in schema.values():
+            if isinstance(sec, dict):
+                customizable_count += len(sec.get('settings', []))
+
+        themes_data.append({
+            'theme': theme_def,
+            'id': tid,
+            'legacy_key': legacy,
+            'name': theme_def.name,
+            'benchmark': theme_def.benchmark,
+            'description': theme_def.description,
+            'industry': theme_def.industry,
+            'version': theme_def.version,
+            'is_flagship': theme_def.is_flagship,
+            'icon': theme_def.icon,
+            'tag': theme_def.tag,
+            'status': theme_def.status,
+            'preview_image_url': theme_def.preview_image_url,
+            'tokens': theme_def.design_tokens,
+            'capabilities': theme_def.supported_capabilities,
+            'customizable_count': customizable_count,
+            'is_active': is_active,
+            'is_previewing': is_previewing,
+            'has_customization': has_customization,
+            'custom_obj': cust_obj,
+        })
+
+    can_edit = request.user.is_superuser or RBACService.user_has_permission(request.user, 'settings.themes', 'edit')
+
+    context = {
+        'themes': themes_data,
+        'active_theme_id': active_theme_id,
+        'preview_theme_id': preview_theme_id,
+        'can_edit': can_edit,
+        'setting': setting,
+    }
+    return render(request, 'admin_panel/settings/theme_manager.html', context)
+
+
+@require_permission('settings.themes', 'edit')
+def admin_theme_activate(request, theme_id):
+    """
+    Activates the specified theme as the store's live active theme.
+    Transactionally updates SiteSetting.active_theme and sets
+    ThemeCustomization.is_active=True while deactivating other themes.
+    """
+    if not theme_registry.is_valid(theme_id):
+        messages.error(request, f"Cannot activate: Theme '{theme_id}' is not recognized.")
+        return redirect('admin_theme_manager')
+
+    canonical_id = theme_registry.normalize_id(theme_id)
+
+    if request.method == 'POST':
+        with transaction.atomic():
+            setting = SiteSetting.get_settings()
+            setting.active_theme = canonical_id
+            setting.save()
+
+            ThemeCustomization = _get_theme_customization_model()
+            if ThemeCustomization is not None:
+                try:
+                    ThemeCustomization.objects.filter(is_active=True).exclude(theme_id=canonical_id).update(is_active=False)
+                    customization, _ = ThemeCustomization.objects.get_or_create(theme_id=canonical_id)
+                    customization.is_active = True
+                    customization.save(update_fields=['is_active'])
+                except Exception:
+                    pass
+
+        # Clear preview if this theme was previewed
+        if request.session.get('admin_preview_theme') == canonical_id:
+            request.session.pop('admin_preview_theme', None)
+
+        theme_def = theme_registry.get(canonical_id)
+        theme_name = getattr(theme_def, 'name', canonical_id)
+        messages.success(request, f"Theme '{theme_name}' has been successfully activated as the live storefront theme!")
+        return redirect('admin_theme_manager')
+
+    return redirect('admin_theme_manager')
+
+
+@login_required(login_url='admin_login')
+def admin_theme_preview(request, theme_id):
+    """
+    Sets session preview mode for staff user to preview theme in isolation.
+    Redirects to storefront '/' with success message.
+    """
+    if not request.user.is_staff:
+        messages.error(request, "Staff privileges required to preview storefront themes.")
+        return redirect('home')
+
+    if not theme_registry.is_valid(theme_id):
+        messages.error(request, f"Cannot preview: Theme '{theme_id}' is not recognized.")
+        return redirect('admin_theme_manager')
+
+    canonical_id = theme_registry.normalize_id(theme_id)
+    theme_def = theme_registry.get(canonical_id)
+    theme_name = getattr(theme_def, 'name', canonical_id)
+
+    request.session['admin_preview_theme'] = canonical_id
+    messages.success(request, f"Now previewing theme '{theme_name}'. This preview is isolated and visible only to staff.")
+    return redirect('/')
+
+
+@login_required(login_url='admin_login')
+def admin_theme_exit_preview(request):
+    """
+    Clears the admin preview theme from session and returns to Theme Manager.
+    """
+    if not request.user.is_staff:
+        return redirect('home')
+
+    if 'admin_preview_theme' in request.session:
+        del request.session['admin_preview_theme']
+        messages.info(request, "Theme preview mode exited. You are now viewing the live storefront theme.")
+
+    next_url = request.GET.get('next') or reverse('admin_theme_manager')
+    return redirect(next_url)
+
+
+@require_permission('settings.themes', 'edit')
+def admin_theme_customize(request, theme_id):
+    """
+    Dynamic theme customization editor.
+    Renders customization form based on theme's customization_schema
+    and persists settings into ThemeCustomization.settings_data and custom_css.
+    """
+    if not theme_registry.is_valid(theme_id):
+        messages.error(request, f"Theme '{theme_id}' does not exist.")
+        return redirect('admin_theme_manager')
+
+    canonical_id = theme_registry.normalize_id(theme_id)
+    theme_def = theme_registry.get(canonical_id)
+    theme_name = getattr(theme_def, 'name', canonical_id)
+    schema = getattr(theme_def, 'customization_schema', {})
+    tokens = getattr(theme_def, 'design_tokens', {})
+    capabilities = getattr(theme_def, 'supported_capabilities', [])
+
+    ThemeCustomization = _get_theme_customization_model()
+    customization = None
+    initial_data = {}
+    initial_css = ''
+
+    if ThemeCustomization is not None:
+        try:
+            customization, _ = ThemeCustomization.objects.get_or_create(theme_id=canonical_id)
+            if hasattr(customization, 'get_effective_config'):
+                initial_data = customization.get_effective_config()
+            else:
+                initial_data = customization.settings_data or {}
+            initial_css = customization.custom_css or ''
+        except Exception:
+            pass
+
+    if request.method == 'POST':
+        form = ThemeCustomizeForm(
+            schema=schema,
+            initial_data=initial_data,
+            initial_css=initial_css,
+            data=request.POST
+        )
+        if form.is_valid():
+            new_settings = form.get_customization_data()
+            new_css = form.get_custom_css()
+
+            if ThemeCustomization is not None:
+                try:
+                    customization, _ = ThemeCustomization.objects.get_or_create(theme_id=canonical_id)
+                    customization.settings_data = new_settings
+                    customization.custom_css = new_css
+                    customization.save()
+                except Exception:
+                    pass
+
+            messages.success(request, f"Theme customization for '{theme_name}' saved successfully!")
+            return redirect('admin_theme_customize', theme_id=canonical_id)
+        else:
+            messages.error(request, "Please correct errors in the configuration form.")
+    else:
+        form = ThemeCustomizeForm(
+            schema=schema,
+            initial_data=initial_data,
+            initial_css=initial_css
+        )
+
+    setting = SiteSetting.get_settings()
+    is_active = (theme_registry.normalize_id(setting.active_theme) == canonical_id)
+    is_previewing = (request.session.get('admin_preview_theme') == canonical_id)
+
+    context = {
+        'theme_id': canonical_id,
+        'theme_def': theme_def,
+        'theme_name': theme_name,
+        'tokens': tokens,
+        'capabilities': capabilities,
+        'customization': customization,
+        'form': form,
+        'is_active': is_active,
+        'is_previewing': is_previewing,
+    }
+    return render(request, 'admin_panel/settings/theme_customize.html', context)
+
+
+@require_permission('settings.themes', 'edit')
+def admin_theme_reset_customization(request, theme_id):
+    """
+    Resets theme customization settings_data and custom_css to default values.
+    Does NOT affect store-wide branding (site name, logo, contacts) or catalog products.
+    """
+    if not theme_registry.is_valid(theme_id):
+        messages.error(request, f"Theme '{theme_id}' does not exist.")
+        return redirect('admin_theme_manager')
+
+    canonical_id = theme_registry.normalize_id(theme_id)
+    theme_def = theme_registry.get(canonical_id)
+    theme_name = getattr(theme_def, 'name', canonical_id)
+
+    if request.method == 'POST':
+        ThemeCustomization = _get_theme_customization_model()
+        if ThemeCustomization is not None:
+            try:
+                customization = ThemeCustomization.objects.filter(theme_id=canonical_id).first()
+                if customization:
+                    if hasattr(customization, 'reset_to_defaults'):
+                        customization.reset_to_defaults()
+                    else:
+                        customization.settings_data = {}
+                        customization.custom_css = ''
+                        customization.save()
+            except Exception:
+                pass
+        messages.success(request, f"Theme customization settings for '{theme_name}' have been reset to schema defaults.")
+        return redirect('admin_theme_customize', theme_id=canonical_id)
+
+    return redirect('admin_theme_customize', theme_id=canonical_id)
+

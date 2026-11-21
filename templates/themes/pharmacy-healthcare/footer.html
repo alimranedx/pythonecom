@@ -1,0 +1,140 @@
+{% load static %}
+<!-- Pharmacy & Healthcare Specialized Footer -->
+<footer class="text-light pt-5 pb-4 mt-auto" style="background-color: #042f2e;">
+    <div class="container">
+        <!-- Healthcare Trust & Compliance Bar -->
+        <div class="row g-3 p-3 rounded-3 mb-4 align-items-center" style="background-color: #0f766e;">
+            <div class="col-md-3 d-flex align-items-center gap-2">
+                <i class="bi bi-shield-lock-fill text-warning fs-3"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">DGDA Certified Pharmacy</h6>
+                    <small class="text-white-50" style="font-size: 0.72rem;">Model Pharmacy License #DA-2024</small>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-center gap-2">
+                <i class="bi bi-snow text-info fs-3"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">Cold Chain Monitored</h6>
+                    <small class="text-white-50" style="font-size: 0.72rem;">Strict 2°-8°C Temperature Control</small>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-center gap-2">
+                <i class="bi bi-file-medical-fill text-warning fs-3"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">A-Grade Pharmacists</h6>
+                    <small class="text-white-50" style="font-size: 0.72rem;">Prescription Verification by Experts</small>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-center gap-2">
+                <i class="bi bi-truck text-white fs-3"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white small">Express Dhaka Delivery</h6>
+                    <small class="text-white-50" style="font-size: 0.72rem;">Emergency 2-Hour Delivery Available</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Brand & Mission -->
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'home' %}" class="d-inline-flex align-items-center mb-3 text-decoration-none">
+                    {% if site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;">
+                    {% else %}
+                        <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center me-2" style="background: #059669; width: 36px; height: 36px;">
+                            <i class="bi bi-capsule-pill fs-5"></i>
+                        </div>
+                        <span class="fw-bold fs-5 text-white">{{ site_settings.get_effective_site_name|default:'AROGYA' }}<span style="color: #34d399;">PHARMA</span></span>
+                    {% endif %}
+                </a>
+                <p class="text-light-emphasis small" style="color: #99f6e4 !important; opacity: 0.85;">
+                    {% if IS_BANGLA %}
+                        আপনার এবং আপনার পরিবারের নির্ভরযোগ্য ডিজিটাল ফার্মেসি। ১০০% খাঁটি ও গুণগত মানসম্পন্ন প্রেসক্রিপশন ঔষধ এবং স্বাস্থ্যপণ্য আপনার দোরগোড়ায়।
+                    {% else %}
+                        Your trusted nationwide digital healthcare and pharmacy partner. Dispensing verified genuine medicines, cold-chain biologics, and clinical essentials across Bangladesh.
+                    {% endif %}
+                </p>
+                <div class="small mt-3" style="color: #5eead4;">
+                    <div><i class="bi bi-hospital me-1"></i> Central Hub: Tejgaon I/A, Dhaka 1208</div>
+                    <div><i class="bi bi-telephone-inbound-fill me-1"></i> Pharmacist Consultation: <strong>{{ site_settings.contact_phone|default:'16263' }}</strong></div>
+                    <div><i class="bi bi-envelope-fill me-1"></i> Rx Desk: {{ site_settings.contact_email|default:'rx@arogyapharma.com' }}</div>
+                </div>
+
+                <!-- Accepted Payment Badges -->
+                <div class="mt-4 pt-1">
+                    <span class="d-block text-white-50 small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                        <i class="bi bi-credit-card-2-back me-1 text-info"></i>
+                        {% if IS_BANGLA %}অনুমোদিত পেমেন্ট মাধ্যম{% else %}Accepted Payment Methods{% endif %}
+                    </span>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm">
+                            <span class="payment-indicator bg-success"></span>
+                            <span class="fw-bold" style="color: #e2136e; font-size: 0.8rem;">bKash</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Active</span>
+                        </div>
+                        <div class="payment-chip d-inline-flex align-items-center gap-1 px-2 py-1 bg-white rounded-2 shadow-sm">
+                            <i class="bi bi-cash-stack text-success" style="font-size: 0.85rem;"></i>
+                            <span class="fw-bold text-dark" style="font-size: 0.78rem;">COD</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.6rem; padding: 2px 4px;">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Healthcare Departments -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="fw-bold text-white mb-3" style="color: #5eead4 !important;">
+                    {% if IS_BANGLA %}বিভাগসমূহ{% else %}Categories{% endif %}
+                </h6>
+                <ul class="list-unstyled small" style="color: #ccfbf1;">
+                    <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}প্রেসক্রিপশন ঔষধ{% else %}Prescription Rx{% endif %}</a></li>
+                    <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}ডায়াবেটিস সেবা{% else %}Diabetes Care{% endif %}</a></li>
+                    <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}মেডিকেল ডিভাইস{% else %}Medical Devices{% endif %}</a></li>
+                    <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}শিশু ও মা এর যত্ন{% else %}Baby &amp; Mother Care{% endif %}</a></li>
+                    <li class="mb-2"><a href="{% url 'product_list' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}ভিটামিন ও সাপ্লিমেন্ট{% else %}Vitamins &amp; OTC{% endif %}</a></li>
+                </ul>
+            </div>
+
+            <!-- Patient Services -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="fw-bold text-white mb-3" style="color: #5eead4 !important;">
+                    {% if IS_BANGLA %}রোগী সেবা{% else %}Patient Services{% endif %}
+                </h6>
+                <ul class="list-unstyled small" style="color: #ccfbf1;">
+                    <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#rxUploadModal" class="text-decoration-none text-warning fw-semibold"><i class="bi bi-upload me-1"></i> {% if IS_BANGLA %}প্রেসক্রিপশন আপলোড{% else %}Upload Prescription{% endif %}</a></li>
+                    <li class="mb-2"><a href="{% url 'customer_orders' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}অর্ডারের অবস্থা{% else %}Track Order{% endif %}</a></li>
+                    <li class="mb-2"><a href="{% url 'cart_detail' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}ঔষধের ব্যাগ{% else %}Medicine Bag{% endif %}</a></li>
+                    <li class="mb-2"><a href="{% url 'wishlist_view' %}" class="text-decoration-none text-light opacity-75">{% if IS_BANGLA %}সংরক্ষিত ঔষধ{% else %}Saved Medicines{% endif %}</a></li>
+                </ul>
+            </div>
+
+            <!-- Emergency & Subscription Newsletter -->
+            <div class="col-lg-4 col-md-12">
+                <h6 class="fw-bold text-white mb-3" style="color: #5eead4 !important;">
+                    <i class="bi bi-clock-history me-1"></i> {% if IS_BANGLA %}মাসিক ঔষধ রিফিল সেবা{% else %}Monthly Medicine Refill Plan{% endif %}
+                </h6>
+                <p class="small" style="color: #ccfbf1; opacity: 0.85;">
+                    {% if IS_BANGLA %}
+                        আপনার প্রেসক্রিপশন অনুযায়ী প্রতি মাসে স্বয়ংক্রিয়ভাবে ঔষধ পৌঁছানোর জন্য রেজিস্ট্রেশন করুন। ১০% পর্যন্ত সাশ্রয়!
+                    {% else %}
+                        Never run out of regular chronic medications (Diabetes, Heart, BP). Get automated doorstep monthly refills with up to 10% discount.
+                    {% endif %}
+                </p>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email" style="background-color: #0f766e; border-color: #14b8a6; color: #ffffff;">
+                    <button class="btn text-white fw-bold px-3" type="button" style="background-color: #059669;">Subscribe</button>
+                </div>
+                <div class="p-2 rounded-2 small d-flex align-items-center gap-2" style="background-color: rgba(15, 118, 110, 0.4); border: 1px solid #14b8a6;">
+                    <i class="bi bi-telephone-plus-fill text-warning fs-5"></i>
+                    <span class="text-white-50">24/7 Medical Emergency Helpline: <strong class="text-white">16263</strong> (Shastho Batayon)</span>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4" style="border-color: #134e4a;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small" style="color: #99f6e4; opacity: 0.75;">
+            <div>&copy; {% now "Y" %} {{ site_settings.get_effective_site_name|default:'Arogya Healthcare & Pharmacy' }}. Registered DGDA Model Pharmacy.</div>
+            <div class="mt-2 mt-md-0">All medicines are dispensed by registered Pharmacists following national pharmacy guidelines.</div>
+        </div>
+    </div>
+</footer>

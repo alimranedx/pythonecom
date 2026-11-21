@@ -1,0 +1,128 @@
+{% load static %}
+{% load product_tags %}
+
+<!-- Marketplace Product Card (Amazon / Daraz Style) -->
+<div class="card h-100 border product-card marketplace-product-card shadow-sm position-relative" style="border-radius: 10px; overflow: hidden; transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease; background: var(--surface-card, #ffffff);">
+    <!-- Card Top: Image Container & Badges -->
+    <div class="position-relative text-center marketplace-card-img-wrapper" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); min-height: 180px; height: 180px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+        <!-- Top Left Badges: Discount % & Brand/Flash -->
+        <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style="z-index: 3;">
+            {% if product.has_discount %}
+                <span class="badge bg-danger shadow-sm fw-bold px-2 py-1" style="border-radius: 6px; font-size: 0.72rem; letter-spacing: 0.2px;">
+                    -{{ product.discount_percent }}%
+                </span>
+            {% endif %}
+            {% if product.is_flash_sale %}
+                <span class="badge bg-warning text-dark fw-bold px-2 py-0.5 rounded-pill shadow-xs" style="font-size: 0.65rem;">
+                    <i class="bi bi-lightning-charge-fill text-danger me-0.5"></i>Flash Deal
+                </span>
+            {% elif product.brand %}
+                <span class="badge bg-white text-dark border px-2 py-0.5 rounded-pill shadow-xs text-truncate" style="font-size: 0.65rem; max-width: 110px; font-weight: 600;">
+                    <i class="bi bi-patch-check-fill text-primary me-0.5"></i>{{ product.brand.name }}
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Wishlist Toggle Heart Button -->
+        <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center marketplace-wishlist-btn" style="width: 32px; height: 32px; z-index: 5;" onclick="toggleWishlist({{ product.pk }}, this)" title="Save to Wishlist" aria-label="Save to Wishlist">
+            {% if product.pk in user_wishlist_ids %}
+                <i class="bi bi-heart-fill text-danger"></i>
+            {% else %}
+                <i class="bi bi-heart text-secondary"></i>
+            {% endif %}
+        </button>
+
+        <!-- Product Image Link -->
+        <a href="{% url 'product_detail' product.pk %}" class="d-flex align-items-center justify-content-center w-100 h-100 text-decoration-none p-3">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid marketplace-card-img" style="max-height: 150px; width: 100%; object-fit: contain; transition: transform 0.28s ease;" loading="lazy">
+            {% else %}
+                <div class="text-secondary opacity-50 py-4"><i class="bi bi-box-seam display-5"></i></div>
+            {% endif %}
+        </a>
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body p-3 d-flex flex-column" style="background-color: var(--surface-card, #ffffff);">
+        <!-- Category & Unit Micro Label -->
+        <div class="d-flex justify-content-between align-items-center small text-muted mb-1" style="font-size: 0.72rem;">
+            <span class="text-truncate fw-medium text-uppercase" style="letter-spacing: 0.4px;">
+                {{ product.category.name|default:'Marketplace' }}
+            </span>
+            {% if product.unit %}
+                <span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 0.68rem;">{{ product.unit }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Product Title with 2-line clamp -->
+        <h6 class="marketplace-title fw-semibold mb-1" style="font-size: 0.88rem; line-height: 1.35; height: 2.7em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+            <a href="{% url 'product_detail' product.pk %}" class="text-decoration-none text-dark hover-primary" title="{{ product.name }}">
+                {{ product.name }}
+            </a>
+        </h6>
+
+        <!-- Rating Stars & Review Count -->
+        <div class="d-flex align-items-center gap-1 mb-2" style="font-size: 0.75rem;">
+            <div class="text-warning d-inline-flex align-items-center">
+                <i class="bi bi-star-fill text-warning" style="font-size: 0.75rem;"></i>
+                <span class="fw-bold text-dark ms-1" style="font-size: 0.78rem;">
+                    {% if product.avg_rating %}{{ product.avg_rating|floatformat:1 }}{% else %}4.8{% endif %}
+                </span>
+            </div>
+            <span class="text-muted" style="font-size: 0.72rem;">
+                ★ ({% if product.reviews_count %}{{ product.reviews_count }}{% elif product.reviews.count %}{{ product.reviews.count }}{% else %}48{% endif %})
+            </span>
+        </div>
+
+        <!-- Price Section: Bold current price + strikethrough original -->
+        <div class="d-flex align-items-baseline gap-2 mb-2">
+            <span class="fs-5 fw-bold text-danger">৳{{ product.effective_price }}</span>
+            {% if product.has_discount %}
+                <span class="text-decoration-line-through text-muted small" style="font-size: 0.8rem;">৳{{ product.price }}</span>
+                <span class="badge bg-danger-subtle text-danger small px-1.5 py-0.5 rounded" style="font-size: 0.65rem;">
+                    -{{ product.discount_percent }}%
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Availability Badge / Sold Percentage Progress Bar -->
+        <div class="mb-3">
+            {% if product.stock > 0 %}
+                <div class="d-flex justify-content-between align-items-center small text-muted mb-1" style="font-size: 0.7rem;">
+                    <span class="text-success fw-semibold"><i class="bi bi-check2-circle me-1"></i>In Stock</span>
+                    <span class="text-secondary">
+                        {% if product.stock > 15 %}
+                            85% sold
+                        {% elif product.stock > 5 %}
+                            65% sold
+                        {% else %}
+                            Only {{ product.stock }} left
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="progress" style="height: 4px; border-radius: 4px; background-color: #f1f5f9;">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: {% if product.stock > 15 %}85%{% elif product.stock > 5 %}65%{% else %}25%{% endif %};" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            {% else %}
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill small py-1 px-2" style="font-size: 0.7rem;">
+                        <i class="bi bi-x-circle me-1"></i>Out of Stock
+                    </span>
+                    <span class="text-muted small" style="font-size: 0.7rem;">Restocking soon</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick "Add to Cart" Button (AJAX enabled) -->
+        <div class="mt-auto">
+            <form action="{% url 'add_to_cart' product.pk %}" method="post" class="d-block w-100">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-primary w-100 btn-sm rounded-2 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm marketplace-add-to-cart-btn" {% if product.stock <= 0 %}disabled{% endif %} style="height: 36px; font-size: 0.82rem;">
+                    <i class="bi bi-cart-plus fs-6"></i>
+                    <span>{% if product.stock > 0 %}{% if IS_BANGLA %}ব্যাগে যোগ করুন{% else %}Add to Cart{% endif %}{% else %}{% if IS_BANGLA %}স্টক শেষ{% else %}Sold Out{% endif %}{% endif %}</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

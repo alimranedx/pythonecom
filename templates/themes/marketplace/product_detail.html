@@ -1,0 +1,992 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+    {{ product.name }} | {{ site_settings.site_name|default:'Easy Purchase' }}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ==========================================================
+       MARKETPLACE PRODUCT DETAIL MODERN STYLING
+       ========================================================== */
+    .marketplace-detail-card,
+    .product-detail-card,
+    .product-tabs-card {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    [data-bs-theme="dark"] .marketplace-detail-card,
+    [data-bs-theme="dark"] .product-detail-card,
+    [data-bs-theme="dark"] .product-tabs-card {
+        background: #1e293b;
+        border-color: #334155;
+    }
+
+    /* Gallery styles */
+    .mkt-gallery-main {
+        position: relative;
+        background: #f8fafc;
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 14px;
+        height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        cursor: crosshair;
+    }
+    [data-bs-theme="dark"] .mkt-gallery-main {
+        background: #0f172a;
+        border-color: #334155;
+    }
+    #marketplaceMainImg {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        transition: transform 0.25s ease;
+        user-select: none;
+    }
+
+    .mkt-thumb-strip {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding-top: 0.75rem;
+        scrollbar-width: thin;
+    }
+    .mkt-thumb-item {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        border: 2px solid var(--border-color, #e2e8f0);
+        background: #f8fafc;
+        padding: 3px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+    .mkt-thumb-item img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .mkt-thumb-item.active,
+    .mkt-thumb-item:hover {
+        border-color: #ff5722;
+        box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.25);
+    }
+
+    /* Services & Delivery Box */
+    .mkt-services-box,
+    .delivery-trust-box {
+        background: #f8fafc;
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 14px;
+        padding: 1.25rem;
+    }
+    [data-bs-theme="dark"] .mkt-services-box,
+    [data-bs-theme="dark"] .delivery-trust-box {
+        background: #0f172a;
+        border-color: #334155;
+    }
+    .mkt-service-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.65rem 0;
+        border-bottom: 1px dashed var(--border-color, #e2e8f0);
+    }
+    .mkt-service-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .mkt-service-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    /* Seller info card */
+    .mkt-seller-card {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    [data-bs-theme="dark"] .mkt-seller-card {
+        background: #1e293b;
+        border-color: #334155;
+    }
+
+    /* Quantity Stepper */
+    .quantity-stepper {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .qty-btn {
+        width: 36px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: var(--surface-card, #ffffff);
+        color: var(--text-main, #334155);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .qty-btn:hover {
+        background: #f1f5f9;
+        color: #ff5722;
+    }
+    .qty-input {
+        width: 55px;
+        height: 38px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid var(--border-color, #e2e8f0);
+        border-right: 1px solid var(--border-color, #e2e8f0);
+        font-weight: 600;
+        outline: none;
+        background: var(--surface-card, #ffffff);
+    }
+
+    /* Tab styling */
+    .detail-nav-pills,
+    .mkt-nav-tabs {
+        border-bottom: 2px solid var(--border-color, #e2e8f0);
+        gap: 1.5rem;
+    }
+    .detail-nav-pills .nav-link,
+    .mkt-nav-tabs .nav-link {
+        border: none;
+        background: transparent;
+        color: var(--text-muted, #64748b);
+        font-weight: 600;
+        padding: 0.75rem 0.25rem;
+        position: relative;
+        font-size: 0.95rem;
+        transition: color 0.2s ease;
+    }
+    .detail-nav-pills .nav-link:hover,
+    .mkt-nav-tabs .nav-link:hover {
+        color: #ff5722;
+    }
+    .detail-nav-pills .nav-link.active,
+    .mkt-nav-tabs .nav-link.active {
+        color: #ff5722;
+        border-bottom: 3px solid #ff5722;
+        margin-bottom: -2px;
+    }
+
+    /* Rating Breakdown Progress Bar */
+    .rating-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.8rem;
+    }
+    .rating-bar-progress {
+        flex: 1;
+        height: 8px;
+        border-radius: 4px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+    .rating-bar-fill {
+        height: 100%;
+        background: #f59e0b;
+        border-radius: 4px;
+    }
+
+    /* Spec feature box */
+    .spec-feature-box {
+        background: #f8fafc;
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+    }
+    [data-bs-theme="dark"] .spec-feature-box {
+        background: #0f172a;
+        border-color: #334155;
+    }
+    .specs-modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .specs-modern-table th,
+    .specs-modern-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color, #e2e8f0);
+        font-size: 0.85rem;
+    }
+    .specs-modern-table th {
+        background-color: #f8fafc;
+        width: 35%;
+        font-weight: 600;
+    }
+    [data-bs-theme="dark"] .specs-modern-table th {
+        background-color: #1e293b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted">{{ tr.home|default:'Home' }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none text-muted">{{ tr.all_products|default:'Marketplace' }}</a></li>
+            {% if product.category %}
+                <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="text-decoration-none text-muted">{{ product.category.name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active fw-semibold text-truncate text-danger" style="max-width: 320px;" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Main Marketplace Detail Split: 3-Column Layout -->
+    <div class="marketplace-detail-card product-detail-card">
+        <div class="row g-4">
+            <!-- COLUMN 1: Image Gallery & Thumbnails (col-lg-4) -->
+            <div class="col-lg-4 col-md-5">
+                <div class="position-relative">
+                    <!-- Badges Overlay -->
+                    <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-1" style="z-index: 5;">
+                        {% if product.has_discount %}
+                            <span class="badge bg-danger fw-bold shadow-sm px-2.5 py-1" style="font-size: 0.78rem;">
+                                -{{ product.discount_percent }}% OFF
+                            </span>
+                        {% endif %}
+                        {% if product.is_flash_sale %}
+                            <span class="badge bg-warning text-dark fw-bold px-2 py-1 shadow-sm" style="font-size: 0.72rem;">
+                                <i class="bi bi-lightning-charge-fill text-danger me-1"></i>Flash Deal
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Main Image Display with Zoom -->
+                    <div class="mkt-gallery-main shadow-xs" id="mainGalleryBox">
+                        {% if product.image and product.image.name %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" id="marketplaceMainImg" class="img-fluid" data-zoom-src="{{ product.image.url }}">
+                        {% else %}
+                            <i class="bi bi-box-seam display-1 text-secondary opacity-50"></i>
+                        {% endif %}
+                    </div>
+
+                    <!-- Thumbnails Strip -->
+                    <div class="mkt-thumb-strip">
+                        {% if product.image and product.image.name %}
+                            <div class="mkt-thumb-item active" onclick="swapMainImage('{{ product.image.url }}', this)">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }} main thumbnail">
+                            </div>
+                        {% endif %}
+                        {% for gallery_img in gallery_images %}
+                            {% if gallery_img.image and gallery_img.image.name %}
+                                <div class="mkt-thumb-item" onclick="swapMainImage('{{ gallery_img.image.url }}', this)">
+                                    <img src="{{ gallery_img.image.url }}" alt="{{ gallery_img.alt_text|default:product.name }}">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Safe Shopping Assurance Micro Bar -->
+                <div class="d-flex align-items-center justify-content-around mt-3 p-2 bg-light rounded-3 text-muted small" style="font-size: 0.75rem;">
+                    <span><i class="bi bi-shield-check text-success me-1"></i>100% Authentic</span>
+                    <span><i class="bi bi-arrow-counterclockwise text-primary me-1"></i>7-Day Returns</span>
+                    <span><i class="bi bi-lock-fill text-secondary me-1"></i>Secure Pay</span>
+                </div>
+            </div>
+
+            <!-- COLUMN 2: Product Core Information & Purchase Actions (col-lg-5) -->
+            <div class="col-lg-5 col-md-7 border-lg-end">
+                <!-- Brand Badge & Official Store -->
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    {% if product.brand %}
+                        <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}" class="badge bg-danger-subtle text-danger border border-danger-subtle text-decoration-none px-2 py-1 rounded-pill fw-semibold" style="font-size: 0.78rem;">
+                            <i class="bi bi-patch-check-fill me-1"></i>{{ product.brand.name }} Official Store
+                        </a>
+                    {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill small">General Marketplace</span>
+                    {% endif %}
+                    <span class="text-muted small">SKU: <code class="text-dark">{{ product.sku|default:'N/A' }}</code></span>
+                </div>
+
+                <!-- Product Title -->
+                <h1 class="fw-bold text-dark mb-2" style="font-size: 1.45rem; line-height: 1.35;">
+                    {{ product.name }}
+                </h1>
+
+                <!-- Star Rating & Review Count -->
+                <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                    <div class="text-warning d-flex align-items-center">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <span class="fw-bold text-dark ms-1">4.8</span>
+                    </div>
+                    <span class="text-muted small">
+                        ★ <a href="#mktTabs" class="text-decoration-none text-muted" onclick="showTab('reviews-tab')">({{ reviews.count|default:'48' }} Customer Reviews)</a>
+                    </span>
+                    <span class="text-secondary opacity-50">|</span>
+                    <span class="text-muted small">500+ Sold</span>
+                </div>
+
+                <!-- Price Block with Savings Badge -->
+                <div class="p-3 bg-light rounded-3 mb-3 price-box-detail">
+                    <div class="d-flex align-items-baseline gap-2 mb-1">
+                        <span class="display-6 fw-bold text-danger">৳{{ product.effective_price }}</span>
+                        {% if product.has_discount %}
+                            <span class="text-decoration-line-through text-muted fs-5">৳{{ product.price }}</span>
+                            <span class="badge bg-danger text-white fw-bold px-2 py-1 rounded-pill small">
+                                -{{ product.discount_percent }}% OFF
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% if product.has_discount %}
+                        <small class="text-success fw-semibold">
+                            <i class="bi bi-tag-fill me-1"></i>You save ৳{{ product.discount_savings }} on this deal!
+                        </small>
+                    {% endif %}
+                </div>
+
+                <!-- Stock Status & Unit -->
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="text-muted small">Availability:</span>
+                        {% if product.stock > 10 %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                <i class="bi bi-check-circle-fill me-1"></i>{% if IS_BANGLA %}স্টকে আছে{% else %}In Stock{% endif %} ({{ product.stock }} available)
+                            </span>
+                        {% elif product.stock > 0 %}
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>{% if IS_BANGLA %}স্টকে কম আছে{% else %}Low Stock{% endif %} (Only {{ product.stock }} left)
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
+                                <i class="bi bi-x-circle-fill me-1"></i>{% if IS_BANGLA %}স্টক শেষ{% else %}Out of Stock{% endif %}
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% if product.unit %}
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="text-muted small">Unit:</span>
+                            <span class="badge bg-light text-dark border">{{ product.unit }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Short Description Summary -->
+                {% if product.short_description %}
+                    <p class="text-secondary small mb-3">
+                        {{ product.short_description|default:product.description|clean_plain_summary:45 }}
+                    </p>
+                {% endif %}
+
+                <!-- Purchase Action Form -->
+                <form action="{% url 'add_to_cart' product.pk %}" method="post" id="detailAddToCartForm" class="mb-3">
+                    {% csrf_token %}
+                    <!-- Quantity Selector with Stepper -->
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <label for="productQtyInput" class="small fw-semibold text-muted text-nowrap">{% if IS_BANGLA %}পরিমাণ:{% else %}Quantity:{% endif %}</label>
+                        <div class="quantity-stepper">
+                            <button type="button" class="qty-btn" onclick="adjustQuantity(-1)">-</button>
+                            <input type="number" name="quantity" id="productQtyInput" value="1" min="1" max="{{ product.stock|default:99 }}" class="qty-input">
+                            <button type="button" class="qty-btn" onclick="adjustQuantity(1)">+</button>
+                        </div>
+                        <span class="text-muted small">Max {{ product.stock|default:99 }} units</span>
+                    </div>
+
+                    <!-- Action Buttons: Add to Cart & Buy Now -->
+                    <div class="d-flex flex-wrap gap-2">
+                        <!-- Add to Cart (AJAX) -->
+                        <button type="submit" class="btn btn-outline-danger flex-grow-1 py-2.5 fw-bold rounded-3 shadow-xs d-flex align-items-center justify-content-center gap-2" {% if product.stock <= 0 %}disabled{% endif %} style="height: 46px;">
+                            <i class="bi bi-cart-plus fs-5"></i>
+                            <span>{% if IS_BANGLA %}শপিং ব্যাগে যোগ করুন{% else %}Add to Shopping Bag{% endif %}</span>
+                        </button>
+
+                        <!-- Buy Now (Instant Checkout) -->
+                        <button type="submit" name="buy_now" value="1" class="btn btn-danger flex-grow-1 py-2.5 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2" {% if product.stock <= 0 %}disabled{% endif %} style="height: 46px; background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%); border-color: #e64a19;">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            <span>{% if IS_BANGLA %}এখনই কিনুন{% else %}Order Now{% endif %}</span>
+                        </button>
+
+                        <!-- Wishlist Toggle Button -->
+                        <button type="button" class="btn btn-light border rounded-3 px-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 48px;" onclick="toggleWishlist({{ product.pk }}, this)" title="Add to Wishlist">
+                            {% if product.pk in user_wishlist_ids %}
+                                <i class="bi bi-heart-fill text-danger fs-5"></i>
+                            {% else %}
+                                <i class="bi bi-heart text-secondary fs-5"></i>
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Promotional Highlights -->
+                <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                    <span class="badge bg-light text-muted border small"><i class="bi bi-credit-card me-1"></i>100% Secure Checkout</span>
+                    <span class="badge bg-light text-muted border small"><i class="bi bi-cash me-1"></i>Cash on Delivery</span>
+                    <span class="badge bg-light text-muted border small"><i class="bi bi-truck me-1"></i>Nationwide Delivery</span>
+                </div>
+            </div>
+
+            <!-- COLUMN 3: Delivery Options & Seller Services (col-lg-3) -->
+            <div class="col-lg-3">
+                <div class="mkt-services-box delivery-trust-box">
+                    <h6 class="fw-bold mb-3 text-dark d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-truck me-1 text-danger"></i> Delivery & Services</span>
+                        <span class="badge bg-danger-subtle text-danger" style="font-size: 0.68rem;">Verified</span>
+                    </h6>
+
+                    <!-- Standard Delivery -->
+                    <div class="mkt-service-item">
+                        <div class="mkt-service-icon bg-primary-subtle text-primary">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold small text-dark">Standard Delivery</div>
+                            <div class="text-muted small" style="font-size: 0.76rem;">Estimated: 2 - 4 business days nationwide</div>
+                            <div class="text-danger fw-semibold small" style="font-size: 0.78rem;">
+                                <span>Inside Dhaka: <strong>৳49</strong></span> • <span>Outside Dhaka: <strong>৳99</strong></span>
+                            </div>
+                            <div class="text-success small fw-semibold" style="font-size: 0.72rem;">Free over ৳500</div>
+                        </div>
+                    </div>
+
+                    <!-- Cash on Delivery -->
+                    <div class="mkt-service-item">
+                        <div class="mkt-service-icon bg-success-subtle text-success">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold small text-dark">Cash on Delivery Available</div>
+                            <div class="text-muted small" style="font-size: 0.76rem;">Pay with cash when your package arrives</div>
+                        </div>
+                    </div>
+
+                    <!-- Return Policy -->
+                    <div class="mkt-service-item">
+                        <div class="mkt-service-icon bg-warning-subtle text-warning">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold small text-dark">7-Day Easy Return Policy</div>
+                            <div class="text-muted small" style="font-size: 0.76rem;">100% money back if defective or wrong item</div>
+                        </div>
+                    </div>
+
+                    <!-- Genuine Guarantee -->
+                    <div class="mkt-service-item">
+                        <div class="mkt-service-icon bg-info-subtle text-info">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold small text-dark">100% Authentic Guarantee</div>
+                            <div class="text-muted small" style="font-size: 0.76rem;">Direct brand sourcing & quality inspected</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seller Profile & Rating Box -->
+                <div class="mkt-seller-card shadow-xs">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small" style="font-size: 0.75rem;">Sold by:</span>
+                        <span class="badge bg-success-subtle text-success small" style="font-size: 0.65rem;">Mall Seller</span>
+                    </div>
+                    <h6 class="fw-bold mb-2 text-dark text-truncate">
+                        {% if product.brand %}{{ product.brand.name }} Flagship{% else %}Verified Marketplace Vendor{% endif %}
+                    </h6>
+
+                    <div class="row g-2 text-center small mb-3">
+                        <div class="col-4">
+                            <div class="fw-bold text-success">96%</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">Positive</div>
+                        </div>
+                        <div class="col-4 border-start border-end">
+                            <div class="fw-bold text-dark">98%</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">On-Time</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-dark">99%</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">Response</div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'product_list' %}{% if product.brand %}?brand={{ product.brand.slug }}{% endif %}" class="btn btn-outline-secondary btn-sm w-100 rounded-pill fw-semibold" style="font-size: 0.78rem;">
+                        <i class="bi bi-shop me-1"></i> Visit Store
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frequently Bought Together Bundle (if bundle items exist) -->
+    {% if bundle_items %}
+    <div class="marketplace-detail-card product-tabs-card mb-4" id="frequentlyBoughtTogether">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
+            <i class="bi bi-boxes text-danger"></i> Frequently Bought Together
+        </h5>
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <!-- Main Product Visual Box -->
+                    <div class="bundle-product-visual position-relative text-center">
+                        <div class="bundle-img-box mb-2" style="width: 100px; height: 90px; border: 1px solid var(--border-color, #e2e8f0); border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fff;">
+                            {% if product.image and product.image.name %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-3" style="max-height: 80px; object-fit: contain;">
+                            {% else %}
+                                <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
+                            {% endif %}
+                        </div>
+                        <span class="badge bg-primary rounded-pill px-2 py-0.5 small">This Item</span>
+                    </div>
+
+                    {% for item in bundle_items %}
+                        <div class="text-muted fs-3 fw-bold">+</div>
+                        <!-- Bundle Item Visual Box -->
+                        <div class="bundle-product-visual position-relative text-center">
+                            <div class="bundle-img-box mb-2" style="width: 100px; height: 90px; border: 1px solid var(--border-color, #e2e8f0); border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fff;">
+                                {% if item.image and item.image.name %}
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded-3" style="max-height: 80px; object-fit: contain;">
+                                {% else %}
+                                    <i class="bi bi-box-seam display-6 text-primary opacity-50"></i>
+                                {% endif %}
+                            </div>
+                            <div class="small fw-semibold text-truncate" style="max-width: 100px;">{{ item.name }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Checkbox List of Items -->
+                <div class="bundle-items-checklist d-flex flex-column gap-2 pt-3 border-top">
+                    <!-- Main Product Checkbox Item -->
+                    <div class="form-check bundle-item-check d-flex align-items-center gap-2">
+                        <input class="form-check-input bundle-checkbox" type="checkbox" value="{{ product.pk }}" id="bundleItem{{ product.pk }}" checked data-price="{{ product.effective_price }}" data-name="{{ product.name }}" onchange="recalculateBundle()">
+                        <label class="form-check-label small" for="bundleItem{{ product.pk }}">
+                            <strong class="text-primary me-1">This item:</strong> {{ product.name }} &mdash; <span class="fw-bold text-dark">৳{{ product.effective_price }}</span>
+                        </label>
+                    </div>
+
+                    <!-- Additional Bundle Items -->
+                    {% for item in bundle_items %}
+                        <div class="form-check bundle-item-check d-flex align-items-center gap-2">
+                            <input class="form-check-input bundle-checkbox" type="checkbox" value="{{ item.pk }}" id="bundleItem{{ item.pk }}" checked data-price="{{ item.effective_price }}" data-name="{{ item.name }}" onchange="recalculateBundle()">
+                            <label class="form-check-label small" for="bundleItem{{ item.pk }}">
+                                <a href="{% url 'product_detail' item.pk %}" class="text-decoration-none fw-medium text-dark">{{ item.name }}</a> &mdash; <span class="fw-bold text-dark">৳{{ item.effective_price }}</span>
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Right: Pricing Summary & Add Button -->
+            <div class="col-lg-4">
+                <div class="p-3 bg-light rounded-3 border">
+                    <div class="small text-muted mb-2 fw-semibold">
+                        Total for <span id="bundleSelectedCount">{{ bundle_items|length|add:1 }}</span> items:
+                    </div>
+
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="fs-3 fw-bold text-danger" id="bundleDiscountedPrice">৳{{ bundle_discount_price }}</span>
+                        <span class="text-decoration-line-through text-muted small" id="bundleOriginalPrice">৳{{ bundle_total }}</span>
+                    </div>
+
+                    <div class="alert alert-success border-0 py-1.5 px-2.5 small rounded-2 d-inline-flex align-items-center gap-1 mb-3" id="bundleSavingsAlert">
+                        <i class="bi bi-tag-fill text-success"></i>
+                        <span>Save <strong id="bundleSavingsAmount">৳{{ bundle_savings }}</strong> (5% Bundle Discount)</span>
+                    </div>
+
+                    <button type="button" class="btn btn-danger w-100 fw-semibold rounded-pill py-2 shadow-sm d-flex align-items-center justify-content-center" id="addBundleBtn" onclick="addBundleToCart()">
+                        <i class="bi bi-bag-plus-fill me-2 fs-5"></i>
+                        <span id="addBundleBtnText">{% if IS_BANGLA %}বান্ডেল ব্যাগে যোগ করুন{% else %}Add Bundle to Bag{% endif %}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Full Tabs: Description, Specifications Table, Customer Reviews -->
+    <div class="marketplace-detail-card product-tabs-card" id="mktTabs">
+        <!-- Tab Navigation -->
+        <ul class="nav detail-nav-pills mkt-nav-tabs mb-4" id="marketplaceDetailTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#descContent" type="button" role="tab" aria-controls="descContent" aria-selected="true">
+                    <i class="bi bi-card-text me-1"></i>
+                    <span>{% if IS_BANGLA %}বিস্তারিত বিবরণ{% else %}Detailed Description{% endif %}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specsContent" type="button" role="tab" aria-controls="specsContent" aria-selected="false">
+                    <i class="bi bi-sliders me-1"></i>
+                    <span>{% if IS_BANGLA %}বৈশিষ্ট্য ও স্পেকস{% else %}Specifications{% endif %}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviewsContent" type="button" role="tab" aria-controls="reviewsContent" aria-selected="false">
+                    <i class="bi bi-chat-heart me-1"></i>
+                    <span>{% if IS_BANGLA %}গ্রাহক রিভিউ{% else %}Customer Reviews{% endif %}</span>
+                    <span class="badge bg-light text-muted border ms-1">{{ reviews.count|default:'0' }}</span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Contents -->
+        <div class="tab-content" id="marketplaceDetailTabsContent">
+            <!-- TAB 1: Description -->
+            <div class="tab-pane fade show active" id="descContent" role="tabpanel" aria-labelledby="desc-tab">
+                <div class="product-description-body lh-lg text-secondary">
+                    {{ product.description|render_safe_html }}
+                </div>
+            </div>
+
+            <!-- TAB 2: Specifications Table -->
+            <div class="tab-pane fade" id="specsContent" role="tabpanel" aria-labelledby="specs-tab">
+                <!-- 4 Feature Highlights Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-primary-subtle text-primary mb-2 rounded-circle d-inline-flex p-2">
+                                <i class="bi bi-shield-check fs-5"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 small">Authentic Guarantee</h6>
+                            <p class="small text-muted mb-0" style="font-size: 0.72rem;">100% genuine brand verified product.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-success-subtle text-success mb-2 rounded-circle d-inline-flex p-2">
+                                <i class="bi bi-truck fs-5"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 small">Express Delivery</h6>
+                            <p class="small text-muted mb-0" style="font-size: 0.72rem;">Fast courier in 24-48 hours.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-info-subtle text-info mb-2 rounded-circle d-inline-flex p-2">
+                                <i class="bi bi-arrow-repeat fs-5"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 small">Easy 7-Day Return</h6>
+                            <p class="small text-muted mb-0" style="font-size: 0.72rem;">Hassle-free replacement.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="spec-feature-box">
+                            <div class="spec-feature-icon bg-warning-subtle text-warning mb-2 rounded-circle d-inline-flex p-2">
+                                <i class="bi bi-box-seam fs-5"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1 small">Secure Packaging</h6>
+                            <p class="small text-muted mb-0" style="font-size: 0.72rem;">Multi-layer protective box.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="max-width: 800px;">
+                    <table class="specs-modern-table table table-bordered table-striped small">
+                        <tbody>
+                            <tr>
+                                <th>Product Name</th>
+                                <td>{{ product.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>SKU</th>
+                                <td><code>{{ product.sku|default:'N/A' }}</code></td>
+                            </tr>
+                            <tr>
+                                <th>Category</th>
+                                <td>{{ product.category.name|default:'General' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Brand</th>
+                                <td>{{ product.brand.name|default:'Official Flagship' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Package / Unit</th>
+                                <td>{{ product.unit|default:'1 pc' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Stock Availability</th>
+                                <td>
+                                    {% if product.stock > 0 %}
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle me-1"></i>{{ product.stock }} Available</span>
+                                    {% else %}
+                                        <span class="text-danger fw-bold"><i class="bi bi-x-circle me-1"></i>Out of Stock</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Delivery Estimate</th>
+                                <td>2 - 4 business days nationwide (Dhaka 24-48 hrs)</td>
+                            </tr>
+                            <tr>
+                                <th>Warranty & Return</th>
+                                <td>7 Days Easy Replacement & 100% Genuine Brand Guarantee</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: Customer Reviews & Rating Summary Breakdown -->
+            <div class="tab-pane fade" id="reviewsContent" role="tabpanel" aria-labelledby="reviews-tab">
+                <div class="row g-4">
+                    <!-- Left: Rating Breakdown Summary -->
+                    <div class="col-lg-5">
+                        <div class="p-3 bg-light rounded-3 text-center mb-3">
+                            <div class="display-4 fw-bold text-dark">4.8</div>
+                            <div class="text-warning fs-5 mb-1">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                            </div>
+                            <div class="text-muted small">Based on {{ reviews.count|default:'48' }} customer ratings</div>
+                        </div>
+
+                        <!-- Rating Bars Breakdown -->
+                        <div class="px-2">
+                            <div class="rating-bar-row">
+                                <span class="text-nowrap" style="width: 48px;">5 Star</span>
+                                <div class="rating-bar-progress"><div class="rating-bar-fill" style="width: 82%;"></div></div>
+                                <span class="text-muted" style="width: 32px; text-align: right;">82%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span class="text-nowrap" style="width: 48px;">4 Star</span>
+                                <div class="rating-bar-progress"><div class="rating-bar-fill" style="width: 12%;"></div></div>
+                                <span class="text-muted" style="width: 32px; text-align: right;">12%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span class="text-nowrap" style="width: 48px;">3 Star</span>
+                                <div class="rating-bar-progress"><div class="rating-bar-fill" style="width: 4%;"></div></div>
+                                <span class="text-muted" style="width: 32px; text-align: right;">4%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span class="text-nowrap" style="width: 48px;">2 Star</span>
+                                <div class="rating-bar-progress"><div class="rating-bar-fill" style="width: 1%;"></div></div>
+                                <span class="text-muted" style="width: 32px; text-align: right;">1%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span class="text-nowrap" style="width: 48px;">1 Star</span>
+                                <div class="rating-bar-progress"><div class="rating-bar-fill" style="width: 1%;"></div></div>
+                                <span class="text-muted" style="width: 32px; text-align: right;">1%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Reviews Feed & Review Submission Form -->
+                    <div class="col-lg-7">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-dark">Verified Customer Reviews</h6>
+                            <span class="badge bg-light text-muted border">{{ reviews.count|default:'0' }} Reviews</span>
+                        </div>
+
+                        {% if reviews %}
+                            <div class="d-flex flex-column gap-3 mb-4">
+                                {% for r in reviews %}
+                                    <div class="border-bottom pb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center fw-bold" style="width: 34px; height: 34px; font-size: 0.82rem;">
+                                                    {{ r.user.username|first|upper }}
+                                                </div>
+                                                <div>
+                                                    <strong class="small text-dark">{{ r.user.get_full_name|default:r.user.username }}</strong>
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-1" style="font-size: 0.65rem;">
+                                                        <i class="bi bi-patch-check-fill me-0.5"></i>Verified Buyer
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">{{ r.created_at|date:"M d, Y" }}</small>
+                                        </div>
+                                        <div class="text-warning small mb-1">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= r.rating %}
+                                                    <i class="bi bi-star-fill"></i>
+                                                {% else %}
+                                                    <i class="bi bi-star text-muted opacity-50"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <p class="small text-secondary mb-0">{{ r.comment }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4 bg-light rounded-3 mb-4">
+                                <i class="bi bi-chat-square-dots display-4 text-secondary opacity-50 mb-2"></i>
+                                <h6 class="fw-bold text-dark mb-1">No reviews yet</h6>
+                                <p class="text-muted small mb-0">Be the first to review this product and help other customers!</p>
+                            </div>
+                        {% endif %}
+
+                        <!-- Write Review Form -->
+                        {% if request.user.is_authenticated and not request.user.is_staff %}
+                            <div class="p-3 border rounded-3 bg-light">
+                                <h6 class="fw-bold mb-2 text-dark"><i class="bi bi-pencil-square text-danger me-1"></i> Submit Your Review</h6>
+                                <form action="{% url 'product_add_review' product.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-semibold text-muted">Your Rating:</label>
+                                        <select name="rating" class="form-select form-select-sm">
+                                            <option value="5" selected>⭐⭐⭐⭐⭐ (5 - Excellent)</option>
+                                            <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
+                                            <option value="3">⭐⭐⭐ (3 - Good)</option>
+                                            <option value="2">⭐⭐ (2 - Fair)</option>
+                                            <option value="1">⭐ (1 - Poor)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-semibold text-muted">Your Comment:</label>
+                                        <textarea name="comment" rows="3" class="form-control form-control-sm" placeholder="Write about your experience with this item..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger btn-sm rounded-pill px-4 fw-semibold">
+                                        Submit Review
+                                    </button>
+                                </form>
+                            </div>
+                        {% elif not request.user.is_authenticated %}
+                            <div class="alert alert-light border small text-center mb-0">
+                                <a href="{% url 'account_login' %}?next={{ request.path }}" class="text-danger fw-semibold">Sign in</a> to leave a verified customer review.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products Carousel / Grid -->
+    {% if related_products %}
+    <div class="mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-bag-check text-danger me-2"></i>Related Marketplace Products
+            </h4>
+            <a href="{% url 'product_list' %}{% if product.category %}?category={{ product.category.slug }}{% endif %}" class="small text-danger text-decoration-none fw-semibold">
+                See More <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row g-3 row-cols-2 row-cols-md-3 row-cols-xl-4">
+            {% for rel_prod in related_products %}
+                <div class="col">
+                    {% include 'themes/marketplace/product_card.html' with product=rel_prod %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function swapMainImage(url, thumbElem) {
+    const mainImg = document.getElementById('marketplaceMainImg');
+    if (mainImg) {
+        mainImg.src = url;
+    }
+    document.querySelectorAll('.mkt-thumb-item').forEach(el => el.classList.remove('active'));
+    if (thumbElem) {
+        thumbElem.classList.add('active');
+    }
+}
+
+function adjustQuantity(delta) {
+    const input = document.getElementById('productQtyInput');
+    if (!input) return;
+    let val = parseInt(input.value, 10) || 1;
+    val += delta;
+    const min = parseInt(input.min, 10) || 1;
+    const max = parseInt(input.max, 10) || 99;
+    if (val < min) val = min;
+    if (val > max) val = max;
+    input.value = val;
+}
+
+function showTab(tabId) {
+    const tabBtn = document.getElementById(tabId);
+    if (tabBtn) {
+        const tab = new bootstrap.Tab(tabBtn);
+        tab.show();
+    }
+}
+
+function recalculateBundle() {
+    const checkboxes = document.querySelectorAll('.bundle-checkbox:checked');
+    const selectedCount = checkboxes.length;
+    let total = 0;
+
+    checkboxes.forEach(cb => {
+        const price = parseFloat(cb.dataset.price) || 0;
+        total += price;
+    });
+
+    const countLabel = document.getElementById('bundleSelectedCount');
+    if (countLabel) countLabel.textContent = selectedCount;
+
+    const originalPriceEl = document.getElementById('bundleOriginalPrice');
+    const discountedPriceEl = document.getElementById('bundleDiscountedPrice');
+    const savingsAlertEl = document.getElementById('bundleSavingsAlert');
+    const savingsAmountEl = document.getElementById('bundleSavingsAmount');
+    const addBtn = document.getElementById('addBundleBtn');
+
+    if (selectedCount === 0) {
+        if (discountedPriceEl) discountedPriceEl.textContent = '৳0.00';
+        if (originalPriceEl) originalPriceEl.style.display = 'none';
+        if (savingsAlertEl) savingsAlertEl.style.display = 'none';
+        if (addBtn) addBtn.disabled = true;
+        return;
+    }
+
+    if (addBtn) addBtn.disabled = false;
+    const discounted = Math.round(total * 0.95 * 100) / 100;
+    const savings = Math.round((total - discounted) * 100) / 100;
+
+    if (discountedPriceEl) discountedPriceEl.textContent = `৳${discounted.toFixed(2)}`;
+    if (originalPriceEl) {
+        originalPriceEl.style.display = 'inline';
+        originalPriceEl.textContent = `৳${total.toFixed(2)}`;
+    }
+    if (savingsAlertEl) {
+        savingsAlertEl.style.display = 'inline-flex';
+        if (savingsAmountEl) savingsAmountEl.textContent = `৳${savings.toFixed(2)}`;
+    }
+}
+
+function addBundleToCart(ids, isBuyNow) {
+    let productIds = ids;
+    if (!productIds || !productIds.length) {
+        productIds = [];
+        document.querySelectorAll('.bundle-checkbox:checked').forEach(cb => {
+            productIds.push(cb.value);
+        });
+    }
+    if (productIds.length === 0) {
+        if (typeof showToast === 'function') showToast('Please select at least one item from the bundle.');
+        return;
+    }
+    if (typeof window.addBundleToCart === 'function') {
+        window.addBundleToCart(productIds, isBuyNow);
+    }
+}
+</script>
+{% endblock %}

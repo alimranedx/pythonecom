@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.urls import reverse, NoReverseMatch
 from .models import Module, Submodule, Permission, Role, UserRole, RolePermission
 
 
@@ -56,8 +57,8 @@ class RBACService:
         if target_code in user_perms:
             return True
 
-        # Backward compatibility fallback: allow settings.site_settings for system errors
-        if submodule_code == 'settings.system_errors':
+        # Backward compatibility fallback: allow settings.site_settings for system errors & themes
+        if submodule_code in ('settings.system_errors', 'settings.themes'):
             if f"settings.site_settings.{action}" in user_perms:
                 return True
 
@@ -91,10 +92,19 @@ class RBACService:
                 view_perm_code = f"{sub.code}.view"
                 if user.is_superuser or view_perm_code in user_perms:
                     allowed_submodules.append(sub)
-                elif sub.code == 'settings.system_errors' and 'settings.site_settings.view' in user_perms:
+                elif sub.code in ('settings.system_errors', 'settings.themes') and 'settings.site_settings.view' in user_perms:
                     allowed_submodules.append(sub)
 
             if allowed_submodules:
+                for sub in allowed_submodules:
+                    if sub.url_name:
+                        try:
+                            sub.menu_url = reverse(sub.url_name)
+                        except NoReverseMatch:
+                            sub.menu_url = '#'
+                    else:
+                        sub.menu_url = '#'
+
                 menu_tree.append({
                     'module': module,
                     'submodules': allowed_submodules,

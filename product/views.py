@@ -1,9 +1,10 @@
 from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, Http404
-from django.db.models import Q
+from django.db.models import Q, Avg, Count
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test
+from django.template.loader import get_template, TemplateDoesNotExist
 
 
 def staff_member_required(view_func=None, login_url='admin_login'):
@@ -17,25 +18,45 @@ from core.models import SiteSetting
 from core.themes import THEMES, DEFAULT_THEME_KEY
 
 
+def _resolve_theme_info(request):
+    """
+    Resolves the canonical theme ID, legacy key, and theme filter Q expression
+    consistently across preview sessions, query params, and site settings.
+    """
+    session_preview = None
+    if hasattr(request, 'session'):
+        session_preview = request.session.get('admin_preview_theme')
+    query_preview = request.GET.get('theme') if hasattr(request, 'GET') else None
+
+    raw_theme = session_preview or query_preview
+    if not raw_theme:
+        settings = SiteSetting.get_settings()
+        raw_theme = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
+
+    try:
+        from core.theme_registry import theme_registry
+        theme_id = theme_registry.normalize_id(raw_theme)
+        if not theme_id:
+            theme_id = theme_registry.default_theme_id
+        legacy_key = theme_registry.get_legacy_key(theme_id) or theme_id
+    except Exception:
+        theme_id = raw_theme
+        legacy_key = raw_theme
+
+    keys = {theme_id, legacy_key, raw_theme}
+    theme_q = Q(theme__in=list(keys)) | Q(theme='all')
+
+    return theme_id, legacy_key, theme_q
+
+
 def product_list(request, category_slug=None):
     """
     Storefront catalog view with comprehensive filtering, searching, sorting, and pagination.
     Strictly isolated and scoped to the active or preview theme.
+    Supports dynamic template resolution for active theme: themes/{theme_id}/product_list.html.
     """
     # 1. Resolve active theme
-    preview_theme = request.GET.get('theme') if hasattr(request, 'GET') else None
-    if preview_theme and preview_theme in THEMES:
-        active_theme_key = preview_theme
-    else:
-        settings = SiteSetting.get_settings()
-        active_theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
-        if active_theme_key not in THEMES:
-            active_theme_key = DEFAULT_THEME_KEY
-
-    if active_theme_key == 'mega_market':
-        theme_q = Q(theme='mega_market') | Q(theme='all')
-    else:
-        theme_q = Q(theme=active_theme_key)
+    theme_id, active_theme_key, theme_q = _resolve_theme_info(request)
 
     if hasattr(Product, 'theme'):
         products = Product.objects.filter(is_active=True).filter(theme_q).select_related('category', 'brand')
@@ -45,6 +66,12 @@ def product_list(request, category_slug=None):
         products = Product.objects.filter(is_active=True).select_related('category', 'brand')
         categories = Category.objects.all().order_by('order', 'name')
         brands = Brand.objects.all().order_by('name')
+
+    # Annotate with reviews rating and count for rating sorting/filtering
+    products = products.annotate(
+        avg_rating=Avg('reviews__rating'),
+        reviews_count=Count('reviews')
+    )
 
     # Keyword Search (bounded to 100 chars to prevent search query DoS)
     query = request.GET.get('q', '').strip()[:100]
@@ -95,6 +122,15 @@ def product_list(request, category_slug=None):
     if in_stock == '1':
         products = products.filter(stock__gt=0)
 
+    # Rating Filter
+    rating_param = request.GET.get('rating', '').strip()
+    if rating_param:
+        try:
+            min_rating = float(rating_param)
+            products = products.filter(avg_rating__gte=min_rating)
+        except (ValueError, TypeError):
+            pass
+
     # Price Range Filter
     min_price = request.GET.get('min_price', '').strip()
     max_price = request.GET.get('max_price', '').strip()
@@ -117,6 +153,8 @@ def product_list(request, category_slug=None):
         products = products.order_by('-price')
     elif sort == 'name_asc':
         products = products.order_by('name')
+    elif sort == 'rating':
+        products = products.order_by('-avg_rating', '-reviews_count', '-created_at')
     else:
         products = products.order_by('-created_at')
 
@@ -152,7 +190,38 @@ def product_list(request, category_slug=None):
         from accounts.models import Wishlist
         user_wishlist_ids = set(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
 
-    return render(request, 'product/list.html', {
+    # Dynamic template resolution
+    target_templates = [
+        f"themes/{theme_id}/product_list.html",
+    ]
+    if active_theme_key and active_theme_key != theme_id:
+        target_templates.append(f"themes/{active_theme_key}/product_list.html")
+    if theme_id in ['tech-electronics', 'tech_gadgets'] or active_theme_key in ['tech-electronics', 'tech_gadgets']:
+        if "themes/tech-electronics/product_list.html" not in target_templates:
+            target_templates.append("themes/tech-electronics/product_list.html")
+        if "themes/tech_gadgets/product_list.html" not in target_templates:
+            target_templates.append("themes/tech_gadgets/product_list.html")
+    if theme_id in ['beauty-skincare', 'beauty_cosmetics'] or active_theme_key in ['beauty-skincare', 'beauty_cosmetics']:
+        if "themes/beauty-skincare/product_list.html" not in target_templates:
+            target_templates.append("themes/beauty-skincare/product_list.html")
+        if "themes/beauty_cosmetics/product_list.html" not in target_templates:
+            target_templates.append("themes/beauty_cosmetics/product_list.html")
+    if theme_id in ['organic-grocery', 'grocery_organic'] or active_theme_key in ['organic-grocery', 'grocery_organic']:
+        if "themes/organic-grocery/product_list.html" not in target_templates:
+            target_templates.append("themes/organic-grocery/product_list.html")
+        if "themes/grocery_organic/product_list.html" not in target_templates:
+            target_templates.append("themes/grocery_organic/product_list.html")
+
+    template_name = 'product/list.html'
+    for candidate in target_templates:
+        try:
+            get_template(candidate)
+            template_name = candidate
+            break
+        except TemplateDoesNotExist:
+            continue
+
+    return render(request, template_name, {
         'products': page_obj,
         'page_obj': page_obj,
         'paginator': paginator,
@@ -169,10 +238,13 @@ def product_list(request, category_slug=None):
         'min_price': min_price,
         'max_price': max_price,
         'sort': sort,
+        'rating': rating_param,
         'total_count': paginator.count,
         'querystring': querystring,
         'user_wishlist_ids': user_wishlist_ids,
         'active_theme_key': active_theme_key,
+        'active_theme_id': theme_id,
+        'current_theme_id': theme_id,
     })
 
 
@@ -180,24 +252,39 @@ def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
 
     # Resolve active theme
-    preview_theme = request.GET.get('theme') if hasattr(request, 'GET') else None
-    if preview_theme and preview_theme in THEMES:
-        active_theme_key = preview_theme
-    else:
-        settings = SiteSetting.get_settings()
-        active_theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
-        if active_theme_key not in THEMES:
-            active_theme_key = DEFAULT_THEME_KEY
+    theme_id, active_theme_key, theme_q = _resolve_theme_info(request)
 
     # Strict Theme Isolation: verify that product belongs to the active storefront theme
     if hasattr(product, 'theme') and product.theme:
-        if active_theme_key != 'mega_market' and product.theme != 'all' and product.theme != active_theme_key:
+        allowed = {theme_id, active_theme_key, 'all'}
+        if 'marketplace' in allowed or 'mega_market' in allowed:
+            allowed.update({'marketplace', 'mega_market'})
+        if 'tech-electronics' in allowed or 'tech_gadgets' in allowed:
+            allowed.update({'tech-electronics', 'tech_gadgets'})
+        if 'pharmacy-healthcare' in allowed or 'pharmacy_health' in allowed:
+            allowed.update({'pharmacy-healthcare', 'pharmacy_health'})
+        if 'beauty-skincare' in allowed or 'beauty_cosmetics' in allowed:
+            allowed.update({'beauty-skincare', 'beauty_cosmetics'})
+        if 'fashion-lifestyle' in allowed or 'fashion_lifestyle' in allowed:
+            allowed.update({'fashion-lifestyle', 'fashion_lifestyle'})
+        if 'organic-grocery' in allowed or 'grocery_organic' in allowed:
+            allowed.update({'organic-grocery', 'grocery_organic'})
+        if product.theme not in allowed:
             raise Http404("Product not available in this storefront theme")
 
     # Scoped related products strictly within the same theme
     related_qs = Product.objects.filter(is_active=True).exclude(pk=product.pk)
     if hasattr(Product, 'theme') and getattr(product, 'theme', None):
-        related_qs = related_qs.filter(theme=product.theme)
+        if product.theme in ['marketplace', 'mega_market']:
+            related_qs = related_qs.filter(Q(theme__in=['marketplace', 'mega_market']) | Q(theme='all'))
+        elif product.theme in ['tech-electronics', 'tech_gadgets']:
+            related_qs = related_qs.filter(Q(theme__in=['tech-electronics', 'tech_gadgets']) | Q(theme='all'))
+        elif product.theme in ['beauty-skincare', 'beauty_cosmetics']:
+            related_qs = related_qs.filter(Q(theme__in=['beauty-skincare', 'beauty_cosmetics']) | Q(theme='all'))
+        elif product.theme in ['organic-grocery', 'grocery_organic']:
+            related_qs = related_qs.filter(Q(theme__in=['organic-grocery', 'grocery_organic']) | Q(theme='all'))
+        else:
+            related_qs = related_qs.filter(theme=product.theme)
 
     if product.category:
         related_products = list(related_qs.filter(category=product.category)[:4])
@@ -210,7 +297,16 @@ def product_detail(request, pk):
 
     bundle_qs = Product.objects.filter(is_active=True, stock__gt=0).exclude(pk=product.pk)
     if hasattr(Product, 'theme') and getattr(product, 'theme', None):
-        bundle_qs = bundle_qs.filter(theme=product.theme)
+        if product.theme in ['marketplace', 'mega_market']:
+            bundle_qs = bundle_qs.filter(Q(theme__in=['marketplace', 'mega_market']) | Q(theme='all'))
+        elif product.theme in ['tech-electronics', 'tech_gadgets']:
+            bundle_qs = bundle_qs.filter(Q(theme__in=['tech-electronics', 'tech_gadgets']) | Q(theme='all'))
+        elif product.theme in ['beauty-skincare', 'beauty_cosmetics']:
+            bundle_qs = bundle_qs.filter(Q(theme__in=['beauty-skincare', 'beauty_cosmetics']) | Q(theme='all'))
+        elif product.theme in ['organic-grocery', 'grocery_organic']:
+            bundle_qs = bundle_qs.filter(Q(theme__in=['organic-grocery', 'grocery_organic']) | Q(theme='all'))
+        else:
+            bundle_qs = bundle_qs.filter(theme=product.theme)
 
     bundle_items = list(
         bundle_qs.filter(category=product.category)[:2]
@@ -229,7 +325,38 @@ def product_detail(request, pk):
         from accounts.models import Wishlist
         user_wishlist_ids = set(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
 
-    return render(request, 'product/detail.html', {
+    # Dynamic template resolution
+    detail_candidates = [
+        f"themes/{theme_id}/product_detail.html",
+    ]
+    if active_theme_key and active_theme_key != theme_id:
+        detail_candidates.append(f"themes/{active_theme_key}/product_detail.html")
+    if 'tech-electronics' in [theme_id, active_theme_key] or 'tech_gadgets' in [theme_id, active_theme_key]:
+        if "themes/tech-electronics/product_detail.html" not in detail_candidates:
+            detail_candidates.append("themes/tech-electronics/product_detail.html")
+        if "themes/tech_gadgets/product_detail.html" not in detail_candidates:
+            detail_candidates.append("themes/tech_gadgets/product_detail.html")
+    if 'beauty-skincare' in [theme_id, active_theme_key] or 'beauty_cosmetics' in [theme_id, active_theme_key]:
+        if "themes/beauty-skincare/product_detail.html" not in detail_candidates:
+            detail_candidates.append("themes/beauty-skincare/product_detail.html")
+        if "themes/beauty_cosmetics/product_detail.html" not in detail_candidates:
+            detail_candidates.append("themes/beauty_cosmetics/product_detail.html")
+    if 'organic-grocery' in [theme_id, active_theme_key] or 'grocery_organic' in [theme_id, active_theme_key]:
+        if "themes/organic-grocery/product_detail.html" not in detail_candidates:
+            detail_candidates.append("themes/organic-grocery/product_detail.html")
+        if "themes/grocery_organic/product_detail.html" not in detail_candidates:
+            detail_candidates.append("themes/grocery_organic/product_detail.html")
+
+    template_name = 'product/detail.html'
+    for candidate in detail_candidates:
+        try:
+            get_template(candidate)
+            template_name = candidate
+            break
+        except TemplateDoesNotExist:
+            continue
+
+    return render(request, template_name, {
         'product': product,
         'related_products': related_products,
         'reviews': product.reviews.select_related('user').all(),
@@ -240,6 +367,9 @@ def product_detail(request, pk):
         'bundle_discount_price': bundle_discount_price,
         'bundle_savings': bundle_savings,
         'user_wishlist_ids': user_wishlist_ids,
+        'active_theme_key': active_theme_key,
+        'active_theme_id': theme_id,
+        'current_theme_id': theme_id,
     })
 
 
@@ -318,17 +448,23 @@ def product_quick_view(request, pk):
     """
     product = get_object_or_404(Product, pk=pk, is_active=True)
 
-    preview_theme = request.GET.get('theme') if hasattr(request, 'GET') else None
-    if preview_theme and preview_theme in THEMES:
-        active_theme_key = preview_theme
-    else:
-        settings = SiteSetting.get_settings()
-        active_theme_key = getattr(settings, 'active_theme', DEFAULT_THEME_KEY) or DEFAULT_THEME_KEY
-        if active_theme_key not in THEMES:
-            active_theme_key = DEFAULT_THEME_KEY
+    theme_id, active_theme_key, theme_q = _resolve_theme_info(request)
 
     if hasattr(product, 'theme') and product.theme:
-        if active_theme_key != 'mega_market' and product.theme != 'all' and product.theme != active_theme_key:
+        allowed = {theme_id, active_theme_key, 'all'}
+        if 'marketplace' in allowed or 'mega_market' in allowed:
+            allowed.update({'marketplace', 'mega_market'})
+        if 'tech-electronics' in allowed or 'tech_gadgets' in allowed:
+            allowed.update({'tech-electronics', 'tech_gadgets'})
+        if 'pharmacy-healthcare' in allowed or 'pharmacy_health' in allowed:
+            allowed.update({'pharmacy-healthcare', 'pharmacy_health'})
+        if 'beauty-skincare' in allowed or 'beauty_cosmetics' in allowed:
+            allowed.update({'beauty-skincare', 'beauty_cosmetics'})
+        if 'fashion-lifestyle' in allowed or 'fashion_lifestyle' in allowed:
+            allowed.update({'fashion-lifestyle', 'fashion_lifestyle'})
+        if 'organic-grocery' in allowed or 'grocery_organic' in allowed:
+            allowed.update({'organic-grocery', 'grocery_organic'})
+        if product.theme not in allowed:
             return JsonResponse({'error': 'Product not available in this storefront theme'}, status=404)
     return JsonResponse({
         'id': product.pk,

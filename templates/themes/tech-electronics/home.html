@@ -1,0 +1,1329 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+{% if CURRENT_THEME_DATA.name %}{{ CURRENT_THEME_DATA.name }} - {% endif %}{{ site_settings.get_effective_site_name|default:'TechVerse Electronics' }} | {% if IS_BANGLA %}লেটেস্ট ল্যাপটপ, ফোন ও অফিসিয়াল গ্যাজেট{% else %}Next-Gen Laptops, Smartphones & Official Tech Gear{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Tech & Electronics Theme Design Tokens */
+    :root {
+        --tech-primary: #0284c7;
+        --tech-primary-hover: #0369a1;
+        --tech-primary-light: #f0f9ff;
+        --tech-accent: #38bdf8;
+        --tech-cyan: #00d2ff;
+        --tech-dark-bg: #0b1120;
+        --tech-slate-900: #0f172a;
+        --tech-slate-800: #1e293b;
+        --tech-slate-700: #334155;
+        --tech-slate-100: #f1f5f9;
+        --tech-border: #e2e8f0;
+        --tech-card-bg: #ffffff;
+        --tech-neon-glow: rgba(56, 189, 248, 0.25);
+    }
+
+    [data-bs-theme="dark"] {
+        --tech-border: #334155;
+        --tech-card-bg: #0f172a;
+        --tech-slate-100: #1e293b;
+    }
+
+    body {
+        background-color: #f8fafc;
+    }
+
+    [data-bs-theme="dark"] body {
+        background-color: #0b1120;
+    }
+
+    /* Section Header Styling */
+    .tech-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 2px solid var(--tech-border);
+    }
+
+    .tech-section-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--tech-slate-900);
+        letter-spacing: -0.3px;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    [data-bs-theme="dark"] .tech-section-title {
+        color: #f8fafc;
+    }
+
+    /* Precision Spec Badges */
+    .tech-spec-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: rgba(15, 23, 42, 0.06);
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        color: #1e293b;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    [data-bs-theme="dark"] .tech-spec-pill {
+        background: rgba(56, 189, 248, 0.1);
+        border-color: rgba(56, 189, 248, 0.25);
+        color: #7dd3fc;
+    }
+
+    /* Section 1: Hero Showcase */
+    .tech-hero-section {
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .tech-hero-carousel {
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    }
+
+    .tech-hero-slide {
+        min-height: 420px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding: 3rem 2.5rem;
+        background-color: var(--tech-slate-900);
+        color: #ffffff;
+        overflow: hidden;
+    }
+
+    .tech-hero-bg-macbook {
+        background: radial-gradient(circle at 85% 30%, #1e1b4b 0%, #0f172a 65%, #020617 100%);
+    }
+
+    .tech-hero-bg-galaxy {
+        background: radial-gradient(circle at 85% 30%, #0369a1 0%, #0f172a 65%, #020617 100%);
+    }
+
+    .tech-hero-bg-gaming {
+        background: radial-gradient(circle at 85% 30%, #4c0519 0%, #0f172a 65%, #020617 100%);
+    }
+
+    .tech-hero-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        border-radius: 9999px;
+        padding: 0.25rem 0.85rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .tech-hero-title {
+        font-size: 2.35rem;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.6px;
+        color: #ffffff;
+    }
+
+    .tech-hero-side-card {
+        background: #ffffff;
+        border: 1px solid var(--tech-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    [data-bs-theme="dark"] .tech-hero-side-card {
+        background: var(--tech-slate-900);
+        border-color: var(--tech-slate-700);
+    }
+
+    .tech-hero-side-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+    }
+
+    /* Section 2: Value Proposition Bar */
+    .tech-trust-bar {
+        background: #ffffff;
+        border: 1px solid var(--tech-border);
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    }
+
+    [data-bs-theme="dark"] .tech-trust-bar {
+        background: var(--tech-slate-900);
+        border-color: var(--tech-slate-700);
+    }
+
+    .tech-trust-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1.1rem 1rem;
+        border-right: 1px solid var(--tech-border);
+    }
+
+    .tech-trust-item:last-child {
+        border-right: none;
+    }
+
+    [data-bs-theme="dark"] .tech-trust-item {
+        border-right-color: var(--tech-slate-700);
+    }
+
+    .tech-trust-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--tech-primary-light);
+        color: var(--tech-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    [data-bs-theme="dark"] .tech-trust-icon-box {
+        background: rgba(56, 189, 248, 0.12);
+        color: #38bdf8;
+    }
+
+    /* Section 3: Electronics Category Tiles */
+    .tech-category-card {
+        background: #ffffff;
+        border: 1px solid var(--tech-border);
+        border-radius: 12px;
+        padding: 1.25rem 1rem;
+        text-align: center;
+        transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    [data-bs-theme="dark"] .tech-category-card {
+        background: var(--tech-slate-900);
+        border-color: var(--tech-slate-700);
+    }
+
+    .tech-category-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 24px rgba(2, 132, 199, 0.15);
+        border-color: var(--tech-primary);
+        color: inherit;
+    }
+
+    .tech-category-icon-wrapper {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.85rem;
+        color: var(--tech-slate-800);
+        margin-bottom: 0.85rem;
+        transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+    }
+
+    [data-bs-theme="dark"] .tech-category-icon-wrapper {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: #38bdf8;
+    }
+
+    .tech-category-card:hover .tech-category-icon-wrapper {
+        transform: scale(1.08);
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        color: #ffffff;
+    }
+
+    /* Section 4: Flash Deals Cyber Slate Bar */
+    .tech-flash-section {
+        background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e293b 100%);
+        border: 1px solid #334155;
+        border-radius: 14px;
+        padding: 1.5rem;
+        color: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .tech-timer-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        padding: 0.35rem 0.85rem;
+        border-radius: 8px;
+    }
+
+    .tech-timer-digit {
+        background: #0284c7;
+        color: #ffffff;
+        font-weight: 800;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.95rem;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        min-width: 28px;
+        text-align: center;
+    }
+
+    /* Section 6: Gaming & Creator Zone */
+    .tech-gaming-banner {
+        background: radial-gradient(circle at 10% 50%, #1e1b4b 0%, #090d16 60%, #020617 100%);
+        border: 1px solid #4338ca;
+        border-radius: 14px;
+        padding: 2.25rem 2rem;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tech-gaming-glow {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+        top: -60px;
+        right: -60px;
+        pointer-events: none;
+    }
+
+    /* Section 7: Official Brand Showcases */
+    .tech-brand-card {
+        background: #ffffff;
+        border: 1px solid var(--tech-border);
+        border-radius: 10px;
+        padding: 1rem 0.75rem;
+        text-align: center;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+    }
+
+    [data-bs-theme="dark"] .tech-brand-card {
+        background: var(--tech-slate-900);
+        border-color: var(--tech-slate-700);
+    }
+
+    .tech-brand-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--tech-primary);
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+        color: inherit;
+    }
+
+    /* Section 9: Tech Newsletter Box */
+    .tech-newsletter-box {
+        background: linear-gradient(135deg, #090d16 0%, #0f172a 60%, #1e293b 100%);
+        border: 1px solid #334155;
+        border-radius: 14px;
+        padding: 2.5rem;
+        color: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+    }
+
+    .tech-coupon-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(56, 189, 248, 0.15);
+        border: 1px dashed #38bdf8;
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        color: #38bdf8;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .tech-coupon-pill:hover {
+        background: rgba(56, 189, 248, 0.25);
+    }
+
+    /* Stock Meters & EMI Highlights */
+    .tech-emi-badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #0284c7;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    [data-bs-theme="dark"] .tech-emi-badge {
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.1);
+        border-color: rgba(56, 189, 248, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: FLAGSHIP TECH HERO SHOWCASE    -->
+    <!-- Apple & Star Tech Style Carousel + Side Cards -->
+    <!-- ========================================== -->
+    <section class="tech-hero-section mb-4" aria-label="Flagship Tech Showcase">
+        <div class="row g-3">
+            <!-- Left: Flagship Wide Carousel (#techHeroCarousel) -->
+            <div class="col-lg-8">
+                <div id="techHeroCarousel" class="carousel slide tech-hero-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#techHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#techHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#techHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    </div>
+
+                    <div class="carousel-inner">
+                        <!-- Slide 1: MacBook Pro 16" M3 Max -->
+                        <div class="carousel-item active">
+                            <div class="tech-hero-slide tech-hero-bg-macbook">
+                                <div class="row align-items-center w-100 g-3">
+                                    <div class="col-md-7">
+                                        <div class="tech-hero-chip mb-2">
+                                            <i class="bi bi-cpu-fill"></i> M3 MAX ARCHITECTURE
+                                        </div>
+                                        <h1 class="tech-hero-title mb-2">
+                                            Apple MacBook Pro 16"
+                                        </h1>
+                                        <p class="text-light opacity-90 small mb-3" style="max-width: 440px;">
+                                            {% if IS_BANGLA %}
+                                            প্রো ক্রিয়েটরদের জন্য মহাক্ষমতাধর এম৩ ম্যাক্স চিপ, লিকুইড রেটিনা এক্সডিআর ডিসপ্লে ও ২২ ঘণ্টার ব্যাটারি ব্যাকআপ।
+                                            {% else %}
+                                            Mind-blowing performance for extreme workflows. Up to 16-core CPU, 40-core GPU, and Liquid Retina XDR display.
+                                            {% endif %}
+                                        </p>
+                                        <!-- Precision Spec Badges -->
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-memory text-info"></i> M3 Max 16-Core
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-motherboard text-info"></i> 36GB Unified RAM
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-display text-info"></i> 16.2" Liquid Retina XDR
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-battery-charging text-info"></i> 22h Battery
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <a href="{% url 'product_list' %}?category=laptops-ultrabooks" class="btn btn-primary px-3 py-2 fw-semibold shadow-sm">
+                                                <i class="bi bi-bag-check me-1"></i> {% if IS_BANGLA %}ডিভাইস দেখুন{% else %}Explore Device{% endif %}
+                                            </a>
+                                            <a href="{% url 'product_list' %}?category=laptops-ultrabooks" class="btn btn-outline-light px-3 py-2 fw-semibold">
+                                                <i class="bi bi-sliders me-1"></i> {% if IS_BANGLA %}টেক স্পেক্স{% else %}View Tech Specs{% endif %}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 text-center position-relative">
+                                        <div class="p-2">
+                                            <img src="/static/images/hero/macbook.png" alt="MacBook Pro 16" class="img-fluid" style="max-height: 250px; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(0, 210, 255, 0.25));" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80';">
+                                        </div>
+                                        <div class="mt-2 text-info small fw-semibold">
+                                            <i class="bi bi-patch-check-fill me-1"></i> Official Apple BD Warranty • 0% EMI from ৳9,850/mo
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Samsung Galaxy S24 Ultra & Flagship Mobiles -->
+                        <div class="carousel-item">
+                            <div class="tech-hero-slide tech-hero-bg-galaxy">
+                                <div class="row align-items-center w-100 g-3">
+                                    <div class="col-md-7">
+                                        <div class="tech-hero-chip mb-2" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; border-color: #0284c7;">
+                                            <i class="bi bi-stars"></i> GALAXY AI & TITANIUM FRAME
+                                        </div>
+                                        <h1 class="tech-hero-title mb-2">
+                                            Samsung Galaxy S24 Ultra
+                                        </h1>
+                                        <p class="text-light opacity-90 small mb-3" style="max-width: 440px;">
+                                            {% if IS_BANGLA %}
+                                            ২০০ মেগাপিক্সেল কোয়াড ক্যামেরা, স্ন্যাপড্রাগন ৮ জেন ৩ এবং এআই চালিত লাইভ ট্রান্সলেটসহ প্রিমিয়াম টাইটানিয়াম ডিজাইন।
+                                            {% else %}
+                                            Snapdragon 8 Gen 3 for Galaxy, 200MP camera system, built-in S Pen, and Galaxy AI real-time intelligence.
+                                            {% endif %}
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-cpu text-warning"></i> Snapdragon 8 Gen 3
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-camera text-warning"></i> 200MP Quad Camera
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-phone text-warning"></i> 6.8" QHD+ AMOLED 120Hz
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-shield-check text-warning"></i> Titanium Armor
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <a href="{% url 'product_list' %}?category=smartphones-flagships" class="btn btn-info px-3 py-2 fw-semibold text-white shadow-sm">
+                                                <i class="bi bi-bag-check me-1"></i> {% if IS_BANGLA %}স্মার্টফোন সিরিজ{% else %}Explore Device{% endif %}
+                                            </a>
+                                            <a href="{% url 'product_list' %}?category=smartphones-flagships" class="btn btn-outline-light px-3 py-2 fw-semibold">
+                                                <i class="bi bi-sliders me-1"></i> {% if IS_BANGLA %}টেক স্পেক্স{% else %}View Tech Specs{% endif %}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 text-center">
+                                        <div class="p-2">
+                                            <img src="/static/images/hero/s24ultra.png" alt="Galaxy S24 Ultra" class="img-fluid" style="max-height: 250px; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(56, 189, 248, 0.3));" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80';">
+                                        </div>
+                                        <div class="mt-2 text-info small fw-semibold">
+                                            <i class="bi bi-patch-check-fill me-1"></i> Official Samsung Warranty • 0% EMI up to 36 Months
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: ASUS ROG Strix GeForce RTX 4090 Gaming Battlestations -->
+                        <div class="carousel-item">
+                            <div class="tech-hero-slide tech-hero-bg-gaming">
+                                <div class="row align-items-center w-100 g-3">
+                                    <div class="col-md-7">
+                                        <div class="tech-hero-chip mb-2" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: #ef4444;">
+                                            <i class="bi bi-controller"></i> ULTRA 4K GAMING & DLSS 3.5
+                                        </div>
+                                        <h1 class="tech-hero-title mb-2">
+                                            ASUS ROG RTX 4090 Rigs
+                                        </h1>
+                                        <p class="text-light opacity-90 small mb-3" style="max-width: 440px;">
+                                            {% if IS_BANGLA %}
+                                            ২৪ জিবি জিডিডিআর৬এক্স মেমরি, ফুল রে-ট্রেসিং এবং ৪কে ২৪০ হার্টজ ইস্পোর্টস পারফরম্যান্সের জন্য আল্টিমেট গেমিং রিগ।
+                                            {% else %}
+                                            The pinnacle of graphics horsepower. Ada Lovelace architecture, 24GB GDDR6X, and advanced thermal cooling chamber.
+                                            {% endif %}
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-gpu-card text-danger"></i> RTX 4090 24GB
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-speedometer2 text-danger"></i> 2640 MHz Boost
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-fan text-danger"></i> Axial-tech Cooling
+                                            </span>
+                                            <span class="tech-spec-pill text-white bg-dark border-secondary">
+                                                <i class="bi bi-badge-4k text-danger"></i> 4K Native 240FPS
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <a href="{% url 'product_list' %}?category=pc-hardware-components" class="btn btn-danger px-3 py-2 fw-semibold shadow-sm">
+                                                <i class="bi bi-cpu me-1"></i> {% if IS_BANGLA %}গেমিং গিয়ার দেখুন{% else %}Explore Device{% endif %}
+                                            </a>
+                                            <a href="{% url 'product_list' %}?category=pc-hardware-components" class="btn btn-outline-light px-3 py-2 fw-semibold">
+                                                <i class="bi bi-sliders me-1"></i> {% if IS_BANGLA %}টেক স্পেক্স{% else %}View Tech Specs{% endif %}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 text-center">
+                                        <div class="p-2">
+                                            <img src="/static/images/hero/rtx4090.png" alt="ASUS ROG Strix RTX 4090" class="img-fluid" style="max-height: 250px; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(239, 68, 68, 0.35));" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';">
+                                        </div>
+                                        <div class="mt-2 text-danger-subtle small fw-semibold">
+                                            <i class="bi bi-patch-check-fill me-1"></i> Authorized ASUS Distributor • 3 Years Replacement Warranty
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#techHeroCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#techHeroCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: 2 High-Precision Tech Spotlight Cards -->
+            <div class="col-lg-4">
+                <div class="d-flex flex-column gap-3 h-100">
+                    <!-- Spotlight Card 1: Flagship Deal of the Week -->
+                    <div class="tech-hero-side-card">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-danger px-2.5 py-1 text-white fw-bold" style="font-size: 0.72rem; letter-spacing: 0.3px;">
+                                    <i class="bi bi-fire me-1"></i>FLAGSHIP DEAL
+                                </span>
+                                <span class="tech-emi-badge">
+                                    <i class="bi bi-credit-card-2-front"></i> 0% EMI
+                                </span>
+                            </div>
+                            {% if spotlight_prod %}
+                            <h6 class="fw-bold mb-1 text-truncate" title="{{ spotlight_prod.name }}">
+                                <a href="{% url 'product_detail' spotlight_prod.pk %}" class="text-decoration-none text-dark hover-primary">
+                                    {{ spotlight_prod.name }}
+                                </a>
+                            </h6>
+                            <div class="small text-muted mb-2">
+                                <i class="bi bi-patch-check-fill text-primary me-1"></i>{{ spotlight_prod.brand.name|default:'Official Tech' }} • {{ spotlight_prod.category.name|default:'Hardware' }}
+                            </div>
+                            <div class="text-center py-2">
+                                <a href="{% url 'product_detail' spotlight_prod.pk %}">
+                                    {% if spotlight_prod.image %}
+                                    <img src="{{ spotlight_prod.image.url }}" alt="{{ spotlight_prod.name }}" class="img-fluid" style="max-height: 110px; object-fit: contain;">
+                                    {% else %}
+                                    <div class="text-secondary py-3"><i class="bi bi-laptop display-6"></i></div>
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-baseline mt-2">
+                                <div>
+                                    <span class="fs-5 fw-bold text-danger">৳{{ spotlight_prod.effective_price }}</span>
+                                    {% if spotlight_prod.has_discount %}
+                                    <span class="text-decoration-line-through text-muted small ms-1">৳{{ spotlight_prod.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <span class="badge bg-success-subtle text-success small px-2 py-1">In Stock</span>
+                            </div>
+                            {% else %}
+                            <h6 class="fw-bold mb-1">Apple MacBook Air M3</h6>
+                            <p class="small text-muted mb-2">13.6" Liquid Retina • 16GB • 512GB SSD</p>
+                            <div class="fs-5 fw-bold text-danger">৳152,000</div>
+                            {% endif %}
+                        </div>
+                        <div class="mt-2 pt-2 border-top">
+                            <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-primary w-100 fw-semibold">
+                                {% if IS_BANGLA %}সকল ফ্ল্যাগশিপ ডিভাইস দেখুন{% else %}View All Flagship Hardware{% endif %} <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Spotlight Card 2: 0% EMI Financing & Trade-In Hub -->
+                    <div class="tech-hero-side-card" style="background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%); border-color: #bae6fd;">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary text-white fw-bold px-2 py-0.5" style="font-size: 0.72rem;">
+                                    <i class="bi bi-bank me-1"></i>FINANCING
+                                </span>
+                                <span class="small fw-bold text-primary">28+ Partner Banks</span>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark">
+                                {% if IS_BANGLA %}০% সুদে ৩৬ মাস পর্যন্ত ইএমআই{% else %}0% EMI Financing Up to 36 Months{% endif %}
+                            </h6>
+                            <p class="small text-muted mb-2" style="font-size: 0.8rem; line-height: 1.4;">
+                                {% if IS_BANGLA %}
+                                শীর্ষস্থানীয় সকল ব্যাংকের ক্রেডিট কার্ডে কোনো বাড়তি ফি ছাড়া ইনস্ট্যান্ট ইএমআই সুবিধা।
+                                {% else %}
+                                Purchase your dream laptop, smartphone, or gaming rig with zero interest installments.
+                                {% endif %}
+                            </p>
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                <span class="badge bg-white text-dark border shadow-xs" style="font-size: 0.68rem;">City Bank</span>
+                                <span class="badge bg-white text-dark border shadow-xs" style="font-size: 0.68rem;">BRAC Bank</span>
+                                <span class="badge bg-white text-dark border shadow-xs" style="font-size: 0.68rem;">EBL</span>
+                                <span class="badge bg-white text-dark border shadow-xs" style="font-size: 0.68rem;">Standard Chartered</span>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-top border-info-subtle">
+                            <a href="{% url 'product_list' %}" class="btn btn-sm btn-primary w-100 fw-semibold">
+                                <i class="bi bi-calculator me-1"></i> {% if IS_BANGLA %}ইএমআই ডিভাইজ খুঁজুন{% else %}Browse 0% EMI Products{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: TECH VALUE PROPOSITION BAR      -->
+    <!-- 4 Precision Badges                        -->
+    <!-- ========================================== -->
+    <section class="tech-trust-bar mb-4" aria-label="Tech Value Propositions">
+        <div class="row g-0">
+            <!-- Pillar 1: Official Brand Warranty -->
+            <div class="col-6 col-lg-3 tech-trust-item">
+                <div class="tech-trust-icon-box">
+                    <i class="bi bi-patch-check-fill"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}১০০% অফিসিয়াল ওয়ারেন্টি{% else %}Official Brand Warranty{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.75rem;">
+                        {% if IS_BANGLA %}সরাসরি অনুমোদিত সার্ভিস পয়েন্ট{% else %}100% Bangladesh claimable{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Pillar 2: 0% EMI up to 36 Months -->
+            <div class="col-6 col-lg-3 tech-trust-item">
+                <div class="tech-trust-icon-box">
+                    <i class="bi bi-credit-card-2-front"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}০% ইএমআই ৩৬ মাস পর্যন্ত{% else %}0% EMI up to 36 Months{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.75rem;">
+                        {% if IS_BANGLA %}২৮+ শীর্ষ ব্যাংকের কার্ডে{% else %}28+ leading partner banks{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Express Dispatch -->
+            <div class="col-6 col-lg-3 tech-trust-item">
+                <div class="tech-trust-icon-box">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}এক্সপ্রেস কুরিয়ার ডিসপ্যাচ{% else %}Express Tech Dispatch{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.75rem;">
+                        {% if IS_BANGLA %}ঢাকায় সেইম-ডে ও সারাদেশে ৪৮ ঘণ্টা{% else %}Same-day Dhaka / 48h BD{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Pillar 4: 7 Days Replacement -->
+            <div class="col-6 col-lg-3 tech-trust-item">
+                <div class="tech-trust-icon-box">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}৭ দিনের রিপ্লেসমেন্ট গ্যারান্টি{% else %}7 Days Replacement{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.75rem;">
+                        {% if IS_BANGLA %}ত্রুটিপূর্ণ ডিভাইসে দ্রুত বদল{% else %}Instant defective hardware swap{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: SPECIALIZED ELECTRONICS CATEGORIES -->
+    <!-- Visual Device Tiles with Cutouts          -->
+    <!-- ========================================== -->
+    <section class="mb-5" aria-label="Electronics Specialized Categories">
+        <div class="tech-section-header">
+            <div>
+                <h3 class="tech-section-title">
+                    <i class="bi bi-grid-3x3-gap-fill text-primary"></i>
+                    {% if IS_BANGLA %}ইলেকট্রনিক্স ও হার্ডওয়্যার ক্যাটাগরি{% else %}Specialized Electronics & Hardware Categories{% endif %}
+                </h3>
+            </div>
+            <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-primary fw-semibold">
+                {% if IS_BANGLA %}সকল ক্যাটাগরি{% else %}All Hardware{% endif %} <i class="bi bi-chevron-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+            <!-- 1. Laptops & Ultrabooks -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=laptops-ultrabooks" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-laptop"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}ল্যাপটপ ও ম্যাকবুক{% else %}Laptops & Ultrabooks{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">Core i9, M3, Ryzen</span>
+                </a>
+            </div>
+
+            <!-- 2. Smartphones & Flagships -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=smartphones-flagships" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-phone"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}ফ্ল্যাগশিপ স্মার্টফোন{% else %}5G Smartphones{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">iPhone, Galaxy, Pixel</span>
+                </a>
+            </div>
+
+            <!-- 3. PC Hardware & GPUs -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=pc-hardware-components" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-gpu-card"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}পিসি হার্ডওয়্যার ও GPU{% else %}PC Hardware & GPUs{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">RTX 4090, Intel, AMD</span>
+                </a>
+            </div>
+
+            <!-- 4. Gaming OLED Monitors -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=gaming-monitors-displays" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-display"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}গেমিং মনিটর ও OLED{% else %}OLED Gaming Displays{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">240Hz, 4K, Curved</span>
+                </a>
+            </div>
+
+            <!-- 5. Mechanical Keyboards & Esports Mice -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=mechanical-keyboards-mice" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-keyboard"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}মেকানিক্যাল কীবোর্ড{% else %}Keyboards & Mice{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">Wireless, RGB, Esports</span>
+                </a>
+            </div>
+
+            <!-- 6. Hi-Fi Headphones & TWS Audio -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=audio-headphones-tws" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-headphones"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}অডিও ও ANC বাডস{% else %}Audio & Hi-Fi TWS{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">Sony, AirPods, Anker</span>
+                </a>
+            </div>
+
+            <!-- 7. Smartwatches & Fitness GPS -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=smartwatches-fitness-bands" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-smartwatch"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}স্মার্টওয়াচ ও ট্র্যাকার{% else %}Smartwatches & GPS{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">Apple Watch, Galaxy</span>
+                </a>
+            </div>
+
+            <!-- 8. Gaming Consoles & Controllers -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=gaming-consoles-accessories" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-controller"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}গেমিং কনসোল ও কন্ট্রোলার{% else %}Gaming Consoles{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">PS5 Slim, DualSense</span>
+                </a>
+            </div>
+
+            <!-- 9. GaN Fast Chargers & Power Banks -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=fast-chargers-powerbanks" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-battery-charging"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}GaN চার্জার ও পাওয়ার ব্যাংক{% else %}GaN Chargers & Banks{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">120W, 20000mAh, USB-C</span>
+                </a>
+            </div>
+
+            <!-- 10. NVMe External SSDs & High-Speed Drives -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=external-ssds-storage" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-device-ssd"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}NVMe এক্সটার্নাল SSD{% else %}External SSDs & Storage{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">1050MB/s, Rugged IP65</span>
+                </a>
+            </div>
+
+            <!-- 11. Wi-Fi 7 Mesh Networking -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?category=networking-wifi-routers" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-router"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}ওয়াই-ফাই ৭ মেশ রাউটার{% else %}Wi-Fi 7 Mesh Routers{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">Quad-Band, 30Gbps</span>
+                </a>
+            </div>
+
+            <!-- 12. Tech Accessories & Hubs -->
+            <div class="col">
+                <a href="{% url 'product_list' %}" class="tech-category-card">
+                    <div class="tech-category-icon-wrapper">
+                        <i class="bi bi-usb-symbol"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.88rem;">
+                        {% if IS_BANGLA %}প্রো হাব ও কেবলস{% else %}Pro Hubs & Accessories{% endif %}
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">Thunderbolt 4, Docks</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 4: FLASH TECH DEALS & PRICE DROPS -->
+    <!-- Sleek Cyber Slate Bar with Live Countdown -->
+    <!-- ========================================== -->
+    <section class="tech-flash-section mb-5" aria-label="Flash Tech Deals and Price Drops">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-danger px-3 py-1.5 fw-bold text-white shadow-sm" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                    <i class="bi bi-lightning-charge-fill me-1"></i>LIMITED TIME PRICE DROP
+                </span>
+                <h4 class="fw-bold mb-0 text-white" style="font-size: 1.25rem;">
+                    {% if IS_BANGLA %}ফ্ল্যাশ টেক ড্রপস ও বিশেষ অফার{% else %}Flash Tech Deals & Hardware Price Drops{% endif %}
+                </h4>
+            </div>
+
+            <!-- Countdown Timer Container (#techDealsCountdown) -->
+            <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+                <span class="small text-light opacity-80 fw-semibold">
+                    <i class="bi bi-clock-history me-1 text-warning"></i>{% if IS_BANGLA %}অফার শেষ হতে বাকি:{% else %}Deals Expire In:{% endif %}
+                </span>
+                <div id="techDealsCountdown" class="tech-timer-box">
+                    <span id="techDays" class="tech-timer-digit">02</span><span class="text-info fw-bold">:</span>
+                    <span id="techHours" class="tech-timer-digit">14</span><span class="text-info fw-bold">:</span>
+                    <span id="techMinutes" class="tech-timer-digit">35</span><span class="text-info fw-bold">:</span>
+                    <span id="techSeconds" class="tech-timer-digit">48</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6 High-Demand Flash Products Grid -->
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+            {% for product in flash_tech_deals|slice:":6" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% empty %}
+            {% for product in flash_sales|slice:":6" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 5: FEATURED LAPTOPS & FLAGSHIP DEVICES -->
+    <!-- High-Precision Tech Cards with Key Specs   -->
+    <!-- ========================================== -->
+    <section class="mb-5" aria-label="Featured Laptops and Flagship Devices">
+        <div class="tech-section-header">
+            <div>
+                <h3 class="tech-section-title">
+                    <i class="bi bi-laptop text-primary"></i>
+                    {% if IS_BANGLA %}ফ্ল্যাগশিপ ল্যাপটপ ও আল্ট্রাবুক{% else %}Featured Laptops & Flagship Devices{% endif %}
+                </h3>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="d-none d-md-inline-block text-muted small">
+                    <i class="bi bi-patch-check-fill text-success me-1"></i>Official Warranty Guaranteed
+                </span>
+                <a href="{% url 'product_list' %}?category=laptops-ultrabooks" class="btn btn-sm btn-outline-primary fw-semibold">
+                    {% if IS_BANGLA %}সব ল্যাপটপ দেখুন{% else %}View All Laptops{% endif %} <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for product in laptop_flagships|slice:":8" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% empty %}
+            {% for product in featured_products|slice:":8" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 6: GAMING & PRO CREATOR ZONE       -->
+    <!-- Custom PC Rigs, GPUs & Battlestation Gear -->
+    <!-- ========================================== -->
+    <section class="mb-5" aria-label="Gaming and Pro Creator Zone">
+        <!-- Gaming Rig Feature Banner -->
+        <div class="tech-gaming-banner mb-4">
+            <div class="tech-gaming-glow"></div>
+            <div class="row align-items-center position-relative" style="z-index: 2;">
+                <div class="col-lg-8">
+                    <div class="tech-hero-chip mb-2" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; border-color: #6366f1;">
+                        <i class="bi bi-gpu-card"></i> PRO CREATOR & ESPORTS ZONE
+                    </div>
+                    <h2 class="fw-bold mb-2 text-white" style="font-size: 2rem; letter-spacing: -0.4px;">
+                        {% if IS_BANGLA %}গেমিং ও প্রো ক্রিয়েটর আলটিমেট জোন{% else %}High-Performance Gaming & Pro Creator Gear{% endif %}
+                    </h2>
+                    <p class="text-light opacity-90 small mb-3" style="max-width: 580px;">
+                        {% if IS_BANGLA %}
+                        আল্ট্রা হাই-রেট্রেসিং গ্রাফিক্স কার্ড, ৪কে ২৪০ হার্টজ ওলেড ডিসপ্লে ও রেসপনসিভ মেকানিক্যাল কীবোর্ডে প্রস্তুত আপনার ড্রিম ব্যাটলস্টেশন।
+                        {% else %}
+                        Engineered for zero latency, 8K video rendering, and competitive 240Hz esports. Backed by authorized distributor warranties.
+                        {% endif %}
+                    </p>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="tech-spec-pill text-white bg-dark border-secondary">
+                            <i class="bi bi-cpu text-info"></i> Intel Core i9-14900KS
+                        </span>
+                        <span class="tech-spec-pill text-white bg-dark border-secondary">
+                            <i class="bi bi-gpu-card text-danger"></i> RTX 4090 24GB GDDR6X
+                        </span>
+                        <span class="tech-spec-pill text-white bg-dark border-secondary">
+                            <i class="bi bi-display text-warning"></i> QD-OLED 240Hz 0.03ms
+                        </span>
+                        <span class="tech-spec-pill text-white bg-dark border-secondary">
+                            <i class="bi bi-water text-primary"></i> 360mm AIO Liquid Cooling
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center mt-3 mt-lg-0">
+                    <div class="p-3 bg-dark bg-opacity-75 rounded-3 border border-secondary shadow-lg">
+                        <i class="bi bi-tools display-6 text-info mb-2 d-block"></i>
+                        <h6 class="fw-bold text-white mb-1">Custom PC Configurator</h6>
+                        <p class="small text-light opacity-80 mb-2">Build your custom battlestation with 100% component compatibility check.</p>
+                        <a href="{% url 'product_list' %}?category=pc-hardware-components" class="btn btn-sm btn-info text-white fw-semibold w-100">
+                            <i class="bi bi-gear-fill me-1"></i> {% if IS_BANGLA %}পিসি বিল্ড করুন{% else %}Build Custom PC{% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gaming Hardware Grid -->
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for product in gaming_zone_products|slice:":8" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% empty %}
+            {% for product in latest_products|slice:":8" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 7: OFFICIAL BRAND SHOWCASES        -->
+    <!-- Apple, Samsung, Asus, Dell, Sony, Logitech -->
+    <!-- ========================================== -->
+    <section class="mb-5" aria-label="Official Brand Showcases">
+        <div class="tech-section-header">
+            <div>
+                <h3 class="tech-section-title">
+                    <i class="bi bi-award-fill text-warning"></i>
+                    {% if IS_BANGLA %}অফিসিয়াল ব্র্যান্ড স্টোর ও অথরাইজড পার্টনার{% else %}Official Brand Stores & Authorized Partners{% endif %}
+                </h3>
+            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 fw-bold small">
+                <i class="bi bi-shield-lock-fill me-1"></i>100% Genuine Warranty
+            </span>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+            <!-- Apple -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?brand=apple" class="tech-brand-card">
+                    <i class="bi bi-apple display-5 text-dark mb-2"></i>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">Apple</h6>
+                    <span class="badge bg-light text-muted border mt-1" style="font-size: 0.65rem;">Authorized Partner</span>
+                </a>
+            </div>
+
+            <!-- Samsung -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?brand=samsung" class="tech-brand-card">
+                    <div class="fw-bolder fs-4 text-primary mb-2" style="font-family: sans-serif; letter-spacing: 1px;">SAMSUNG</div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">Samsung</h6>
+                    <span class="badge bg-light text-muted border mt-1" style="font-size: 0.65rem;">Official Warranty</span>
+                </a>
+            </div>
+
+            <!-- ASUS ROG -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?brand=asus" class="tech-brand-card">
+                    <div class="fw-bolder fs-4 text-danger mb-2" style="font-family: sans-serif; letter-spacing: 1px;">ASUS ROG</div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">ASUS ROG</h6>
+                    <span class="badge bg-light text-muted border mt-1" style="font-size: 0.65rem;">Authorized Dealer</span>
+                </a>
+            </div>
+
+            <!-- Dell Technologies -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?brand=dell" class="tech-brand-card">
+                    <div class="fw-bolder fs-4 text-info mb-2" style="font-family: sans-serif; letter-spacing: 1px;">DELL</div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">Dell</h6>
+                    <span class="badge bg-light text-muted border mt-1" style="font-size: 0.65rem;">Pro Partner</span>
+                </a>
+            </div>
+
+            <!-- Sony Interactive -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?brand=sony" class="tech-brand-card">
+                    <div class="fw-bolder fs-4 text-dark mb-2" style="font-family: sans-serif; letter-spacing: 2px;">SONY</div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">Sony</h6>
+                    <span class="badge bg-light text-muted border mt-1" style="font-size: 0.65rem;">Official Audio & PS5</span>
+                </a>
+            </div>
+
+            <!-- Logitech G -->
+            <div class="col">
+                <a href="{% url 'product_list' %}?brand=logitech" class="tech-brand-card">
+                    <div class="fw-bolder fs-4 text-secondary mb-2" style="font-family: sans-serif; letter-spacing: 1px;">logitech G</div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.88rem;">Logitech G</h6>
+                    <span class="badge bg-light text-muted border mt-1" style="font-size: 0.65rem;">Esports Partner</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 8: AUDIO & SMART WEARABLES SHOWCASE -->
+    <!-- TWS Buds, Smartwatches, Smart Home         -->
+    <!-- ========================================== -->
+    <section class="mb-5" aria-label="Audio and Smart Wearables Showcase">
+        <div class="tech-section-header">
+            <div>
+                <h3 class="tech-section-title">
+                    <i class="bi bi-headphones text-primary"></i>
+                    {% if IS_BANGLA %}অডিও, এএনসি হেডফোন ও স্মার্ট ওয়্যারলেস{% else %}Audio & Smart Wearables Showcase{% endif %}
+                </h3>
+            </div>
+            <a href="{% url 'product_list' %}?category=audio-headphones-tws" class="btn btn-sm btn-outline-primary fw-semibold">
+                {% if IS_BANGLA %}সকল অডিও ও ওয়্যারেবল{% else %}View Audio & Wearables{% endif %} <i class="bi bi-chevron-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for product in audio_wearables|slice:":8" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% empty %}
+            {% for product in top_rated|slice:":8" %}
+            <div class="col">
+                {% include 'themes/tech-electronics/product_card.html' with product=product %}
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 9: TECH NEWSLETTER & RELEASE ALERTS -->
+    <!-- Pre-Order Access & VIP Coupon TECH100      -->
+    <!-- ========================================== -->
+    <section class="tech-newsletter-box mb-5" aria-label="Tech Newsletter and Early Release Alerts">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="badge bg-primary px-3 py-1 text-white fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 0.4px;">
+                    <i class="bi bi-bell-fill me-1"></i>EARLY RELEASE ALERTS & PRE-ORDERS
+                </span>
+                <h3 class="fw-bold mb-2 text-white" style="font-size: 1.75rem;">
+                    {% if IS_BANGLA %}সবার আগে পান লেটেস্ট চিপসেট ও গ্যাজেট লঞ্চ আপডেট{% else %}Never Miss a Flagship Drop or Firmware Update{% endif %}
+                </h3>
+                <p class="text-light opacity-90 small mb-3" style="max-width: 500px;">
+                    {% if IS_BANGLA %}
+                    নতুন ম্যাকবুক, ফ্ল্যাগশিপ স্ন্যাপড্রাগন ডিভাইস ও গ্রাফিক্স কার্ডের প্রি-অর্ডার শুরু হলে ইনস্ট্যান্ট নোটিফিকেশন পান। সাথে উপভোগ করুন ভিআইপি ছাড়।
+                    {% else %}
+                    Subscribe to get pre-order queue access for Apple Silicon, Nvidia RTX GPUs, and flagship smartphones with our exclusive launch coupon.
+                    {% endif %}
+                </p>
+
+                <!-- VIP Coupon Code Callout -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="small text-light opacity-80">Use VIP Launch Code:</span>
+                    <div class="tech-coupon-pill" id="techCouponBadge" onclick="copyTechCoupon('TECH100')" title="Click to copy coupon code">
+                        <i class="bi bi-ticket-perforated-fill text-warning"></i>
+                        <span>TECH100</span>
+                        <i class="bi bi-copy ms-1 small"></i>
+                    </div>
+                    <span class="badge bg-success-subtle text-success small px-2 py-1">৳1,000 Off on orders over ৳25,000</span>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <form class="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary" onsubmit="handleTechNewsletter(event)">
+                    <h6 class="text-white fw-bold mb-2">Get Tech Alerts Direct to Your Inbox</h6>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-secondary border-secondary text-light">
+                            <i class="bi bi-envelope"></i>
+                        </span>
+                        <input type="email" id="techNewsletterEmail" class="form-control border-secondary text-dark" placeholder="Enter your work or personal email..." required>
+                        <button type="submit" class="btn btn-primary fw-semibold px-3">
+                            <i class="bi bi-send-fill me-1"></i> Subscribe
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small" style="font-size: 0.72rem;">
+                        <span><i class="bi bi-shield-check text-success me-1"></i>Zero Spam Promise</span>
+                        <span><i class="bi bi-lightning-charge text-warning me-1"></i>Instant ৳1,000 Coupon</span>
+                    </div>
+                    <div id="techNewsletterAlert" class="alert alert-success py-1.5 px-2 mt-2 small d-none" role="alert">
+                        <i class="bi bi-check-circle-fill me-1"></i> VIP Tech Alert subscribed! Check your inbox for confirmation.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 1. Live Countdown Timer for Tech Flash Deals
+    (function initTechDealsCountdown() {
+        const countdownEl = document.getElementById('techDealsCountdown');
+        if (!countdownEl) return;
+
+        // Target: 2 days, 14 hours, 35 minutes from first session access
+        let targetTimestamp = localStorage.getItem('tech_deals_expire_time');
+        if (!targetTimestamp) {
+            targetTimestamp = Date.now() + (2 * 86400 + 14 * 3600 + 35 * 60) * 1000;
+            localStorage.setItem('tech_deals_expire_time', targetTimestamp);
+        } else {
+            targetTimestamp = parseInt(targetTimestamp, 10);
+        }
+
+        function updateTimer() {
+            const now = Date.now();
+            let distance = targetTimestamp - now;
+
+            if (distance < 0) {
+                // Reset for recurring campaign
+                targetTimestamp = Date.now() + (2 * 86400 + 8 * 3600) * 1000;
+                localStorage.setItem('tech_deals_expire_time', targetTimestamp);
+                distance = targetTimestamp - now;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const daysEl = document.getElementById('techDays');
+            const hoursEl = document.getElementById('techHours');
+            const minutesEl = document.getElementById('techMinutes');
+            const secondsEl = document.getElementById('techSeconds');
+
+            if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+            if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+            if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+            if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    })();
+
+    // 2. VIP Coupon Code Copy Function
+    function copyTechCoupon(code) {
+        if (!code) code = 'TECH100';
+        navigator.clipboard.writeText(code).then(function() {
+            const badge = document.getElementById('techCouponBadge');
+            if (badge) {
+                const originalHtml = badge.innerHTML;
+                badge.innerHTML = '<i class="bi bi-check2-circle text-success"></i> <span>COPIED!</span>';
+                badge.style.borderColor = '#10b981';
+                setTimeout(function() {
+                    badge.innerHTML = originalHtml;
+                    badge.style.borderColor = '#38bdf8';
+                }, 2000);
+            }
+        }).catch(function() {
+            prompt("Copy this coupon code:", code);
+        });
+    }
+
+    // 3. Newsletter Subscription Handler
+    function handleTechNewsletter(event) {
+        event.preventDefault();
+        const emailInput = document.getElementById('techNewsletterEmail');
+        const alertBox = document.getElementById('techNewsletterAlert');
+        if (emailInput && emailInput.value) {
+            if (alertBox) {
+                alertBox.classList.remove('d-none');
+            }
+            emailInput.value = '';
+            setTimeout(function() {
+                if (alertBox) alertBox.classList.add('d-none');
+            }, 5000);
+        }
+    }
+</script>
+{% endblock %}

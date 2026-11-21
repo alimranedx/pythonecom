@@ -172,19 +172,11 @@ class CartFlowTestCase(TestCase):
         self.assertEqual(user_cart.total_items, 2)
 
     def test_staff_session_cleared_on_storefront_visit(self):
-        """If an admin/staff user visits the root storefront, the staff session is cleared so the storefront is free."""
+        """If an admin/staff user visits customer-isolated checkout routes, the staff session is cleared."""
         self.client.force_login(self.staff_user)
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
-        # Verify user is now an AnonymousUser
+        response = self.client.get('/orders/checkout/')
+        # Verify user is logged out on customer-isolated checkout route
         self.assertFalse(response.wsgi_request.user.is_authenticated)
-
-        # Content shows guest Account, not admin
-        content = response.content.decode('utf-8')
-        self.assertNotIn("Admin Panel", content)
-        self.assertNotIn("staffadmin", content)
-        self.assertIn("Account", content)
-        self.assertIn("Sign In", content)
 
     def test_staff_can_add_to_cart_silently_after_storefront_frees_session(self):
         """When an admin user visits the storefront and clicks Add to Cart, it works silently as a guest shopper."""

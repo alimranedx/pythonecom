@@ -1,0 +1,824 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+    {% if selected_category %}{{ selected_category.name }} | {% elif query %}Search "{{ query }}" | {% elif selected_brand %}{{ selected_brand.name }} | {% endif %}Organic Food & Daily Grocery Aisles | {{ site_settings.site_name|default:'Organic Harvest' }}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ==========================================================
+       ORGANIC GROCERY CATALOG & AISLES STYLING
+       Warm cream canvas, forest green accents, honey amber highlights
+       ========================================================== */
+    :root {
+        --grocery-canvas: #fcfbf7;
+        --grocery-surface: #ffffff;
+        --grocery-forest: #2d6a4f;
+        --grocery-forest-dark: #1b4332;
+        --grocery-amber: #d97706;
+        --grocery-cream: #f4ede4;
+        --grocery-border: #e6dfd5;
+        --grocery-bark: #1c1917;
+    }
+
+    .grocery-catalog-header {
+        background: linear-gradient(135deg, #fbf9f4 0%, #f3eee3 100%);
+        border: 1px solid var(--grocery-border);
+        border-radius: 16px;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .grocery-catalog-header::after {
+        content: '';
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(45, 106, 79, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    [data-bs-theme="dark"] .grocery-catalog-header {
+        background: linear-gradient(135deg, #1b261f 0%, #17201a 100%);
+        border-color: #2d3b31;
+    }
+
+    /* Subcategory Shortcuts Bar */
+    .grocery-shortcuts-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        overflow-x: auto;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.75rem;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .grocery-shortcuts-bar::-webkit-scrollbar {
+        height: 5px;
+    }
+    .grocery-shortcuts-bar::-webkit-scrollbar-thumb {
+        background: #d4ccbf;
+        border-radius: 4px;
+    }
+    .grocery-shortcut-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.15rem;
+        border-radius: 50px;
+        border: 1px solid var(--grocery-border);
+        background: var(--surface-card, #ffffff);
+        color: #374151;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+    .grocery-shortcut-pill:hover,
+    .grocery-shortcut-pill.active {
+        border-color: #2d6a4f;
+        background: #2d6a4f;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(45, 106, 79, 0.15);
+    }
+    [data-bs-theme="dark"] .grocery-shortcut-pill {
+        background: #1f2923;
+        border-color: #374151;
+        color: #d1d5db;
+    }
+    [data-bs-theme="dark"] .grocery-shortcut-pill:hover,
+    [data-bs-theme="dark"] .grocery-shortcut-pill.active {
+        background: #2d6a4f;
+        color: #ffffff;
+        border-color: #2d6a4f;
+    }
+
+    /* Grocery Filter Sidebar */
+    .grocery-filter-sidebar {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--grocery-border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.03);
+    }
+    [data-bs-theme="dark"] .grocery-filter-sidebar {
+        background: #1b261f;
+        border-color: #2d3b31;
+    }
+
+    .grocery-filter-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #2d6a4f;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .grocery-cat-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.45rem 0.65rem;
+        border-radius: 8px;
+        font-size: 0.84rem;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.18s ease;
+    }
+    .grocery-cat-link:hover,
+    .grocery-cat-link.active {
+        background: #eef7f2;
+        color: #2d6a4f;
+        font-weight: 600;
+    }
+    [data-bs-theme="dark"] .grocery-cat-link {
+        color: #d1d5db;
+    }
+    [data-bs-theme="dark"] .grocery-cat-link:hover,
+    [data-bs-theme="dark"] .grocery-cat-link.active {
+        background: #27392e;
+        color: #86efac;
+    }
+
+    .grocery-form-check .form-check-input:checked {
+        background-color: #2d6a4f;
+        border-color: #2d6a4f;
+    }
+
+    /* Active Filter Badges */
+    .grocery-active-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 50px;
+        background: #eef7f2;
+        border: 1px solid #b7e4c7;
+        color: #1b4332;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+    .grocery-active-chip a {
+        color: #2d6a4f;
+        text-decoration: none;
+    }
+    .grocery-active-chip a:hover {
+        color: #dc2626;
+    }
+
+    /* Budget Brackets */
+    .grocery-budget-pill {
+        display: inline-block;
+        padding: 0.3rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        background: #fbf9f5;
+        border: 1px solid #e5dfd5;
+        color: #4b5563;
+        text-decoration: none;
+        transition: all 0.18s ease;
+    }
+    .grocery-budget-pill:hover,
+    .grocery-budget-pill.active {
+        background: #2d6a4f;
+        color: #ffffff;
+        border-color: #2d6a4f;
+    }
+
+    /* Grocery Table / List View Toggle */
+    .grocery-table-view .grocery-product-card {
+        flex-direction: row !important;
+        align-items: stretch;
+    }
+    .grocery-table-view .grocery-card-img-wrapper {
+        width: 220px !important;
+        height: auto !important;
+        min-height: 190px !important;
+        flex-shrink: 0;
+        border-right: 1px solid var(--grocery-border);
+    }
+    .grocery-table-view .grocery-title {
+        height: auto !important;
+        -webkit-line-clamp: 2 !important;
+        font-size: 1rem !important;
+    }
+    @media (max-width: 768px) {
+        .grocery-table-view .grocery-product-card {
+            flex-direction: column !important;
+        }
+        .grocery-table-view .grocery-card-img-wrapper {
+            width: 100% !important;
+            height: 190px !important;
+            border-right: none;
+            border-bottom: 1px solid var(--grocery-border);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none text-muted">Organic Grocery</a></li>
+            {% if selected_category %}
+                <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">{{ selected_category.name }}</li>
+            {% elif selected_brand %}
+                <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">{{ selected_brand.name }}</li>
+            {% elif query %}
+                <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">Search: "{{ query }}"</li>
+            {% else %}
+                <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">All Farm Produce & Staples</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Harvest Category Header -->
+    <div class="grocery-catalog-header d-flex flex-wrap align-items-center justify-content-between gap-3 shadow-xs">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 52px; height: 52px; background: rgba(45, 106, 79, 0.12); color: #2d6a4f;">
+                <i class="bi {% if selected_category %}{{ selected_category.icon|default:'bi-basket2-fill' }}{% else %}bi-flower1{% endif %} fs-3"></i>
+            </div>
+            <div>
+                <h1 class="h4 fw-bold mb-1 text-dark" style="letter-spacing: -0.3px;">
+                    {% if selected_category %}
+                        {{ selected_category.name }}
+                    {% elif selected_brand %}
+                        {{ selected_brand.name }} Organic Staples
+                    {% elif query %}
+                        Search Results: "{{ query }}"
+                    {% else %}
+                        Organic Food & Daily Grocery Aisles
+                    {% endif %}
+                </h1>
+                <p class="text-muted small mb-0">
+                    {% if selected_category and selected_category.description %}
+                        {{ selected_category.description }}
+                    {% else %}
+                        Directly procured from verified traditional farmers across Bangladesh • 100% Adulteration Free • Same-Day Fresh Dispatch
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge px-3 py-2 fw-semibold rounded-pill" style="background: rgba(45, 106, 79, 0.12); color: #1b4332; font-size: 0.82rem;">
+                <i class="bi bi-box-seam me-1"></i><strong>{{ total_count }}</strong> Available Staples
+            </span>
+        </div>
+    </div>
+
+    <!-- Subcategory Shortcuts Bar -->
+    <div class="grocery-shortcuts-bar">
+        <a href="{% url 'product_list' %}" class="grocery-shortcut-pill {% if not selected_category %}active{% endif %}">
+            <i class="bi bi-grid-fill"></i> All Aisles
+        </a>
+        {% for cat in categories %}
+            <a href="{% url 'product_category' cat.slug %}" class="grocery-shortcut-pill {% if selected_category.slug == cat.slug %}active{% endif %}">
+                <i class="bi {{ cat.icon|default:'bi-basket' }}"></i>
+                <span>{{ cat.name }}</span>
+            </a>
+        {% empty %}
+            <a href="javascript:void(0)" onclick="updateGroceryParam('category', 'cooking-oils')" class="grocery-shortcut-pill">
+                <i class="bi bi-droplet-fill text-warning"></i> Oils & Ghee
+            </a>
+            <a href="javascript:void(0)" onclick="updateGroceryParam('category', 'honey-sweeteners')" class="grocery-shortcut-pill">
+                <i class="bi bi-flower2 text-amber"></i> Honey & Sweeteners
+            </a>
+            <a href="javascript:void(0)" onclick="updateGroceryParam('category', 'spices-masala')" class="grocery-shortcut-pill">
+                <i class="bi bi-fire text-danger"></i> Spices & Masala
+            </a>
+            <a href="javascript:void(0)" onclick="updateGroceryParam('category', 'rice-daal')" class="grocery-shortcut-pill">
+                <i class="bi bi-boxes text-success"></i> Rice & Daal
+            </a>
+            <a href="javascript:void(0)" onclick="updateGroceryParam('category', 'fresh-produce')" class="grocery-shortcut-pill">
+                <i class="bi bi-apple text-danger"></i> Fresh Produce
+            </a>
+            <a href="javascript:void(0)" onclick="updateGroceryParam('category', 'nuts-seeds')" class="grocery-shortcut-pill">
+                <i class="bi bi-nut text-primary"></i> Nuts & Seeds
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Main Content Area: Sidebar Filter + Catalog Showcase -->
+    <div class="row g-4">
+        <!-- Desktop Grocery Filter Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="grocery-filter-sidebar">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-sliders me-1 text-success"></i> Grocery Filters</h6>
+                    <a href="{% url 'product_list' %}" class="small text-muted text-decoration-none">Reset All</a>
+                </div>
+
+                <!-- 1. Categories / Aisles Filter -->
+                <div class="mb-4">
+                    <div class="grocery-filter-title">
+                        <span>Harvest Aisles</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1" style="max-height: 230px; overflow-y: auto;">
+                        <a href="javascript:void(0)" onclick="removeGroceryParam('category')" class="grocery-cat-link {% if not selected_category %}active{% endif %}">
+                            <span><i class="bi bi-grid me-1.5 opacity-75"></i> All Aisles</span>
+                        </a>
+                        {% for cat in categories %}
+                            <a href="javascript:void(0)" onclick="updateGroceryParam('category', '{{ cat.slug }}')" class="grocery-cat-link {% if selected_category.slug == cat.slug %}active{% endif %}">
+                                <span class="text-truncate"><i class="bi {{ cat.icon|default:'bi-basket' }} me-1.5 opacity-75"></i> {{ cat.name }}</span>
+                                <span class="badge bg-light text-muted border ms-1" style="font-size: 0.65rem;">{{ cat.products.count }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 2. Brand Checkboxes with Item Counts -->
+                {% if brands %}
+                <div class="mb-4">
+                    <div class="grocery-filter-title">
+                        <span>Verified Brands</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
+                        {% for b in brands %}
+                            <div class="form-check grocery-form-check mb-0">
+                                <input class="form-check-input" type="checkbox" id="brand_{{ b.pk }}" value="{{ b.slug }}" {% if selected_brand and selected_brand.slug == b.slug %}checked{% endif %} onchange="toggleGroceryBrand('{{ b.slug }}')">
+                                <label class="form-check-label d-flex justify-content-between align-items-center w-100 small text-dark" for="brand_{{ b.pk }}">
+                                    <span>{{ b.name }}</span>
+                                    <span class="text-muted" style="font-size: 0.7rem;">({{ b.products.count }})</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- 3. Price Range (Min/Max) & Budget Brackets -->
+                <div class="mb-4">
+                    <div class="grocery-filter-title">
+                        <span>Price Range (৳)</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2.5">
+                        <input type="number" id="minPriceInput" class="form-control form-control-sm" placeholder="Min ৳" value="{{ min_price|default:'' }}" min="0">
+                        <span class="text-muted small">-</span>
+                        <input type="number" id="maxPriceInput" class="form-control form-control-sm" placeholder="Max ৳" value="{{ max_price|default:'' }}" min="0">
+                        <button type="button" class="btn btn-sm btn-outline-success px-2.5" onclick="applyGroceryPriceRange()">Go</button>
+                    </div>
+                    <!-- Quick Budget Brackets -->
+                    <div class="d-flex flex-wrap gap-1.5">
+                        <a href="javascript:void(0)" onclick="setGroceryPriceRange('', 250)" class="grocery-budget-pill {% if max_price == '250' and not min_price %}active{% endif %}">Under ৳250</a>
+                        <a href="javascript:void(0)" onclick="setGroceryPriceRange(250, 500)" class="grocery-budget-pill {% if min_price == '250' and max_price == '500' %}active{% endif %}">৳250-500</a>
+                        <a href="javascript:void(0)" onclick="setGroceryPriceRange(500, 1000)" class="grocery-budget-pill {% if min_price == '500' and max_price == '1000' %}active{% endif %}">৳500-1000</a>
+                        <a href="javascript:void(0)" onclick="setGroceryPriceRange(1000, '') class="grocery-budget-pill {% if min_price == '1000' and not max_price %}active{% endif %}">Above ৳1000</a>
+                    </div>
+                </div>
+
+                <!-- 4. Package Size / Weight Filters -->
+                <div class="mb-4">
+                    <div class="grocery-filter-title">
+                        <span>Package Weight / Size</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1.5">
+                        <a href="javascript:void(0)" onclick="updateGroceryParam('weight', 'under-500g')" class="grocery-cat-link {% if request.GET.weight == 'under-500g' %}active{% endif %}">
+                            <span><i class="bi bi-box-seam me-1.5 opacity-75"></i> Under 500g</span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="updateGroceryParam('weight', '500g-1kg')" class="grocery-cat-link {% if request.GET.weight == '500g-1kg' %}active{% endif %}">
+                            <span><i class="bi bi-box-seam me-1.5 opacity-75"></i> 500g - 1 Kg</span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="updateGroceryParam('weight', '1kg-5kg')" class="grocery-cat-link {% if request.GET.weight == '1kg-5kg' %}active{% endif %}">
+                            <span><i class="bi bi-box-seam me-1.5 opacity-75"></i> 1 Kg - 5 Kg</span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="updateGroceryParam('weight', '5kg-plus')" class="grocery-cat-link {% if request.GET.weight == '5kg-plus' %}active{% endif %}">
+                            <span><i class="bi bi-box-seam me-1.5 opacity-75"></i> 5 Kg+ Bulk Pack</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 5. Organic & Chemical-Free and In-Stock Ready to Dispatch Toggles -->
+                <div class="mb-4 pt-2 border-top">
+                    <div class="form-check form-switch mb-2.5">
+                        <input class="form-check-input" type="checkbox" id="organicToggle" {% if request.GET.organic == '1' %}checked{% endif %} onchange="toggleGroceryOrganic(this)">
+                        <label class="form-check-label small fw-medium text-dark" for="organicToggle">
+                            <i class="bi bi-patch-check-fill text-success me-1"></i>Organic & Chemical Free
+                        </label>
+                    </div>
+
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="inStockToggle" {% if in_stock %}checked{% endif %} onchange="toggleGroceryInStock(this)">
+                        <label class="form-check-label small fw-medium text-dark" for="inStockToggle">
+                            <i class="bi bi-truck text-primary me-1"></i>In Stock Ready to Dispatch
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 6. Customer Rating Filter -->
+                <div class="mb-2 pt-2 border-top">
+                    <div class="grocery-filter-title">
+                        <span>Customer Rating</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </div>
+                    <div class="d-flex flex-column gap-1.5">
+                        <a href="javascript:void(0)" onclick="updateGroceryParam('rating', '4.5')" class="grocery-cat-link {% if rating == '4.5' %}active{% endif %}">
+                            <span>
+                                <i class="bi bi-star-fill text-warning me-1"></i>
+                                <span class="fw-semibold">4.5★</span> & Above
+                            </span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="updateGroceryParam('rating', '4.0')" class="grocery-cat-link {% if rating == '4.0' %}active{% endif %}">
+                            <span>
+                                <i class="bi bi-star-fill text-warning me-1"></i>
+                                <span class="fw-semibold">4.0★</span> & Above
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Product Listing Content -->
+        <div class="col-lg-9">
+            <!-- Control Bar: Mobile Filter Trigger, Active Chips, Sorting, Grid/Table Switcher -->
+            <div class="card border rounded-3 p-3 mb-4 shadow-xs" style="background: var(--surface-card, #ffffff); border-color: var(--grocery-border) !important;">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <!-- Mobile Filter Button & Product Count -->
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-success d-lg-none d-inline-flex align-items-center gap-1.5" type="button" data-bs-toggle="offcanvas" data-bs-target="#groceryFilterOffcanvas" aria-controls="groceryFilterOffcanvas">
+                            <i class="bi bi-sliders"></i> Filters
+                        </button>
+                        <span class="small text-muted">
+                            Showing <strong class="text-dark">{{ page_obj.start_index|default:0 }}-{{ page_obj.end_index|default:0 }}</strong> of <strong class="text-dark">{{ total_count }}</strong> items
+                        </span>
+                    </div>
+
+                    <!-- Right Controls: Sort Dropdown & View Mode Switcher -->
+                    <div class="d-flex align-items-center gap-3 ms-auto">
+                        <!-- Sort Dropdown -->
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="grocerySortSelect" class="small text-muted text-nowrap d-none d-sm-inline">Sort by:</label>
+                            <select id="grocerySortSelect" class="form-select form-select-sm" style="min-width: 170px;" onchange="updateGroceryParam('sort', this.value)">
+                                <option value="" {% if not sort %}selected{% endif %}>Popular / Bestselling</option>
+                                <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest Harvest</option>
+                                <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name: A to Z</option>
+                                <option value="rating_desc" {% if sort == 'rating_desc' %}selected{% endif %}>Customer Rating</option>
+                            </select>
+                        </div>
+
+                        <!-- Grid vs Grocery Table List Switcher -->
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Layout mode">
+                            <button type="button" id="groceryGridViewBtn" class="btn btn-outline-secondary active" onclick="setGroceryView('grid')" title="Grid View">
+                                <i class="bi bi-grid-3x3-gap-fill"></i>
+                            </button>
+                            <button type="button" id="groceryTableViewBtn" class="btn btn-outline-secondary" onclick="setGroceryView('table')" title="Grocery Table View">
+                                <i class="bi bi-list-task"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Filter Chips Row -->
+                {% if selected_category or selected_brand or query or min_price or max_price or in_stock or rating or request.GET.weight or request.GET.organic %}
+                <div class="d-flex flex-wrap align-items-center gap-2 pt-2.5 mt-2.5 border-top">
+                    <span class="small text-muted me-1">Active filters:</span>
+
+                    {% if selected_category %}
+                        <span class="grocery-active-chip">
+                            Category: {{ selected_category.name }}
+                            <a href="javascript:void(0)" onclick="removeGroceryParam('category')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    {% if selected_brand %}
+                        <span class="grocery-active-chip">
+                            Brand: {{ selected_brand.name }}
+                            <a href="javascript:void(0)" onclick="removeGroceryParam('brand')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    {% if query %}
+                        <span class="grocery-active-chip">
+                            Search: "{{ query }}"
+                            <a href="javascript:void(0)" onclick="removeGroceryParam('q')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    {% if min_price or max_price %}
+                        <span class="grocery-active-chip">
+                            Price: ৳{{ min_price|default:'0' }} - ৳{{ max_price|default:'Max' }}
+                            <a href="javascript:void(0)" onclick="clearGroceryPriceParams()"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    {% if in_stock %}
+                        <span class="grocery-active-chip">
+                            In Stock Ready
+                            <a href="javascript:void(0)" onclick="removeGroceryParam('in_stock')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    {% if request.GET.weight %}
+                        <span class="grocery-active-chip">
+                            Weight: {{ request.GET.weight }}
+                            <a href="javascript:void(0)" onclick="removeGroceryParam('weight')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    {% if request.GET.organic %}
+                        <span class="grocery-active-chip">
+                            Organic & Pure
+                            <a href="javascript:void(0)" onclick="removeGroceryParam('organic')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    {% if rating %}
+                        <span class="grocery-active-chip">
+                            Rating: {{ rating }}★+
+                            <a href="javascript:void(0)" onclick="removeGroceryParam('rating')"><i class="bi bi-x-circle-fill"></i></a>
+                        </span>
+                    {% endif %}
+
+                    <a href="{% url 'product_list' %}" class="small text-danger text-decoration-none ms-1 fw-medium">Clear All</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Showcase Grid / Table -->
+            <div id="groceryProductContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-4">
+                {% for product in products %}
+                    <div class="col">
+                        {% include 'themes/organic-grocery/product_card.html' with product=product %}
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <div class="py-5 px-3 border rounded-3 bg-white shadow-xs">
+                            <i class="bi bi-basket2 text-muted display-4 mb-3 d-inline-block opacity-50"></i>
+                            <h5 class="fw-bold text-dark">No organic grocery items found</h5>
+                            <p class="text-muted small mb-3">We couldn't find items matching your specific filters or search keywords.</p>
+                            <a href="{% url 'product_list' %}" class="btn btn-sm btn-success px-4 rounded-pill">
+                                View All Grocery Aisles
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination Preserving Query Parameters -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Catalog pagination" class="d-flex justify-content-center my-4">
+                <ul class="pagination pagination-sm flex-wrap gap-1">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link rounded-2 px-3 text-dark" href="?{{ querystring }}&page={{ page_obj.previous_page_number }}">
+                                <i class="bi bi-chevron-left me-1"></i>Previous
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link rounded-2 px-3 text-muted"><i class="bi bi-chevron-left me-1"></i>Previous</span>
+                        </li>
+                    {% endif %}
+
+                    {% for num in elided_page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link rounded-2 px-3 fw-bold" style="background: #2d6a4f; border-color: #2d6a4f; color: #ffffff;">{{ num }}</span>
+                            </li>
+                        {% elif num == ellipsis %}
+                            <li class="page-item disabled"><span class="page-link border-0 text-muted">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link rounded-2 px-3 text-dark" href="?{{ querystring }}&page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link rounded-2 px-3 text-dark" href="?{{ querystring }}&page={{ page_obj.next_page_number }}">
+                                Next<i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link rounded-2 px-3 text-muted">Next<i class="bi bi-chevron-right ms-1"></i></span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Responsive Mobile Filter Offcanvas -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="groceryFilterOffcanvas" aria-labelledby="groceryFilterOffcanvasLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold text-success" id="groceryFilterOffcanvasLabel">
+            <i class="bi bi-sliders me-1.5"></i>Grocery Aisles & Filters
+        </h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- Categories in Mobile Offcanvas -->
+        <div class="mb-4">
+            <div class="grocery-filter-title">
+                <span>Harvest Aisles</span>
+            </div>
+            <div class="d-flex flex-column gap-1">
+                <a href="javascript:void(0)" onclick="removeGroceryParam('category')" class="grocery-cat-link {% if not selected_category %}active{% endif %}">
+                    <span><i class="bi bi-grid me-1.5"></i> All Aisles</span>
+                </a>
+                {% for cat in categories %}
+                    <a href="javascript:void(0)" onclick="updateGroceryParam('category', '{{ cat.slug }}')" class="grocery-cat-link {% if selected_category.slug == cat.slug %}active{% endif %}">
+                        <span><i class="bi {{ cat.icon|default:'bi-basket' }} me-1.5"></i> {{ cat.name }}</span>
+                        <span class="badge bg-light text-muted border ms-1">{{ cat.products.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Brands in Mobile Offcanvas -->
+        {% if brands %}
+        <div class="mb-4">
+            <div class="grocery-filter-title">
+                <span>Verified Brands</span>
+            </div>
+            <div class="d-flex flex-column gap-2">
+                {% for b in brands %}
+                    <div class="form-check grocery-form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="m_brand_{{ b.pk }}" value="{{ b.slug }}" {% if selected_brand and selected_brand.slug == b.slug %}checked{% endif %} onchange="toggleGroceryBrand('{{ b.slug }}')">
+                        <label class="form-check-label d-flex justify-content-between align-items-center w-100 small text-dark" for="m_brand_{{ b.pk }}">
+                            <span>{{ b.name }}</span>
+                            <span class="text-muted">({{ b.products.count }})</span>
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Price Range in Mobile Offcanvas -->
+        <div class="mb-4">
+            <div class="grocery-filter-title">
+                <span>Budget (৳)</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <input type="number" id="mMinPrice" class="form-control form-control-sm" placeholder="Min ৳" value="{{ min_price|default:'' }}">
+                <span class="text-muted">-</span>
+                <input type="number" id="mMaxPrice" class="form-control form-control-sm" placeholder="Max ৳" value="{{ max_price|default:'' }}">
+                <button type="button" class="btn btn-sm btn-success px-2.5" onclick="applyMobileGroceryPrice()">Apply</button>
+            </div>
+        </div>
+
+        <!-- In Stock Toggle in Mobile Offcanvas -->
+        <div class="mb-4 pt-2 border-top">
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="mInStock" {% if in_stock %}checked{% endif %} onchange="toggleGroceryInStock(this)">
+                <label class="form-check-label small fw-medium text-dark" for="mInStock">In Stock Ready to Dispatch</label>
+            </div>
+            <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="mOrganic" {% if request.GET.organic == '1' %}checked{% endif %} onchange="toggleGroceryOrganic(this)">
+                <label class="form-check-label small fw-medium text-dark" for="mOrganic">100% Organic & Chemical Free</label>
+            </div>
+        </div>
+
+        <div class="d-grid mt-4">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm">Reset All Filters</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getGroceryParams() {
+        return new URLSearchParams(window.location.search);
+    }
+
+    function applyGroceryParams(params) {
+        params.delete('page'); // Reset to page 1 on filter alteration
+        const qs = params.toString();
+        window.location.href = window.location.pathname + (qs ? '?' + qs : '');
+    }
+
+    function updateGroceryParam(key, value) {
+        const params = getGroceryParams();
+        if (value) {
+            params.set(key, value);
+        } else {
+            params.delete(key);
+        }
+        applyGroceryParams(params);
+    }
+
+    function removeGroceryParam(key) {
+        const params = getGroceryParams();
+        params.delete(key);
+        applyGroceryParams(params);
+    }
+
+    function toggleGroceryBrand(brandSlug) {
+        const params = getGroceryParams();
+        const current = params.get('brand');
+        if (current === brandSlug) {
+            params.delete('brand');
+        } else {
+            params.set('brand', brandSlug);
+        }
+        applyGroceryParams(params);
+    }
+
+    function applyGroceryPriceRange() {
+        const minVal = document.getElementById('minPriceInput').value.trim();
+        const maxVal = document.getElementById('maxPriceInput').value.trim();
+        const params = getGroceryParams();
+        if (minVal) params.set('min_price', minVal); else params.delete('min_price');
+        if (maxVal) params.set('max_price', maxVal); else params.delete('max_price');
+        applyGroceryParams(params);
+    }
+
+    function applyMobileGroceryPrice() {
+        const minVal = document.getElementById('mMinPrice').value.trim();
+        const maxVal = document.getElementById('mMaxPrice').value.trim();
+        const params = getGroceryParams();
+        if (minVal) params.set('min_price', minVal); else params.delete('min_price');
+        if (maxVal) params.set('max_price', maxVal); else params.delete('max_price');
+        applyGroceryParams(params);
+    }
+
+    function setGroceryPriceRange(min, max) {
+        const params = getGroceryParams();
+        if (min) params.set('min_price', min); else params.delete('min_price');
+        if (max) params.set('max_price', max); else params.delete('max_price');
+        applyGroceryParams(params);
+    }
+
+    function clearGroceryPriceParams() {
+        const params = getGroceryParams();
+        params.delete('min_price');
+        params.delete('max_price');
+        applyGroceryParams(params);
+    }
+
+    function toggleGroceryInStock(checkbox) {
+        const params = getGroceryParams();
+        if (checkbox.checked) {
+            params.set('in_stock', '1');
+        } else {
+            params.delete('in_stock');
+        }
+        applyGroceryParams(params);
+    }
+
+    function toggleGroceryOrganic(checkbox) {
+        const params = getGroceryParams();
+        if (checkbox.checked) {
+            params.set('organic', '1');
+        } else {
+            params.delete('organic');
+        }
+        applyGroceryParams(params);
+    }
+
+    // Grid vs Grocery Table List View Toggle
+    function setGroceryView(viewMode) {
+        const container = document.getElementById('groceryProductContainer');
+        const gridBtn = document.getElementById('groceryGridViewBtn');
+        const tableBtn = document.getElementById('groceryTableViewBtn');
+
+        if (viewMode === 'table') {
+            container.classList.remove('row-cols-sm-2', 'row-cols-md-3');
+            container.classList.add('row-cols-1', 'grocery-table-view');
+            tableBtn.classList.add('active');
+            gridBtn.classList.remove('active');
+            localStorage.setItem('grocery_view_pref', 'table');
+        } else {
+            container.classList.remove('row-cols-1', 'grocery-table-view');
+            container.classList.add('row-cols-sm-2', 'row-cols-md-3');
+            gridBtn.classList.add('active');
+            tableBtn.classList.remove('active');
+            localStorage.setItem('grocery_view_pref', 'grid');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedView = localStorage.getItem('grocery_view_pref');
+        if (savedView === 'table') {
+            setGroceryView('table');
+        }
+    });
+</script>
+{% endblock %}

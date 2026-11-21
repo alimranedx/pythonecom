@@ -1,0 +1,92 @@
+{% load static %}
+<!-- Pharmacy Specialized Product Card Slot -->
+<div class="card h-100 border shadow-sm pharmacy-product-card" style="border-radius: 12px; border-color: #ccfbf1 !important; transition: all 0.25s ease; overflow: hidden; background: #ffffff;">
+    <div class="position-relative p-3 text-center" style="background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%); min-height: 170px; display: flex; align-items: center; justify-content: center;">
+        <!-- Badges: Discount & Rx / Cold Chain -->
+        <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style="z-index: 3;">
+            {% if product.has_discount %}
+                <span class="badge bg-danger shadow-sm fw-bold px-2 py-1" style="border-radius: 6px; font-size: 0.7rem;">
+                    -{{ product.discount_percent }}% OFF
+                </span>
+            {% endif %}
+            <span class="badge shadow-sm px-2 py-1" style="background-color: #0f766e; color: #ffffff; border-radius: 6px; font-size: 0.68rem;">
+                <i class="bi bi-shield-check"></i> Genuine
+            </span>
+        </div>
+
+        <!-- Wishlist Button -->
+        <button type="button" class="btn btn-sm btn-light rounded-circle position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 5;" onclick="toggleWishlist({{ product.pk }}, this)" title="Save medicine">
+            {% if product.pk in user_wishlist_ids %}
+                <i class="bi bi-heart-fill text-danger"></i>
+            {% else %}
+                <i class="bi bi-heart text-secondary"></i>
+            {% endif %}
+        </button>
+
+        <!-- Product Image -->
+        <a href="{% url 'product_detail' product.pk %}" class="d-block w-100 h-100 d-flex align-items-center justify-content-center text-decoration-none">
+            {% if product.image %}
+                <img src="{{ product.image.url }}?v=2" alt="{{ product.name }}" class="img-fluid" style="max-height: 130px; object-fit: contain;">
+            {% else %}
+                <div class="p-3 rounded-circle text-teal" style="background-color: #ccfbf1; color: #0d9488;">
+                    <i class="bi bi-capsule fs-1"></i>
+                </div>
+            {% endif %}
+        </a>
+    </div>
+
+    <div class="card-body p-3 d-flex flex-column" style="background-color: #ffffff;">
+        <!-- Manufacturer / Brand & Stock -->
+        <div class="d-flex justify-content-between align-items-center small mb-1">
+            <span class="fw-semibold text-uppercase text-truncate" style="color: #0d9488; font-size: 0.72rem; letter-spacing: 0.04em;">
+                <i class="bi bi-building me-1"></i>{{ product.brand.name|default:"Square Pharma" }}
+            </span>
+            {% if product.stock > 0 %}
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.65rem;">
+                    In Stock
+                </span>
+            {% else %}
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill" style="font-size: 0.65rem;">
+                    Refill Soon
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Medicine Name -->
+        <h6 class="fw-bold mb-1" style="font-size: 0.95rem; line-height: 1.35;">
+            <a href="{% url 'product_detail' product.pk %}" class="text-dark text-decoration-none hover-teal">
+                {{ product.name }}
+            </a>
+        </h6>
+
+        <!-- Dosage & Unit Indicator (Arogga style) -->
+        <div class="d-flex align-items-center gap-1 mb-2">
+            <span class="badge bg-light text-secondary border" style="font-size: 0.7rem; font-weight: 500;">
+                <i class="bi bi-box-seam me-1"></i>{{ product.unit|default:"1 Strip (10 Tabs)" }}
+            </span>
+            {% if product.category %}
+                <span class="text-muted small text-truncate" style="font-size: 0.72rem;">• {{ product.category.name }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Pricing Block -->
+        <div class="d-flex align-items-baseline gap-2 mt-auto mb-3">
+            <span class="fs-5 fw-bold" style="color: #0f766e;">৳{{ product.effective_price }}</span>
+            {% if product.has_discount %}
+                <span class="text-decoration-line-through text-muted small">৳{{ product.price }}</span>
+                <span class="badge bg-danger-subtle text-danger small">Save ৳{{ product.price|floatformat:2|default:'0' }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Order Button -->
+        <div>
+            <form action="{% url 'add_to_cart' product.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn w-100 rounded-pill btn-sm fw-bold text-white shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%); height: 38px;">
+                    <i class="bi bi-cart-plus"></i>
+                    <span>{% if IS_BANGLA %}অর্ডারে যোগ করুন{% else %}Add to Med Bag{% endif %}</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

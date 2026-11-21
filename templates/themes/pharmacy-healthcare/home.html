@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if CURRENT_THEME_DATA.name %}{{ CURRENT_THEME_DATA.name }} - {% endif %}{{ site_settings.get_effective_site_name|default:'Arogya Healthcare & Pharmacy' }}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .pharmacy-hero-card {
+        background: linear-gradient(135deg, #042f2e 0%, #0f766e 60%, #059669 100%);
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+    .pharmacy-quick-pill {
+        background: #ffffff;
+        border: 1px solid #ccfbf1;
+        border-radius: 12px;
+        padding: 14px 18px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: #134e4a;
+        box-shadow: 0 2px 6px rgba(15, 118, 110, 0.06);
+    }
+    .pharmacy-quick-pill:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(15, 118, 110, 0.15);
+        border-color: #0d9488;
+        color: #0d9488;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mb-5">
+    <!-- Pharmacy Hero & Prescription Upload Banner -->
+    <div class="pharmacy-hero-card text-white p-4 p-md-5 mb-4 shadow-lg">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);">
+                    <i class="bi bi-shield-fill-check text-warning"></i>
+                    <span class="small fw-semibold">{% if IS_BANGLA %}ডিজিডিএ মডেল ফার্মেসি লাইসেন্সপ্রাপ্ত{% else %}DGDA Licensed Model Pharmacy{% endif %}</span>
+                </div>
+                <h1 class="display-5 fw-bold mb-3 text-white">
+                    {% if IS_BANGLA %}
+                        {{ CURRENT_THEME_DATA.hero_headline|default:'১০০% আসল ও রেজিস্টার্ড ওষুধ এবং হেলথকেয়ার সল্যুশন' }}
+                    {% else %}
+                        {{ CURRENT_THEME_DATA.hero_headline|default:'Certified Genuine Medicines & Comprehensive Healthcare' }}
+                    {% endif %}
+                </h1>
+                <p class="lead mb-4 text-light opacity-90" style="max-width: 580px;">
+                    {% if IS_BANGLA %}
+                        {{ CURRENT_THEME_DATA.hero_tagline|default:'তাপমাত্রা-নিয়ন্ত্রিত সংরক্ষণ ও রেজিস্টার্ড ফার্মাসিস্টদের তত্ত্বাবধানে নির্ভরযোগ্য সেবা।' }}
+                    {% else %}
+                        {{ CURRENT_THEME_DATA.hero_tagline|default:'Temperature-controlled storage, DGDA licensed pharmacists, and digital prescription review.' }}
+                    {% endif %}
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <button type="button" class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2" style="color: #0f766e;" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
+                        <i class="bi bi-file-earmark-medical-fill text-danger fs-5"></i>
+                        <span>{% if IS_BANGLA %}প্রেসক্রিপশন দিয়ে অর্ডার করুন{% else %}Order with Prescription{% endif %}</span>
+                    </button>
+                    <a href="{% url 'product_list' %}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-bold">
+                        {% if IS_BANGLA %}সকল ঔষধ দেখুন{% else %}Browse All Medicines{% endif %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div class="d-flex justify-content-around mb-3 text-start">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-snow text-info fs-3"></i>
+                            <div>
+                                <strong class="d-block text-white small">Cold Chain 2°-8°C</strong>
+                                <small class="text-white-50">Insulin &amp; Vaccines</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history text-warning fs-3"></i>
+                            <div>
+                                <strong class="d-block text-white small">2 Hours Express</strong>
+                                <small class="text-white-50">Emergency Dhaka Delivery</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-white rounded-3 text-dark text-start shadow-sm">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge" style="background-color: #059669; color: #ffffff;">Need Chronic Refills?</span>
+                            <small class="text-muted"><i class="bi bi-telephone-fill text-teal"></i> 16263</small>
+                        </div>
+                        <div class="small fw-semibold text-secondary mb-2">Save 10% on monthly subscriptions for Diabetes &amp; Cardiac medication.</div>
+                        <a href="{% url 'product_list' %}" class="btn btn-sm w-100 text-white fw-bold rounded-2" style="background-color: #0d9488;">
+                            Explore Healthcare Catalog →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Healthcare Shortcuts / Pillars -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-3 col-6">
+            <a href="{% url 'product_list' %}" class="pharmacy-quick-pill d-flex align-items-center gap-3">
+                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #059669; width: 44px; height: 44px;">
+                    <i class="bi bi-prescription fs-4"></i>
+                </div>
+                <div>
+                    <strong class="d-block">Prescription Rx</strong>
+                    <small class="text-muted">100% Genuine Brands</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{% url 'product_list' %}" class="pharmacy-quick-pill d-flex align-items-center gap-3">
+                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #0284c7; width: 44px; height: 44px;">
+                    <i class="bi bi-activity fs-4"></i>
+                </div>
+                <div>
+                    <strong class="d-block">Diabetes &amp; BP</strong>
+                    <small class="text-muted">Meters &amp; Strips</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{% url 'product_list' %}" class="pharmacy-quick-pill d-flex align-items-center gap-3">
+                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #0d9488; width: 44px; height: 44px;">
+                    <i class="bi bi-snow fs-4"></i>
+                </div>
+                <div>
+                    <strong class="d-block">Cold Chain</strong>
+                    <small class="text-muted">Biologics &amp; Insulin</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#rxUploadModal" class="pharmacy-quick-pill d-flex align-items-center gap-3">
+                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #e11d48; width: 44px; height: 44px;">
+                    <i class="bi bi-cloud-arrow-up-fill fs-4"></i>
+                </div>
+                <div>
+                    <strong class="d-block text-danger">Upload Rx</strong>
+                    <small class="text-muted">Fast Doctor Review</small>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Featured Medicines & Healthcare Products Grid -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1" style="color: #042f2e;">
+                    {% if IS_BANGLA %}প্রয়োজনীয় ঔষধ ও স্বাস্থ্যপণ্য{% else %}Essential Medicines &amp; Healthcare{% endif %}
+                </h3>
+                <p class="text-muted small mb-0">Verified authentic stock directly sourced from authorized pharmaceuticals.</p>
+            </div>
+            <a href="{% url 'product_list' %}" class="btn btn-sm rounded-pill px-3 fw-bold text-white shadow-sm" style="background-color: #059669;">
+                {% if IS_BANGLA %}সব দেখুন{% else %}View All{% endif %} <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            {% for product in featured_products %}
+                <div class="col-lg-3 col-md-4 col-6">
+                    {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
+                </div>
+            {% empty %}
+                {% for product in latest_products %}
+                    <div class="col-lg-3 col-md-4 col-6">
+                        {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-capsule fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">No medicines listed yet.</p>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Cold Chain & Medical Advisory Notice -->
+    <div class="p-4 rounded-3 text-white mb-4" style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);">
+        <div class="row align-items-center g-3">
+            <div class="col-md-8">
+                <h5 class="fw-bold mb-2"><i class="bi bi-heart-pulse-fill text-warning me-2"></i>Licensed Pharmacist Free Consultation</h5>
+                <p class="small text-light opacity-90 mb-0">Unsure about dosage, interactions, or generics? Speak with our DGDA registered Pharmacist on hotline <strong>16263</strong> (8 AM - 11 PM).</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="tel:16263" class="btn btn-warning rounded-pill fw-bold px-4 shadow-sm text-dark">
+                    <i class="bi bi-telephone-outbound-fill me-1"></i> Call 16263
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

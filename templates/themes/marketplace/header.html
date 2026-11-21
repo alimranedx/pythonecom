@@ -1,0 +1,636 @@
+{% load static %}
+<!-- Commercial & Dynamic Marketplace Header (Daraz / Amazon Style) -->
+<header class="marketplace-header bg-white shadow-sm sticky-top border-bottom" style="z-index: 1020;">
+    <!-- 1. Top Announcement & Utility Strip -->
+    <div class="mkt-top-strip py-1 px-3 text-white small" style="background-color: #131921; font-size: 0.78rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Left Utility Items -->
+            <div class="d-flex align-items-center gap-3 text-truncate">
+                <span class="d-none d-sm-inline-flex align-items-center gap-1">
+                    <i class="bi bi-shield-check text-warning"></i>
+                    <strong>{% if IS_BANGLA %}১০০% আসল পণ্য ও নিরাপদ ডেলিভারি{% else %}100% Authentic Products &amp; Secure Delivery{% endif %}</strong>
+                </span>
+                <span class="d-none d-md-inline text-white-50">•</span>
+                <a href="{% url 'customer_orders' %}" class="text-white text-decoration-none d-inline-flex align-items-center gap-1 hover-link" title="{% if IS_BANGLA %}আপনার অর্ডার ট্র্যাক করুন{% else %}Track My Order{% endif %}">
+                    <i class="bi bi-truck text-warning"></i>
+                    <span>{% if IS_BANGLA %}অর্ডার ট্র্যাকিং{% else %}Track Order{% endif %}</span>
+                </a>
+                <span class="d-none d-lg-inline text-white-50">•</span>
+                <span class="d-none d-lg-inline-flex align-items-center gap-1">
+                    <i class="bi bi-headset text-warning"></i>
+                    <span>{% if IS_BANGLA %}হেল্পলাইন:{% else %}Helpline:{% endif %} <strong>{{ site_settings.contact_phone|default:'+880 1700-000000' }}</strong></span>
+                </span>
+            </div>
+
+            <!-- Right Utility: Seller, App, Theme & Language Toggles -->
+            <div class="d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
+                <!-- Seller Center Link / Modal Trigger -->
+                <a href="#" class="text-warning text-decoration-none fw-semibold d-none d-md-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#sellerCenterModal">
+                    <i class="bi bi-shop"></i>
+                    <span>{% if IS_BANGLA %}সেলার হন{% else %}Sell on Marketplace{% endif %}</span>
+                </a>
+
+                <span class="text-white-50 d-none d-md-inline">|</span>
+
+                <!-- Download App Link / Modal Trigger -->
+                <a href="#" class="text-white text-decoration-none d-none d-md-inline-flex align-items-center gap-1 hover-link" data-bs-toggle="modal" data-bs-target="#downloadAppModal">
+                    <i class="bi bi-phone"></i>
+                    <span>{% if IS_BANGLA %}অ্যাপ ডাউনলোড{% else %}Save More on App{% endif %}</span>
+                </a>
+
+                <span class="text-white-50 d-none d-sm-inline">|</span>
+
+                <!-- Dark / Light Mode Switcher -->
+                <button type="button" class="btn btn-xs btn-outline-light text-white theme-toggle-btn py-0 px-2 rounded-pill d-none d-sm-inline-flex align-items-center" onclick="toggleTheme()" title="Toggle Dark/Light Mode" style="font-size: 0.72rem; line-height: 1.6;">
+                    <i class="bi bi-moon-stars-fill theme-icon me-1"></i>
+                    <span class="theme-text">Dark</span>
+                </button>
+
+                <!-- Dynamic Language Toggle Switcher -->
+                <div class="btn-group btn-group-sm lang-toggle-pill" role="group" aria-label="Language Selector">
+                    <a href="{% url 'set_language' 'en' %}" 
+                       class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}btn-primary active fw-bold text-white{% else %}btn-outline-light text-white-50{% endif %} py-0 px-2 rounded-start-pill" 
+                       style="font-size: 0.72rem; line-height: 1.6; {% if CURRENT_LANGUAGE == 'en' %}background-color: #f85606; border-color: #f85606;{% endif %}" 
+                       title="Switch to English">
+                        EN
+                    </a>
+                    <a href="{% url 'set_language' 'bn' %}" 
+                       class="btn btn-xs {% if CURRENT_LANGUAGE == 'bn' %}btn-primary active fw-bold text-white{% else %}btn-outline-light text-white-50{% endif %} py-0 px-2 rounded-end-pill" 
+                       style="font-size: 0.72rem; line-height: 1.6; {% if CURRENT_LANGUAGE == 'bn' %}background-color: #f85606; border-color: #f85606;{% endif %}" 
+                       title="বাংলা ভাষায় দেখুন">
+                        বাংলা
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Main Marketplace Header (Desktop & Large Screens) -->
+    <div class="container py-2 d-none d-md-block">
+        <div class="row align-items-center g-3">
+            <!-- Store Logo -->
+            <div class="col-auto">
+                <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'Mega Marketplace' }}">
+                    {% if site_settings.get_brand_logo_url %}
+                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Marketplace Logo' }}" height="44" class="brand-logo-img" style="height: 44px; width: auto; max-width: 220px; object-fit: contain;">
+                    {% elif site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Marketplace Logo' }}" height="44" class="brand-logo-img" style="height: 44px; width: auto; max-width: 220px; object-fit: contain;">
+                    {% elif CURRENT_THEME_DATA.logo_url %}
+                        <picture class="d-flex align-items-center logo-light">
+                            <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
+                            <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="44" style="height: 44px; width: auto; max-width: 220px; object-fit: contain;">
+                        </picture>
+                    {% else %}
+                        <!-- Guaranteed Daraz / Amazon Marketplace Brand Fallback -->
+                        <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center shadow-sm" style="background: linear-gradient(135deg, #f85606 0%, #ea580c 100%); width: 44px; height: 44px;">
+                            <i class="bi bi-cart4 fs-3"></i>
+                        </div>
+                        <div>
+                            <span class="fw-bold fs-4 d-block lh-1 text-dark brand-dark">{{ site_settings.get_effective_site_name|default:'MEGA' }}<span style="color: #f85606;">MARKET</span></span>
+                            <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.65rem; letter-spacing: 0.08em;">ONLINE SHOPPING MALL</small>
+                        </div>
+                    {% endif %}
+                </a>
+            </div>
+
+            <!-- Prominent Marketplace Search Bar with Category Selector Prefix -->
+            <div class="col">
+                <form action="{% url 'product_list' %}" method="get" class="marketplace-search-form">
+                    <div class="input-group shadow-sm rounded-pill overflow-hidden border" style="border-color: #f85606 !important;">
+                        <!-- Category Selector Dropdown Prefix -->
+                        <div class="col-auto d-none d-lg-block" style="max-width: 175px;">
+                            <select name="category" class="form-select border-0 bg-light rounded-0 py-2 ps-3 pe-4 text-secondary small fw-semibold text-truncate" style="cursor: pointer; height: 42px; border-right: 1px solid #e2e8f0 !important; background-color: #f8fafc !important;" aria-label="Select Category">
+                                <option value="">{% if IS_BANGLA %}সকল ক্যাটাগরি{% else %}All Categories{% endif %}</option>
+                                {% for cat in all_categories %}
+                                    <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Search Input Field -->
+                        <input type="text" name="q" class="form-control border-0 py-2 px-3 text-dark bg-white" 
+                               placeholder="{% if IS_BANGLA %}লাখো পণ্যের মধ্যে যা চান খুঁজুন (যেমন: মোবাইল, ল্যাপটপ, জুতো)...{% else %}Search in Mega Marketplace (e.g. smartphone, sneakers, watch)...{% endif %}" 
+                               value="{{ request.GET.q|default:'' }}" 
+                               style="height: 42px; font-size: 0.9rem;" 
+                               aria-label="Search Marketplace">
+
+                        <!-- Vibrant Amazon / Daraz Orange Search Action Button -->
+                        <button class="btn text-white fw-bold px-4 d-flex align-items-center gap-2" type="submit" style="background: linear-gradient(135deg, #f85606 0%, #d94400 100%); border: none; height: 42px;" aria-label="Submit Search">
+                            <i class="bi bi-search"></i>
+                            <span class="d-none d-xl-inline">{% if IS_BANGLA %}খুঁজুন{% else %}Search{% endif %}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Controls: Account, Wishlist, Cart Drawer Trigger -->
+            <div class="col-auto d-flex align-items-center gap-2">
+                <!-- User Account Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center gap-2 border shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #ffffff;">
+                        {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-warning" style="width: 28px; height: 28px;">
+                        {% else %}
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 28px; height: 28px; background-color: #f85606;">
+                                <i class="bi bi-person-fill small"></i>
+                            </div>
+                        {% endif %}
+                        <div class="text-start d-none d-lg-block lh-sm">
+                            <span class="text-muted d-block" style="font-size: 0.68rem;">
+                                {% if request.user.is_authenticated and not request.user.is_staff %}
+                                    {% if IS_BANGLA %}স্বাগতম{% else %}Hello,{% endif %}
+                                {% else %}
+                                    {% if IS_BANGLA %}লগইন করুন{% else %}Hello, Sign in{% endif %}
+                                {% endif %}
+                            </span>
+                            <strong class="d-block text-dark fw-bold text-truncate" style="font-size: 0.82rem; max-width: 110px;">
+                                {% if request.user.is_authenticated and not request.user.is_staff %}
+                                    {{ request.user.first_name|default:request.user.username }}
+                                {% else %}
+                                    {% if IS_BANGLA %}অ্যাকাউন্ট{% else %}Account &amp; Lists{% endif %}
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <i class="bi bi-chevron-down small text-muted d-none d-lg-inline"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2" style="min-width: 240px; border-radius: 12px;">
+                        {% if request.user.is_authenticated and not request.user.is_staff %}
+                            <li class="px-3 py-2 border-bottom d-flex align-items-center gap-2 mb-1">
+                                {% if request.user.profile.avatar %}
+                                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-warning" style="width: 38px; height: 38px;">
+                                {% else %}
+                                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: linear-gradient(135deg, #f85606 0%, #ea580c 100%); width: 38px; height: 38px;">
+                                        <i class="bi bi-person-check-fill fs-5"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="overflow-hidden">
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">{{ tr.signed_in_as }}</small>
+                                    <strong class="text-truncate d-block small text-dark">{{ request.user.get_full_name|default:request.user.username }}</strong>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-grid-fill me-2 text-warning"></i> {{ tr.dashboard }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{% url 'customer_orders' %}"><i class="bi bi-box-seam-fill me-2 text-primary"></i> {{ tr.my_orders }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{% url 'wishlist_view' %}"><i class="bi bi-heart-fill me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{% url 'address_list' %}"><i class="bi bi-geo-alt-fill me-2 text-success"></i> {{ tr.address_book }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{% url 'customer_profile_edit' %}"><i class="bi bi-person-gear me-2 text-secondary"></i> {{ tr.edit_profile }}</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-danger fw-semibold" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right me-2"></i> {{ tr.logout }}</a></li>
+                        {% else %}
+                            <li class="p-2 text-center border-bottom mb-2">
+                                <a href="{% url 'account_login' %}" class="btn text-white w-100 fw-bold py-2 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #f85606 0%, #ea580c 100%); font-size: 0.85rem;">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> {{ tr.sign_in }}
+                                </a>
+                                <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
+                                    {% if IS_BANGLA %}নতুন গ্রাহক?{% else %}New customer?{% endif %} 
+                                    <a href="{% url 'account_register' %}" class="text-decoration-none fw-bold" style="color: #f85606;">{{ tr.create_account }}</a>
+                                </small>
+                            </li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{% url 'customer_orders' %}"><i class="bi bi-truck me-2 text-primary"></i> {% if IS_BANGLA %}অর্ডার ট্র্যাক করুন{% else %}Track My Order{% endif %}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Wishlist Button with Live Count Badge -->
+                <a href="{% url 'wishlist_view' %}" class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center gap-2 position-relative border shadow-sm" title="{{ tr.wishlist }}" style="background-color: #ffffff;">
+                    <i class="bi bi-heart-fill fs-5 text-danger"></i>
+                    <div class="text-start d-none d-xl-block lh-sm">
+                        <span class="text-muted d-block" style="font-size: 0.68rem;">{% if IS_BANGLA %}পছন্দ{% else %}My{% endif %}</span>
+                        <strong class="d-block text-dark fw-bold" style="font-size: 0.82rem;">{{ tr.wishlist }}</strong>
+                    </div>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" id="navWishlistBadge" style="font-size: 0.65rem;">
+                        {{ global_wishlist_count|default:0 }}
+                    </span>
+                </a>
+
+                <!-- Cart Widget Button with Item Count and Subtotal Preview (Triggers Offcanvas Cart Drawer) -->
+                <button class="btn text-white rounded-pill px-3 py-2 d-flex align-items-center gap-2 position-relative shadow-sm border-0 mkt-cart-btn" 
+                        type="button" 
+                        id="cartDrawerTrigger"
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#cartOffcanvas" 
+                        data-cart-drawer="#cartDrawer"
+                        onclick="if (typeof openCartDrawer === 'function') { openCartDrawer(); } else if (document.getElementById('cartDrawer') && document.getElementById('cartDrawer').classList.contains('offcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartDrawer')).show(); } else if (document.getElementById('cartOffcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartOffcanvas')).show(); }"
+                        style="background: linear-gradient(135deg, #f85606 0%, #ea580c 100%);">
+                    <i class="bi bi-bag-check-fill fs-5"></i>
+                    <div class="text-start d-none d-lg-block lh-sm text-white">
+                        <span class="d-block opacity-75" style="font-size: 0.68rem;">
+                            <span id="navCartItemsLabel">{% if IS_BANGLA %}কার্ট{% else %}Subtotal{% endif %}</span>
+                        </span>
+                        <strong class="d-block fw-bold text-nowrap" id="navCartSubtotal" style="font-size: 0.82rem;">
+                            ৳{{ global_cart.subtotal|floatformat:2|default:'0.00' }}
+                        </strong>
+                    </div>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark text-warning border border-white shadow-sm" id="navCartBadge" style="font-size: 0.68rem; font-weight: 700;">
+                        {{ global_cart_items_count|default:0 }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Marketplace Navigation Sub-bar (Desktop Commercial Bar) -->
+    <div class="mkt-sub-navbar py-1 d-none d-md-block" style="background-color: #232f3e; color: #ffffff;">
+        <div class="container d-flex align-items-center justify-content-between small">
+            <!-- Left Side: All Categories Flyout Dropdown & Quick Links -->
+            <div class="d-flex align-items-center gap-3">
+                <!-- "All Categories" Dropdown Toggle with Full Category Flyout Menu -->
+                <div class="dropdown">
+                    <button class="btn btn-sm text-white fw-bold py-1 px-3 d-flex align-items-center gap-2 border-0 shadow-sm" 
+                            type="button" 
+                            id="mktCategoriesDropdown"
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false" 
+                            style="background-color: #f85606; border-radius: 6px; font-size: 0.84rem;">
+                        <i class="bi bi-list fs-5"></i>
+                        <span>{% if IS_BANGLA %}সকল ক্যাটাগরি{% else %}All Categories{% endif %}</span>
+                        <i class="bi bi-chevron-down small ms-1"></i>
+                    </button>
+                    <ul class="dropdown-menu shadow-lg border-0 py-2 mt-1" aria-labelledby="mktCategoriesDropdown" style="max-height: 480px; overflow-y: auto; min-width: 280px; border-radius: 8px;">
+                        <li>
+                            <a class="dropdown-item fw-bold py-2 d-flex align-items-center gap-2 border-bottom text-dark" href="{% url 'product_list' %}" style="color: #f85606 !important;">
+                                <i class="bi bi-grid-3x3-gap-fill text-warning"></i>
+                                <span>{% if IS_BANGLA %}সকল পণ্য ব্রাউজ করুন{% else %}Browse All Products &amp; Catalog{% endif %}</span>
+                            </a>
+                        </li>
+                        {% for cat in all_categories %}
+                            <li>
+                                <a class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between text-secondary hover-bg-light" href="{% url 'product_list' %}?category={{ cat.slug }}">
+                                    <span class="d-flex align-items-center gap-2 text-truncate">
+                                        <i class="bi {{ cat.icon|default:'bi-tag-fill' }}" style="color: #f85606;"></i>
+                                        <span class="text-truncate">{{ cat.name }}</span>
+                                    </span>
+                                    <i class="bi bi-chevron-right text-muted" style="font-size: 0.7rem;"></i>
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li><span class="dropdown-item text-muted py-2">No categories found</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <span class="text-white-50 opacity-25">|</span>
+
+                <!-- Quick Navigation Links -->
+                <a href="{% url 'product_list' %}?flash_sale=true" class="text-white text-decoration-none fw-semibold text-nowrap d-flex align-items-center gap-1 hover-amber" style="font-size: 0.83rem;">
+                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                    <span>{% if IS_BANGLA %}ফ্ল্যাশ ডিলস{% else %}Flash Deals{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?sort=best_sellers" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 hover-white" style="font-size: 0.83rem;">
+                    <i class="bi bi-trophy-fill text-warning"></i>
+                    <span>{% if IS_BANGLA %}বেস্ট সেলার{% else %}Best Sellers{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}#brands" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 hover-white" style="font-size: 0.83rem;">
+                    <i class="bi bi-patch-check-fill text-info"></i>
+                    <span>{% if IS_BANGLA %}ব্র্যান্ডস{% else %}Brands{% endif %}</span>
+                </a>
+
+                <a href="{% url 'product_list' %}?sort=newest" class="text-white-50 text-decoration-none fw-medium text-nowrap d-flex align-items-center gap-1 hover-white" style="font-size: 0.83rem;">
+                    <i class="bi bi-stars text-warning"></i>
+                    <span>{% if IS_BANGLA %}নতুন পণ্য{% else %}New Arrivals{% endif %}</span>
+                </a>
+
+                <!-- Dynamic Featured Navigation Categories -->
+                {% for cat in nav_categories|slice:":3" %}
+                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-white-50 text-decoration-none text-nowrap d-none d-xl-inline hover-white" style="font-size: 0.83rem;">
+                        {{ cat.name }}
+                    </a>
+                {% endfor %}
+
+                <a href="{% url 'customer_orders' %}" class="text-white-50 text-decoration-none fw-medium text-nowrap d-none d-xxl-inline hover-white" style="font-size: 0.83rem;">
+                    <i class="bi bi-headset me-1 text-warning"></i>
+                    <span>{% if IS_BANGLA %}কাস্টমার কেয়ার{% else %}Customer Care{% endif %}</span>
+                </a>
+            </div>
+
+            <!-- Right Side: Download App / Seller Center / Helpline Badge -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge border d-inline-flex align-items-center gap-1" style="background-color: rgba(255, 255, 255, 0.08); color: #f8fafc; border-color: rgba(255, 255, 255, 0.2) !important; border-radius: 9999px; font-size: 0.72rem; padding: 4px 10px;">
+                    <i class="bi bi-telephone-inbound-fill text-warning"></i>
+                    <span>{% if IS_BANGLA %}২৪/৭ হেল্পলাইন: <strong>{{ site_settings.contact_phone|default:'16263' }}</strong>{% else %}24/7 Helpline: <strong>{{ site_settings.contact_phone|default:'16263' }}</strong>{% endif %}</span>
+                </span>
+                <span class="badge d-none d-lg-inline-flex align-items-center gap-1" style="background-color: #f85606; color: #ffffff; border-radius: 9999px; font-size: 0.72rem; padding: 4px 10px;">
+                    <i class="bi bi-shield-fill-check"></i> 100% Genuine
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Dedicated Mobile Marketplace Header (Compact & High-Converting) -->
+    <div class="mkt-mobile-header d-md-none bg-white py-2 px-2 border-bottom">
+        <!-- Mobile Top Row: Menu, Logo, Language, Wishlist, Cart -->
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+            <!-- Mobile Offcanvas Menu Trigger -->
+            <button class="btn btn-light rounded-circle p-2 border-0 flex-shrink-0" 
+                    type="button" 
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#mobileMarketplaceOffcanvas" 
+                    aria-label="Open Marketplace Menu"
+                    style="width: 38px; height: 38px;">
+                <i class="bi bi-list fs-5 text-dark"></i>
+            </button>
+
+            <!-- Mobile Store Logo -->
+            <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-1 flex-grow-1 text-truncate" title="{{ site_settings.get_effective_site_name|default:'Marketplace' }}">
+                {% if site_settings.get_brand_logo_url %}
+                    <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Marketplace' }}" height="32" class="brand-logo-img" style="height: 32px; width: auto; max-width: 150px; object-fit: contain;">
+                {% elif site_settings.brand_logo %}
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="32" class="brand-logo-img" style="height: 32px; width: auto; max-width: 150px; object-fit: contain;">
+                {% else %}
+                    <div class="rounded-2 p-1 text-white d-flex align-items-center justify-content-center" style="background-color: #f85606; width: 30px; height: 30px;">
+                        <i class="bi bi-cart4 fs-5"></i>
+                    </div>
+                    <span class="fw-bold fs-6 text-dark text-truncate">{{ site_settings.get_effective_site_name|default:'MEGA' }}<span style="color: #f85606;">MKT</span></span>
+                {% endif %}
+            </a>
+
+            <!-- Mobile Right Controls -->
+            <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                <!-- Mobile Language Mini Toggle -->
+                {% if CURRENT_LANGUAGE == 'en' %}
+                    <a href="{% url 'set_language' 'bn' %}" class="btn btn-sm btn-outline-secondary py-1 px-2 rounded-pill fw-bold" style="font-size: 0.68rem;" title="বাংলায় দেখুন">বাং</a>
+                {% else %}
+                    <a href="{% url 'set_language' 'en' %}" class="btn btn-sm btn-outline-secondary py-1 px-2 rounded-pill fw-bold" style="font-size: 0.68rem;" title="View in English">EN</a>
+                {% endif %}
+
+                <!-- Mobile Wishlist Button -->
+                <a href="{% url 'wishlist_view' %}" class="btn btn-light rounded-circle p-2 border position-relative" style="width: 36px; height: 36px;" title="{{ tr.wishlist }}">
+                    <i class="bi bi-heart fs-6 text-danger"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; padding: 2px 4px;">
+                        {{ global_wishlist_count|default:0 }}
+                    </span>
+                </a>
+
+                <!-- Mobile Cart Button (Triggers Offcanvas Cart Drawer) -->
+                <button class="btn text-white rounded-circle p-2 position-relative shadow-sm" 
+                        type="button" 
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#cartOffcanvas" 
+                        data-cart-drawer="#cartDrawer"
+                        onclick="if (typeof openCartDrawer === 'function') { openCartDrawer(); } else if (document.getElementById('cartDrawer') && document.getElementById('cartDrawer').classList.contains('offcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartDrawer')).show(); } else if (document.getElementById('cartOffcanvas')) { bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartOffcanvas')).show(); }"
+                        style="background-color: #f85606; width: 36px; height: 36px;" 
+                        title="{{ tr.cart }}">
+                    <i class="bi bi-bag-check fs-6"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark text-warning" style="font-size: 0.6rem; padding: 2px 4px;">
+                        {{ global_cart_items_count|default:0 }}
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Compact Search Bar -->
+        <form action="{% url 'product_list' %}" method="get" class="w-100">
+            <div class="input-group input-group-sm rounded-pill overflow-hidden border" style="border-color: #f85606 !important;">
+                <input type="text" name="q" class="form-control border-0 py-2 px-3 text-dark bg-light" 
+                       placeholder="{% if IS_BANGLA %}মার্কেটপ্লেসে খুঁজুন...{% else %}Search products, brands and deals...{% endif %}" 
+                       value="{{ request.GET.q|default:'' }}" 
+                       style="font-size: 0.85rem;" 
+                       aria-label="Search Marketplace Mobile">
+                <button class="btn text-white px-3 fw-bold" type="submit" style="background-color: #f85606; border: none;">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+
+        <!-- Mobile Sticky Sub-navigation Horizontal Scrollable Bar -->
+        <div class="mkt-mobile-subnav d-flex align-items-center gap-1 overflow-x-auto pt-2 pb-1 text-nowrap no-scrollbar" style="font-size: 0.75rem;">
+            <a href="{% url 'product_list' %}" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold">
+                <i class="bi bi-grid me-1"></i>{% if IS_BANGLA %}সকল পণ্য{% else %}All{% endif %}
+            </a>
+            <a href="{% url 'product_list' %}?flash_sale=true" class="btn btn-xs py-1 px-2 rounded-pill fw-semibold text-white" style="background-color: #f85606;">
+                <i class="bi bi-lightning-charge-fill me-1 text-warning"></i>{% if IS_BANGLA %}ফ্ল্যাশ ডিলস{% else %}Flash Deals{% endif %}
+            </a>
+            <a href="{% url 'product_list' %}?sort=best_sellers" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold">
+                <i class="bi bi-trophy me-1 text-warning"></i>{% if IS_BANGLA %}সেরা পণ্য{% else %}Best Sellers{% endif %}
+            </a>
+            <a href="{% url 'product_list' %}#brands" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold">
+                <i class="bi bi-patch-check me-1 text-info"></i>{% if IS_BANGLA %}ব্র্যান্ড{% else %}Brands{% endif %}
+            </a>
+            {% for cat in nav_categories|slice:":4" %}
+                <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded-pill fw-semibold">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</header>
+
+<!-- Compatibility Anchor for Cart Drawer Selector -->
+<div id="cartDrawer" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-hidden="true"></div>
+
+<!-- Mobile Navigation Offcanvas Drawer -->
+<div class="offcanvas offcanvas-start shadow" tabindex="-1" id="mobileMarketplaceOffcanvas" aria-labelledby="mobileMarketplaceOffcanvasLabel">
+    <div class="offcanvas-header text-white" style="background: linear-gradient(135deg, #131921 0%, #232f3e 100%);">
+        <div class="d-flex align-items-center gap-2">
+            {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
+                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border border-warning" style="width: 38px; height: 38px;">
+            {% else %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; background-color: #f85606;">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            {% endif %}
+            <div>
+                <span class="d-block text-white-50 small" style="font-size: 0.72rem;">
+                    {% if request.user.is_authenticated and not request.user.is_staff %}
+                        {{ tr.signed_in_as }}
+                    {% else %}
+                        {% if IS_BANGLA %}স্বাগতম{% else %}Welcome to Marketplace{% endif %}
+                    {% endif %}
+                </span>
+                <strong class="text-white d-block text-truncate" style="font-size: 0.9rem; max-width: 180px;">
+                    {% if request.user.is_authenticated and not request.user.is_staff %}
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="text-warning text-decoration-none">{% if IS_BANGLA %}লগইন / রেজিস্টার করুন{% else %}Sign in / Register{% endif %}</a>
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <!-- Quick Account Action Links -->
+        {% if request.user.is_authenticated and not request.user.is_staff %}
+            <div class="p-3 bg-light border-bottom d-flex gap-2">
+                <a href="{% url 'customer_dashboard' %}" class="btn btn-sm btn-outline-dark rounded-pill flex-fill fw-semibold">
+                    <i class="bi bi-grid-fill me-1 text-warning"></i> {{ tr.dashboard }}
+                </a>
+                <a href="{% url 'customer_orders' %}" class="btn btn-sm btn-outline-dark rounded-pill flex-fill fw-semibold">
+                    <i class="bi bi-box-seam me-1 text-primary"></i> {{ tr.my_orders }}
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Navigation Menu Sections -->
+        <div class="py-2">
+            <h6 class="px-3 pt-2 text-uppercase text-muted fw-bold" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                {% if IS_BANGLA %}ক্যাটাগরি অনুযায়ী কিনুন{% else %}Shop by Category{% endif %}
+            </h6>
+            <ul class="list-unstyled mb-3">
+                <li>
+                    <a href="{% url 'product_list' %}" class="d-flex align-items-center justify-content-between px-3 py-2 text-decoration-none text-dark fw-bold border-bottom">
+                        <span class="d-flex align-items-center gap-2" style="color: #f85606;">
+                            <i class="bi bi-grid-3x3-gap-fill text-warning"></i>
+                            <span>{% if IS_BANGLA %}সকল পণ্য দেখুন{% else %}All Categories &amp; Products{% endif %}</span>
+                        </span>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </li>
+                {% for cat in all_categories %}
+                    <li>
+                        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="d-flex align-items-center justify-content-between px-3 py-2 text-decoration-none text-secondary border-bottom">
+                            <span class="d-flex align-items-center gap-2">
+                                <i class="bi {{ cat.icon|default:'bi-tag' }}" style="color: #f85606;"></i>
+                                <span>{{ cat.name }}</span>
+                            </span>
+                            <i class="bi bi-chevron-right text-muted small"></i>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h6 class="px-3 pt-2 text-uppercase text-muted fw-bold" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                {% if IS_BANGLA %}মার্কেটপ্লেস ফিচার{% else %}Marketplace Highlights{% endif %}
+            </h6>
+            <ul class="list-unstyled mb-3">
+                <li>
+                    <a href="{% url 'product_list' %}?flash_sale=true" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark fw-semibold">
+                        <i class="bi bi-lightning-charge-fill text-warning"></i>
+                        <span>{% if IS_BANGLA %}ফ্ল্যাশ ডিলস ও সেভিংস{% else %}Flash Deals &amp; Discounts{% endif %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'product_list' %}?sort=best_sellers" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark fw-semibold">
+                        <i class="bi bi-trophy-fill text-warning"></i>
+                        <span>{% if IS_BANGLA %}টপ রেটেড বেস্ট সেলার্স{% else %}Top Rated Best Sellers{% endif %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'customer_orders' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark fw-semibold">
+                        <i class="bi bi-truck text-info"></i>
+                        <span>{% if IS_BANGLA %}অর্ডার ট্র্যাকিং{% else %}Track Order{% endif %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#sellerCenterModal">
+                        <i class="bi bi-shop text-warning"></i>
+                        <span>{% if IS_BANGLA %}সেলার হিসেবে যুক্ত হন{% else %}Become a Seller{% endif %}</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Customer Care Helpline in Drawer -->
+            <div class="m-3 p-3 rounded-3" style="background-color: #fff7ed; border: 1px dashed #fdba74;">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="bi bi-headset fs-4 text-warning" style="color: #f85606 !important;"></i>
+                    <strong class="text-dark small">{% if IS_BANGLA %}কাস্টমার কেয়ার হেল্পলাইন{% else %}Customer Care Helpline{% endif %}</strong>
+                </div>
+                <div class="fw-bold fs-6" style="color: #f85606;">{{ site_settings.contact_phone|default:'+880 1700-000000' }}</div>
+                <small class="text-muted d-block" style="font-size: 0.72rem;">{% if IS_BANGLA %}সকাল ৯টা - রাত ১১টা (৭ দিন){% else %}9:00 AM - 11:00 PM (Everyday){% endif %}</small>
+            </div>
+
+            <!-- Sign In / Out at Bottom -->
+            <div class="p-3 border-top">
+                {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <a href="{% url 'account_logout' %}" class="btn btn-outline-danger w-100 rounded-pill fw-semibold">
+                        <i class="bi bi-box-arrow-right me-1"></i> {{ tr.logout }}
+                    </a>
+                {% else %}
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'account_login' %}" class="btn text-white w-100 rounded-pill fw-bold" style="background-color: #f85606;">
+                            {{ tr.sign_in }}
+                        </a>
+                        <a href="{% url 'account_register' %}" class="btn btn-outline-dark w-100 rounded-pill fw-semibold">
+                            {{ tr.create_account }}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Seller Center Interactive Modal -->
+<div class="modal fade" id="sellerCenterModal" tabindex="-1" aria-labelledby="sellerCenterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header text-white" style="background: linear-gradient(135deg, #131921 0%, #232f3e 100%); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="sellerCenterModalLabel">
+                    <i class="bi bi-shop text-warning"></i>
+                    <span>{% if IS_BANGLA %}মার্কেটপ্লেস সেলার সেন্টার{% else %}Marketplace Seller Center{% endif %}</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 64px; height: 64px; background-color: #fff7ed; color: #f85606;">
+                    <i class="bi bi-rocket-takeoff-fill fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">{% if IS_BANGLA %}আপনার ব্যবসা বাড়ান লাখো ক্রেতার কাছে{% else %}Reach Millions of Shoppers Nationwide{% endif %}</h5>
+                <p class="text-muted small mb-4">
+                    {% if IS_BANGLA %}
+                        আমাদের ভেরিফাইড মার্চেন্ট প্ল্যাটফর্মে যুক্ত হয়ে সারা বাংলাদেশে নিরাপদে পণ্য বিক্রি করুন। ০% হিডেন ফি, দ্রুততম পেমেন্ট সেটেলমেন্ট।
+                    {% else %}
+                        Sell your products with lowest commission rates, instant customer reach across all 64 districts, and automated logistics pickup.
+                    {% endif %}
+                </p>
+                <div class="row g-2 text-start mb-4 small">
+                    <div class="col-6">
+                        <div class="p-2 border rounded-3 bg-light">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i> {% if IS_BANGLA %}দ্রুত অনুমোদন{% else %}Instant Approval{% endif %}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 border rounded-3 bg-light">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i> {% if IS_BANGLA %}৭ দিনে পে-আউট{% else %}7-Day Pay-outs{% endif %}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 border rounded-3 bg-light">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i> {% if IS_BANGLA %}লজিস্টিকস সাপোর্ট{% else %}Doorstep Pickup{% endif %}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 border rounded-3 bg-light">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i> {% if IS_BANGLA %}২৪/৭ সেলার কেয়ার{% else %}Seller Dashboard{% endif %}
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn text-white w-100 fw-bold py-2 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #f85606 0%, #ea580c 100%);" onclick="alert('Seller registration desk is open! Please contact {{ site_settings.contact_email|default:"seller@easypurchase.com" }} to onboard your storefront.'); bootstrap.Modal.getInstance(document.getElementById('sellerCenterModal')).hide();">
+                    {% if IS_BANGLA %}সেলার অ্যাকাউন্ট খুলুন{% else %}Start Selling Today{% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Download App Interactive Modal -->
+<div class="modal fade" id="downloadAppModal" tabindex="-1" aria-labelledby="downloadAppModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header text-white" style="background: linear-gradient(135deg, #f85606 0%, #d94400 100%); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="downloadAppModalLabel">
+                    <i class="bi bi-phone-vibrate text-warning"></i>
+                    <span>{% if IS_BANGLA %}মার্কেটপ্লেস মোবাইল অ্যাপ{% else %}Get the Mega Market App{% endif %}</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="p-3 bg-light rounded-4 d-inline-block border mb-3">
+                    <i class="bi bi-qr-code fs-1 text-dark" style="font-size: 4rem !important;"></i>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">{% if IS_BANGLA %}স্ক্যান করে অ্যাপ ডাউনলোড করুন{% else %}Scan QR Code to Download{% endif %}</h6>
+                <p class="text-muted small mb-3">{% if IS_BANGLA %}প্রথম অর্ডারে পান অতিরিক্ত ১০% ডিসকাউন্ট ভাউচার!{% else %}Exclusive in-app flash sales, instant delivery alerts, and extra 10% coupon on first app order.{% endif %}</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-dark btn-sm rounded-pill px-3 d-flex align-items-center gap-2" type="button" onclick="alert('Google Play Store package downloading...');">
+                        <i class="bi bi-google-play text-warning"></i> Google Play
+                    </button>
+                    <button class="btn btn-dark btn-sm rounded-pill px-3 d-flex align-items-center gap-2" type="button" onclick="alert('Apple App Store package downloading...');">
+                        <i class="bi bi-apple"></i> App Store
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
