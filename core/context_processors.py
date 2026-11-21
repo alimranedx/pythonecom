@@ -63,9 +63,9 @@ def site_settings_processor(request):
                 theme_to_render = session_preview
                 is_preview = True
 
-    # 2. Check preview query parameter (?theme=<id_or_key>)
+    # 2. Check preview query parameter (?theme=<id_or_key> or ?preview_theme=<id_or_key>)
     if hasattr(request, 'GET'):
-        preview_param = request.GET.get('theme')
+        preview_param = request.GET.get('preview_theme') or request.GET.get('theme')
         if preview_param and theme_registry.is_valid(preview_param):
             user = getattr(request, 'user', None)
             is_staff = user and getattr(user, 'is_authenticated', False) and (user.is_staff or user.is_superuser)
@@ -73,7 +73,7 @@ def site_settings_processor(request):
             theme_to_render = preview_param
             norm_param = theme_registry.normalize_id(preview_param)
             norm_active = theme_registry.normalize_id(active_theme_raw)
-            if norm_param != norm_active or is_staff:
+            if request.GET.get('preview_theme') or norm_param != norm_active or is_staff:
                 is_preview = True
 
     canonical_id = theme_registry.normalize_id(theme_to_render)
@@ -83,10 +83,12 @@ def site_settings_processor(request):
 
     # Load theme customization config overrides
     custom_config = {}
+    custom_css = ""
     try:
         customization = ThemeCustomization.objects.filter(theme_id=canonical_id).first()
         if customization:
             custom_config = customization.get_effective_config()
+            custom_css = customization.custom_css or ""
     except Exception:
         pass
 
@@ -99,6 +101,7 @@ def site_settings_processor(request):
         'CURRENT_THEME_ID': canonical_id,
         'CURRENT_THEME_DATA': theme_data,
         'CURRENT_THEME_CONFIG': custom_config,
+        'THEME_CUSTOM_CSS': custom_css,
         'IS_THEME_PREVIEW': is_preview,
         'THEME_CHOICES': THEME_CHOICES,
         'ALL_THEMES': THEMES,
@@ -156,7 +159,7 @@ def navigation_categories_processor(request):
                 theme_key = sess_preview
 
         if not theme_key and hasattr(request, 'GET'):
-            preview = request.GET.get('theme')
+            preview = request.GET.get('preview_theme') or request.GET.get('theme')
             if preview and theme_registry.is_valid(preview):
                 theme_key = preview
 

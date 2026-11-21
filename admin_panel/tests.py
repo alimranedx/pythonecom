@@ -15,19 +15,26 @@ class AdminPanelSessionAndRBACNavigationTests(TestCase):
             email='super@test.com',
             password='AdminPassword123'
         )
-        self.module = Module.objects.create(name='Catalog', code='catalog', icon='bi-boxes', order=1)
-        self.submodule = Submodule.objects.create(
-            module=self.module,
-            name='Products',
-            code='catalog.products',
-            url_name='admin_product_list',
-            order=1
+        self.module, _ = Module.objects.get_or_create(
+            code='catalog',
+            defaults={'name': 'Catalog', 'icon': 'bi-boxes', 'order': 1}
         )
-        self.perm = Permission.objects.create(
-            submodule=self.submodule,
-            action='view',
+        self.submodule, _ = Submodule.objects.get_or_create(
+            code='catalog.products',
+            defaults={
+                'module': self.module,
+                'name': 'Products',
+                'url_name': 'admin_product_list',
+                'order': 1
+            }
+        )
+        self.perm, _ = Permission.objects.get_or_create(
             code='catalog.products.view',
-            name='View Products'
+            defaults={
+                'submodule': self.submodule,
+                'action': 'view',
+                'name': 'View Products'
+            }
         )
 
     def test_unauthenticated_admin_dashboard_redirects_to_admin_login(self):

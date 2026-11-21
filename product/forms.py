@@ -57,6 +57,13 @@ class CategoryForm(forms.ModelForm):
             self.fields['parent'].empty_label = "Please Select Parent Category (None - Top Level)"
         if 'theme' in self.fields:
             self.fields['theme'].required = False
+        if 'icon' in self.fields:
+            self.fields['icon'].required = False
+        if 'slug' in self.fields:
+            self.fields['slug'].required = False
+
+    def clean_icon(self):
+        return self.cleaned_data.get('icon') or 'bi-tag'
 
 
 class BrandForm(forms.ModelForm):

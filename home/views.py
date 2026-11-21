@@ -63,7 +63,7 @@ def index(request):
     session_preview = None
     if hasattr(request, 'session'):
         session_preview = request.session.get('admin_preview_theme')
-    query_preview = request.GET.get('theme') if hasattr(request, 'GET') else None
+    query_preview = (request.GET.get('preview_theme') or request.GET.get('theme')) if hasattr(request, 'GET') else None
 
     raw_theme = session_preview or query_preview
     if not raw_theme:
