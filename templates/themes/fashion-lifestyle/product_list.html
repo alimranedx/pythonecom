@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+    {% if selected_category %}{{ selected_category.name }} | {% elif query %}Search "{{ query }}" | {% elif selected_brand %}{{ selected_brand.name }} | {% endif %}Heritage Fashion &amp; Lifestyle | {{ site_settings.site_name|default:'Heritage Fashion' }}
+{% endblock %}
+
+{% block extra_head %}
+<!-- Google Fonts: Playfair Display for editorial elegance -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Fashion Catalog Design Tokens */
+    :root {
+        --fashion-primary: #9a3412;
+        --fashion-primary-hover: #7c2d12;
+        --fashion-accent: #d97706;
+        --fashion-border: #fed7aa;
+        --fashion-bg-soft: #fefce8;
+        --fashion-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+        --fashion-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+        font-family: var(--fashion-font-sans);
+    }
+
+    .fashion-serif {
+        font-family: var(--fashion-font-serif);
+    }
+
+    /* Catalog Header */
+    .fashion-catalog-header {
+        background: linear-gradient(135deg, #fefce8 0%, #fff7ed 50%, #ffedd5 100%);
+        border: 1px solid var(--fashion-border);
+        border-radius: 18px;
+        padding: 2rem 2.25rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Category Shortcuts Bar */
+    .fashion-shortcuts-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        overflow-x: auto;
+        padding-bottom: 0.75rem;
+        margin-bottom: 2rem;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .fashion-shortcuts-bar::-webkit-scrollbar {
+        height: 4px;
+    }
+    .fashion-shortcuts-bar::-webkit-scrollbar-thumb {
+        background: #fed7aa;
+        border-radius: 4px;
+    }
+    .fashion-shortcut-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 1.15rem;
+        border-radius: 50px;
+        background: #ffffff;
+        border: 1px solid var(--fashion-border);
+        color: #1c1917;
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: all 0.22s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .fashion-shortcut-chip:hover,
+    .fashion-shortcut-chip.active {
+        background: var(--fashion-primary);
+        color: #ffffff !important;
+        border-color: var(--fashion-primary);
+        box-shadow: 0 4px 12px rgba(154, 52, 18, 0.25);
+        transform: translateY(-1px);
+    }
+
+    /* Filter Sidebar */
+    .fashion-filter-card {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--fashion-border);
+        border-radius: 14px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .fashion-filter-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--fashion-primary);
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-3 my-md-4">
+
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>{% if IS_BANGLA %}হোম{% else %}Home{% endif %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none text-muted">{% if IS_BANGLA %}পোশাক ও ফ্যাশন{% else %}Fashion &amp; Apparel{% endif %}</a></li>
+            {% if selected_category %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ selected_category.name }}</li>
+            {% elif selected_brand %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ selected_brand.name }}</li>
+            {% elif query %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">"{{ query }}"</li>
+            {% else %}
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{% if IS_BANGLA %}সকল কালেকশন{% else %}All Collections{% endif %}</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- EDITORIAL CATALOG HEADER -->
+    <div class="fashion-catalog-header shadow-xs">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <span class="badge px-3 py-1 rounded-pill mb-2 fw-semibold" style="background-color: #ffedd5; color: #9a3412; font-size: 0.75rem;">
+                    <i class="bi bi-person-heart me-1"></i>{% if IS_BANGLA %}হেরিটেজ এডিটরিয়াল স্টোর{% else %}Heritage Editorial Atelier{% endif %}
+                </span>
+                <h1 class="fashion-serif fw-bold display-6 mb-2" style="color: #1c1917;">
+                    {% if selected_category %}
+                        {{ selected_category.name }}
+                    {% elif selected_brand %}
+                        {{ selected_brand.name }} {% if IS_BANGLA %}কালেকশন{% else %}Official Edit{% endif %}
+                    {% elif query %}
+                        {% if IS_BANGLA %}অনুসন্ধানের ফলাফল:{% else %}Search Results for{% endif %} "{{ query }}"
+                    {% else %}
+                        {% if IS_BANGLA %}আভিজাত্য ও আধুনিক ফ্যাশন কালেকশন{% else %}Artisanal Ethnic &amp; Contemporary Apparel{% endif %}
+                    {% endif %}
+                </h1>
+                <p class="text-secondary small mb-0" style="max-width: 620px;">
+                    {% if selected_category and selected_category.description %}
+                        {{ selected_category.description }}
+                    {% else %}
+                        {% if IS_BANGLA %}
+                            ঐতিহ্যবাহী তাঁতীদের নিখুঁত হাতের কাজ, খাঁটি ঢাকাই জামদানি, প্রিমিয়াম সুতি পাঞ্জাবি এবং ট্রাই অ্যান্ড বাই ডেলিভারির নিশ্চয়তা।
+                        {% else %}
+                            Explore handcrafted weaves, Dhakai Jamdani sarees, tailored Panjabis, formal blazers, and curated urban lifestyle essentials.
+                        {% endif %}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-inline-flex align-items-center gap-2 p-2.5 rounded-3 bg-white shadow-xs border border-warning-subtle text-start">
+                    <i class="bi bi-shield-check fs-3" style="color: #9a3412;"></i>
+                    <div class="small">
+                        <strong class="d-block" style="color: #9a3412;">Try &amp; Buy At Doorstep</strong>
+                        <span class="text-muted" style="font-size: 0.72rem;">Try before you pay in Dhaka</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HORIZONTAL CATEGORY CHIPS BAR -->
+    <div class="fashion-shortcuts-bar">
+        <a href="{% url 'product_list' %}" class="fashion-shortcut-chip {% if not selected_category %}active{% endif %}">
+            <i class="bi bi-grid-fill"></i>
+            <span>{% if IS_BANGLA %}সকল ডিজাইন{% else %}All Collections{% endif %}</span>
+        </a>
+        {% for cat in categories %}
+            <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="fashion-shortcut-chip {% if selected_category and selected_category.slug == cat.slug %}active{% endif %}">
+                <i class="bi {{ cat.icon|default:'bi-tag' }}"></i>
+                <span>{{ cat.name }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- MAIN CATALOG GRID & SIDEBAR -->
+    <div class="row g-4">
+        <!-- Filter Sidebar Column (Desktop) -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="fashion-filter-card sticky-top" style="top: 80px;">
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 fashion-serif" style="color: #1c1917;">
+                        <i class="bi bi-funnel me-1" style="color: #9a3412;"></i>
+                        {% if IS_BANGLA %}ফিল্টার সমূহ{% else %}Filter Atelier{% endif %}
+                    </h6>
+                    <a href="{% url 'product_list' %}" class="small text-decoration-none hover-terracotta" style="font-size: 0.75rem; color: #9a3412;">
+                        {% if IS_BANGLA %}রিসেট{% else %}Reset All{% endif %}
+                    </a>
+                </div>
+
+                <form method="get" action="{% url 'product_list' %}">
+                    {% if query %}
+                        <input type="hidden" name="q" value="{{ query }}">
+                    {% endif %}
+
+                    <!-- Categories Filter -->
+                    <div class="mb-4">
+                        <div class="fashion-filter-title">{% if IS_BANGLA %}ক্যাটাগরি{% else %}Categories{% endif %}</div>
+                        <div class="d-flex flex-column gap-1.5" style="max-height: 200px; overflow-y: auto;">
+                            <div class="form-check small">
+                                <input class="form-check-input" type="radio" name="category" value="" id="cat_all" {% if not selected_category %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label" for="cat_all">{% if IS_BANGLA %}সবগুলো{% else %}All Categories{% endif %}</label>
+                            </div>
+                            {% for cat in categories %}
+                                <div class="form-check small">
+                                    <input class="form-check-input" type="radio" name="category" value="{{ cat.slug }}" id="cat_{{ cat.pk }}" {% if selected_category and selected_category.slug == cat.slug %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label text-truncate" for="cat_{{ cat.pk }}">{{ cat.name }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Brands Filter -->
+                    {% if brands %}
+                    <div class="mb-4">
+                        <div class="fashion-filter-title">{% if IS_BANGLA %}ব্র্যান্ডসমূহ{% else %}Fashion Labels{% endif %}</div>
+                        <div class="d-flex flex-column gap-1.5" style="max-height: 180px; overflow-y: auto;">
+                            <div class="form-check small">
+                                <input class="form-check-input" type="radio" name="brand" value="" id="brand_all" {% if not selected_brand %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label" for="brand_all">{% if IS_BANGLA %}সবগুলো ব্র্যান্ড{% else %}All Brands{% endif %}</label>
+                            </div>
+                            {% for b in brands %}
+                                <div class="form-check small">
+                                    <input class="form-check-input" type="radio" name="brand" value="{{ b.slug }}" id="brand_{{ b.pk }}" {% if selected_brand and selected_brand.slug == b.slug %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label text-truncate" for="brand_{{ b.pk }}">{{ b.name }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Price Filter -->
+                    <div class="mb-4">
+                        <div class="fashion-filter-title">{% if IS_BANGLA %}মূল্য পরিসীমা (৳){% else %}Price Range (৳){% endif %}</div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="{{ min_price|default:'' }}">
+                            <span class="text-muted">-</span>
+                            <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="{{ max_price|default:'' }}">
+                        </div>
+                        <button type="submit" class="btn btn-sm w-100 rounded-pill text-white fw-semibold" style="background-color: #9a3412;">
+                            {% if IS_BANGLA %}প্রয়োগ করুন{% else %}Apply Price{% endif %}
+                        </button>
+                    </div>
+
+                    <!-- Availability Filter -->
+                    <div class="mb-3">
+                        <div class="fashion-filter-title">{% if IS_BANGLA %}সহজলভ্যতা{% else %}Availability{% endif %}</div>
+                        <div class="form-check small">
+                            <input class="form-check-input" type="checkbox" name="in_stock" value="1" id="inStockCheck" {% if in_stock %}checked{% endif %} onchange="this.form.submit()">
+                            <label class="form-check-label" for="inStockCheck">
+                                <i class="bi bi-check2-circle text-success me-1"></i>{% if IS_BANGLA %}কেবল স্টকে আছে{% else %}In Stock Only{% endif %}
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Products Listing Column -->
+        <div class="col-lg-9">
+            <!-- Top Controls Bar -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 p-3 rounded-3 bg-white border mb-3 shadow-xs" style="border-color: var(--fashion-border) !important;">
+                <div class="small text-muted">
+                    {% if IS_BANGLA %}
+                        মোট <strong>{{ total_count|default:products|length }}</strong> টি ফ্যাশন আইটেম পাওয়া গেছে
+                    {% else %}
+                        Showing <strong>{{ total_count|default:products|length }}</strong> curated designs
+                    {% endif %}
+                </div>
+
+                <!-- Sort Control -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <label for="sortSelector" class="small text-muted text-nowrap d-none d-sm-inline">{% if IS_BANGLA %}সাজান:{% else %}Sort by:{% endif %}</label>
+                    <select id="sortSelector" class="form-select form-select-sm" style="width: auto;" onchange="location = this.value;">
+                        <option value="?{% if querystring %}{{ querystring }}&{% endif %}sort=-created_at" {% if sort == '-created_at' or not sort %}selected{% endif %}>
+                            {% if IS_BANGLA %}নতুন ডিজাইন{% else %}Newest Arrivals{% endif %}
+                        </option>
+                        <option value="?{% if querystring %}{{ querystring }}&{% endif %}sort=price" {% if sort == 'price' %}selected{% endif %}>
+                            {% if IS_BANGLA %}মূল্য: কম থেকে বেশি{% else %}Price: Low to High{% endif %}
+                        </option>
+                        <option value="?{% if querystring %}{{ querystring }}&{% endif %}sort=-price" {% if sort == '-price' %}selected{% endif %}>
+                            {% if IS_BANGLA %}মূল্য: বেশি থেকে কম{% else %}Price: High to Low{% endif %}
+                        </option>
+                        <option value="?{% if querystring %}{{ querystring }}&{% endif %}sort=-avg_rating" {% if sort == '-avg_rating' %}selected{% endif %}>
+                            {% if IS_BANGLA %}টপ রেটেড{% else %}Top Rated{% endif %}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- PRODUCT GRID -->
+            {% if products %}
+                <div class="row row-cols-2 row-cols-md-3 g-3 mb-4">
+                    {% for product in products %}
+                        <div class="col">
+                            {% include 'themes/fashion-lifestyle/product_card.html' with product=product %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- PAGINATION -->
+                {% if page_obj.has_other_pages %}
+                    <nav aria-label="Fashion Catalog Pagination" class="d-flex justify-content-center my-4">
+                        <ul class="pagination pagination-sm gap-1">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link rounded-pill px-3" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                                        &laquo; {% if IS_BANGLA %}পূর্ববর্তী{% else %}Previous{% endif %}
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in elided_page_range %}
+                                {% if num == ellipsis %}
+                                    <li class="page-item disabled"><span class="page-link rounded-circle">{{ ellipsis }}</span></li>
+                                {% elif num == page_obj.number %}
+                                    <li class="page-item active"><span class="page-link rounded-circle text-white fw-bold" style="background-color: #9a3412; border-color: #9a3412;">{{ num }}</span></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link rounded-circle" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link rounded-pill px-3" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}">
+                                        {% if IS_BANGLA %}পরবর্তী{% else %}Next{% endif %} &raquo;
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+
+            {% else %}
+                <!-- Empty State -->
+                <div class="card p-5 text-center border-0 rounded-4 shadow-xs" style="background-color: #fefce8;">
+                    <div class="mb-3">
+                        <i class="bi bi-person-x display-3" style="color: #9a3412;"></i>
+                    </div>
+                    <h4 class="fashion-serif fw-bold mb-2">{% if IS_BANGLA %}কোনো পোশাক পাওয়া যায়নি{% else %}No Designs Found{% endif %}</h4>
+                    <p class="text-muted small mb-4" style="max-width: 440px; margin: 0 auto;">
+                        {% if IS_BANGLA %}
+                            আপনার অনুসন্ধানের সাথে মিল রেখে কোনো পোশাক পাওয়া যায়নি। দয়া করে ভিন্ন ফিল্টার বা অনুসন্ধান শব্দ ব্যবহার করুন।
+                        {% else %}
+                            We could not find any apparel matching your selected criteria. Try adjusting your filters or search terms.
+                        {% endif %}
+                    </p>
+                    <div>
+                        <a href="{% url 'product_list' %}" class="btn btn-sm text-white rounded-pill px-4 fw-semibold shadow-sm" style="background-color: #9a3412;">
+                            <i class="bi bi-arrow-repeat me-1"></i>{% if IS_BANGLA %}সকল কালেকশন দেখুন{% else %}Clear Filters &amp; View All{% endif %}
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,499 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+{% if CURRENT_THEME_DATA.name %}{{ CURRENT_THEME_DATA.name }} - {% endif %}{{ site_settings.get_effective_site_name|default:'Heritage Fashion' }} | {% if IS_BANGLA %}ঐতিহ্যবাহী আভিজাত্য, হস্তশিল্প ও আধুনিক ফ্যাশন{% else %}Editorial Artisanal Apparel, Panjabi, Jamdani Sarees & Modern Lifestyle{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<!-- Google Fonts: Playfair Display for editorial elegance -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Fashion & Lifestyle Editorial Theme Tokens */
+    :root {
+        --fashion-primary: #9a3412;
+        --fashion-primary-hover: #7c2d12;
+        --fashion-primary-light: #fff7ed;
+        --fashion-accent: #d97706;
+        --fashion-accent-subtle: rgba(217, 119, 6, 0.12);
+        --fashion-charcoal: #1c1917;
+        --fashion-cream: #faf5ee;
+        --fashion-border: #fed7aa;
+        --fashion-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+        --fashion-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+        font-family: var(--fashion-font-sans);
+        color: #292524;
+    }
+
+    .fashion-serif {
+        font-family: var(--fashion-font-serif);
+    }
+
+    .hover-terracotta:hover {
+        color: var(--fashion-primary) !important;
+    }
+
+    /* Hero Editorial Showcase */
+    .fashion-hero-section {
+        background: linear-gradient(135deg, #fefce8 0%, #fff7ed 50%, #ffedd5 100%);
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .fashion-hero-badge {
+        background-color: #ffedd5;
+        color: #9a3412;
+        border: 1px solid #fed7aa;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+    }
+
+    .fashion-hero-title {
+        font-family: var(--fashion-font-serif);
+        font-weight: 700;
+        line-height: 1.15;
+        color: #1c1917;
+    }
+
+    /* Category Tiles */
+    .fashion-cat-card {
+        border-radius: 14px;
+        transition: transform 0.28s ease, box-shadow 0.28s ease;
+        overflow: hidden;
+        border: 1px solid rgba(217, 119, 6, 0.15);
+        background: #ffffff;
+    }
+    .fashion-cat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px -5px rgba(154, 52, 18, 0.15);
+        border-color: #9a3412;
+    }
+
+    /* Try & Buy Feature Strip */
+    .fashion-try-banner {
+        background: linear-gradient(135deg, #1c1917 0%, #292524 50%, #451a03 100%);
+        border-radius: 18px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Spotlight Split Banner */
+    .fashion-spotlight-card {
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 2rem;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .fashion-brand-pill {
+        border-radius: 9999px;
+        border: 1px solid #fed7aa;
+        background: #ffffff;
+        padding: 0.5rem 1.25rem;
+        transition: all 0.25s ease;
+    }
+    .fashion-brand-pill:hover {
+        border-color: #9a3412;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(154, 52, 18, 0.12);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-3 my-md-4">
+
+    <!-- 1. EDITORIAL HERO SHOWCASE -->
+    <section class="fashion-hero-section p-4 p-md-5 mb-5 shadow-sm">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="badge fashion-hero-badge px-3 py-1.5 rounded-pill text-uppercase fw-bold mb-3 d-inline-flex align-items-center gap-1.5">
+                    <i class="bi bi-stars text-warning"></i>
+                    {% if IS_BANGLA %}হেরিটেজ ফেস্টিভ কালেকশন ২০২৬{% else %}Heritage Festive Couture 2026{% endif %}
+                </span>
+                <h1 class="fashion-hero-title display-5 mb-3">
+                    {% if IS_BANGLA %}
+                        ঐতিহ্যের ছোঁয়া ও আধুনিক ফ্যাশনের আভিজাত্য
+                    {% else %}
+                        Handcrafted Elegance, Premium Fabrics &amp; Modern Silhouette
+                    {% endif %}
+                </h1>
+                <p class="lead text-secondary mb-4" style="font-size: 1.08rem; max-width: 580px;">
+                    {% if IS_BANGLA %}
+                        আভিজাত পাঞ্জাবি, জামদানি শাড়ি ও ট্রেন্ডি লাইফস্টাইল কালেকশন ঘরে বসেই ট্রাই করুন। ১০০% প্রিমিয়াম সুতি ও খাঁটি সিল্কের নিশ্চয়তা।
+                    {% else %}
+                        Discover tailored Panjabis, artisanal Dhakai Jamdani sarees, tailored blazers, and contemporary ethnic couture crafted for distinction and celebration.
+                    {% endif %}
+                </p>
+                <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+                    <a href="{% url 'product_list' %}" class="btn btn-lg px-4 py-2.5 rounded-pill fw-bold text-white shadow-sm" style="background-color: #9a3412;">
+                        <i class="bi bi-bag-check me-1.5"></i>
+                        {% if IS_BANGLA %}কালেকশন এক্সপ্লোর করুন{% else %}Shop Festive Edit{% endif %}
+                    </a>
+                    <a href="#tryAndBuySection" class="btn btn-lg btn-outline-dark px-4 py-2.5 rounded-pill fw-semibold">
+                        <i class="bi bi-shield-check text-warning me-1.5"></i>
+                        {% if IS_BANGLA %}ট্রাই অ্যান্ড বাই সুবিধা{% else %}Try &amp; Buy At Doorstep{% endif %}
+                    </a>
+                </div>
+                <!-- Micro Trust Points -->
+                <div class="d-flex flex-wrap gap-4 pt-2 border-top border-warning-subtle small text-secondary">
+                    <div class="d-flex align-items-center gap-1.5">
+                        <i class="bi bi-check-circle-fill" style="color: #9a3412;"></i>
+                        <span>{% if IS_BANGLA %}১০০% খাঁটি হ্যান্ডলুম ও সুতি{% else %}100% Pure Handloom Cotton{% endif %}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-1.5">
+                        <i class="bi bi-arrow-repeat" style="color: #9a3412;"></i>
+                        <span>{% if IS_BANGLA %}৭ দিনে সহজ সাইজ এক্সচেঞ্জ{% else %}7-Day Easy Size Exchange{% endif %}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-1.5">
+                        <i class="bi bi-truck" style="color: #9a3412;"></i>
+                        <span>{% if IS_BANGLA %}২৪ ঘণ্টায় ঢাকা এক্সপ্রেস ডেলিভারি{% else %}24h Express Dhaka Delivery{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Visual Right Column -->
+            <div class="col-lg-5">
+                <div class="position-relative">
+                    {% if slider_candidates and slider_candidates.0.image %}
+                        <div class="card border-0 shadow-lg overflow-hidden rounded-4" style="aspect-ratio: 4/5;">
+                            <img src="{{ slider_candidates.0.image.url }}" alt="{{ slider_candidates.0.name }}" class="w-100 h-100 object-fit-cover">
+                            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 23, 0.85) 100%);">
+                                <span class="badge bg-warning text-dark fw-bold mb-1">
+                                    <i class="bi bi-gem me-1"></i>{% if IS_BANGLA %}সিগনেচার পিস{% else %}Signature Piece{% endif %}
+                                </span>
+                                <h5 class="text-white fashion-serif mb-1">{{ slider_candidates.0.name }}</h5>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="text-warning fw-bold fs-5">৳{{ slider_candidates.0.effective_price }}</span>
+                                    <a href="{% url 'product_detail' slider_candidates.0.pk %}" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">
+                                        {% if IS_BANGLA %}বিস্তারিত{% else %}View Details{% endif %} &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card border-0 shadow-lg rounded-4 p-5 text-center text-white" style="background: linear-gradient(135deg, #9a3412 0%, #7c2d12 100%); aspect-ratio: 4/5; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-person-heart display-1 mb-3 text-warning"></i>
+                            <h3 class="fashion-serif">Heritage Festive Couture</h3>
+                            <p class="text-white-50">Artisanal apparel crafted for elegance.</p>
+                        </div>
+                    {% endif %}
+                    <!-- Floating Stat Badge -->
+                    <div class="position-absolute top-0 end-0 m-3 p-2.5 rounded-3 bg-white shadow-sm border border-warning-subtle text-dark text-center" style="font-size: 0.75rem;">
+                        <span class="d-block fw-bold fs-6" style="color: #9a3412;">4.9 ★</span>
+                        <small class="text-muted">{% if IS_BANGLA %}ভেরিফাইড রেটিং{% else %}Couture Rating{% endif %}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. FOUR PILLARS OF FASHION ASSURANCE -->
+    <section class="mb-5">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="card h-100 border-0 p-3 rounded-3 shadow-xs" style="background-color: #fefce8; border-left: 3px solid #d97706 !important;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-palette fs-4" style="color: #9a3412;"></i>
+                        <h6 class="mb-0 fw-bold small text-dark">{% if IS_BANGLA %}হাতে বোনা কারুকাজ{% else %}Handcrafted Weaves{% endif %}</h6>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.75rem;">{% if IS_BANGLA %}ঐতিহ্যবাহী তাঁতীদের নিখুঁত কাজ{% else %}Traditional rural master artisans{% endif %}</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 border-0 p-3 rounded-3 shadow-xs" style="background-color: #fff7ed; border-left: 3px solid #9a3412 !important;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-feather fs-4" style="color: #9a3412;"></i>
+                        <h6 class="mb-0 fw-bold small text-dark">{% if IS_BANGLA %}১০০% খাঁটি সুতি কাপড়{% else %}100% Organic Textiles{% endif %}</h6>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.75rem;">{% if IS_BANGLA %}আরামদায়ক ও টেকসই ফেব্রিক{% else %}Pre-shrunk breathable cotton &amp; silk{% endif %}</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 border-0 p-3 rounded-3 shadow-xs" style="background-color: #fefce8; border-left: 3px solid #d97706 !important;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-scissors fs-4" style="color: #9a3412;"></i>
+                        <h6 class="mb-0 fw-bold small text-dark">{% if IS_BANGLA %}পারফেক্ট ফিটিং{% else %}Tailored Fit Guarantee{% endif %}</h6>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.75rem;">{% if IS_BANGLA %}সহজ সাইজ এক্সচেঞ্জ সুবিধা{% else %}Accurate size charts &amp; alterations{% endif %}</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 border-0 p-3 rounded-3 shadow-xs" style="background-color: #fff7ed; border-left: 3px solid #9a3412 !important;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-bag-check fs-4" style="color: #9a3412;"></i>
+                        <h6 class="mb-0 fw-bold small text-dark">{% if IS_BANGLA %}ট্রাই অ্যান্ড বাই ডেলিভারি{% else %}Try &amp; Buy at Doorstep{% endif %}</h6>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.75rem;">{% if IS_BANGLA %}ট্রাই করে পছন্দ হলে পেমেন্ট{% else %}Try at home before you pay{% endif %}</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. CURATED FASHION CATEGORY TILES -->
+    <section class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <span class="text-uppercase fw-bold text-muted small" style="letter-spacing: 0.08em; color: #9a3412 !important;">
+                    {% if IS_BANGLA %}ক্যাটাগরি সমূহ{% else %}Atelier Collections{% endif %}
+                </span>
+                <h3 class="fashion-serif fw-bold mb-0">{% if IS_BANGLA %}জনপ্রিয় ফ্যাশন কালেকশন{% else %}Curated Wardrobe Categories{% endif %}</h3>
+            </div>
+            <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                {% if IS_BANGLA %}সবগুলো দেখুন{% else %}View All{% endif %} &rarr;
+            </a>
+        </div>
+        <div class="row g-3">
+            {% for cat in category_tiles|slice:":8" %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none text-dark">
+                        <div class="card fashion-cat-card p-3 h-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background: #fff7ed; color: #9a3412;">
+                                    <i class="bi {{ cat.icon|default:'bi-person-heart' }} fs-4"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="fw-bold mb-0 text-truncate" style="font-size: 0.88rem;">{{ cat.name }}</h6>
+                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                        {{ cat.prod_count|default:cat.products.count }} {% if IS_BANGLA %}টি ডিজাইন{% else %}Styles{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% empty %}
+                {% for cat in featured_categories|slice:":8" %}
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none text-dark">
+                            <div class="card fashion-cat-card p-3 h-100">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background: #fff7ed; color: #9a3412;">
+                                        <i class="bi bi-tag fs-4"></i>
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <h6 class="fw-bold mb-0 text-truncate" style="font-size: 0.88rem;">{{ cat.name }}</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">{% if IS_BANGLA %}এক্সপ্লোর করুন{% else %}Explore Edit{% endif %}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 4. FESTIVE COUTURE & PANJABI SPOTLIGHT (FLASH SALE) -->
+    {% if flash_sales %}
+    <section class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <span class="badge px-2.5 py-1 rounded-pill mb-1" style="background-color: #9a3412; color: #ffffff; font-size: 0.72rem;">
+                    <i class="bi bi-fire text-warning me-1"></i>{% if IS_BANGLA %}লিমিটেড ফেস্টিভ অফার{% else %}Festive Flash Sale{% endif %}
+                </span>
+                <h3 class="fashion-serif fw-bold mb-0">{% if IS_BANGLA %}উৎসব স্পেশাল পাঞ্জাবি ও শাড়ি{% else %}Festive Panjabi &amp; Saree Spotlight{% endif %}</h3>
+            </div>
+            <a href="{% url 'product_list' %}?flash_sale=1" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                {% if IS_BANGLA %}সব অফার{% else %}View All Deals{% endif %} &rarr;
+            </a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for product in flash_sales|slice:":8" %}
+                <div class="col">
+                    {% include 'themes/fashion-lifestyle/product_card.html' with product=product %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- 5. TRY & BUY DOORSTEP BANNER -->
+    <section id="tryAndBuySection" class="fashion-try-banner p-4 p-md-5 mb-5 shadow-sm">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill text-uppercase mb-3" style="font-size: 0.72rem;">
+                    <i class="bi bi-shield-check me-1"></i>{% if IS_BANGLA %}জিরো রিস্ক শপিং{% else %}Zero Risk Service{% endif %}
+                </span>
+                <h2 class="fashion-serif fw-bold text-white display-6 mb-3">
+                    {% if IS_BANGLA %}
+                        ঘরে বসেই ট্রাই করুন, পছন্দ হলে তবেই পেমেন্ট
+                    {% else %}
+                        Try &amp; Buy At Your Doorstep Before You Pay
+                    {% endif %}
+                </h2>
+                <p class="text-white-50 mb-4" style="max-width: 540px; font-size: 0.98rem;">
+                    {% if IS_BANGLA %}
+                        সাইজ কিংবা ফিটিং নিয়ে কোনো সংশয় নেই। আমাদের রাইডার আপনার ঠিকানায় পোশাক পৌঁছে দেবে, আপনি স্বাচ্ছন্দ্যে ট্রাই করে ফিট হওয়া পোশাকটি গ্রহণ করবেন।
+                    {% else %}
+                        Eliminate sizing doubts completely. Order your favorite ethnic wear, our courier waits while you try on the garments in the comfort of your home, and you only pay for what fits perfectly.
+                    {% endif %}
+                </p>
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-4">
+                        <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                            <strong class="d-block text-warning fs-5">১</strong>
+                            <small class="text-white">{% if IS_BANGLA %}পছন্দের ড্রেস অর্ডার করুন{% else %}Order Favourite Apparel{% endif %}</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                            <strong class="d-block text-warning fs-5">২</strong>
+                            <small class="text-white">{% if IS_BANGLA %}ডোরস্টেপে ট্রাই করুন{% else %}Try On at Doorstep{% endif %}</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                            <strong class="d-block text-warning fs-5">৩</strong>
+                            <small class="text-white">{% if IS_BANGLA %}ফিট হলে পেমেন্ট দিন{% else %}Pay Only for What Fits{% endif %}</small>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'product_list' %}" class="btn btn-warning rounded-pill px-4 py-2.5 fw-bold text-dark shadow-sm">
+                    <i class="bi bi-cart4 me-1.5"></i>
+                    {% if IS_BANGLA %}ট্রাই অ্যান্ড বাই প্রোডাক্ট দেখুন{% else %}Browse Try &amp; Buy Collection{% endif %}
+                </a>
+            </div>
+            <div class="col-lg-5 text-center">
+                <div class="p-4 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-15 backdrop-blur">
+                    <i class="bi bi-truck-flatbed display-2 text-warning mb-3"></i>
+                    <h5 class="text-white fashion-serif">Dhaka Express Doorstep Fitting</h5>
+                    <p class="text-white-50 small mb-0">Covering Gulshan, Banani, Dhanmondi, Uttara &amp; all major Dhaka zones within 24 hours.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. NEW ARRIVALS & TRENDING LOOKBOOK -->
+    <section class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <span class="text-uppercase fw-bold text-muted small" style="letter-spacing: 0.08em; color: #9a3412 !important;">
+                    {% if IS_BANGLA %}নতুন আগমন{% else %}Fresh Off The Loom{% endif %}
+                </span>
+                <h3 class="fashion-serif fw-bold mb-0">{% if IS_BANGLA %}নতুন ডিজাইনার কালেকশন{% else %}New Arrivals &amp; Seasonal Trends{% endif %}</h3>
+            </div>
+            <a href="{% url 'product_list' %}?sort=-created_at" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                {% if IS_BANGLA %}সব নতুন ডিজাইন{% else %}View All New{% endif %} &rarr;
+            </a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for product in latest_products|slice:":8" %}
+                <div class="col">
+                    {% include 'themes/fashion-lifestyle/product_card.html' with product=product %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 7. DUAL EDITORIAL SPOTLIGHT: PANJABI & JAMDANI SAREE STORIES -->
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card border-0 rounded-4 shadow-sm p-4 text-white fashion-spotlight-card" style="background: linear-gradient(135deg, rgba(154, 52, 18, 0.9) 0%, rgba(69, 26, 3, 0.95) 100%);">
+                    <span class="badge bg-warning text-dark fw-bold px-2.5 py-1 rounded-pill align-self-start mb-2" style="font-size: 0.72rem;">
+                        <i class="bi bi-gem me-1"></i>Aarong &amp; Sailor Inspired
+                    </span>
+                    <h3 class="fashion-serif fw-bold mb-2">{% if IS_BANGLA %}রয়েল পাঞ্জাবি ও এথনিক ওয়্যার{% else %}The Royal Panjabi &amp; Waistcoat Edit{% endif %}</h3>
+                    <p class="text-white-50 small mb-3">
+                        {% if IS_BANGLA %}
+                            বিশুদ্ধ সুতি ও তসর সিল্কের নকশা করা কালেকশন। ঈদ, বিয়ে ও পারিবারিক উৎসবের সেরা পছন্দ।
+                        {% else %}
+                            Tailored fit jacquard, hand-embroidered collars, and fine linen Panjabis engineered for celebration and cultural poise.
+                        {% endif %}
+                    </p>
+                    <div>
+                        <a href="{% url 'product_list' %}?q=Panjabi" class="btn btn-light rounded-pill px-4 fw-bold btn-sm">
+                            {% if IS_BANGLA %}পাঞ্জাবি কালেকশন{% else %}Explore Panjabis{% endif %} &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 rounded-4 shadow-sm p-4 text-white fashion-spotlight-card" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.9) 0%, rgba(120, 53, 15, 0.95) 100%);">
+                    <span class="badge bg-light text-dark fw-bold px-2.5 py-1 rounded-pill align-self-start mb-2" style="font-size: 0.72rem;">
+                        <i class="bi bi-palette me-1"></i>Artisan Weaves
+                    </span>
+                    <h3 class="fashion-serif fw-bold mb-2">{% if IS_BANGLA %}ঐতিহ্যবাহী জামদানি ও সিল্ক শাড়ি{% else %}Handloom Dhakai Jamdani &amp; Silk Sarees{% endif %}</h3>
+                    <p class="text-white-50 small mb-3">
+                        {% if IS_BANGLA %}
+                            রূপগঞ্জের তাঁতীদের বোনা ঐতিহ্যবাহী ঢাকাই জামদানি এবং রাজশাহী সিল্কের অপরূপ সমাহার।
+                        {% else %}
+                            Intricate geometrical motifs woven on fine muslin and organic Mulberry silk by multigenerational handloom weavers.
+                        {% endif %}
+                    </p>
+                    <div>
+                        <a href="{% url 'product_list' %}?q=Saree" class="btn btn-light rounded-pill px-4 fw-bold btn-sm">
+                            {% if IS_BANGLA %}শাড়ি কালেকশন{% else %}Explore Sarees{% endif %} &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. BESTSELLERS & WARDROBE ESSENTIALS -->
+    <section class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <span class="text-uppercase fw-bold text-muted small" style="letter-spacing: 0.08em; color: #9a3412 !important;">
+                    {% if IS_BANGLA %}সর্বাধিক বিক্রিত{% else %}Customer Favorites{% endif %}
+                </span>
+                <h3 class="fashion-serif fw-bold mb-0">{% if IS_BANGLA %}জনপ্রিয় বেস্টসেলার পোশাক{% else %}Bestselling Wardrobe Essentials{% endif %}</h3>
+            </div>
+            <a href="{% url 'product_list' %}?sort=-orders" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                {% if IS_BANGLA %}সব বেস্টসেলার{% else %}Shop All Bestsellers{% endif %} &rarr;
+            </a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for product in best_sellers|slice:":8" %}
+                <div class="col">
+                    {% include 'themes/fashion-lifestyle/product_card.html' with product=product %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 9. OFFICIAL FASHION BRAND BOUTIQUES -->
+    {% if brands %}
+    <section class="mb-5 p-4 rounded-4 bg-white border shadow-xs" style="border-color: #fed7aa !important;">
+        <div class="text-center mb-4">
+            <span class="badge fashion-hero-badge px-3 py-1 rounded-pill text-uppercase fw-bold mb-2">
+                {% if IS_BANGLA %}অফিশিয়াল পার্টনারস{% else %}Official Brand Boutiques{% endif %}
+            </span>
+            <h4 class="fashion-serif fw-bold mb-1">{% if IS_BANGLA %}শীর্ষস্থানীয় ফ্যাশন ও লাইফস্টাইল ব্র্যান্ড{% else %}Premier Verified Fashion Labels{% endif %}</h4>
+            <p class="text-muted small mb-0">{% if IS_BANGLA %}১০০% আসল ও ব্র্যান্ড অথেনটিক পণ্যের নিশ্চয়তা{% else %}Directly sourced authentic apparel and accessories{% endif %}</p>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+            {% for brand in brands %}
+                <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="text-decoration-none fashion-brand-pill d-flex align-items-center gap-2">
+                    {% if brand.logo %}
+                        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="height: 24px; max-width: 60px; object-fit: contain;">
+                    {% else %}
+                        <i class="bi bi-patch-check-fill" style="color: #9a3412;"></i>
+                    {% endif %}
+                    <span class="fw-semibold text-dark small">{{ brand.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}

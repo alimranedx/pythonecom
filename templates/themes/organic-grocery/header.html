@@ -300,15 +300,36 @@
             <!-- Left: Farm-Fresh Store Brand Logo -->
             <div class="col-auto">
                 <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'Pure Harvest Organic Grocery' }}">
-                    {% if site_settings.get_brand_logo_url %}
-                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Organic Store Logo' }}" height="44" class="brand-logo-img" style="height: 44px; width: auto; max-width: 210px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
-                    {% elif site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="44" class="brand-logo-img" style="height: 44px; width: auto; max-width: 210px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
+                    {% if site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="44" class="brand-logo-img" style="height: 44px; width: auto; max-width: 210px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0 shadow-sm" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); width: 44px; height: 44px; border: 2px solid #52b788;">
+                                <i class="bi bi-basket2-fill fs-4" style="color: #d8f3dc;"></i>
+                            </div>
+                            <div class="lh-sm">
+                                <span class="fw-bold fs-4 d-block" style="color: #1c1917; letter-spacing: -0.02em;">
+                                    {{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}
+                                </span>
+                                <small class="text-uppercase fw-bold" style="font-size: 0.62rem; letter-spacing: 0.12em; color: #2d6a4f;">
+                                    {% if IS_BANGLA %}অর্গানিক ফুড ও নিত্যবাজার{% else %}ORGANIC FOOD &amp; DAILY GROCERY{% endif %}
+                                </small>
+                            </div>
+                        </span>
                     {% elif CURRENT_THEME_DATA.logo_url %}
-                        <picture class="d-flex align-items-center">
-                            <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
-                            <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="44" style="height: 44px; width: auto; max-width: 210px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
-                        </picture>
+                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="44" style="height: 44px; width: auto; max-width: 210px; object-fit: contain;" class="brand-logo-img" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0 shadow-sm" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); width: 44px; height: 44px; border: 2px solid #52b788;">
+                                <i class="bi bi-basket2-fill fs-4" style="color: #d8f3dc;"></i>
+                            </div>
+                            <div class="lh-sm">
+                                <span class="fw-bold fs-4 d-block" style="color: #1c1917; letter-spacing: -0.02em;">
+                                    {{ CURRENT_THEME_DATA.brand_name|default:'PURE HARVEST' }}
+                                </span>
+                                <small class="text-uppercase fw-bold" style="font-size: 0.62rem; letter-spacing: 0.12em; color: #2d6a4f;">
+                                    {% if IS_BANGLA %}অর্গানিক ফুড ও নিত্যবাজার{% else %}ORGANIC FOOD &amp; DAILY GROCERY{% endif %}
+                                </small>
+                            </div>
+                        </span>
                     {% else %}
                         <!-- Farm-Fresh Organic Monogram & Typography -->
                         <div class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0 shadow-sm" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); width: 44px; height: 44px; border: 2px solid #52b788;">
@@ -639,12 +660,10 @@
 
             <!-- Store Brand Logo / Title -->
             <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mx-auto" title="{{ site_settings.get_effective_site_name|default:'Pure Harvest Organic Grocery' }}">
-                {% if site_settings.get_brand_logo_url %}
-                    <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Organic Store Logo' }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
-                {% elif site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
+                {% if site_settings.brand_logo %}
+                    <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3';">
                 {% elif CURRENT_THEME_DATA.logo_url %}
-                    <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
+                    <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3';">
                 {% else %}
                     <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #2d6a4f; width: 30px; height: 30px;">
                         <i class="bi bi-basket2-fill small"></i>

@@ -78,12 +78,12 @@
                             <div class="position-relative flex-shrink-0 avatar-preview-box">
                                 <div id="avatarContainer" class="rounded-circle border border-2 border-primary-subtle shadow-sm overflow-hidden d-flex align-items-center justify-content-center bg-white" style="width: 90px; height: 90px;">
                                     {% if profile.avatar %}
-                                        <img id="avatarPreviewImg" src="{{ profile.avatar.url }}" alt="{{ request.user.username }}" class="w-100 h-100 object-fit-cover">
+                                        <img id="avatarPreviewImg" src="{{ profile.avatar.url }}" alt="{{ request.user.username }}" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                                         <div id="avatarPlaceholder" class="rounded-circle bg-primary-subtle text-primary w-100 h-100 d-none align-items-center justify-content-center">
                                             <i class="bi bi-person fs-1"></i>
                                         </div>
                                     {% else %}
-                                        <img id="avatarPreviewImg" src="" alt="Preview" class="w-100 h-100 object-fit-cover d-none">
+                                        <img id="avatarPreviewImg" src="" alt="Preview" class="w-100 h-100 object-fit-cover d-none" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                                         <div id="avatarPlaceholder" class="rounded-circle bg-primary-subtle text-primary w-100 h-100 d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person fs-1"></i>
                                         </div>
@@ -151,7 +151,7 @@
                     <!-- Left: Cropper Canvas Viewport -->
                     <div class="col-lg-8">
                         <div class="bg-dark rounded-3 overflow-hidden d-flex align-items-center justify-content-center" style="max-height: 400px; height: 380px;">
-                            <img id="cropperImage" src="" alt="Crop image" style="max-width: 100%; display: block;">
+                            <img id="cropperImage" src="" alt="Crop image" style="max-width: 100%; display: block;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         </div>
                     </div>
 

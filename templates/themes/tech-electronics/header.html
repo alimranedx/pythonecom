@@ -71,17 +71,28 @@
             <!-- Tech Store Branding with Logo -->
             <div class="col-auto">
                 <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'TechVerse Electronics' }}">
-                    {% if site_settings.get_brand_logo_url %}
-                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
-                    {% elif site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
-                    {% elif CURRENT_THEME_DATA.logo_dark_url %}
-                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
-                    {% elif CURRENT_THEME_DATA.logo_url %}
-                        <picture class="d-flex align-items-center">
-                            <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
-                            <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
-                        </picture>
+                    {% if site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Tech Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%); width: 44px; height: 44px; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);">
+                                <i class="bi bi-cpu fs-3" style="color: #38bdf8;"></i>
+                            </div>
+                            <div>
+                                <span class="fw-bold fs-4 d-block lh-1 text-white" style="letter-spacing: -0.02em;">{{ site_settings.get_effective_site_name|default:'TECH' }}<span style="color: #38bdf8;">VERSE</span></span>
+                                <small class="text-white-50 d-block text-uppercase fw-semibold" style="font-size: 0.62rem; letter-spacing: 0.12em; color: #94a3b8 !important;">PRO GADGETS &amp; HARDWARE</small>
+                            </div>
+                        </span>
+                    {% elif CURRENT_THEME_DATA.logo_dark_url or CURRENT_THEME_DATA.logo_url %}
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" class="brand-logo-img" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%); width: 44px; height: 44px; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);">
+                                <i class="bi bi-cpu fs-3" style="color: #38bdf8;"></i>
+                            </div>
+                            <div>
+                                <span class="fw-bold fs-4 d-block lh-1 text-white" style="letter-spacing: -0.02em;">{{ CURRENT_THEME_DATA.brand_name|default:'TECH' }}<span style="color: #38bdf8;">VERSE</span></span>
+                                <small class="text-white-50 d-block text-uppercase fw-semibold" style="font-size: 0.62rem; letter-spacing: 0.12em; color: #94a3b8 !important;">PRO GADGETS &amp; HARDWARE</small>
+                            </div>
+                        </span>
                     {% else %}
                         <!-- Sleek High-Precision Fallback Logo -->
                         <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%); width: 44px; height: 44px; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);">
@@ -410,12 +421,10 @@
 
             <!-- Mobile Tech Logo -->
             <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-1 flex-grow-1 text-truncate" title="{{ site_settings.get_effective_site_name|default:'TechVerse' }}">
-                {% if site_settings.get_brand_logo_url %}
-                    <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Tech Store' }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
-                {% elif site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
-                {% elif CURRENT_THEME_DATA.logo_dark_url %}
-                    <img src="{{ CURRENT_THEME_DATA.logo_dark_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="30" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png';">
+                {% if site_settings.brand_logo %}
+                    <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name }}" height="30" class="brand-logo-img" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/tech_gadgets/logo_dark.png?v=3';">
+                {% elif CURRENT_THEME_DATA.logo_dark_url or CURRENT_THEME_DATA.logo_url %}
+                    <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="30" style="height: 30px; width: auto; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3';">
                 {% else %}
                     <div class="rounded-2 p-1 text-white d-flex align-items-center justify-content-center" style="background-color: #0284c7; width: 28px; height: 28px;">
                         <i class="bi bi-cpu fs-6" style="color: #38bdf8;"></i>

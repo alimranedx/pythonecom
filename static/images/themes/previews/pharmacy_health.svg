@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="100%" height="100%">
+  <defs>
+    <linearGradient id="pharma-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0fdfa" />
+      <stop offset="50%" stop-color="#ccfbf1" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+    <linearGradient id="pharma-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="card-pharma" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f0fdfa" />
+    </linearGradient>
+    <filter id="pharma-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f766e" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <!-- Browser Frame -->
+  <rect width="800" height="520" rx="12" fill="#134e4a" />
+  
+  <!-- Window Header -->
+  <circle cx="24" cy="18" r="5" fill="#ef4444" />
+  <circle cx="38" cy="18" r="5" fill="#f59e0b" />
+  <circle cx="52" cy="18" r="5" fill="#10b981" />
+  <rect x="75" y="9" width="390" height="18" rx="5" fill="#042f2e" />
+  <text x="85" y="22" font-family="-apple-system,sans-serif" font-size="10" fill="#99f6e4">https://easypurchase.com/pharmacy-healthcare • Arogga Style (Flagship)</text>
+
+  <!-- Canvas -->
+  <rect x="0" y="32" width="800" height="488" fill="url(#pharma-bg)" />
+
+  <!-- Top Announcement Bar -->
+  <rect x="0" y="32" width="800" height="24" fill="#042f2e" />
+  <rect x="24" y="36" width="120" height="16" rx="8" fill="#059669" />
+  <text x="32" y="48" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#ffffff">⚕️ DGDA CERTIFIED RX</text>
+  <text x="155" y="48" font-family="sans-serif" font-size="9" fill="#ccfbf1">100% Genuine Medicine • Cold Chain Storage (2°-8°C) • Licensed Pharmacists</text>
+  <text x="690" y="48" font-family="sans-serif" font-size="9" fill="#5eead4">Rx Doctor Helpline: 16263</text>
+
+  <!-- Header -->
+  <rect x="0" y="56" width="800" height="50" fill="#ffffff" filter="url(#pharma-shadow)" />
+  <!-- Logo -->
+  <circle cx="45" cy="81" r="14" fill="#ccfbf1" />
+  <text x="38" y="86" font-family="sans-serif" font-size="14" fill="#0f766e">💊</text>
+  <text x="68" y="85" font-family="sans-serif" font-size="16" font-weight="800" fill="#134e4a">AROGYA<tspan fill="#059669">PHARMA</tspan></text>
+  
+  <!-- Prescription Upload Highlight Button (Arogga Feature) -->
+  <rect x="200" y="66" width="140" height="30" rx="15" fill="#0f766e" />
+  <text x="214" y="85" font-family="sans-serif" font-size="9.5" font-weight="bold" fill="#ffffff">📋 Order with Prescription</text>
+
+  <!-- Medicine Search Bar with Generic / Brand selector -->
+  <rect x="350" y="66" width="280" height="30" rx="15" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1" />
+  <text x="364" y="85" font-family="sans-serif" font-size="10" fill="#0f766e">Search medicine name or generic (e.g. Paracetamol)...</text>
+  <rect x="575" y="67" width="52" height="28" rx="14" fill="#059669" />
+  <text x="586" y="85" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Search</text>
+
+  <!-- Header Controls -->
+  <rect x="645" y="70" width="80" height="22" rx="11" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1" />
+  <text x="653" y="85" font-family="sans-serif" font-size="9" font-weight="bold" fill="#059669">Doctor Chat</text>
+  <circle cx="745" cy="81" r="12" fill="#ccfbf1" />
+  <text x="741" y="85" font-family="sans-serif" font-size="11" fill="#0f766e">🛒</text>
+  <circle cx="753" cy="74" r="5" fill="#059669" />
+  <text x="751" y="77" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">1</text>
+
+  <!-- Categories Sub-bar -->
+  <rect x="0" y="106" width="800" height="28" fill="#ffffff" stroke="#ccfbf1" stroke-width="1" />
+  <text x="24" y="124" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0f766e">Prescription Drugs</text>
+  <text x="145" y="124" font-family="sans-serif" font-size="10" fill="#134e4a">Diabetes Care &amp; Insulin</text>
+  <text x="295" y="124" font-family="sans-serif" font-size="10" fill="#134e4a">Cardiac &amp; BP Monitors</text>
+  <text x="440" y="124" font-family="sans-serif" font-size="10" fill="#134e4a">Baby Health &amp; Diapers</text>
+  <text x="585" y="124" font-family="sans-serif" font-size="10" fill="#134e4a">Vitamins &amp; Supplements</text>
+  <rect x="715" y="111" width="60" height="18" rx="9" fill="#ecfdf5" stroke="#059669" stroke-width="1" />
+  <text x="722" y="123" font-family="sans-serif" font-size="8" font-weight="bold" fill="#059669">COLD CHAIN</text>
+
+  <!-- Hero Section (Arogga Flagship Style) -->
+  <rect x="24" y="144" width="752" height="150" rx="12" fill="url(#pharma-grad)" filter="url(#pharma-shadow)" />
+  <circle cx="680" cy="219" r="80" fill="#ffffff" fill-opacity="0.1" />
+  
+  <rect x="44" y="162" width="135" height="18" rx="9" fill="#ffffff" />
+  <text x="52" y="174" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#0f766e">🛡️ BANGLADESH DGDA VERIFIED</text>
+  <text x="44" y="210" font-family="sans-serif" font-size="20" font-weight="800" fill="#ffffff">Genuine Medicine, Delivered In 2 Hours</text>
+  <text x="44" y="228" font-family="sans-serif" font-size="11" fill="#ccfbf1">Save up to 12% on regular medicine subscriptions with temperature-controlled logistics.</text>
+
+  <rect x="44" y="246" width="135" height="30" rx="15" fill="#ffffff" />
+  <text x="56" y="265" font-family="sans-serif" font-size="10.5" font-weight="bold" fill="#0f766e">Upload Prescription →</text>
+  <rect x="189" y="246" width="125" height="30" rx="15" fill="#042f2e" fill-opacity="0.4" stroke="#ffffff" stroke-width="1" />
+  <text x="201" y="265" font-family="sans-serif" font-size="10.5" font-weight="bold" fill="#ffffff">Monthly Refill Plan</text>
+
+  <!-- Hero Imagery: Prescription &amp; Medicine Badge -->
+  <g transform="translate(570, 160)">
+    <rect width="170" height="118" rx="10" fill="#ffffff" fill-opacity="0.2" stroke="#ffffff" stroke-width="1" />
+    <circle cx="85" cy="50" r="30" fill="#ffffff" />
+    <text x="73" y="58" font-size="26">🩺</text>
+    <rect x="30" y="88" width="110" height="18" rx="9" fill="#ffffff" />
+    <text x="35" y="100" font-family="sans-serif" font-size="8" font-weight="bold" fill="#0f766e">Cold Chain Certified 4°C</text>
+  </g>
+
+  <!-- Showcase Section -->
+  <text x="24" y="318" font-family="sans-serif" font-size="13" font-weight="800" fill="#134e4a">Essential Healthcare &amp; Daily Medicines</text>
+  <text x="735" y="318" font-family="sans-serif" font-size="10" font-weight="bold" fill="#059669">View All &gt;</text>
+
+  <!-- Product 1 -->
+  <g transform="translate(24, 328)">
+    <rect width="176" height="170" rx="10" fill="url(#card-pharma)" stroke="#99f6e4" stroke-width="1" filter="url(#pharma-shadow)" />
+    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdfa" />
+    <text x="76" y="58" font-size="28" text-anchor="middle">💊</text>
+    <rect x="16" y="14" width="46" height="14" rx="7" fill="#059669" />
+    <text x="22" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">SQUARE</text>
+    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#134e4a">Napa Extra 500mg/65mg</text>
+    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#0f766e">Paracetamol + Caffeine • 1 Strip</text>
+    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#059669">৳30</text>
+    <text x="44" y="146" font-family="sans-serif" font-size="9" text-decoration="line-through" fill="#94a3b8">৳35</text>
+    <rect x="110" y="132" width="54" height="22" rx="11" fill="#059669" />
+    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
+  </g>
+
+  <!-- Product 2 -->
+  <g transform="translate(216, 328)">
+    <rect width="176" height="170" rx="10" fill="url(#card-pharma)" stroke="#99f6e4" stroke-width="1" filter="url(#pharma-shadow)" />
+    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdfa" />
+    <text x="76" y="58" font-size="28" text-anchor="middle">🩸</text>
+    <rect x="16" y="14" width="52" height="14" rx="7" fill="#0284c7" />
+    <text x="20" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">DIABETES</text>
+    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#134e4a">Accu-Chek Instant Meter</text>
+    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#0f766e">Blood Glucose Test + 10 Strips</text>
+    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#059669">৳1,850</text>
+    <rect x="110" y="132" width="54" height="22" rx="11" fill="#059669" />
+    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
+  </g>
+
+  <!-- Product 3 -->
+  <g transform="translate(408, 328)">
+    <rect width="176" height="170" rx="10" fill="url(#card-pharma)" stroke="#99f6e4" stroke-width="1" filter="url(#pharma-shadow)" />
+    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdfa" />
+    <text x="76" y="58" font-size="28" text-anchor="middle">🧪</text>
+    <rect x="16" y="14" width="46" height="14" rx="7" fill="#0d9488" />
+    <text x="22" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">BEXIMCO</text>
+    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#134e4a">Maxpro 20mg Tablet</text>
+    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#0f766e">Esomeprazole • Box of 10 Strips</text>
+    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#059669">৳70</text>
+    <rect x="110" y="132" width="54" height="22" rx="11" fill="#059669" />
+    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
+  </g>
+
+  <!-- Product 4 -->
+  <g transform="translate(600, 328)">
+    <rect width="176" height="170" rx="10" fill="url(#card-pharma)" stroke="#99f6e4" stroke-width="1" filter="url(#pharma-shadow)" />
+    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdfa" />
+    <text x="76" y="58" font-size="28" text-anchor="middle">🩺</text>
+    <rect x="16" y="14" width="50" height="14" rx="7" fill="#047857" />
+    <text x="20" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">OMRON</text>
+    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#134e4a">Digital Blood Pressure</text>
+    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#0f766e">IntelliSense • 3-Yr Warranty</text>
+    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#059669">৳3,450</text>
+    <rect x="110" y="132" width="54" height="22" rx="11" fill="#059669" />
+    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
+  </g>
+</svg>

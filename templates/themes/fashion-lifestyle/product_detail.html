@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+    {{ product.name }} | {{ site_settings.site_name|default:'Heritage Fashion' }}
+{% endblock %}
+
+{% block extra_head %}
+<!-- Google Fonts: Playfair Display for editorial elegance -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Fashion Detail Tokens */
+    :root {
+        --fashion-primary: #9a3412;
+        --fashion-primary-hover: #7c2d12;
+        --fashion-accent: #d97706;
+        --fashion-border: #fed7aa;
+        --fashion-bg-soft: #fefce8;
+        --fashion-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+        --fashion-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+        font-family: var(--fashion-font-sans);
+    }
+
+    .fashion-serif {
+        font-family: var(--fashion-font-serif);
+    }
+
+    .fashion-detail-card,
+    .fashion-services-card,
+    .fashion-tabs-card {
+        background: var(--surface-card, #ffffff);
+        border: 1px solid var(--fashion-border);
+        border-radius: 18px;
+        box-shadow: 0 4px 20px -4px rgba(154, 52, 18, 0.06);
+        padding: 1.75rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Gallery Styling */
+    .fashion-gallery-main {
+        position: relative;
+        background: linear-gradient(180deg, #fefce8 0%, #fff7ed 100%);
+        border: 1px solid var(--fashion-border);
+        border-radius: 16px;
+        aspect-ratio: 3/4;
+        max-height: 520px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .fashion-gallery-thumb {
+        width: 64px;
+        height: 80px;
+        border-radius: 8px;
+        border: 2px solid var(--fashion-border);
+        overflow: hidden;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.2s ease;
+    }
+    .fashion-gallery-thumb:hover,
+    .fashion-gallery-thumb.active {
+        opacity: 1;
+        border-color: var(--fashion-primary);
+        transform: translateY(-2px);
+    }
+
+    /* Size Selector Pill Buttons */
+    .fashion-size-btn {
+        width: 44px;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: 1px solid #fed7aa;
+        background: #ffffff;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .fashion-size-btn:hover,
+    .fashion-size-btn.active {
+        background: #9a3412;
+        color: #ffffff;
+        border-color: #9a3412;
+    }
+
+    /* Try & Buy Highlight Box */
+    .fashion-try-highlight {
+        background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        color: #ffffff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-3 my-md-4">
+
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>{% if IS_BANGLA %}হোম{% else %}Home{% endif %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}" class="text-decoration-none text-muted">{% if IS_BANGLA %}পোশাক ও ফ্যাশন{% else %}Fashion &amp; Apparel{% endif %}</a></li>
+            {% if product.category %}
+                <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="text-decoration-none text-muted">{{ product.category.name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active text-dark fw-semibold text-truncate" aria-current="page" style="max-width: 250px;">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- 1. MAIN PRODUCT DETAIL CARD -->
+    <div class="fashion-detail-card shadow-xs">
+        <div class="row g-4 g-lg-5">
+            <!-- Left: Portrait Image Gallery -->
+            <div class="col-lg-6">
+                <div class="fashion-gallery-main shadow-xs mb-3 position-relative">
+                    {% if product.has_discount %}
+                        <span class="badge shadow-sm fw-bold px-2.5 py-1.5 position-absolute top-0 start-0 m-3" style="background-color: #9a3412; color: #ffffff; border-radius: 6px; font-size: 0.8rem; z-index: 3;">
+                            -{{ product.discount_percent }}% OFF
+                        </span>
+                    {% endif %}
+
+                    <!-- Wishlist Button -->
+                    <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 p-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; z-index: 5;" onclick="toggleWishlist({{ product.pk }}, this)" title="Save to Wishlist" aria-label="Save to Wishlist">
+                        {% if product.pk in user_wishlist_ids %}
+                            <i class="bi bi-heart-fill text-danger fs-5"></i>
+                        {% else %}
+                            <i class="bi bi-heart fs-5" style="color: #9a3412;"></i>
+                        {% endif %}
+                    </button>
+
+                    {% if product.image %}
+                        <img id="mainFashionImage" src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100 h-100 object-fit-cover">
+                    {% else %}
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-person-heart display-1" style="color: #9a3412;"></i>
+                            <p class="mt-2 mb-0">Artisanal Design</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Gallery Thumbnails -->
+                {% if gallery_images %}
+                    <div class="d-flex gap-2 overflow-x-auto pb-2">
+                        {% if product.image %}
+                            <div class="fashion-gallery-thumb active" onclick="document.getElementById('mainFashionImage').src='{{ product.image.url }}'; document.querySelectorAll('.fashion-gallery-thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100 h-100 object-fit-cover">
+                            </div>
+                        {% endif %}
+                        {% for img in gallery_images %}
+                            <div class="fashion-gallery-thumb" onclick="document.getElementById('mainFashionImage').src='{{ img.image.url }}'; document.querySelectorAll('.fashion-gallery-thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+                                <img src="{{ img.image.url }}" alt="{{ product.name }}" class="w-100 h-100 object-fit-cover">
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Right: Editorial Specs & Purchase Options -->
+            <div class="col-lg-6">
+                <!-- Brand and Category Header -->
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                    <span class="badge px-2.5 py-1 rounded-pill" style="background-color: #ffedd5; color: #9a3412; font-weight: 600; font-size: 0.75rem;">
+                        <i class="bi bi-patch-check-fill me-1"></i>{{ product.brand.name|default:'Heritage Official' }}
+                    </span>
+                    <span class="text-muted small">
+                        {% if IS_BANGLA %}হ্যান্ডলুম ও ক্রাফট{% else %}Artisanal Handloom{% endif %}
+                    </span>
+                </div>
+
+                <!-- Product Title -->
+                <h1 class="fashion-serif fw-bold mb-2 display-6" style="color: #1c1917;">{{ product.name }}</h1>
+
+                <!-- Rating & Reviews -->
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="d-flex align-items-center text-warning" style="font-size: 0.9rem;">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                    </div>
+                    <span class="fw-bold small">4.9</span>
+                    <span class="text-muted small">({{ reviews.count|default:'48' }} {% if IS_BANGLA %}কাস্টমার রিভিউ{% else %}verified reviews{% endif %})</span>
+                    <span class="badge bg-success-subtle text-success small px-2 py-0.5 rounded-pill ms-2">
+                        <i class="bi bi-check2-all me-1"></i>{% if IS_BANGLA %}১০০% খাঁটি পণ্য{% else %}100% Authentic{% endif %}
+                    </span>
+                </div>
+
+                <!-- Price Section -->
+                <div class="d-flex align-items-baseline gap-3 p-3 rounded-3 mb-3" style="background-color: #fefce8; border: 1px solid #fed7aa;">
+                    <span class="display-6 fw-bold" style="color: #9a3412;">৳{{ product.effective_price }}</span>
+                    {% if product.has_discount %}
+                        <span class="text-decoration-line-through text-muted fs-5">৳{{ product.price }}</span>
+                        <span class="badge px-2 py-1 rounded" style="background-color: #9a3412; color: #ffffff; font-size: 0.8rem;">
+                            {% if IS_BANGLA %}সেভ ৳{{ product.price|floatformat:0 }} থেকে ছাড়{% else %}-{{ product.discount_percent }}% OFF{% endif %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Try & Buy Doorstep Banner -->
+                <div class="fashion-try-highlight mb-4 d-flex align-items-center gap-3">
+                    <i class="bi bi-shield-check text-warning fs-1 flex-shrink-0"></i>
+                    <div class="small">
+                        <strong class="d-block text-warning" style="font-size: 0.9rem;">{% if IS_BANGLA %}ট্রাই অ্যান্ড বাই সুবিধা সহজলভ্য{% else %}Try &amp; Buy At Doorstep Available{% endif %}</strong>
+                        <span class="text-white-50">{% if IS_BANGLA %}ঢাকায় ঘরে বসেই ট্রাই করুন, পারফেক্ট সাইজ হলে তবেই পেমেন্ট দিন।{% else %}Try this apparel at home before payment across Dhaka. Zero risk doorstep fitting.{% endif %}</span>
+                    </div>
+                </div>
+
+                <!-- Size Selector -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <label class="fw-bold small text-uppercase" style="letter-spacing: 0.5px; color: #1c1917;">
+                            {% if IS_BANGLA %}সাইজ নির্বাচন করুন:{% else %}Select Size:{% endif %}
+                        </label>
+                        <button type="button" class="btn btn-link p-0 text-decoration-none small" style="color: #9a3412;" data-bs-toggle="modal" data-bs-target="#sizeGuideModal">
+                            <i class="bi bi-rulers me-1"></i>{% if IS_BANGLA %}সাইজ গাইড{% else %}Size Guide{% endif %}
+                        </button>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="fashion-size-btn active" onclick="document.querySelectorAll('.fashion-size-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active');">M (38)</button>
+                        <button type="button" class="fashion-size-btn" onclick="document.querySelectorAll('.fashion-size-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active');">L (40)</button>
+                        <button type="button" class="fashion-size-btn" onclick="document.querySelectorAll('.fashion-size-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active');">XL (42)</button>
+                        <button type="button" class="fashion-size-btn" onclick="document.querySelectorAll('.fashion-size-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active');">XXL (44)</button>
+                    </div>
+                </div>
+
+                <!-- Purchase Form (Add to Bag / Buy Now) -->
+                <form action="{% url 'add_to_cart' product.pk %}" method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="d-flex gap-3 align-items-center mb-3">
+                        <div class="input-group" style="width: 120px;">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="var el=this.nextElementSibling; if(el.value>1) el.value=parseInt(el.value)-1;">-</button>
+                            <input type="number" name="quantity" class="form-control form-control-sm text-center fw-bold" value="1" min="1" max="{{ product.stock|default:10 }}">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="var el=this.previousElementSibling; el.value=parseInt(el.value)+1;">+</button>
+                        </div>
+                        <div class="small">
+                            {% if product.stock > 0 %}
+                                <span class="text-success fw-semibold"><i class="bi bi-check2-circle me-1"></i>{% if IS_BANGLA %}স্টকে আছে ({{ product.stock }} পিস){% else %}In Stock ({{ product.stock }} available){% endif %}</span>
+                            {% else %}
+                                <span class="text-danger fw-semibold"><i class="bi bi-x-circle me-1"></i>{% if IS_BANGLA %}স্টক আউট{% else %}Out of Stock{% endif %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-lg flex-grow-1 text-white fw-bold rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2" {% if product.stock <= 0 %}disabled{% endif %} style="background-color: #9a3412;">
+                            <i class="bi bi-bag-plus fs-5"></i>
+                            <span>{% if IS_BANGLA %}শপিং ব্যাগে যোগ করুন{% else %}Add to Shopping Bag{% endif %}</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Value Guarantees Strip -->
+                <div class="row g-2 pt-3 border-top small text-secondary">
+                    <div class="col-6 d-flex align-items-center gap-2">
+                        <i class="bi bi-feather fs-5" style="color: #9a3412;"></i>
+                        <span>{% if IS_BANGLA %}১০০% প্রিমিয়াম সুতি/সিল্ক{% else %}100% Pure Organic Textile{% endif %}</span>
+                    </div>
+                    <div class="col-6 d-flex align-items-center gap-2">
+                        <i class="bi bi-scissors fs-5" style="color: #9a3412;"></i>
+                        <span>{% if IS_BANGLA %}পারফেক্ট টেইলর্ড ফিটিং{% else %}Bespoke Tailored Fit{% endif %}</span>
+                    </div>
+                    <div class="col-6 d-flex align-items-center gap-2">
+                        <i class="bi bi-arrow-repeat fs-5" style="color: #9a3412;"></i>
+                        <span>{% if IS_BANGLA %}৭ দিনে সাইজ এক্সচেঞ্জ{% else %}7-Day Size Exchange{% endif %}</span>
+                    </div>
+                    <div class="col-6 d-flex align-items-center gap-2">
+                        <i class="bi bi-truck fs-5" style="color: #9a3412;"></i>
+                        <span>{% if IS_BANGLA %}সারা দেশে ক্যাশ অন ডেলিভারি{% else %}Cash on Delivery Available{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. PRODUCT SPECIFICATION & DETAILS TABS -->
+    <div class="fashion-tabs-card shadow-xs">
+        <ul class="nav nav-tabs border-bottom mb-4" id="fashionTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold text-dark" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc-pane" type="button" role="tab">
+                    <i class="bi bi-card-text me-1.5" style="color: #9a3412;"></i>{% if IS_BANGLA %}পোশাকের বিবরণ ও কারুকাজ{% else %}Craftsmanship &amp; Story{% endif %}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-dark" id="care-tab" data-bs-toggle="tab" data-bs-target="#care-pane" type="button" role="tab">
+                    <i class="bi bi-droplet-half me-1.5" style="color: #9a3412;"></i>{% if IS_BANGLA %}ফেব্রিক ও ধোয়ার যত্ন{% else %}Fabric &amp; Garment Care{% endif %}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-dark" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews-pane" type="button" role="tab">
+                    <i class="bi bi-chat-quote me-1.5" style="color: #9a3412;"></i>{% if IS_BANGLA %}গ্রাহক মূল্যায়ন{% else %}Reviews ({{ reviews.count|default:'0' }}){% endif %}
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="fashionTabContent">
+            <!-- Tab 1: Description -->
+            <div class="tab-pane fade show active" id="desc-pane" role="tabpanel">
+                <div class="fashion-serif fs-5 mb-3" style="color: #9a3412;">The Heritage Weave Story</div>
+                <div class="lead-text small text-secondary mb-3" style="line-height: 1.75;">
+                    {{ product.description|linebreaks }}
+                </div>
+            </div>
+
+            <!-- Tab 2: Care Guide -->
+            <div class="tab-pane fade" id="care-pane" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-2">{% if IS_BANGLA %}ফেব্রিক স্পেসিফিকেশন{% else %}Textile Composition{% endif %}</h6>
+                        <ul class="list-unstyled small text-secondary d-flex flex-column gap-2">
+                            <li><i class="bi bi-check-circle text-warning me-2"></i>100% Handloom Combed Cotton / Mulberry Silk Weave</li>
+                            <li><i class="bi bi-check-circle text-warning me-2"></i>Pre-shrunk organic yarn to eliminate post-wash shrinkage</li>
+                            <li><i class="bi bi-check-circle text-warning me-2"></i>Azo-free eco-friendly natural dyes certified skin-safe</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-2">{% if IS_BANGLA %}ধোয়ার নির্দেশিকা{% else %}Washing &amp; Ironing Instructions{% endif %}</h6>
+                        <ul class="list-unstyled small text-secondary d-flex flex-column gap-2">
+                            <li><i class="bi bi-exclamation-circle text-warning me-2"></i>Dry clean recommended for silk and jacquard pieces</li>
+                            <li><i class="bi bi-exclamation-circle text-warning me-2"></i>Gentle hand wash in cold water with mild liquid detergent</li>
+                            <li><i class="bi bi-exclamation-circle text-warning me-2"></i>Warm iron on reverse side; never iron directly on embroidery</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Reviews -->
+            <div class="tab-pane fade" id="reviews-pane" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <h6 class="fw-bold mb-3">{% if IS_BANGLA %}গ্রাহক মতামত{% else %}Customer Feedback{% endif %}</h6>
+                        {% for review in reviews %}
+                            <div class="p-3 rounded-3 bg-light border mb-2">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <strong class="small">{{ review.user.get_full_name|default:review.user.username }}</strong>
+                                    <div class="text-warning small">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <p class="small text-muted mb-0">{{ review.comment }}</p>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted small">{% if IS_BANGLA %}এখনও কোনো রিভিউ দেওয়া হয়নি। প্রথম রিভিউটি আপনিই দিন!{% else %}No reviews yet. Be the first to review this design!{% endif %}</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="p-3 rounded-3 bg-light border">
+                            <h6 class="fw-bold mb-2">{% if IS_BANGLA %}আপনার রিভিউ লিখুন{% else %}Write a Review{% endif %}</h6>
+                            {% if request.user.is_authenticated %}
+                                <form action="{% url 'product_add_review' product.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label class="small text-muted mb-1">Rating</label>
+                                        <select name="rating" class="form-select form-select-sm">
+                                            <option value="5">5 ★ - Exceptional Quality</option>
+                                            <option value="4">4 ★ - Very Good Fit</option>
+                                            <option value="3">3 ★ - Average</option>
+                                            <option value="2">2 ★ - Poor</option>
+                                            <option value="1">1 ★ - Terrible</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="Share your experience on fit, fabric texture and color..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm text-white rounded-pill px-4" style="background-color: #9a3412;">Submit Review</button>
+                                </form>
+                            {% else %}
+                                <p class="small text-muted mb-2">Please log in to submit a review for this apparel.</p>
+                                <a href="{% url 'account_login' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">Login to Review</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. RELATED FASHION PIECES -->
+    {% if related_products %}
+    <div class="my-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <span class="text-uppercase fw-bold small" style="color: #9a3412; letter-spacing: 0.08em;">
+                    {% if IS_BANGLA %}সম্পর্কিত কালেকশন{% else %}Complete The Aesthetic{% endif %}
+                </span>
+                <h3 class="fashion-serif fw-bold mb-0">{% if IS_BANGLA %}একই ঘরানার পোশাকসমূহ{% else %}Complementary Atelier Pieces{% endif %}</h3>
+            </div>
+            <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                {% if IS_BANGLA %}সব কালেকশন{% else %}Browse All{% endif %} &rarr;
+            </a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for p in related_products|slice:":4" %}
+                <div class="col">
+                    {% include 'themes/fashion-lifestyle/product_card.html' with product=p %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- SIZE GUIDE MODAL -->
+<div class="modal fade" id="sizeGuideModal" tabindex="-1" aria-labelledby="sizeGuideModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fashion-serif fw-bold" id="sizeGuideModalLabel">
+                    <i class="bi bi-rulers me-2" style="color: #9a3412;"></i>Ethnic &amp; Casual Fit Size Guide
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="small text-muted mb-3">All measurements are in inches. Designed for standard Asian comfort fit.</p>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered text-center small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Size</th>
+                                <th>Chest (in)</th>
+                                <th>Length (in)</th>
+                                <th>Shoulder (in)</th>
+                                <th>Sleeve (in)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>S (38)</strong></td><td>38 - 39</td><td>40</td><td>17.5</td><td>24.5</td></tr>
+                            <tr class="table-warning"><td><strong>M (40)</strong></td><td>40 - 41</td><td>42</td><td>18.0</td><td>25.0</td></tr>
+                            <tr><td><strong>L (42)</strong></td><td>42 - 43</td><td>44</td><td>18.5</td><td>25.5</td></tr>
+                            <tr><td><strong>XL (44)</strong></td><td>44 - 45</td><td>45</td><td>19.0</td><td>26.0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -48,7 +48,7 @@
                     <tr>
                         <td class="ps-3">
                             {% if b.logo %}
-                                <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="rounded border p-1" style="width: 44px; height: 44px; object-fit: contain;">
+                                <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="rounded border p-1" style="width: 44px; height: 44px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                             {% else %}
                                 <div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                                     <i class="bi bi-tag fs-5"></i>

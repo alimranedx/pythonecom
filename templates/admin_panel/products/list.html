@@ -83,7 +83,7 @@
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 {% if p.image %}
-                                    <img src="{{ p.image.url }}" alt="{{ p.name }}" class="rounded border p-1 bg-white" style="width: 42px; height: 42px; object-fit: contain;">
+                                    <img src="{{ p.image.url }}" alt="{{ p.name }}" class="rounded border p-1 bg-white" style="width: 42px; height: 42px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                 {% else %}
                                     <div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                                         <i class="bi bi-box-seam"></i>

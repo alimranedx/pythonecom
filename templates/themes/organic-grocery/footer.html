@@ -258,12 +258,26 @@
             <!-- Column 1: Store info, site name, organic mission statement, hotline, address -->
             <div class="col-lg-4 col-md-6">
                 <a href="{% url 'home' %}" class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none">
-                    {% if site_settings.get_brand_logo_url %}
-                        <img src="{{ site_settings.get_brand_logo_url }}" alt="{{ site_settings.get_effective_site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
-                    {% elif site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
+                    {% if site_settings.brand_logo %}
+                        <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #2d6a4f; width: 34px; height: 34px;">
+                                <i class="bi bi-basket2-fill small"></i>
+                            </div>
+                            <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.01em;">
+                                {{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}
+                            </span>
+                        </span>
                     {% elif CURRENT_THEME_DATA.logo_url %}
-                        <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png';">
+                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #2d6a4f; width: 34px; height: 34px;">
+                                <i class="bi bi-basket2-fill small"></i>
+                            </div>
+                            <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.01em;">
+                                {{ CURRENT_THEME_DATA.brand_name|default:'PURE HARVEST' }}
+                            </span>
+                        </span>
                     {% else %}
                         <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #2d6a4f; width: 34px; height: 34px;">
                             <i class="bi bi-basket2-fill small"></i>

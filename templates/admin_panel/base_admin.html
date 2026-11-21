@@ -243,9 +243,9 @@
         <div class="sidebar-brand d-flex align-items-center justify-content-between">
             <a href="{% url 'admin_dashboard' %}" class="d-flex align-items-center gap-2 text-decoration-none text-reset" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                 {% if site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;">
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                 {% elif site_settings.get_brand_logo_dark_url %}
-                    <img src="{{ site_settings.get_brand_logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;">
+                    <img src="{{ site_settings.get_brand_logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                 {% else %}
                     <picture class="d-flex align-items-center">
                         <source srcset="{% static 'images/logo_dark.svg' %}" type="image/svg+xml">

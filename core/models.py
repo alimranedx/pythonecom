@@ -198,56 +198,62 @@ class SiteSetting(TimeStampedModel):
 
     def get_brand_logo_url(self, theme_key=None):
         """
-        Returns custom uploaded brand logo if present, otherwise returns
-        the active theme's dedicated vector brand logo SVG.
+        Returns custom uploaded brand logo if present.
+        If theme_key is explicitly provided, returns that theme's dedicated vector brand logo SVG.
+        If theme_key is not provided, returns None so templates can cleanly fall back
+        to CURRENT_THEME_DATA.logo_url.
         """
         if self.brand_logo:
             try:
                 return self.brand_logo.url
             except Exception:
                 pass
-        target_key = theme_key or self.get_canonical_theme_id()
-        from core.themes import get_theme
-        theme = get_theme(target_key)
-        return theme.get('logo_url', '/static/images/logo.svg')
+        if theme_key:
+            from core.themes import get_theme
+            theme = get_theme(theme_key)
+            return theme.get('logo_url', '/static/images/logo.svg')
+        return None
 
     def get_brand_logo_dark_url(self, theme_key=None):
         """
-        Returns active theme's dark-mode brand logo.
+        Returns active theme's dark-mode brand logo if theme_key is explicitly provided,
+        otherwise None so templates cleanly fall back to CURRENT_THEME_DATA.logo_dark_url.
         """
-        target_key = theme_key or self.get_canonical_theme_id()
-        from core.themes import get_theme
-        theme = get_theme(target_key)
-        return theme.get('logo_dark_url', '/static/images/logo_dark.svg')
+        if theme_key:
+            from core.themes import get_theme
+            theme = get_theme(theme_key)
+            return theme.get('logo_dark_url', '/static/images/logo_dark.svg')
+        return None
 
     def get_brand_favicon_url(self, theme_key=None):
         """
-        Returns custom uploaded browser favicon if present, otherwise returns
-        the active theme's dedicated vector favicon SVG.
+        Returns custom uploaded browser favicon if present, or theme-specific favicon SVG.
         """
         if self.brand_favicon:
             try:
                 return self.brand_favicon.url
             except Exception:
                 pass
-        target_key = theme_key or self.get_canonical_theme_id()
-        from core.themes import get_theme
-        theme = get_theme(target_key)
-        return theme.get('favicon_url', '/static/images/favicon.svg')
+        if theme_key:
+            from core.themes import get_theme
+            theme = get_theme(theme_key)
+            return theme.get('favicon_url', '/static/images/favicon.svg')
+        return None
 
     def get_brand_favicon_ico_url(self, theme_key=None):
         """
-        Returns active theme's browser favicon ICO url.
+        Returns custom uploaded browser favicon if present, or theme-specific favicon ICO.
         """
         if self.brand_favicon:
             try:
                 return self.brand_favicon.url
             except Exception:
                 pass
-        target_key = theme_key or self.get_canonical_theme_id()
-        from core.themes import get_theme
-        theme = get_theme(target_key)
-        return theme.get('favicon_ico_url', '/static/images/favicon.ico')
+        if theme_key:
+            from core.themes import get_theme
+            theme = get_theme(theme_key)
+            return theme.get('favicon_ico_url', '/static/images/favicon.ico')
+        return None
 
     def get_effective_site_name(self, theme_key=None):
         """

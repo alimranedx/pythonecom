@@ -38,7 +38,7 @@
                     <tr>
                         <td class="ps-3">
                             {% if c.image %}
-                                <img src="{{ c.image.url }}" alt="{{ c.name }}" class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;">
+                                <img src="{{ c.image.url }}" alt="{{ c.name }}" class="rounded-circle object-fit-cover border" style="width: 36px; height: 36px;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                             {% else %}
                                 <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
                                     <i class="bi {{ c.icon|default:'bi-tag' }}"></i>

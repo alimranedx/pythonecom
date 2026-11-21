@@ -51,7 +51,7 @@
                     {% if brand and brand.logo %}
                         <div class="mt-2 p-2 border rounded bg-light d-inline-block">
                             <small class="d-block text-muted mb-1">Current Logo:</small>
-                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="max-height: 50px;">
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="max-height: 50px;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                         </div>
                     {% endif %}
                 </div>

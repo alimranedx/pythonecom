@@ -27,12 +27,27 @@
                 </button>
                 <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2" title="{{ site_settings.get_effective_site_name|default:'Arogya Healthcare' }}">
                     {% if site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/pharmacy_health/logo.png';">
+                        <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/pharmacy_health/logo.png?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center" style="background: #059669; width: 40px; height: 40px;">
+                                <i class="bi bi-capsule-pill fs-4"></i>
+                            </div>
+                            <div>
+                                <span class="fw-bold fs-5 d-block lh-1 text-dark">{{ site_settings.get_effective_site_name|default:'AROGYA' }}<span style="color: #059669;">PHARMA</span></span>
+                                <small class="text-muted d-block" style="font-size: 0.65rem; letter-spacing: 0.05em;">HEALTHCARE &amp; MEDICINE</small>
+                            </div>
+                        </span>
                     {% elif CURRENT_THEME_DATA.logo_url %}
-                        <picture class="d-flex align-items-center logo-light">
-                            <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
-                            <img src="{{ CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/pharmacy_health/logo.png';">
-                        </picture>
+                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 220px; object-fit: contain;" class="brand-logo-img" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center" style="background: #059669; width: 40px; height: 40px;">
+                                <i class="bi bi-capsule-pill fs-4"></i>
+                            </div>
+                            <div>
+                                <span class="fw-bold fs-5 d-block lh-1 text-dark">{{ CURRENT_THEME_DATA.brand_name|default:'AROGYA' }}<span style="color: #059669;">PHARMA</span></span>
+                                <small class="text-muted d-block" style="font-size: 0.65rem; letter-spacing: 0.05em;">HEALTHCARE &amp; MEDICINE</small>
+                            </div>
+                        </span>
                     {% else %}
                         <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center" style="background: #059669; width: 40px; height: 40px;">
                             <i class="bi bi-capsule-pill fs-4"></i>

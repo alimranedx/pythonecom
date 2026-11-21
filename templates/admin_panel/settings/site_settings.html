@@ -207,7 +207,7 @@
                                         {% if setting.brand_logo %}
                                             <div class="mt-2 p-2 bg-light rounded d-inline-block border">
                                                 <small class="text-muted d-block mb-1">Custom Uploaded Logo:</small>
-                                                <img src="{{ setting.brand_logo.url }}" alt="Logo Preview" style="max-height: 48px; max-width: 180px;">
+                                                <img src="{{ setting.brand_logo.url }}" alt="Logo Preview" style="max-height: 48px; max-width: 180px;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                             </div>
                                         {% elif current_theme.logo_url %}
                                             <div class="mt-2 p-2 bg-light rounded d-inline-block border">
@@ -215,7 +215,7 @@
                                                     <small class="text-muted fw-bold">Active Theme Default Logo:</small>
                                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem;">{{ current_theme.name }}</span>
                                                 </div>
-                                                <img src="{{ current_theme.logo_url }}" alt="{{ current_theme.name }} Logo" style="max-height: 44px; max-width: 190px;">
+                                                <img src="{{ current_theme.logo_url }}" alt="{{ current_theme.name }} Logo" style="max-height: 44px; max-width: 190px;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                             </div>
                                         {% endif %}
                                     </div>
@@ -225,7 +225,7 @@
                                         {% if setting.brand_favicon %}
                                             <div class="mt-2 p-2 bg-light rounded d-inline-block border">
                                                 <small class="text-muted d-block mb-1">Custom Favicon:</small>
-                                                <img src="{{ setting.brand_favicon.url }}" alt="Favicon Preview" style="width: 24px; height: 24px;">
+                                                <img src="{{ setting.brand_favicon.url }}" alt="Favicon Preview" style="width: 24px; height: 24px;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                             </div>
                                         {% elif current_theme.favicon_url %}
                                             <div class="mt-2 p-2 bg-light rounded d-inline-block border">
@@ -233,7 +233,7 @@
                                                     <small class="text-muted fw-bold">Active Theme Favicon:</small>
                                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem;">{{ current_theme.name }}</span>
                                                 </div>
-                                                <img src="{{ current_theme.favicon_url }}" alt="{{ current_theme.name }} Favicon" style="width: 28px; height: 28px;">
+                                                <img src="{{ current_theme.favicon_url }}" alt="{{ current_theme.name }} Favicon" style="width: 28px; height: 28px;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                             </div>
                                         {% endif %}
                                     </div>
@@ -476,7 +476,7 @@
                                                     </span>
                                                     {% if theme.favicon_url %}
                                                         <span class="d-inline-flex align-items-center gap-1.5 px-2 py-1 bg-light rounded-pill border small" title="Theme Favicon">
-                                                            <img src="{{ theme.favicon_url }}" alt="Favicon" style="width: 16px; height: 16px;">
+                                                            <img src="{{ theme.favicon_url }}" alt="Favicon" style="width: 16px; height: 16px;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                                             <span class="text-muted" style="font-size: 0.7rem;">Favicon</span>
                                                         </span>
                                                     {% endif %}
@@ -489,7 +489,7 @@
                                                             <div class="small fw-bold text-dark lh-1">{{ theme.brand_name }}</div>
                                                             <small class="text-muted" style="font-size: 0.7rem;">{{ theme.brand_sub }}</small>
                                                         </div>
-                                                        <img src="{{ theme.logo_url }}" alt="{{ theme.name }} Logo" style="max-height: 32px; max-width: 140px; object-fit: contain;">
+                                                        <img src="{{ theme.logo_url }}" alt="{{ theme.name }} Logo" style="max-height: 32px; max-width: 140px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                                                     </div>
                                                 {% endif %}
 

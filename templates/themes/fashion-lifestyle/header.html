@@ -23,14 +23,22 @@
             <!-- Brand Logo -->
             <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center me-3 text-decoration-none">
                 {% if site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name|default:'Heritage Fashion' }}" height="40" style="height: 40px; width: auto; max-width: 200px; object-fit: contain;">
+                    <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Heritage Fashion' }}" height="40" style="height: 40px; width: auto; max-width: 200px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/fashion_lifestyle/logo.png?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                    <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                        <i class="bi bi-person-heart fs-4" style="color: #9a3412;"></i>
+                        <span class="fw-bold fs-4 text-dark" style="font-family: serif; letter-spacing: 0.1em;">{{ site_settings.get_effective_site_name|default:'HERITAGE' }}</span>
+                    </span>
                 {% elif CURRENT_THEME_DATA.logo_url %}
-                    <picture class="d-flex align-items-center">
-                        <source srcset="{{ CURRENT_THEME_DATA.logo_url }}" type="image/svg+xml">
-                        <img src="{{ CURRENT_THEME_DATA.logo_png_url|default:CURRENT_THEME_DATA.logo_url }}" alt="{{ CURRENT_THEME_DATA.brand_name|default:'Heritage' }}" height="40" style="height: 40px; width: auto; max-width: 200px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/fashion_lifestyle/logo.png';">
-                    </picture>
+                    <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.brand_name|default:'Heritage' }}" height="40" style="height: 40px; width: auto; max-width: 200px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
+                    <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                        <i class="bi bi-person-heart fs-4" style="color: #9a3412;"></i>
+                        <span class="fw-bold fs-4 text-dark" style="font-family: serif; letter-spacing: 0.1em;">{{ CURRENT_THEME_DATA.brand_name|default:'HERITAGE' }}</span>
+                    </span>
                 {% else %}
-                    <span class="fw-bold fs-4 text-dark" style="font-family: serif; letter-spacing: 0.1em;">HERITAGE</span>
+                    <span class="fw-bold fs-4 text-dark d-inline-flex align-items-center gap-2" style="font-family: serif; letter-spacing: 0.1em;">
+                        <i class="bi bi-person-heart" style="color: #9a3412;"></i>
+                        <span>HERITAGE</span>
+                    </span>
                 {% endif %}
             </a>
 
@@ -57,7 +65,7 @@
                             {% if request.user.customer_profile.avatar %}
                                 <img src="{{ request.user.customer_profile.avatar.url }}" alt="{{ request.user.username }}" width="32" height="32" class="rounded-circle object-fit-cover" onerror="this.onerror=null; this.src='{% static 'images/default-avatar.svg' %}';">
                             {% else %}
-                                <img src="{% static 'images/default-avatar.svg' %}" alt="{{ request.user.username }}" width="32" height="32" class="rounded-circle">
+                                <img src="{% static 'images/default-avatar.svg' %}" alt="{{ request.user.username }}" width="32" height="32" class="rounded-circle" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                             {% endif %}
                             <span class="small fw-semibold d-none d-md-inline">{{ request.user.first_name|default:request.user.username }}</span>
                         </a>
