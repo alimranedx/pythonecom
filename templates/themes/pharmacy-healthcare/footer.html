@@ -227,14 +227,42 @@
     if (form && successAlert) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            successAlert.classList.remove('d-none');
-            setTimeout(function() {
-                form.reset();
-                if (nameDisplay) {
-                    nameDisplay.textContent = 'Click to upload clear photo of your Rx (JPG, PNG, PDF)';
-                    nameDisplay.classList.remove('text-success');
+            var formData = new FormData();
+            formData.append('patient_name', document.getElementById('rxPatientName').value);
+            formData.append('phone', document.getElementById('rxPhone').value);
+            formData.append('notes', document.getElementById('rxNotes').value);
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                formData.append('prescription_file', fileInput.files[0]);
+            }
+            var csrfToken = '';
+            var csrfEl = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (csrfEl) {
+                csrfToken = csrfEl.value;
+            } else {
+                var m = document.cookie.match(/csrftoken=([^;]+)/);
+                if (m) csrfToken = m[1];
+            }
+            fetch('/orders/rx-upload/', {
+                method: 'POST',
+                headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+                body: formData
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok) {
+                    successAlert.classList.remove('d-none');
+                    form.reset();
+                    if (nameDisplay) {
+                        nameDisplay.textContent = 'Click to upload clear photo of your Rx (JPG, PNG, PDF)';
+                        nameDisplay.classList.remove('text-success');
+                    }
+                } else {
+                    alert(data.error || 'Could not upload prescription. Please try again.');
                 }
-            }, 400);
+            })
+            .catch(function() {
+                successAlert.classList.remove('d-none');
+            });
         });
     }
 })();

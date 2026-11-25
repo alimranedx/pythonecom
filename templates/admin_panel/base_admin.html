@@ -457,6 +457,21 @@
                     No modules permitted. Contact your Super Administrator.
                 </div>
             {% endfor %}
+
+            {% has_perm request.user 'orders.orders' 'view' as can_view_orders_nav %}
+            {% if can_view_orders_nav %}
+                <a href="{% url 'admin_prescription_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_prescription_list' %}active{% endif %}" title="Prescriptions (Rx)">
+                    <i class="bi bi-file-earmark-medical fs-6 flex-shrink-0 text-success"></i>
+                    <span class="sidebar-hide-collapsed text-truncate">Prescriptions (Rx)</span>
+                </a>
+            {% endif %}
+            {% has_perm request.user 'settings.system_errors' 'view' as can_view_audit_nav %}
+            {% if can_view_audit_nav %}
+                <a href="{% url 'admin_activity_logs' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_activity_logs' %}active{% endif %}" title="Activity Logs">
+                    <i class="bi bi-journal-text fs-6 flex-shrink-0 text-info"></i>
+                    <span class="sidebar-hide-collapsed text-truncate">Activity Logs</span>
+                </a>
+            {% endif %}
         </div>
 
         <!-- Pinned Sidebar Footer -->

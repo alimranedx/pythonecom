@@ -2,17 +2,20 @@ from django.urls import reverse
 from datetime import datetime, timedelta
 from django.utils import timezone
 from decimal import Decimal, InvalidOperation
+import json
+from django.db.models.functions import TruncDate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, F
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db import transaction
 from core.validators import validate_image_file
 from rbac.decorators import require_permission, require_superuser
+from .models import AdminActivityLog
 from .forms import (
     StaffUserCreateForm, StaffUserEditForm, SiteSettingForm,
     AdminProfileUpdateForm, AdminPasswordChangeForm, ThemeCustomizeForm
@@ -23,8 +26,26 @@ from rbac.services import RBACService
 from rbac.models import Role, Permission, UserRole, RolePermission, Module
 from product.models import Product, Category, Brand, ProductImage, ProductReview
 from product.forms import ProductForm, CategoryForm, BrandForm
-from orders.models import Order, OrderItem, DeliverySlot, Coupon
+from orders.models import Order, OrderItem, DeliverySlot, Coupon, PrescriptionRequest
 from accounts.models import CustomerProfile, Address
+
+
+def log_admin_action(request, action, target_model='', target_repr='', details=''):
+    """Safely record an AdminActivityLog entry without interrupting the main request."""
+    try:
+        user = request.user if getattr(request, 'user', None) and request.user.is_authenticated else None
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip() or request.META.get('REMOTE_ADDR')
+        AdminActivityLog.objects.create(
+            user=user,
+            username_snapshot=user.username if user else 'system',
+            action=action[:100],
+            target_model=target_model[:80],
+            target_repr=str(target_repr)[:255],
+            details=details,
+            ip_address=ip or None,
+        )
+    except Exception:
+        pass
 
 
 def admin_login(request):
@@ -69,29 +90,79 @@ def admin_dashboard(request):
         messages.error(request, "Staff credentials required.")
         return redirect('home')
 
-    paid_orders = Order.objects.filter(payment_status='paid')
+    date_range = request.GET.get('range', 'all').strip()
+    now = timezone.now()
+    orders_qs = Order.objects.all()
+    if date_range == 'today':
+        orders_qs = orders_qs.filter(created_at__date=now.date())
+    elif date_range == '7d':
+        orders_qs = orders_qs.filter(created_at__gte=now - timedelta(days=7))
+    elif date_range == '30d':
+        orders_qs = orders_qs.filter(created_at__gte=now - timedelta(days=30))
+
+    paid_orders = orders_qs.filter(payment_status='paid')
     total_revenue = paid_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
     paid_count = paid_orders.count()
     aov = (total_revenue / paid_count).quantize(Decimal('0.01')) if paid_count > 0 else Decimal('0.00')
 
-    total_orders = Order.objects.count()
-    pending_orders = Order.objects.filter(status='pending').count()
+    total_orders = orders_qs.count()
+    pending_orders = orders_qs.filter(status='pending').count()
     total_products = Product.objects.count()
-    low_stock_products = Product.objects.filter(stock__lte=5)
+    low_stock_products = Product.objects.filter(stock__lte=5).order_by('stock', 'name')
     total_customers = User.objects.filter(is_staff=False).count()
+    pending_rx_count = PrescriptionRequest.objects.filter(status='pending').count()
 
     # Fulfillment status breakdown
     status_counts = {
         'pending': pending_orders,
-        'processing': Order.objects.filter(status='processing').count(),
-        'shipped': Order.objects.filter(status='shipped').count(),
-        'delivered': Order.objects.filter(status='delivered').count(),
-        'cancelled': Order.objects.filter(status='cancelled').count(),
+        'processing': orders_qs.filter(status='processing').count(),
+        'shipped': orders_qs.filter(status='shipped').count(),
+        'delivered': orders_qs.filter(status='delivered').count(),
+        'cancelled': orders_qs.filter(status='cancelled').count(),
     }
 
-    recent_orders = Order.objects.select_related('user').order_by('-created_at')[:8]
+    # Daily Sales & Orders Chart (Last 14 days)
+    chart_start = (now - timedelta(days=13)).date()
+    daily_agg = (
+        Order.objects.filter(created_at__date__gte=chart_start)
+        .annotate(day=TruncDate('created_at'))
+        .values('day')
+        .annotate(
+            revenue=Sum('total_amount', filter=Q(payment_status='paid')),
+            count=Count('id'),
+        )
+        .order_by('day')
+    )
+    daily_map = {row['day']: row for row in daily_agg if row['day']}
+    chart_labels, chart_revenue, chart_orders = [], [], []
+    for i in range(14):
+        d = chart_start + timedelta(days=i)
+        chart_labels.append(d.strftime('%b %d'))
+        row = daily_map.get(d, {})
+        chart_revenue.append(float(row.get('revenue') or 0))
+        chart_orders.append(int(row.get('count') or 0))
+
+    # Payment Method Breakdown
+    pm_agg = orders_qs.values('payment_method').annotate(c=Count('id'))
+    pm_labels_map = dict(Order.PAYMENT_METHOD_CHOICES)
+    pm_labels = [pm_labels_map.get(r['payment_method'], r['payment_method']) for r in pm_agg]
+    pm_counts = [r['c'] for r in pm_agg]
+
+    # Top Selling Products
+    top_products = list(
+        OrderItem.objects.filter(order__in=orders_qs)
+        .values('product_name')
+        .annotate(
+            total_qty=Sum('quantity'),
+            total_sales=Sum(F('product_price') * F('quantity')),
+        )
+        .order_by('-total_qty')[:5]
+    )
+
+    recent_orders = orders_qs.select_related('user').order_by('-created_at')[:8]
 
     return render(request, 'admin_panel/dashboard.html', {
+        'date_range': date_range,
         'total_revenue': total_revenue,
         'total_orders': total_orders,
         'pending_orders': pending_orders,
@@ -100,8 +171,15 @@ def admin_dashboard(request):
         'low_stock_count': low_stock_products.count(),
         'low_stock_products': low_stock_products[:5],
         'total_customers': total_customers,
+        'pending_rx_count': pending_rx_count,
         'status_counts': status_counts,
         'recent_orders': recent_orders,
+        'top_products': top_products,
+        'chart_labels_json': json.dumps(chart_labels),
+        'chart_revenue_json': json.dumps(chart_revenue),
+        'chart_orders_json': json.dumps(chart_orders),
+        'pm_labels_json': json.dumps(pm_labels),
+        'pm_counts_json': json.dumps(pm_counts),
     })
 
 
@@ -689,11 +767,24 @@ def admin_order_detail(request, pk):
         if new_payment_status in dict(Order.PAYMENT_STATUS_CHOICES):
             order.payment_status = new_payment_status
 
+        courier_name = request.POST.get('courier_name', '').strip()
+        tracking_number = request.POST.get('tracking_number', '').strip()
+        if courier_name in dict(Order.COURIER_CHOICES):
+            order.courier_name = courier_name
+        order.tracking_number = tracking_number
+
         order.save()
-        messages.success(request, f"Order {order.order_number} status updated successfully.")
+        log_admin_action(
+            request,
+            action='Order Updated',
+            target_model='Order',
+            target_repr=order.order_number,
+            details=f"Status: {old_status} -> {order.status}, Payment: {order.payment_status}, Courier: {order.courier_name or 'None'} ({order.tracking_number or '-'})"
+        )
+        messages.success(request, f"Order {order.order_number} updated successfully.")
         return redirect('admin_order_detail', pk=order.pk)
 
-    return render(request, 'admin_panel/orders/detail.html', {'order': order})
+    return render(request, 'admin_panel/orders/detail.html', {'order': order, 'courier_choices': Order.COURIER_CHOICES})
 
 
 @require_permission('orders.orders', 'view')
@@ -1497,3 +1588,105 @@ def admin_theme_reset_customization(request, theme_id):
 
     return redirect('admin_theme_customize', theme_id=canonical_id)
 
+
+
+@require_permission('orders.orders', 'edit')
+def admin_order_bulk_action(request):
+    """Bulk update fulfillment status for multiple selected orders."""
+    if request.method == 'POST':
+        order_ids = request.POST.getlist('order_ids')
+        bulk_status = request.POST.get('bulk_status', '').strip()
+        if not order_ids or bulk_status not in dict(Order.STATUS_CHOICES):
+            messages.warning(request, "Please select at least one order and a valid status.")
+            return redirect('admin_order_list')
+
+        orders = Order.objects.prefetch_related('items__product').filter(pk__in=order_ids)
+        updated_count = 0
+        for order in orders:
+            old_status = order.status
+            if old_status == bulk_status:
+                continue
+            if bulk_status == 'cancelled' and old_status != 'cancelled':
+                for item in order.items.all():
+                    if item.product:
+                        item.product.stock += item.quantity
+                        item.product.save(update_fields=['stock'])
+            elif old_status == 'cancelled' and bulk_status != 'cancelled':
+                for item in order.items.all():
+                    if item.product:
+                        item.product.stock = max(0, item.product.stock - item.quantity)
+                        item.product.save(update_fields=['stock'])
+            order.status = bulk_status
+            order.save(update_fields=['status', 'updated_at'])
+            updated_count += 1
+
+        log_admin_action(
+            request,
+            action='Bulk Order Status Update',
+            target_model='Order',
+            target_repr=f"{updated_count} order(s)",
+            details=f"Set status to '{bulk_status}' for IDs: {','.join(order_ids)}"
+        )
+        messages.success(request, f"Updated {updated_count} order(s) to '{dict(Order.STATUS_CHOICES)[bulk_status]}'.")
+    return redirect('admin_order_list')
+
+
+@require_permission('orders.orders', 'view')
+def admin_prescription_list(request):
+    """Lists Pharmacy & Healthcare prescription uploads for pharmacist review."""
+    status_filter = request.GET.get('status', '').strip()
+    qs = PrescriptionRequest.objects.all()
+    if status_filter in dict(PrescriptionRequest.STATUS_CHOICES):
+        qs = qs.filter(status=status_filter)
+
+    paginator = Paginator(qs, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/orders/prescriptions.html', {
+        'prescriptions': page_obj,
+        'page_obj': page_obj,
+        'status_filter': status_filter,
+        'status_choices': PrescriptionRequest.STATUS_CHOICES,
+        'pending_count': PrescriptionRequest.objects.filter(status='pending').count(),
+    })
+
+
+@require_permission('orders.orders', 'edit')
+def admin_prescription_update(request, pk):
+    """Updates prescription review status and pharmacist notes."""
+    rx = get_object_or_404(PrescriptionRequest, pk=pk)
+    if request.method == 'POST':
+        new_status = request.POST.get('status', '').strip()
+        admin_notes = request.POST.get('admin_notes', '').strip()
+        if new_status in dict(PrescriptionRequest.STATUS_CHOICES):
+            rx.status = new_status
+        rx.admin_notes = admin_notes
+        rx.save()
+        log_admin_action(
+            request,
+            action='Prescription Reviewed',
+            target_model='PrescriptionRequest',
+            target_repr=f"Rx #{rx.pk} ({rx.patient_name})",
+            details=f"Status: {rx.status}"
+        )
+        messages.success(request, f"Prescription Rx #{rx.pk} updated.")
+    return redirect('admin_prescription_list')
+
+
+@require_permission('settings.system_errors', 'view')
+def admin_activity_logs(request):
+    """Displays back-office staff audit trail."""
+    q = request.GET.get('q', '').strip()
+    qs = AdminActivityLog.objects.select_related('user').all()
+    if q:
+        qs = qs.filter(
+            Q(username_snapshot__icontains=q) |
+            Q(action__icontains=q) |
+            Q(target_repr__icontains=q)
+        )
+    paginator = Paginator(qs, 25)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/settings/activity_logs.html', {
+        'logs': page_obj,
+        'page_obj': page_obj,
+        'q': q,
+    })

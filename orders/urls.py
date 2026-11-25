@@ -7,4 +7,5 @@ urlpatterns = [
     path('bkash/callback/', views.bkash_callback, name='bkash_callback'),
     path('bkash/retry/<str:order_number>/', views.retry_bkash_payment, name='retry_bkash_payment'),
     path('invoice/<str:order_number>/', views.order_invoice, name='order_invoice'),
+    path('rx-upload/', views.rx_upload_submit, name='rx_upload_submit'),
 ]

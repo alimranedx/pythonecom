@@ -7,6 +7,21 @@
 {% has_perm request.user 'orders.orders' 'view' as can_view_orders %}
 {% has_perm request.user 'catalog.products' 'edit' as can_edit_products %}
 
+<!-- Date Range Filter & Rx Alert Bar -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div class="btn-group btn-group-sm bg-white p-1 rounded-pill shadow-xs border" role="group">
+        <a href="?range=all" class="btn rounded-pill px-3 {% if date_range == 'all' %}btn-primary fw-semibold{% else %}btn-light border-0 text-secondary{% endif %}">All Time</a>
+        <a href="?range=today" class="btn rounded-pill px-3 {% if date_range == 'today' %}btn-primary fw-semibold{% else %}btn-light border-0 text-secondary{% endif %}">Today</a>
+        <a href="?range=7d" class="btn rounded-pill px-3 {% if date_range == '7d' %}btn-primary fw-semibold{% else %}btn-light border-0 text-secondary{% endif %}">7 Days</a>
+        <a href="?range=30d" class="btn rounded-pill px-3 {% if date_range == '30d' %}btn-primary fw-semibold{% else %}btn-light border-0 text-secondary{% endif %}">30 Days</a>
+    </div>
+    {% if pending_rx_count > 0 %}
+        <a href="{% url 'admin_prescription_list' %}" class="btn btn-sm btn-warning rounded-pill px-3 fw-semibold shadow-xs">
+            <i class="bi bi-file-earmark-medical-fill me-1"></i> {{ pending_rx_count }} Pending Rx Prescription{{ pending_rx_count|pluralize }}
+        </a>
+    {% endif %}
+</div>
+
 <!-- Metric KPI Cards -->
 <div class="row g-3 mb-4">
     <div class="col-xl-3 col-md-6">
@@ -88,6 +103,37 @@
 </div>
 {% endif %}
 
+<!-- Analytics Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Revenue &amp; Order Trend</h5>
+                    <small class="text-muted">Last 14 days daily performance</small>
+                </div>
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">14-Day Analytics</span>
+            </div>
+            <div style="height: 250px;">
+                <canvas id="salesTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Payment Methods</h5>
+                    <small class="text-muted">Order volume by gateway</small>
+                </div>
+            </div>
+            <div style="height: 250px;" class="d-flex align-items-center justify-content-center">
+                <canvas id="paymentMixChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <!-- Recent Orders Table -->
     <div class="col-lg-8">
@@ -160,7 +206,7 @@
             </div>
 
             {% if low_stock_products %}
-                <div class="list-group list-group-flush">
+                <div class="list-group list-group-flush mb-3">
                     {% for p in low_stock_products %}
                         <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
                             <div>
@@ -180,6 +226,9 @@
                         </div>
                     {% endfor %}
                 </div>
+                <a href="{% url 'admin_product_list' %}?stock=low_stock" class="btn btn-sm btn-outline-danger w-100 rounded-pill fw-semibold">
+                    View All Low Stock Items &rarr;
+                </a>
             {% else %}
                 <div class="text-center py-4 text-muted small">
                     <i class="bi bi-check-circle fs-3 text-success d-block mb-1"></i>
@@ -189,4 +238,107 @@
         </div>
     </div>
 </div>
+
+<!-- Top Selling Products -->
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="fw-bold mb-0">Top Selling Products</h5>
+            <small class="text-muted">Ranked by units sold</small>
+        </div>
+    </div>
+    {% if top_products %}
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-center">Units Sold</th>
+                        <th class="text-end">Gross Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tp in top_products %}
+                        <tr>
+                            <td class="fw-semibold text-dark">{{ tp.product_name }}</td>
+                            <td class="text-center"><span class="badge bg-primary-subtle text-primary rounded-pill px-2.5">{{ tp.total_qty }}</span></td>
+                            <td class="text-end fw-bold">৳{{ tp.total_sales|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted small mb-0">No product sales recorded for this period yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    var trendCtx = document.getElementById('salesTrendChart');
+    if (trendCtx) {
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: {{ chart_labels_json|safe }},
+                datasets: [
+                    {
+                        label: 'Paid Revenue (৳)',
+                        data: {{ chart_revenue_json|safe }},
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.35,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Orders',
+                        data: {{ chart_orders_json|safe }},
+                        borderColor: '#10b981',
+                        backgroundColor: '#10b981',
+                        borderDash: [4, 4],
+                        tension: 0.35,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { beginAtZero: true, position: 'left', grid: { color: '#f1f5f9' } },
+                    y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
+
+    var pmCtx = document.getElementById('paymentMixChart');
+    var pmLabels = {{ pm_labels_json|safe }};
+    var pmCounts = {{ pm_counts_json|safe }};
+    if (pmCtx) {
+        new Chart(pmCtx, {
+            type: 'doughnut',
+            data: {
+                labels: pmLabels.length ? pmLabels : ['No Orders'],
+                datasets: [{
+                    data: pmCounts.length ? pmCounts : [1],
+                    backgroundColor: pmCounts.length ? ['#e2136e', '#2563eb', '#10b981', '#f59e0b'] : ['#e2e8f0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '66%',
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+})();
+</script>
 {% endblock %}

@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from cart.services import CartService
 from accounts.models import Address
-from .models import Order, DeliverySlot
+from .models import Order, DeliverySlot, PrescriptionRequest
 from .services import OrderService
 from .bkash import BKashService
 
@@ -275,3 +275,29 @@ def order_invoice(request, order_number):
     return render(request, 'orders/invoice.html', {'order': order})
 
 
+
+
+def rx_upload_submit(request):
+    """Handles Pharmacy & Healthcare prescription uploads via AJAX POST."""
+    from django.http import JsonResponse
+    if request.method != 'POST':
+        return JsonResponse({'ok': False, 'error': 'Method not allowed'}, status=405)
+
+    patient_name = request.POST.get('patient_name', '').strip()
+    phone = request.POST.get('phone', '').strip()
+    notes = request.POST.get('notes', '').strip()
+    rx_file = request.FILES.get('prescription_file')
+
+    if not patient_name or not phone or not rx_file:
+        return JsonResponse({'ok': False, 'error': 'Patient name, phone, and prescription file are required.'}, status=400)
+
+    if rx_file.size > 10 * 1024 * 1024:
+        return JsonResponse({'ok': False, 'error': 'File size must be under 10MB.'}, status=400)
+
+    rx = PrescriptionRequest.objects.create(
+        patient_name=patient_name,
+        phone=phone,
+        prescription_file=rx_file,
+        notes=notes,
+    )
+    return JsonResponse({'ok': True, 'rx_id': rx.pk})

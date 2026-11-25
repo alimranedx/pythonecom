@@ -131,6 +131,19 @@ class Order(TimeStampedModel):
     coupon_code = models.CharField(max_length=50, blank=True, default='')
     discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
 
+    # Bangladeshi Courier & Logistics Tracking
+    COURIER_CHOICES = [
+        ('', 'Not Assigned'),
+        ('Steadfast', 'Steadfast Courier'),
+        ('Pathao', 'Pathao Courier'),
+        ('RedX', 'RedX Logistics'),
+        ('Paperfly', 'Paperfly'),
+        ('SA Paribahan', 'SA Paribahan'),
+        ('Self Delivery', 'Own Rider / Express'),
+    ]
+    courier_name = models.CharField(max_length=50, choices=COURIER_CHOICES, blank=True, default='')
+    tracking_number = models.CharField(max_length=100, blank=True, default='')
+
     # Financial Totals Snapshot
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
     shipping_fee = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
@@ -161,3 +174,26 @@ class OrderItem(TimeStampedModel):
     @property
     def line_total(self):
         return self.product_price * self.quantity
+
+
+class PrescriptionRequest(TimeStampedModel):
+    """Stores customer prescription uploads from the Pharmacy & Healthcare storefront."""
+    STATUS_CHOICES = [
+        ('pending', 'Pending Pharmacist Review'),
+        ('reviewed', 'Verified by Pharmacist'),
+        ('converted', 'Converted to Order'),
+        ('rejected', 'Unclear / Rejected'),
+    ]
+
+    patient_name = models.CharField(max_length=150)
+    phone = models.CharField(max_length=30)
+    prescription_file = models.FileField(upload_to='prescriptions/')
+    notes = models.TextField(blank=True, default='')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_notes = models.TextField(blank=True, default='')
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Rx #{self.pk} - {self.patient_name} ({self.phone})"

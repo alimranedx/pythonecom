@@ -32,8 +32,11 @@ urlpatterns = [
 
     # Orders & Logistics (Chaldal Standard)
     path('orders/', views.admin_order_list, name='admin_order_list'),
+    path('orders/bulk-action/', views.admin_order_bulk_action, name='admin_order_bulk_action'),
     path('orders/<int:pk>/', views.admin_order_detail, name='admin_order_detail'),
     path('orders/<int:pk>/invoice/', views.admin_order_invoice, name='admin_order_invoice'),
+    path('prescriptions/', views.admin_prescription_list, name='admin_prescription_list'),
+    path('prescriptions/<int:pk>/update/', views.admin_prescription_update, name='admin_prescription_update'),
     path('orders/delivery-slots/', views.admin_delivery_slots_list, name='admin_delivery_slots_list'),
     path('orders/delivery-slots/<int:pk>/toggle/', views.admin_delivery_slot_toggle, name='admin_delivery_slot_toggle'),
     path('orders/coupons/', views.admin_coupon_list, name='admin_coupon_list'),
@@ -75,4 +78,5 @@ urlpatterns = [
     path('system-errors/<int:pk>/resolve/', views.admin_resolve_error, name='admin_resolve_error'),
     path('system-errors/resolve-all/', views.admin_resolve_all_errors, name='admin_resolve_all_errors'),
     path('system-errors/clear-resolved/', views.admin_clear_resolved_errors, name='admin_clear_resolved_errors'),
+    path('activity-logs/', views.admin_activity_logs, name='admin_activity_logs'),
 ]

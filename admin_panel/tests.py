@@ -688,3 +688,104 @@ class AdminSecurityAndValidationTests(TestCase):
         self.assertFalse(Coupon.objects.filter(code='BADCOUPON').exists())
 
 
+
+
+class AdminSpecialistFeaturesTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.superuser = User.objects.create_superuser(
+            username='specialist_admin',
+            email='specialist@test.com',
+            password='AdminPassword123'
+        )
+        self.client.force_login(self.superuser)
+        self.order1 = Order.objects.create(
+            full_name='Karim Ahmed',
+            email='karim@test.com',
+            phone='01711111111',
+            street_address='House 12, Dhanmondi',
+            city='Dhaka',
+            postal_code='1209',
+            total_amount=Decimal('1500.00'),
+            payment_method='bkash',
+            payment_status='paid',
+            status='pending',
+        )
+        self.order2 = Order.objects.create(
+            full_name='Nusrat Jahan',
+            email='nusrat@test.com',
+            phone='01822222222',
+            street_address='Banani Road 11',
+            city='Dhaka',
+            postal_code='1213',
+            total_amount=Decimal('950.00'),
+            payment_method='cod',
+            payment_status='pending',
+            status='pending',
+        )
+
+    def test_dashboard_date_ranges_and_charts(self):
+        for rng in ['all', 'today', '7d', '30d']:
+            res = self.client.get(f'/app-admin/?range={rng}')
+            self.assertEqual(res.status_code, 200)
+            html = res.content.decode('utf-8')
+            self.assertIn('salesTrendChart', html)
+            self.assertIn('paymentMixChart', html)
+
+    def test_order_courier_tracking_and_audit_log(self):
+        from admin_panel.models import AdminActivityLog
+        res = self.client.post(f'/app-admin/orders/{self.order1.pk}/', {
+            'status': 'shipped',
+            'payment_status': 'paid',
+            'courier_name': 'Steadfast',
+            'tracking_number': 'SF-998877',
+        }, follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.order1.refresh_from_db()
+        self.assertEqual(self.order1.status, 'shipped')
+        self.assertEqual(self.order1.courier_name, 'Steadfast')
+        self.assertEqual(self.order1.tracking_number, 'SF-998877')
+        self.assertTrue(AdminActivityLog.objects.filter(action='Order Updated', target_repr=self.order1.order_number).exists())
+
+    def test_order_bulk_action(self):
+        res = self.client.post('/app-admin/orders/bulk-action/', {
+            'order_ids': [str(self.order1.pk), str(self.order2.pk)],
+            'bulk_status': 'processing',
+        }, follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.order1.refresh_from_db()
+        self.order2.refresh_from_db()
+        self.assertEqual(self.order1.status, 'processing')
+        self.assertEqual(self.order2.status, 'processing')
+
+    def test_rx_upload_and_admin_prescription_inbox(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from orders.models import PrescriptionRequest
+        rx_file = SimpleUploadedFile('rx_test.jpg', b'fake-image-bytes', content_type='image/jpeg')
+        anon = Client()
+        up_res = anon.post('/orders/rx-upload/', {
+            'patient_name': 'Md. Hasan',
+            'phone': '01755555555',
+            'notes': 'Need 1 month supply',
+            'prescription_file': rx_file,
+        })
+        self.assertEqual(up_res.status_code, 200)
+        self.assertTrue(up_res.json()['ok'])
+        rx = PrescriptionRequest.objects.first()
+        self.assertIsNotNone(rx)
+
+        list_res = self.client.get('/app-admin/prescriptions/')
+        self.assertEqual(list_res.status_code, 200)
+        self.assertIn('Md. Hasan', list_res.content.decode('utf-8'))
+
+        upd_res = self.client.post(f'/app-admin/prescriptions/{rx.pk}/update/', {
+            'status': 'reviewed',
+            'admin_notes': 'Verified by pharmacist',
+        }, follow=True)
+        self.assertEqual(upd_res.status_code, 200)
+        rx.refresh_from_db()
+        self.assertEqual(rx.status, 'reviewed')
+
+    def test_activity_logs_page(self):
+        res = self.client.get('/app-admin/activity-logs/')
+        self.assertEqual(res.status_code, 200)
