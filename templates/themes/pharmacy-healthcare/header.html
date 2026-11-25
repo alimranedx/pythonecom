@@ -402,7 +402,7 @@
                     <button class="ph-bag-btn position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
                         <i class="bi bi-bag-plus-fill fs-6"></i>
                         <span class="d-none d-sm-inline">{% if IS_BANGLA %}ব্যাগ{% else %}Med Bag{% endif %}</span>
-                        <span class="badge rounded-pill bg-white text-dark fw-bold ms-1" id="navCartBadge" style="font-size: 0.72rem;">
+                        <span class="badge rounded-pill fw-bold ms-1" id="navCartBadge" style="font-size: 0.72rem; background-color: #ffffff !important; color: #0f766e !important;">
                             {{ global_cart_items_count|default:0 }}
                         </span>
                     </button>

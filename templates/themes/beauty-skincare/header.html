@@ -287,7 +287,7 @@
             </div>
 
             <!-- Left Editorial Links -->
-            <nav class="d-flex align-items-center gap-2 gap-xl-3">
+            <nav class="d-none d-lg-flex align-items-center gap-2 gap-xl-3">
                 <a href="{% url 'product_list' %}?category=makeup" class="beauty-runway-nav-link">{% if IS_BANGLA %}মেকআপ{% else %}Makeup{% endif %}</a>
                 <a href="{% url 'product_list' %}?category=skin-care" class="beauty-runway-nav-link">{% if IS_BANGLA %}স্কিনকেয়ার{% else %}Skincare{% endif %}</a>
                 <a href="{% url 'product_list' %}?category=hair-care" class="beauty-runway-nav-link">{% if IS_BANGLA %}হেয়ার{% else %}Hair{% endif %}</a>
@@ -313,8 +313,8 @@
 
             <!-- Right Editorial Links + Routine Quiz -->
             <nav class="d-flex align-items-center gap-2 gap-xl-3">
-                <a href="{% url 'product_list' %}?category=fragrances" class="beauty-runway-nav-link">{% if IS_BANGLA %}সুগন্ধি{% else %}Fragrance{% endif %}</a>
-                <a href="{% url 'product_list' %}?category=body-care" class="beauty-runway-nav-link d-none d-lg-inline-block">{% if IS_BANGLA %}এসেনশিয়ালস{% else %}Body &amp; Bath{% endif %}</a>
+                <a href="{% url 'product_list' %}?category=fragrances" class="beauty-runway-nav-link d-none d-lg-inline-block">{% if IS_BANGLA %}সুগন্ধি{% else %}Fragrance{% endif %}</a>
+                <a href="{% url 'product_list' %}?category=body-care" class="beauty-runway-nav-link d-none d-xl-inline-block">{% if IS_BANGLA %}এসেনশিয়ালস{% else %}Body &amp; Bath{% endif %}</a>
                 <button type="button" class="btn beauty-routine-btn d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#skinConsultationModal" title="Take our 60-second Skin & Routine Consultation">
                     <i class="bi bi-stars"></i>
                     <span>{% if IS_BANGLA %}রুটিন খুঁজুন{% else %}Find Your Routine{% endif %}</span>
@@ -398,7 +398,7 @@
                     <span class="d-none d-xl-inline fw-bold text-nowrap" id="navCartSubtotal" style="font-size: 0.78rem;">
                         ৳{{ global_cart.subtotal|floatformat:2|default:'0.00' }}
                     </span>
-                    <span class="badge rounded-pill bg-white text-dark fw-bold" id="navCartBadge" style="font-size: 0.68rem; color: #be185d !important;">
+                    <span class="badge rounded-pill fw-bold" id="navCartBadge" style="font-size: 0.68rem; background-color: #ffffff !important; color: #be185d !important;">
                         {{ global_cart_items_count|default:0 }}
                     </span>
                 </button>
@@ -474,7 +474,7 @@
                         data-cart-drawer="#cartDrawer"
                         aria-label="Open Bag">
                     <i class="bi bi-bag-heart-fill"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-white text-dark fw-bold border" style="font-size: 0.58rem; padding: 2px 5px; color: #be185d !important;">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill fw-bold border" style="font-size: 0.58rem; padding: 2px 5px; background-color: #ffffff !important; color: #be185d !important; border-color: #fbcfe8 !important;">
                         {{ global_cart_items_count|default:0 }}
                     </span>
                 </button>
@@ -752,6 +752,16 @@
             }
         }
         document.addEventListener('DOMContentLoaded', function() {
+            var beautyHeader = document.querySelector('.beauty-header.sticky-top');
+            var previewBar = document.querySelector('.theme-preview-top-bar');
+            function syncBeautyHeaderTop() {
+                if (beautyHeader && previewBar) {
+                    beautyHeader.style.top = previewBar.offsetHeight + 'px';
+                }
+            }
+            syncBeautyHeaderTop();
+            window.addEventListener('resize', syncBeautyHeaderTop);
+
             document.querySelectorAll('input[name="skin_type"], #skinConcernsOptions input[type="checkbox"]').forEach(function(el) {
                 el.addEventListener('change', updateBeautyRoutine);
             });

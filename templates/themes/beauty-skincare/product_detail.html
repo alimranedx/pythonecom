@@ -39,6 +39,37 @@
         background: #1c1917;
         border-color: #44403c;
     }
+    .beauty-price-box {
+        background: linear-gradient(135deg, #fdfbf9 0%, #f6efe8 100%);
+        border: 1px solid var(--beauty-border);
+    }
+    .beauty-compat-box {
+        background: #faf5ee;
+        border: 1px solid #ebd9c8;
+    }
+    [data-bs-theme="dark"] .beauty-price-box {
+        background: linear-gradient(135deg, #251e22 0%, #1c1619 100%) !important;
+        border-color: #44403c !important;
+    }
+    [data-bs-theme="dark"] .beauty-compat-box {
+        background: #251e22 !important;
+        border-color: #44403c !important;
+    }
+    .beauty-soft-panel {
+        background: #faf8f5;
+    }
+    .beauty-patch-alert {
+        background: #fffbeb;
+        border-color: #fde68a !important;
+    }
+    [data-bs-theme="dark"] .beauty-soft-panel {
+        background: #251e22 !important;
+        border-color: #44403c !important;
+    }
+    [data-bs-theme="dark"] .beauty-patch-alert {
+        background: rgba(245, 158, 11, 0.14) !important;
+        border-color: rgba(245, 158, 11, 0.35) !important;
+    }
 
     /* Gallery Studio Styling */
     .beauty-gallery-main {
@@ -438,7 +469,7 @@
                 </div>
 
                 <!-- Pricing Block with Savings Badge -->
-                <div class="p-3 rounded-3 mb-3" style="background: linear-gradient(135deg, #fdfbf9 0%, #f6efe8 100%); border: 1px solid var(--beauty-border);">
+                <div class="p-3 rounded-3 mb-3 beauty-price-box">
                     <div class="d-flex align-items-baseline gap-2 mb-1">
                         <span class="fs-2 fw-bold text-dark" style="letter-spacing: -0.5px;">৳{{ product.effective_price }}</span>
                         {% if product.has_discount %}
@@ -460,7 +491,7 @@
                 </div>
 
                 <!-- Skin Type Compatibility Badge -->
-                <div class="p-2.5 rounded-3 mb-3 d-flex align-items-center gap-2" style="background: #faf5ee; border: 1px solid #ebd9c8;">
+                <div class="p-2.5 rounded-3 mb-3 d-flex align-items-center gap-2 beauty-compat-box">
                     <i class="bi bi-droplet-half text-success fs-5"></i>
                     <div>
                         <div class="fw-semibold text-dark small" style="font-size: 0.8rem;">Skin Compatibility:</div>
@@ -833,7 +864,7 @@
                     <div class="row g-4 mb-4">
                         <!-- AM Morning Ritual -->
                         <div class="col-md-6">
-                            <div class="p-3.5 rounded-3 border h-100" style="background: #faf8f5;">
+                            <div class="p-3.5 rounded-3 border h-100 beauty-soft-panel">
                                 <div class="d-flex align-items-center gap-2 mb-2">
                                     <span class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: #fef3c7; color: #d97706;">
                                         <i class="bi bi-sun"></i>
@@ -851,7 +882,7 @@
 
                         <!-- PM Evening Ritual -->
                         <div class="col-md-6">
-                            <div class="p-3.5 rounded-3 border h-100" style="background: #faf8f5;">
+                            <div class="p-3.5 rounded-3 border h-100 beauty-soft-panel">
                                 <div class="d-flex align-items-center gap-2 mb-2">
                                     <span class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: #e0e7ff; color: #4338ca;">
                                         <i class="bi bi-moon-stars"></i>
@@ -869,7 +900,7 @@
                     </div>
 
                     <!-- Patch Test Guide -->
-                    <div class="p-3 rounded-3 border" style="background: #fffbeb; border-color: #fde68a !important;">
+                    <div class="p-3 rounded-3 border beauty-patch-alert">
                         <div class="d-flex align-items-start gap-2.5">
                             <i class="bi bi-exclamation-triangle-fill text-warning fs-5 flex-shrink-0 mt-0.5"></i>
                             <div>
@@ -991,7 +1022,7 @@
                     {% endif %}
 
                     <!-- Add Review Form -->
-                    <div class="p-3.5 rounded-3 border" style="background: #faf8f5;">
+                    <div class="p-3.5 rounded-3 border beauty-soft-panel">
                         <h6 class="fw-bold text-dark mb-2">Leave Your Experience</h6>
                         <form action="{% url 'product_add_review' product.pk %}" method="post">
                             {% csrf_token %}
