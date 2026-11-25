@@ -182,6 +182,40 @@
     .theme-pharmacy-header .ph-compact-search .form-control::placeholder {
         color: var(--ph-muted);
     }
+    .theme-pharmacy-header .ph-header-search-slot {
+        transition: opacity 0.24s ease, max-width 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.24s ease;
+    }
+    .theme-pharmacy-header.ph-home-mode:not(.is-scrolled) .ph-header-search-slot {
+        max-width: 0 !important;
+        opacity: 0;
+        overflow: hidden;
+        pointer-events: none;
+        transform: translateY(-6px);
+        margin: 0 !important;
+        padding: 0 !important;
+        flex-grow: 0 !important;
+    }
+    .theme-pharmacy-header.ph-home-mode.is-scrolled .ph-header-search-slot,
+    .theme-pharmacy-header:not(.ph-home-mode) .ph-header-search-slot {
+        max-width: 480px;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+    .theme-pharmacy-header .ph-mobile-scroll-search {
+        display: none;
+        background-color: var(--ph-header-bg);
+        border-top: 1px solid var(--ph-border);
+    }
+    .theme-pharmacy-header.is-scrolled .ph-mobile-scroll-search,
+    .theme-pharmacy-header:not(.ph-home-mode) .ph-mobile-scroll-search {
+        display: block;
+    }
+    @media (max-width: 1399.98px) {
+        .theme-pharmacy-header.is-scrolled .ph-hide-on-search {
+            display: none !important;
+        }
+    }
     .theme-pharmacy-header .ph-mega-dropdown {
         min-width: 280px;
         max-height: 420px;
@@ -191,7 +225,7 @@
     }
 </style>
 
-<header class="{% if CURRENT_THEME_CONFIG.sticky_header|default:True %}sticky-top {% endif %}shadow-xs theme-pharmacy-header">
+<header id="phSiteHeader" class="{% if CURRENT_THEME_CONFIG.sticky_header|default:True %}sticky-top {% endif %}shadow-xs theme-pharmacy-header {% if request.path == '/' %}ph-home-mode{% endif %}">
     <!-- Row 1: Main Clinical Header Bar -->
     <div class="ph-top-row py-2">
         <div class="container">
@@ -283,24 +317,29 @@
                     </div>
                 </div>
 
-                <!-- Center Search Bar ONLY on Inner Pages (Homepage features the monumental Hero Search Dock) -->
-                {% if request.path != '/' %}
-                <div class="flex-grow-1 mx-lg-3 d-none d-lg-block" style="max-width: 440px;">
+                <!-- Center Fixed Search Bar (Reveals smoothly when scrolling past Hero Search Box on /, always visible on inner pages) -->
+                <div class="flex-grow-1 mx-lg-2 d-none d-lg-block ph-header-search-slot" id="phStickyHeaderSearch">
                     <form action="{% url 'product_list' %}" method="get" class="ph-compact-search">
-                        <div class="input-group input-group-sm">
-                            <input type="text" name="q" class="form-control rounded-start-pill ps-3 py-2" placeholder="{% if IS_BANGLA %}ঔষধ বা জেনেরিক খুঁজুন...{% else %}Search medicine, generic, or brand...{% endif %}" value="{{ request.GET.q }}">
-                            <button class="btn text-white rounded-end-pill px-3" type="submit" style="background-color: #059669;">
+                        <div class="input-group input-group-sm shadow-xs rounded-pill overflow-hidden" style="border: 1.5px solid var(--ph-teal-border); background: var(--ph-surface-soft);">
+                            <span class="input-group-text border-0 bg-transparent ps-3 pe-1" style="color: var(--ph-accent);">
                                 <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="q" class="form-control border-0 bg-transparent shadow-none py-2" placeholder="{% if IS_BANGLA %}ঔষধের নাম বা জেনেরিক খুঁজুন...{% else %}Search medicines, generics, or health devices...{% endif %}" value="{{ request.GET.q }}" aria-label="Search medicines in top header">
+                            <button type="button" class="btn btn-sm border-0 d-inline-flex align-items-center gap-1 px-2" style="color: var(--ph-accent); font-size: 0.74rem; font-weight: 700;" data-bs-toggle="modal" data-bs-target="#rxUploadModal" title="Upload Prescription">
+                                <i class="bi bi-camera-fill"></i>
+                                <span>Rx</span>
+                            </button>
+                            <button class="btn text-white fw-bold px-3" type="submit" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
+                                {% if IS_BANGLA %}খুঁজুন{% else %}Search{% endif %}
                             </button>
                         </div>
                     </form>
                 </div>
-                {% endif %}
 
                 <!-- Right: Clean PharmEasy-Style Clinical Actions -->
-                <div class="d-flex align-items-center gap-1 gap-sm-2">
+                <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
                     <!-- Helpline Quick Chip (Desktop XL) -->
-                    <a href="tel:16263" class="ph-action-link d-none d-xl-inline-flex" title="Licensed Pharmacist Helpline">
+                    <a href="tel:16263" class="ph-action-link d-none d-xl-inline-flex ph-hide-on-search" title="Licensed Pharmacist Helpline">
                         <i class="bi bi-telephone-fill" style="color: #059669;"></i>
                         <span>16263</span>
                     </a>
@@ -345,7 +384,7 @@
                     </div>
 
                     <!-- Healthcare Offers -->
-                    <a href="{% url 'product_list' %}?flash_sale=1" class="ph-action-link d-none d-lg-inline-flex">
+                    <a href="{% url 'product_list' %}?flash_sale=1" class="ph-action-link d-none d-lg-inline-flex ph-hide-on-search">
                         <i class="bi bi-patch-check-fill text-warning"></i>
                         <span>{% if IS_BANGLA %}অফার{% else %}Offers{% endif %}</span>
                     </a>
@@ -429,6 +468,18 @@
             </div>
         </div>
     </nav>
+
+    <!-- Mobile / Tablet Sticky Search Bar (Appears automatically when scrolled past hero search box) -->
+    <div class="ph-mobile-scroll-search d-lg-none py-2 px-3">
+        <form action="{% url 'product_list' %}" method="get" class="ph-compact-search">
+            <div class="input-group input-group-sm rounded-pill overflow-hidden" style="border: 1.5px solid var(--ph-teal-border); background: var(--ph-surface-soft);">
+                <input type="text" name="q" class="form-control border-0 bg-transparent shadow-none ps-3" placeholder="{% if IS_BANGLA %}ঔষধ বা জেনেরিক খুঁজুন...{% else %}Search medicines or generics...{% endif %}" value="{{ request.GET.q }}">
+                <button class="btn text-white fw-bold px-3" type="submit" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
 </header>
 
 <script>
@@ -448,6 +499,43 @@
                 }
             });
         });
+
+        // 1. Keep sticky header cleanly below Preview Mode banner if active
+        var siteHeader = document.getElementById('phSiteHeader');
+        var previewBar = document.querySelector('.theme-preview-top-bar');
+        function syncHeaderTopOffset() {
+            if (!siteHeader) return;
+            if (previewBar && siteHeader.classList.contains('sticky-top')) {
+                siteHeader.style.top = previewBar.offsetHeight + 'px';
+            } else {
+                siteHeader.style.top = '0px';
+            }
+        }
+        syncHeaderTopOffset();
+        window.addEventListener('resize', syncHeaderTopOffset);
+
+        // 2. Reveal Fixed Top Search Box smoothly when scrolling past the Hero Search Box (with hysteresis to prevent flicker)
+        function updateScrolledSearchState() {
+            if (!siteHeader) return;
+            var heroSearch = document.getElementById('phHeroSearchBox');
+            var topOffset = previewBar ? previewBar.offsetHeight : 0;
+            if (!heroSearch) {
+                siteHeader.classList.toggle('is-scrolled', window.scrollY > 180);
+                return;
+            }
+            var rect = heroSearch.getBoundingClientRect();
+            var triggerY = topOffset + 75;
+            if (!siteHeader.classList.contains('is-scrolled')) {
+                if (rect.top <= triggerY) {
+                    siteHeader.classList.add('is-scrolled');
+                }
+            } else if (rect.top > triggerY + 28) {
+                siteHeader.classList.remove('is-scrolled');
+            }
+        }
+        window.addEventListener('scroll', updateScrolledSearchState, { passive: true });
+        window.addEventListener('load', updateScrolledSearchState);
+        updateScrolledSearchState();
     } catch (e) {}
 })();
 </script>

@@ -81,7 +81,11 @@
     .ph-hero-carousel-wrap .carousel-control-next-icon {
         width: 14px;
         height: 14px;
-        filter: invert(48%) sepia(79%) saturate(420%) hue-rotate(122deg) brightness(95%) contrast(92%);
+        filter: invert(38%) sepia(83%) saturate(465%) hue-rotate(131deg) brightness(92%) contrast(94%);
+    }
+    [data-bs-theme="dark"] .ph-hero-carousel-wrap .carousel-control-prev-icon,
+    [data-bs-theme="dark"] .ph-hero-carousel-wrap .carousel-control-next-icon {
+        filter: invert(84%) sepia(24%) saturate(560%) hue-rotate(122deg) brightness(102%) contrast(96%);
     }
     .ph-hero-carousel-wrap .carousel-indicators {
         bottom: 3.75rem;
@@ -388,6 +392,12 @@
         color: var(--ph-heading);
     }
 
+    @media (min-width: 992px) {
+        .row-cols-lg-8 > * {
+            flex: 0 0 auto;
+            width: 12.5%;
+        }
+    }
     @media (max-width: 767.98px) {
         .ph-hero-band {
             padding: 0.5rem 0 0;
@@ -575,7 +585,7 @@
     <div class="container">
         <div class="ph-search-dock">
             <form action="{% url 'product_list' %}" method="get">
-                <div class="ph-dock-searchbar">
+                <div class="ph-dock-searchbar" id="phHeroSearchBox">
                     <i class="bi bi-search fs-5" style="color: var(--ph-accent);"></i>
                     <input type="text" name="q"
                            placeholder="{% if IS_BANGLA %}ঔষধের নাম বা জেনেরিক খুঁজুন (যেমন: Napa, Omeprazole, ইনসুলিন)...{% else %}Search for Medicines, Generic Salts, or Health Devices...{% endif %}"
@@ -586,7 +596,7 @@
                         <i class="bi bi-camera-fill"></i>
                         <span>Rx</span>
                     </button>
-                    <button type="submit" class="btn rounded-3 px-4 py-2 fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
+                    <button type="submit" class="btn rounded-3 px-3 px-sm-4 py-2 fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
                         {% if IS_BANGLA %}খুঁজুন{% else %}Search{% endif %}
                     </button>
                 </div>

@@ -64,12 +64,30 @@
         overflow: hidden;
     }
     .beauty-hero-slide {
-        min-height: 410px;
+        min-height: 365px;
         display: flex;
         align-items: center;
         position: relative;
         overflow: hidden;
-        padding: 2.25rem 0 3.25rem;
+        padding: 1.65rem 0 2.75rem;
+    }
+    .beauty-svg-plaque {
+        fill: #d6cec4;
+        fill-opacity: 0.45;
+    }
+    [data-bs-theme="dark"] .beauty-svg-plaque {
+        fill: #ffffff;
+        fill-opacity: 0.08;
+    }
+    @media (min-width: 992px) {
+        .row-cols-lg-7 > * {
+            flex: 0 0 auto;
+            width: 14.285714%;
+        }
+        .row-cols-lg-8 > * {
+            flex: 0 0 auto;
+            width: 12.5%;
+        }
     }
     .beauty-slide-bg-1 { background: var(--beauty-slide-1); }
     .beauty-slide-bg-2 { background: var(--beauty-slide-2); }
@@ -485,9 +503,9 @@
 
                                 <!-- Architectural Sculpted Pedestal SVG Studio Art (OHSOGO Inspired) -->
                                 <div class="col-lg-6 d-none d-lg-flex justify-content-center">
-                                    <svg viewBox="0 0 520 310" width="490" height="290" class="img-fluid" role="img" aria-label="Curated Skincare Bottle Pedestals">
+                                    <svg viewBox="0 0 520 310" width="440" height="258" class="img-fluid" role="img" aria-label="Curated Skincare Bottle Pedestals">
                                         <!-- Architectural backdrop plaque -->
-                                        <rect x="135" y="18" width="250" height="110" rx="4" fill="#d6cec4" fill-opacity="0.45"/>
+                                        <rect x="135" y="18" width="250" height="110" rx="4" class="beauty-svg-plaque"/>
                                         <text x="260" y="64" text-anchor="middle" fill="currentColor" font-size="19" font-weight="700" font-family="Playfair Display, serif" letter-spacing="3" opacity="0.88">THE RADIANCE EDIT</text>
                                         <text x="260" y="88" text-anchor="middle" fill="currentColor" font-size="11.5" font-family="sans-serif" letter-spacing="1.5" opacity="0.68">K-BEAUTY • DERM TESTED</text>
                                         <line x1="210" y1="104" x2="310" y2="104" stroke="#be185d" stroke-width="2"/>
@@ -558,8 +576,8 @@
                                 </div>
 
                                 <div class="col-lg-6 d-none d-lg-flex justify-content-center">
-                                    <svg viewBox="0 0 520 310" width="490" height="290" class="img-fluid" role="img" aria-label="Barrier Serums Showcase">
-                                        <rect x="130" y="20" width="260" height="106" rx="4" fill="#be185d" fill-opacity="0.1"/>
+                                    <svg viewBox="0 0 520 310" width="440" height="258" class="img-fluid" role="img" aria-label="Barrier Serums Showcase">
+                                        <rect x="130" y="20" width="260" height="106" rx="4" class="beauty-svg-plaque"/>
                                         <text x="260" y="66" text-anchor="middle" fill="currentColor" font-size="18" font-weight="700" font-family="Playfair Display, serif" letter-spacing="2.5">BARRIER SCIENCE</text>
                                         <text x="260" y="90" text-anchor="middle" fill="currentColor" font-size="11" font-family="sans-serif" letter-spacing="1.4" opacity="0.7">NIACINAMIDE • CERAMIDES</text>
                                         <rect x="65" y="205" width="390" height="75" rx="8" fill="#d9c6cf" fill-opacity="0.5"/>
@@ -613,7 +631,7 @@
                                 </div>
 
                                 <div class="col-lg-6 d-none d-lg-flex justify-content-center">
-                                    <svg viewBox="0 0 520 310" width="490" height="290" class="img-fluid" role="img" aria-label="Invisible Sun Care & Lip Tints">
+                                    <svg viewBox="0 0 520 310" width="440" height="258" class="img-fluid" role="img" aria-label="Invisible Sun Care & Lip Tints">
                                         <circle cx="260" cy="148" r="108" fill="#f59e0b" fill-opacity="0.14"/>
                                         <rect x="85" y="210" width="350" height="68" rx="8" fill="#d6c5b3" fill-opacity="0.55"/>
                                         <rect x="165" y="88" width="76" height="122" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>

@@ -184,6 +184,14 @@
             border-color: #2e2428 !important;
             color: #f472b6 !important;
         }
+        [data-bs-theme="dark"] .beauty-subfooter-line {
+            border-color: #2e2428 !important;
+        }
+        [data-bs-theme="dark"] .beauty-clean-badge {
+            background: #2a1822 !important;
+            border-color: #5c2542 !important;
+            color: #f472b6 !important;
+        }
     </style>
 
     <div class="container">
@@ -297,7 +305,7 @@
 
                 <!-- Clean Beauty Badge -->
                 <div class="mb-3">
-                    <span class="badge py-1 px-2 d-inline-flex align-items-center gap-1" style="background: #fff0f3; color: #be185d; border: 1px solid #fbcfe8; font-size: 0.72rem; border-radius: 9999px;">
+                    <span class="badge py-1 px-2 d-inline-flex align-items-center gap-1 beauty-clean-badge" style="background: #fff0f3; color: #be185d; border: 1px solid #fbcfe8; font-size: 0.72rem; border-radius: 9999px;">
                         <i class="bi bi-stars"></i> Clean Luxury Skincare &amp; Botanicals
                     </span>
                 </div>
@@ -423,7 +431,7 @@
         </div>
 
         <!-- 3. Sub-Footer (Copyright, Back to Top, Legal Links) -->
-        <div class="pt-3 border-top d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" style="border-color: #ebdcd4 !important; font-size: 0.78rem;">
+        <div class="pt-3 border-top beauty-subfooter-line d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" style="border-color: #ebdcd4 !important; font-size: 0.78rem;">
             <!-- Copyright Notice -->
             <div class="text-muted text-center text-md-start">
                 © {% now "Y" %} <strong>{{ site_settings.get_effective_site_name|default:'Glow & Glam' }}</strong>. 

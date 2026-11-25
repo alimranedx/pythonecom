@@ -194,7 +194,7 @@
         }
     </style>
 
-    <!-- 1. Top Beauty Announcement & Concierge Ribbon -->
+    <!-- 1. Top Beauty Concierge Ribbon -->
     <div class="beauty-top-bar py-1 px-3 d-none d-sm-block">
         <div class="container-xl d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3 text-truncate">
@@ -219,6 +219,7 @@
                     <span>{% if IS_BANGLA %}বিউটি হেল্পলাইন:{% else %}Beauty Hotline:{% endif %} <strong>{{ site_settings.contact_phone|default:'+880 1700-000000' }}</strong></span>
                 </a>
 
+                {% if not site_settings.announcement_enabled %}
                 <span class="opacity-30 d-none d-lg-inline">|</span>
 
                 <button type="button" class="btn btn-xs btn-outline-secondary theme-toggle-btn py-0 px-2 rounded-pill d-inline-flex align-items-center" onclick="toggleTheme()" title="Toggle Dark/Light Mode" style="font-size: 0.72rem; line-height: 1.6; border-color: var(--bh-border); color: var(--bh-text);">
@@ -238,6 +239,7 @@
                         বাং
                     </a>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
