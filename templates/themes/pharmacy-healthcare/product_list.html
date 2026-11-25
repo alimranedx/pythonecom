@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if selected_category %}{{ selected_category.name }} | {% endif %}Medicines &amp; Healthcare Catalog | {{ site_settings.get_effective_site_name|default:'Arogya Pharma' }}{% endblock %}
+
+{% block content %}
+<div class="container my-4 mb-5">
+    <!-- Clinical Trust Banner -->
+    <div class="p-3 p-md-4 rounded-4 text-white mb-4 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3" style="background: linear-gradient(135deg, #042f2e 0%, #0f766e 65%, #059669 100%);">
+        <div>
+            <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 fw-bold mb-2">
+                <i class="bi bi-shield-fill-check me-1"></i> DGDA Verified Pharmacy Catalog
+            </span>
+            <h3 class="fw-bold mb-1">
+                {% if selected_category %}{{ selected_category.name }}{% elif query %}Search: "{{ query }}"{% else %}{% if IS_BANGLA %}সকল ঔষধ ও স্বাস্থ্যপণ্য{% else %}All Medicines &amp; Healthcare Essentials{% endif %}{% endif %}
+            </h3>
+            <p class="small text-white-50 mb-0">{{ total_count }} authentic clinical items available • 2-Hour Express Dhaka Delivery</p>
+        </div>
+        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" style="color: #0f766e;" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
+            <i class="bi bi-file-earmark-medical-fill text-danger me-1"></i> {% if IS_BANGLA %}প্রেসক্রিপশন আপলোড{% else %}Order with Rx{% endif %}
+        </button>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar Filters -->
+        <aside class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 sticky-top" style="top: 85px; border: 1px solid #ccfbf1 !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0" style="color: #042f2e;"><i class="bi bi-funnel me-1 text-success"></i> {% if IS_BANGLA %}ফিল্টার{% else %}Filter Medicines{% endif %}</h6>
+                    <a href="{% url 'product_list' %}" class="small text-decoration-none text-danger fw-semibold">Reset</a>
+                </div>
+                <form method="get" action="{% url 'product_list' %}">
+                    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Category</label>
+                        <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.slug }}" {% if selected_category and selected_category.slug == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Pharmaceutical / Brand</label>
+                        <select name="brand" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                            <option value="">All Brands</option>
+                            {% for br in brands %}
+                                <option value="{{ br.slug }}" {% if selected_brand and selected_brand.slug == br.slug %}selected{% endif %}>{{ br.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Price Range (৳)</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min ৳" value="{{ min_price }}">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max ৳" value="{{ max_price }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="in_stock" value="1" id="inStockOnly" {% if in_stock %}checked{% endif %} onchange="this.form.submit()">
+                        <label class="form-check-label small fw-semibold" for="inStockOnly">In Stock Only</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-sm w-100 text-white rounded-pill fw-bold" style="background-color: #059669;">Apply Filters</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Product Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2 bg-white p-3 rounded-3 shadow-xs border">
+                <span class="small text-muted fw-semibold">Showing <strong>{{ products|length }}</strong> of <strong>{{ total_count }}</strong> items</span>
+                <form method="get" class="d-flex align-items-center gap-2">
+                    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+                    {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand.slug }}">{% endif %}
+                    <select name="sort" class="form-select form-select-sm rounded-pill" onchange="this.form.submit()">
+                        <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Recommended</option>
+                        <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest Stock</option>
+                    </select>
+                </form>
+            </div>
+
+            <div class="row g-3">
+                {% for product in products %}
+                    <div class="col-6 col-md-4">
+                        {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                        <i class="bi bi-capsule fs-1 text-muted"></i>
+                        <h5 class="fw-bold mt-3">No matching medicines found</h5>
+                        <p class="text-muted small">Try clearing filters or upload your prescription for pharmacist assistance.</p>
+                        <a href="{% url 'product_list' %}" class="btn btn-outline-success rounded-pill px-4">Reset Search</a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if page_obj.has_other_pages %}
+                <nav class="mt-4 d-flex justify-content-center">
+                    <ul class="pagination pagination-sm">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ querystring }}">Prev</a></li>
+                        {% endif %}
+                        {% for num in elided_page_range %}
+                            {% if num == ellipsis %}
+                                <li class="page-item disabled"><span class="page-link">{{ ellipsis }}</span></li>
+                            {% else %}
+                                <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}&{{ querystring }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ querystring }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

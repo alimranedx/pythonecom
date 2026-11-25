@@ -152,3 +152,90 @@
         </div>
     </div>
 </footer>
+
+<!-- Prescription Upload Modal (#rxUploadModal) -->
+<div class="modal fade" id="rxUploadModal" tabindex="-1" aria-labelledby="rxUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header text-white border-0 py-3 px-4" style="background: linear-gradient(135deg, #042f2e 0%, #0f766e 60%, #059669 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-medical-fill text-warning fs-4"></i>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="rxUploadModalLabel">
+                            {% if IS_BANGLA %}প্রেসক্রিপশন আপলোড করুন{% else %}Upload Doctor's Prescription (Rx){% endif %}
+                        </h5>
+                        <small class="text-white-50">{% if IS_BANGLA %}রেজিস্টার্ড ফার্মাসিস্ট ১৫ মিনিটের মধ্যে কল করবেন{% else %}Verified by DGDA A-Grade Pharmacists within 15 mins{% endif %}</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="rxUploadForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}রোগীর নাম{% else %}Patient Full Name{% endif %} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-3" id="rxPatientName" placeholder="e.g. Md. Rafiqul Islam" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}মোবাইল নম্বর (বাংলাদেশ){% else %}Mobile Number (BD){% endif %} <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control rounded-3" id="rxPhone" placeholder="017XXXXXXXX" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}প্রেসক্রিপশনের ছবি আপলোড করুন{% else %}Prescription Photo / PDF{% endif %} <span class="text-danger">*</span></label>
+                            <div class="p-4 rounded-3 text-center border border-2 border-dashed" style="border-color: #14b8a6 !important; background-color: #f0fdfa; cursor: pointer;" onclick="document.getElementById('rxFileInput').click();">
+                                <i class="bi bi-cloud-arrow-up-fill fs-1" style="color: #0d9488;"></i>
+                                <p class="fw-semibold mb-1 text-dark" id="rxFileNameDisplay">{% if IS_BANGLA %}ছবি বা পিডিএফ সিলেক্ট করতে ক্লিক করুন{% else %}Click to upload clear photo of your Rx (JPG, PNG, PDF){% endif %}</p>
+                                <small class="text-muted">Max 10MB • Keep doctor's signature &amp; medicine list visible</small>
+                                <input type="file" id="rxFileInput" accept="image/*,.pdf" class="d-none" required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}ডেলিভারি ঠিকানা ও নোট{% else %}Delivery Area &amp; Pharmacist Notes{% endif %}</label>
+                            <textarea class="form-control rounded-3" id="rxNotes" rows="2" placeholder="e.g. Dhanmondi 27, Dhaka • Need 1 month dose for all items"></textarea>
+                        </div>
+                    </div>
+                    <div id="rxUploadSuccess" class="alert alert-success mt-3 mb-0 d-none rounded-3">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <strong>{% if IS_BANGLA %}প্রেসক্রিপশন সফলভাবে জমা হয়েছে!{% else %}Prescription Received!{% endif %}</strong>
+                        <span>{% if IS_BANGLA %}আমাদের ফার্মাসিস্ট শীঘ্রই আপনার নম্বরে কল করে অর্ডার কনফার্ম করবেন।{% else %}Our licensed pharmacist will call you shortly to confirm dosage &amp; delivery.{% endif %}</span>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">{% if IS_BANGLA %}বাতিল{% else %}Cancel{% endif %}</button>
+                        <button type="submit" class="btn text-white rounded-pill px-4 fw-bold" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
+                            <i class="bi bi-send-check me-1"></i> {% if IS_BANGLA %}সাবমিট করুন{% else %}Submit Prescription{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    var fileInput = document.getElementById('rxFileInput');
+    var nameDisplay = document.getElementById('rxFileNameDisplay');
+    if (fileInput && nameDisplay) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                nameDisplay.textContent = 'Selected: ' + this.files[0].name;
+                nameDisplay.classList.add('text-success');
+            }
+        });
+    }
+    var form = document.getElementById('rxUploadForm');
+    var successAlert = document.getElementById('rxUploadSuccess');
+    if (form && successAlert) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            successAlert.classList.remove('d-none');
+            setTimeout(function() {
+                form.reset();
+                if (nameDisplay) {
+                    nameDisplay.textContent = 'Click to upload clear photo of your Rx (JPG, PNG, PDF)';
+                    nameDisplay.classList.remove('text-success');
+                }
+            }, 400);
+        });
+    }
+})();
+</script>

@@ -1,4 +1,17 @@
 {% load static %}
+<style>
+    .pharmacy-product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -6px rgba(15, 118, 110, 0.16) !important;
+        border-color: #0d9488 !important;
+    }
+    .pharmacy-product-card img {
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .pharmacy-product-card:hover img {
+        transform: scale(1.06);
+    }
+</style>
 <!-- Pharmacy Specialized Product Card Slot -->
 <div class="card h-100 border shadow-sm pharmacy-product-card" style="border-radius: 12px; border-color: #ccfbf1 !important; transition: all 0.25s ease; overflow: hidden; background: #ffffff;">
     <div class="position-relative p-3 text-center" style="background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%); min-height: 170px; display: flex; align-items: center; justify-content: center;">
@@ -74,7 +87,7 @@
             <span class="fs-5 fw-bold" style="color: #0f766e;">৳{{ product.effective_price }}</span>
             {% if product.has_discount %}
                 <span class="text-decoration-line-through text-muted small">৳{{ product.price }}</span>
-                <span class="badge bg-danger-subtle text-danger small">Save ৳{{ product.price|floatformat:2|default:'0' }}</span>
+                <span class="badge bg-danger-subtle text-danger small">-{{ product.discount_percent }}%</span>
             {% endif %}
         </div>
 

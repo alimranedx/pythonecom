@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | {{ site_settings.get_effective_site_name|default:'Arogya Healthcare & Pharmacy' }}{% endblock %}
+
+{% block content %}
+<div class="container my-4 mb-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-success">Home</a></li>
+            {% if product.category %}
+                <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="text-decoration-none text-success">{{ product.category.name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 mb-5" style="border: 1px solid #ccfbf1 !important;">
+        <div class="row g-4 align-items-start">
+            <!-- Left: Image & Gallery -->
+            <div class="col-lg-5">
+                <div class="rounded-4 p-4 text-center border mb-3" style="background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%); border-color: #ccfbf1 !important;">
+                    {% if product.image %}
+                        <img id="pharmaMainImg" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 320px; object-fit: contain;">
+                    {% else %}
+                        <i class="bi bi-capsule display-1 text-success"></i>
+                    {% endif %}
+                </div>
+                {% if gallery_images %}
+                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="rounded-3 border p-1 bg-white" style="width: 60px; height: 60px; object-fit: contain; cursor: pointer;" onclick="document.getElementById('pharmaMainImg').src=this.src;">
+                    {% endif %}
+                    {% for img in gallery_images %}
+                        <img src="{{ img.image.url }}" class="rounded-3 border p-1 bg-white" style="width: 60px; height: 60px; object-fit: contain; cursor: pointer;" onclick="document.getElementById('pharmaMainImg').src=this.src;">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right: Clinical Details & Purchase -->
+            <div class="col-lg-7">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="badge rounded-pill px-3 py-1" style="background-color: #0f766e; color: #fff;">
+                        <i class="bi bi-shield-check me-1"></i> DGDA Genuine Stock
+                    </span>
+                    {% if product.brand %}
+                        <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}" class="badge bg-light text-dark border text-decoration-none rounded-pill px-3 py-1">
+                            <i class="bi bi-building me-1 text-success"></i> {{ product.brand.name }}
+                        </a>
+                    {% endif %}
+                    {% if product.stock > 0 %}
+                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1">In Stock ({{ product.stock }})</span>
+                    {% else %}
+                        <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-1">Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <h2 class="fw-bold mb-2" style="color: #042f2e;">{{ product.name }}</h2>
+                <p class="text-muted small mb-3">Pack / Unit: <strong>{{ product.unit|default:"Standard Pack" }}</strong> • Category: <strong>{{ product.category.name|default:"Healthcare" }}</strong></p>
+
+                <div class="d-flex align-items-baseline gap-3 mb-4 p-3 rounded-3" style="background-color: #f0fdfa;">
+                    <span class="display-6 fw-bold" style="color: #0f766e;">৳{{ product.effective_price }}</span>
+                    {% if product.has_discount %}
+                        <span class="fs-5 text-decoration-line-through text-muted">৳{{ product.price }}</span>
+                        <span class="badge bg-danger rounded-pill px-3 py-1.5">-{{ product.discount_percent }}% OFF</span>
+                    {% endif %}
+                </div>
+
+                <p class="text-secondary mb-4">{{ product.description|default:"100% authentic pharmaceutical & healthcare product sourced directly from authorized distributors and stored under strict temperature control." }}</p>
+
+                <form action="{% url 'add_to_cart' product.pk %}" method="post" class="d-flex flex-wrap gap-3 align-items-center mb-4">
+                    {% csrf_token %}
+                    <div class="input-group" style="width: 130px;">
+                        <button type="button" class="btn btn-outline-secondary" onclick="var el=this.nextElementSibling; if(el.value>1) el.value--;">-</button>
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock|default:99 }}" class="form-control text-center fw-bold">
+                        <button type="button" class="btn btn-outline-secondary" onclick="var el=this.previousElementSibling; el.value++;">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-lg rounded-pill px-5 text-white fw-bold shadow-sm" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
+                        <i class="bi bi-cart-plus me-2"></i> {% if IS_BANGLA %}ব্যাগে যোগ করুন{% else %}Add to Medicine Bag{% endif %}
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-lg rounded-circle" onclick="toggleWishlist({{ product.pk }}, this)" title="Save to Wishlist">
+                        <i class="bi {% if product.pk in user_wishlist_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                    </button>
+                </form>
+
+                <!-- Clinical Assurance Strip -->
+                <div class="row g-2 small">
+                    <div class="col-sm-4">
+                        <div class="p-2.5 rounded-3 border bg-light h-100">
+                            <i class="bi bi-snow text-info me-1"></i> <strong>Cold Chain 2°-8°C</strong>
+                            <div class="text-muted" style="font-size: 0.72rem;">Monitored storage</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2.5 rounded-3 border bg-light h-100">
+                            <i class="bi bi-clock-history text-success me-1"></i> <strong>2-Hour Express</strong>
+                            <div class="text-muted" style="font-size: 0.72rem;">Inside Dhaka city</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2.5 rounded-3 border bg-light h-100">
+                            <i class="bi bi-telephone-fill text-danger me-1"></i> <strong>Pharmacist 16263</strong>
+                            <div class="text-muted" style="font-size: 0.72rem;">Free dosage advice</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Medicines -->
+    {% if related_products %}
+    <section class="mb-4">
+        <h4 class="fw-bold mb-3" style="color: #042f2e;">{% if IS_BANGLA %}সম্পর্কিত ঔষধ ও স্বাস্থ্যপণ্য{% else %}Related Medicines &amp; Healthcare{% endif %}</h4>
+        <div class="row g-3">
+            {% for rel in related_products|slice:":4" %}
+                <div class="col-lg-3 col-md-4 col-6">
+                    {% include 'themes/pharmacy-healthcare/product_card.html' with product=rel %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

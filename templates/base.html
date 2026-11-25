@@ -271,6 +271,21 @@
             border-radius: var(--badge-border-radius, 6px);
             z-index: 2;
         }
+        /* Subtle global entrance animation for storefront sections */
+        @keyframes agyFadeSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        main > .container,
+        main > section {
+            animation: agyFadeSlideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            main > .container,
+            main > section {
+                animation: none !important;
+            }
+        }
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);

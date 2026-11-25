@@ -48,6 +48,25 @@
         overflow: hidden;
         border: 1px solid rgba(251, 146, 60, 0.25);
     }
+    .fashion-hero-carousel .carousel-item.active .fashion-anim-up {
+        animation: fashionFadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes fashionFadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fashion-hero-carousel .carousel-indicators [data-bs-target] {
+        width: 24px;
+        height: 4px;
+        border-radius: 9999px;
+        background-color: rgba(154, 52, 18, 0.25);
+        border: none;
+        transition: width 0.25s ease, background-color 0.25s ease;
+    }
+    .fashion-hero-carousel .carousel-indicators .active {
+        width: 42px;
+        background-color: #9a3412;
+    }
 
     .fashion-hero-badge {
         background-color: #ffedd5;
@@ -119,89 +138,179 @@
 {% block content %}
 <div class="container my-3 my-md-4">
 
-    <!-- 1. EDITORIAL HERO SHOWCASE -->
-    <section class="fashion-hero-section p-4 p-md-5 mb-5 shadow-sm">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-7">
-                <span class="badge fashion-hero-badge px-3 py-1.5 rounded-pill text-uppercase fw-bold mb-3 d-inline-flex align-items-center gap-1.5">
-                    <i class="bi bi-stars text-warning"></i>
-                    {% if IS_BANGLA %}হেরিটেজ ফেস্টিভ কালেকশন ২০২৬{% else %}Heritage Festive Couture 2026{% endif %}
-                </span>
-                <h1 class="fashion-hero-title display-5 mb-3">
-                    {% if IS_BANGLA %}
-                        ঐতিহ্যের ছোঁয়া ও আধুনিক ফ্যাশনের আভিজাত্য
-                    {% else %}
-                        Handcrafted Elegance, Premium Fabrics &amp; Modern Silhouette
-                    {% endif %}
-                </h1>
-                <p class="lead text-secondary mb-4" style="font-size: 1.08rem; max-width: 580px;">
-                    {% if IS_BANGLA %}
-                        আভিজাত পাঞ্জাবি, জামদানি শাড়ি ও ট্রেন্ডি লাইফস্টাইল কালেকশন ঘরে বসেই ট্রাই করুন। ১০০% প্রিমিয়াম সুতি ও খাঁটি সিল্কের নিশ্চয়তা।
-                    {% else %}
-                        Discover tailored Panjabis, artisanal Dhakai Jamdani sarees, tailored blazers, and contemporary ethnic couture crafted for distinction and celebration.
-                    {% endif %}
-                </p>
-                <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
-                    <a href="{% url 'product_list' %}" class="btn btn-lg px-4 py-2.5 rounded-pill fw-bold text-white shadow-sm" style="background-color: #9a3412;">
-                        <i class="bi bi-bag-check me-1.5"></i>
-                        {% if IS_BANGLA %}কালেকশন এক্সপ্লোর করুন{% else %}Shop Festive Edit{% endif %}
-                    </a>
-                    <a href="#tryAndBuySection" class="btn btn-lg btn-outline-dark px-4 py-2.5 rounded-pill fw-semibold">
-                        <i class="bi bi-shield-check text-warning me-1.5"></i>
-                        {% if IS_BANGLA %}ট্রাই অ্যান্ড বাই সুবিধা{% else %}Try &amp; Buy At Doorstep{% endif %}
-                    </a>
-                </div>
-                <!-- Micro Trust Points -->
-                <div class="d-flex flex-wrap gap-4 pt-2 border-top border-warning-subtle small text-secondary">
-                    <div class="d-flex align-items-center gap-1.5">
-                        <i class="bi bi-check-circle-fill" style="color: #9a3412;"></i>
-                        <span>{% if IS_BANGLA %}১০০% খাঁটি হ্যান্ডলুম ও সুতি{% else %}100% Pure Handloom Cotton{% endif %}</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-1.5">
-                        <i class="bi bi-arrow-repeat" style="color: #9a3412;"></i>
-                        <span>{% if IS_BANGLA %}৭ দিনে সহজ সাইজ এক্সচেঞ্জ{% else %}7-Day Easy Size Exchange{% endif %}</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-1.5">
-                        <i class="bi bi-truck" style="color: #9a3412;"></i>
-                        <span>{% if IS_BANGLA %}২৪ ঘণ্টায় ঢাকা এক্সপ্রেস ডেলিভারি{% else %}24h Express Dhaka Delivery{% endif %}</span>
+    <!-- 1. EDITORIAL HERO CAROUSEL SHOWCASE -->
+    <section id="fashionHeroCarousel" class="carousel slide fashion-hero-carousel fashion-hero-section mb-5 shadow-sm" data-bs-ride="carousel" data-bs-interval="5500">
+        <div class="carousel-indicators mb-2">
+            <button type="button" data-bs-target="#fashionHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#fashionHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#fashionHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <!-- Slide 1: Heritage Festive Couture -->
+            <div class="carousel-item active">
+                <div class="p-4 p-md-5">
+                    <div class="row align-items-center g-4 fashion-anim-up">
+                        <div class="col-lg-7">
+                            <span class="badge fashion-hero-badge px-3 py-1.5 rounded-pill text-uppercase fw-bold mb-3 d-inline-flex align-items-center gap-1.5">
+                                <i class="bi bi-stars text-warning"></i>
+                                {% if IS_BANGLA %}হেরিটেজ ফেস্টিভ কালেকশন ২০২৬{% else %}Heritage Festive Couture 2026{% endif %}
+                            </span>
+                            <h1 class="fashion-hero-title display-5 mb-3">
+                                {% if IS_BANGLA %}
+                                    ঐতিহ্যের ছোঁয়া ও আধুনিক ফ্যাশনের আভিজাত্য
+                                {% else %}
+                                    Handcrafted Elegance, Premium Fabrics &amp; Modern Silhouette
+                                {% endif %}
+                            </h1>
+                            <p class="lead text-secondary mb-4" style="font-size: 1.08rem; max-width: 580px;">
+                                {% if IS_BANGLA %}
+                                    আভিজাত পাঞ্জাবি, জামদানি শাড়ি ও ট্রেন্ডি লাইফস্টাইল কালেকশন ঘরে বসেই ট্রাই করুন। ১০০% প্রিমিয়াম সুতি ও খাঁটি সিল্কের নিশ্চয়তা।
+                                {% else %}
+                                    Discover tailored Panjabis, artisanal Dhakai Jamdani sarees, tailored blazers, and contemporary ethnic couture crafted for distinction and celebration.
+                                {% endif %}
+                            </p>
+                            <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+                                <a href="{% url 'product_list' %}" class="btn btn-lg px-4 py-2.5 rounded-pill fw-bold text-white shadow-sm" style="background-color: #9a3412;">
+                                    <i class="bi bi-bag-check me-1.5"></i>
+                                    {% if IS_BANGLA %}কালেকশন এক্সপ্লোর করুন{% else %}Shop Festive Edit{% endif %}
+                                </a>
+                                <a href="#tryAndBuySection" class="btn btn-lg btn-outline-dark px-4 py-2.5 rounded-pill fw-semibold">
+                                    <i class="bi bi-shield-check text-warning me-1.5"></i>
+                                    {% if IS_BANGLA %}ট্রাই অ্যান্ড বাই সুবিধা{% else %}Try &amp; Buy At Doorstep{% endif %}
+                                </a>
+                            </div>
+                            <div class="d-flex flex-wrap gap-4 pt-2 border-top border-warning-subtle small text-secondary">
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <i class="bi bi-check-circle-fill" style="color: #9a3412;"></i>
+                                    <span>{% if IS_BANGLA %}১০০% খাঁটি হ্যান্ডলুম ও সুতি{% else %}100% Pure Handloom Cotton{% endif %}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <i class="bi bi-arrow-repeat" style="color: #9a3412;"></i>
+                                    <span>{% if IS_BANGLA %}৭ দিনে সহজ সাইজ এক্সচেঞ্জ{% else %}7-Day Easy Size Exchange{% endif %}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <i class="bi bi-truck" style="color: #9a3412;"></i>
+                                    <span>{% if IS_BANGLA %}২৪ ঘণ্টায় ঢাকা এক্সপ্রেস ডেলিভারি{% else %}24h Express Dhaka Delivery{% endif %}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="position-relative">
+                                {% if slider_candidates and slider_candidates.0.image %}
+                                    <div class="card border-0 shadow-lg overflow-hidden rounded-4" style="aspect-ratio: 4/5;">
+                                        <img src="{{ slider_candidates.0.image.url }}" alt="{{ slider_candidates.0.name }}" class="w-100 h-100 object-fit-cover">
+                                        <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 23, 0.85) 100%);">
+                                            <span class="badge bg-warning text-dark fw-bold mb-1">
+                                                <i class="bi bi-gem me-1"></i>{% if IS_BANGLA %}সিগনেচার পিস{% else %}Signature Piece{% endif %}
+                                            </span>
+                                            <h5 class="text-white fashion-serif mb-1">{{ slider_candidates.0.name }}</h5>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="text-warning fw-bold fs-5">৳{{ slider_candidates.0.effective_price }}</span>
+                                                <a href="{% url 'product_detail' slider_candidates.0.pk %}" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">
+                                                    {% if IS_BANGLA %}বিস্তারিত{% else %}View Details{% endif %} &rarr;
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="position-absolute top-0 end-0 m-3 p-2.5 rounded-3 bg-white shadow-sm border border-warning-subtle text-dark text-center" style="font-size: 0.75rem;">
+                                    <span class="d-block fw-bold fs-6" style="color: #9a3412;">4.9 ★</span>
+                                    <small class="text-muted">{% if IS_BANGLA %}ভেরিফাইড রেটিং{% else %}Couture Rating{% endif %}</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Hero Visual Right Column -->
-            <div class="col-lg-5">
-                <div class="position-relative">
-                    {% if slider_candidates and slider_candidates.0.image %}
-                        <div class="card border-0 shadow-lg overflow-hidden rounded-4" style="aspect-ratio: 4/5;">
-                            <img src="{{ slider_candidates.0.image.url }}" alt="{{ slider_candidates.0.name }}" class="w-100 h-100 object-fit-cover">
-                            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 23, 0.85) 100%);">
-                                <span class="badge bg-warning text-dark fw-bold mb-1">
-                                    <i class="bi bi-gem me-1"></i>{% if IS_BANGLA %}সিগনেচার পিস{% else %}Signature Piece{% endif %}
-                                </span>
-                                <h5 class="text-white fashion-serif mb-1">{{ slider_candidates.0.name }}</h5>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <span class="text-warning fw-bold fs-5">৳{{ slider_candidates.0.effective_price }}</span>
-                                    <a href="{% url 'product_detail' slider_candidates.0.pk %}" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">
-                                        {% if IS_BANGLA %}বিস্তারিত{% else %}View Details{% endif %} &rarr;
-                                    </a>
+            <!-- Slide 2: Handloom Jamdani & Ethnic Sarees -->
+            <div class="carousel-item">
+                <div class="p-4 p-md-5" style="background: linear-gradient(135deg, #fff1f2 0%, #fff7ed 60%, #fef3c7 100%);">
+                    <div class="row align-items-center g-4 fashion-anim-up">
+                        <div class="col-lg-7">
+                            <span class="badge fashion-hero-badge px-3 py-1.5 rounded-pill text-uppercase fw-bold mb-3 d-inline-flex align-items-center gap-1.5">
+                                <i class="bi bi-palette-fill text-danger"></i>
+                                {% if IS_BANGLA %}রূপগঞ্জের তাঁতীদের ঐতিহ্যবাহী বুনন{% else %}Dhakai Jamdani &amp; Artisan Looms{% endif %}
+                            </span>
+                            <h2 class="fashion-hero-title display-5 mb-3">
+                                {% if IS_BANGLA %}তাঁতের নিখুঁত কারুকাজ ও খাঁটি মসলিন জামদানি{% else %}Handwoven Dhakai Jamdani &amp; Pure Mulberry Silk{% endif %}
+                            </h2>
+                            <p class="lead text-secondary mb-4" style="font-size: 1.08rem; max-width: 580px;">
+                                {% if IS_BANGLA %}বিয়ে, উৎসব ও বিশেষ মুহূর্তের জন্য Aarong ও Sailor অনুপ্রাণিত ঐতিহ্যবাহী শাড়ি ও কুর্তি কালেকশন।{% else %}Celebrate timeless Bangladeshi craftsmanship with heirloom Jamdani weaves, floral Kurtis, and artisanal footwear.{% endif %}
+                            </p>
+                            <a href="{% url 'product_list' %}?q=Saree" class="btn btn-lg px-4 py-2.5 rounded-pill fw-bold text-white shadow-sm" style="background-color: #9a3412;">
+                                <i class="bi bi-stars me-1.5"></i> {% if IS_BANGLA %}জামদানি ও শাড়ি দেখুন{% else %}Explore Sarees &amp; Kurtis{% endif %}
+                            </a>
+                        </div>
+                        <div class="col-lg-5">
+                            {% with slide_prod=slider_candidates.1|default:slider_candidates.0 %}
+                            {% if slide_prod and slide_prod.image %}
+                                <div class="card border-0 shadow-lg overflow-hidden rounded-4" style="aspect-ratio: 4/5;">
+                                    <img src="{{ slide_prod.image.url }}" alt="{{ slide_prod.name }}" class="w-100 h-100 object-fit-cover">
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 23, 0.85) 100%);">
+                                        <span class="badge bg-light text-dark fw-bold mb-1">Artisan Featured</span>
+                                        <h5 class="text-white fashion-serif mb-1">{{ slide_prod.name }}</h5>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span class="text-warning fw-bold fs-5">৳{{ slide_prod.effective_price }}</span>
+                                            <a href="{% url 'product_detail' slide_prod.pk %}" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Shop Now &rarr;</a>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
+                            {% endwith %}
                         </div>
-                    {% else %}
-                        <div class="card border-0 shadow-lg rounded-4 p-5 text-center text-white" style="background: linear-gradient(135deg, #9a3412 0%, #7c2d12 100%); aspect-ratio: 4/5; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person-heart display-1 mb-3 text-warning"></i>
-                            <h3 class="fashion-serif">Heritage Festive Couture</h3>
-                            <p class="text-white-50">Artisanal apparel crafted for elegance.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Royal Panjabi & Modern Tailored Menswear -->
+            <div class="carousel-item">
+                <div class="p-4 p-md-5" style="background: linear-gradient(135deg, #f5f5f4 0%, #fefce8 60%, #ffedd5 100%);">
+                    <div class="row align-items-center g-4 fashion-anim-up">
+                        <div class="col-lg-7">
+                            <span class="badge fashion-hero-badge px-3 py-1.5 rounded-pill text-uppercase fw-bold mb-3 d-inline-flex align-items-center gap-1.5">
+                                <i class="bi bi-award-fill text-warning"></i>
+                                {% if IS_BANGLA %}রয়েল পাঞ্জাবি ও মেন্সওয়্যার এডিট{% else %}Tailored Panjabi &amp; Modern Menswear{% endif %}
+                            </span>
+                            <h2 class="fashion-hero-title display-5 mb-3">
+                                {% if IS_BANGLA %}আভিজাত এমব্রয়ডারি পাঞ্জাবি ও প্রিমিয়াম ব্লেজার{% else %}Sharp Tailoring, Embroidered Panjabis &amp; Leather Footwear{% endif %}
+                            </h2>
+                            <p class="lead text-secondary mb-4" style="font-size: 1.08rem; max-width: 580px;">
+                                {% if IS_BANGLA %}ডোরস্টেপ ট্রাই অ্যান্ড বাই সুবিধায় ঘরে বসেই ট্রাই করে আপনার পারফেক্ট সাইজ বেছে নিন।{% else %}From festive hand-embroidered Panjabis to selvedge denim and Bata/Apex leather oxfords—delivered with doorstep Try &amp; Buy.{% endif %}
+                            </p>
+                            <a href="{% url 'product_list' %}?q=Panjabi" class="btn btn-lg px-4 py-2.5 rounded-pill fw-bold text-white shadow-sm" style="background-color: #1c1917;">
+                                <i class="bi bi-bag-heart me-1.5"></i> {% if IS_BANGLA %}পাঞ্জাবি ও মেন্সওয়্যার{% else %}Shop Men's Edit{% endif %}
+                            </a>
                         </div>
-                    {% endif %}
-                    <!-- Floating Stat Badge -->
-                    <div class="position-absolute top-0 end-0 m-3 p-2.5 rounded-3 bg-white shadow-sm border border-warning-subtle text-dark text-center" style="font-size: 0.75rem;">
-                        <span class="d-block fw-bold fs-6" style="color: #9a3412;">4.9 ★</span>
-                        <small class="text-muted">{% if IS_BANGLA %}ভেরিফাইড রেটিং{% else %}Couture Rating{% endif %}</small>
+                        <div class="col-lg-5">
+                            {% with slide_prod=slider_candidates.2|default:slider_candidates.0 %}
+                            {% if slide_prod and slide_prod.image %}
+                                <div class="card border-0 shadow-lg overflow-hidden rounded-4" style="aspect-ratio: 4/5;">
+                                    <img src="{{ slide_prod.image.url }}" alt="{{ slide_prod.name }}" class="w-100 h-100 object-fit-cover">
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 23, 0.85) 100%);">
+                                        <span class="badge bg-warning text-dark fw-bold mb-1">Festive Pick</span>
+                                        <h5 class="text-white fashion-serif mb-1">{{ slide_prod.name }}</h5>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span class="text-warning fw-bold fs-5">৳{{ slide_prod.effective_price }}</span>
+                                            <a href="{% url 'product_detail' slide_prod.pk %}" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Shop Now &rarr;</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#fashionHeroCarousel" data-bs-slide="prev" style="width: 4%;">
+            <span class="carousel-control-prev-icon bg-dark bg-opacity-50 rounded-circle p-2" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#fashionHeroCarousel" data-bs-slide="next" style="width: 4%;">
+            <span class="carousel-control-next-icon bg-dark bg-opacity-50 rounded-circle p-2" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </section>
 
     <!-- 2. FOUR PILLARS OF FASHION ASSURANCE -->
