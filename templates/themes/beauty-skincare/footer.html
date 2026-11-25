@@ -275,8 +275,9 @@
                             </span>
                         </span>
                     {% elif CURRENT_THEME_DATA.logo_url %}
-                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
-                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" class="brand-logo-img logo-light" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" class="brand-logo-img logo-dark" style="height: 38px; width: auto; max-width: 200px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <span class="brand-logo-fallback align-items-center gap-2">
                             <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #be185d 0%, #9f1239 100%); width: 36px; height: 36px;">
                                 <i class="bi bi-flower1"></i>
                             </div>

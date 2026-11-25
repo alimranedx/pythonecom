@@ -7,886 +7,809 @@
 {% endblock %}
 
 {% block extra_head %}
-<!-- Google Fonts: Playfair Display for editorial elegance -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    /* Beauty & Skincare Theme Design Tokens (LUNA, ssèraskin, NUORI, PIBU Inspired) */
     :root {
         --beauty-bg: #faf8f5;
         --beauty-surface: #ffffff;
         --beauty-cashmere: #f4eee7;
         --beauty-border: #ede4dc;
-        --beauty-border-subtle: rgba(226, 214, 203, 0.45);
-        --beauty-text-main: #2d2621;
-        --beauty-text-muted: #786c62;
-        --beauty-blush: #e11d48;
+        --beauty-border-subtle: rgba(214, 202, 190, 0.55);
+        --beauty-text-main: #1c1917;
+        --beauty-text-muted: #6b5f56;
+        --beauty-blush: #be185d;
         --beauty-blush-light: #fff1f2;
-        --beauty-rose: #be185d;
-        --beauty-gold: #b45309;
-        --beauty-gold-subtle: rgba(180, 83, 9, 0.08);
-        --beauty-sage: #0f766e;
-        --beauty-sage-subtle: rgba(15, 118, 110, 0.08);
-        --beauty-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+        --beauty-gold: #9a3412;
+        --beauty-slide-1: linear-gradient(125deg, #eae4dd 0%, #f5f1ec 46%, #e2dad0 100%);
+        --beauty-slide-2: linear-gradient(125deg, #f3e8ec 0%, #faf3f5 48%, #ebd8df 100%);
+        --beauty-slide-3: linear-gradient(125deg, #f2eadf 0%, #fbf6ef 48%, #e9dccb 100%);
+        --beauty-font-serif: 'Playfair Display', Georgia, serif;
         --beauty-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     }
 
     [data-bs-theme="dark"] {
-        --beauty-bg: #141210;
-        --beauty-surface: #1e1b18;
-        --beauty-cashmere: #282420;
-        --beauty-border: #38322c;
-        --beauty-border-subtle: rgba(75, 66, 58, 0.6);
+        --beauty-bg: #120e11;
+        --beauty-surface: #1b1519;
+        --beauty-cashmere: #251c22;
+        --beauty-border: #3a2b34;
+        --beauty-border-subtle: rgba(82, 60, 72, 0.65);
         --beauty-text-main: #f5f0eb;
-        --beauty-text-muted: #b5a89c;
-        --beauty-blush-light: rgba(225, 29, 72, 0.15);
-        --beauty-gold-subtle: rgba(245, 158, 11, 0.12);
-        --beauty-sage-subtle: rgba(20, 184, 166, 0.15);
+        --beauty-text-muted: #c2b3ba;
+        --beauty-blush: #f472b6;
+        --beauty-blush-light: rgba(244, 114, 182, 0.14);
+        --beauty-gold: #fbbf24;
+        --beauty-slide-1: linear-gradient(125deg, #1b161a 0%, #261d24 48%, #161115 100%);
+        --beauty-slide-2: linear-gradient(125deg, #21151d 0%, #2d1b26 48%, #171015 100%);
+        --beauty-slide-3: linear-gradient(125deg, #1f1a15 0%, #2b2219 48%, #15120f 100%);
     }
 
     body {
         background-color: var(--beauty-bg) !important;
         color: var(--beauty-text-main);
         font-family: var(--beauty-font-sans);
-        letter-spacing: -0.01em;
     }
 
     .font-serif {
         font-family: var(--beauty-font-serif);
     }
 
-    /* Section Headers */
-    .beauty-section-title-wrap {
-        text-align: center;
-        max-width: 680px;
-        margin: 0 auto 2.5rem auto;
-    }
-
-    .beauty-kicker {
-        font-family: var(--beauty-font-sans);
-        text-transform: uppercase;
-        font-size: 0.72rem;
-        letter-spacing: 0.22em;
-        color: var(--beauty-gold);
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-
-    .beauty-heading {
-        font-family: var(--beauty-font-serif);
-        font-weight: 600;
-        font-size: 2.15rem;
-        line-height: 1.25;
-        color: var(--beauty-text-main);
-        margin-bottom: 0.75rem;
-    }
-
-    .beauty-subheading {
-        font-size: 0.95rem;
-        color: var(--beauty-text-muted);
-        line-height: 1.6;
-        font-weight: 400;
-    }
-
-    /* Hover Utilities */
-    .hover-blush:hover {
-        color: var(--beauty-blush) !important;
-    }
-
-    /* Section 1: Hero Carousel & Spotlights */
-    .beauty-hero-slide {
-        border-radius: 20px;
+    /* 1. OHSOGO-Inspired Full-Bleed Architectural Runway Carousel */
+    .beauty-runway-hero {
+        margin-top: -1.5rem;
+        position: relative;
+        border-bottom: 1px solid var(--beauty-border);
         overflow: hidden;
-        min-height: 500px;
+    }
+    .beauty-hero-slide {
+        min-height: 410px;
         display: flex;
         align-items: center;
         position: relative;
-        background-size: cover;
-        background-position: center;
-        box-shadow: 0 10px 30px rgba(45, 38, 33, 0.04);
-        border: 1px solid var(--beauty-border-subtle);
+        overflow: hidden;
+        padding: 2.25rem 0 3.25rem;
     }
-
-    .beauty-hero-content {
-        position: relative;
-        z-index: 2;
-        max-width: 580px;
-        padding: 3.5rem 3rem;
-    }
+    .beauty-slide-bg-1 { background: var(--beauty-slide-1); }
+    .beauty-slide-bg-2 { background: var(--beauty-slide-2); }
+    .beauty-slide-bg-3 { background: var(--beauty-slide-3); }
 
     .beauty-badge-pill {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.35rem 0.9rem;
+        gap: 0.45rem;
+        padding: 0.32rem 0.9rem;
         border-radius: 9999px;
-        font-size: 0.72rem;
-        letter-spacing: 0.08em;
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        font-weight: 600;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(226, 214, 203, 0.8);
-        color: var(--beauty-text-main);
-        backdrop-filter: blur(8px);
-        margin-bottom: 1.25rem;
+        font-weight: 700;
+        background: var(--beauty-surface);
+        border: 1px solid var(--beauty-border);
+        color: var(--beauty-blush);
+        margin-bottom: 1rem;
     }
-
-    [data-bs-theme="dark"] .beauty-badge-pill {
-        background: rgba(30, 27, 24, 0.85);
-        border-color: var(--beauty-border);
-        color: #f5f0eb;
-    }
-
     .beauty-hero-title {
         font-family: var(--beauty-font-serif);
-        font-size: 3rem;
-        font-weight: 600;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.015em;
         color: var(--beauty-text-main);
-        margin-bottom: 1.25rem;
+        margin-bottom: 0.9rem;
     }
-
     .beauty-hero-desc {
-        font-size: 1.05rem;
-        line-height: 1.65;
+        font-size: 0.98rem;
+        line-height: 1.6;
         color: var(--beauty-text-muted);
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+        max-width: 520px;
     }
-
     .btn-beauty-primary {
-        background: #2d2621;
-        color: #ffffff;
-        border: 1px solid #2d2621;
+        background: #1c1917;
+        color: #ffffff !important;
+        border: 1px solid #1c1917;
         border-radius: 9999px;
-        padding: 0.75rem 2rem;
+        padding: 0.7rem 1.85rem;
         font-weight: 600;
-        font-size: 0.88rem;
-        letter-spacing: 0.04em;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .btn-beauty-primary:hover {
-        background: #443a33;
-        color: #ffffff;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(45, 38, 33, 0.15);
-    }
-
-    .btn-beauty-outline {
-        background: transparent;
-        color: var(--beauty-text-main);
-        border: 1px solid var(--beauty-text-main);
-        border-radius: 9999px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        font-size: 0.88rem;
-        letter-spacing: 0.04em;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .btn-beauty-outline:hover {
-        background: var(--beauty-text-main);
-        color: #ffffff;
-        transform: translateY(-2px);
-    }
-
-    /* Editorial Side Spotlight Cards */
-    .beauty-spotlight-card {
-        background: var(--beauty-surface);
-        border: 1px solid var(--beauty-border-subtle);
-        border-radius: 18px;
-        padding: 1.5rem;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 4px 18px rgba(45, 38, 33, 0.03);
-    }
-
-    .beauty-spotlight-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(45, 38, 33, 0.08);
-    }
-
-    /* Section 2: Clean Beauty Trust Pillars */
-    .beauty-pillar-card {
-        background: var(--beauty-surface);
-        border: 1px solid var(--beauty-border-subtle);
-        border-radius: 14px;
-        padding: 1.5rem 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        height: 100%;
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
         transition: all 0.25s ease;
     }
-
-    .beauty-pillar-card:hover {
+    .btn-beauty-primary:hover {
+        background: #be185d;
+        border-color: #be185d;
         transform: translateY(-2px);
-        border-color: var(--beauty-gold);
-        box-shadow: 0 6px 16px rgba(45, 38, 33, 0.04);
+        box-shadow: 0 10px 22px rgba(190, 24, 93, 0.24);
+    }
+    [data-bs-theme="dark"] .btn-beauty-primary {
+        background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
+        border-color: transparent;
+    }
+    .btn-beauty-outline {
+        background: transparent;
+        color: var(--beauty-text-main) !important;
+        border: 1.5px solid var(--beauty-text-main);
+        border-radius: 9999px;
+        padding: 0.68rem 1.65rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        transition: all 0.25s ease;
+    }
+    .btn-beauty-outline:hover {
+        background: var(--beauty-text-main);
+        color: var(--beauty-surface) !important;
     }
 
-    .beauty-pillar-icon-box {
-        width: 48px;
-        height: 48px;
+    /* OHSOGO-Style Bottom Line Progress Indicators */
+    .beauty-carousel-indicators {
+        bottom: 14px;
+        gap: 8px;
+    }
+    .beauty-carousel-indicators [data-bs-target] {
+        width: 44px;
+        height: 3.5px;
+        border-radius: 2px;
+        background-color: var(--beauty-text-main);
+        opacity: 0.25;
+        border: 0;
+        margin: 0;
+        transition: opacity 0.25s ease, width 0.25s ease;
+    }
+    .beauty-carousel-indicators .active {
+        width: 64px;
+        opacity: 0.95;
+        background-color: var(--beauty-blush);
+    }
+    .beauty-hero-arrow {
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        background: var(--beauty-cashmere);
-        color: var(--beauty-gold);
+        background: var(--beauty-surface);
+        color: var(--beauty-text-main);
+        border: 1px solid var(--beauty-border);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.35rem;
-        flex-shrink: 0;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
     }
 
-    /* Section 3: Curated Rituals & Category Discovery */
+    /* Section Headings */
+    .beauty-section-title-wrap {
+        text-align: center;
+        max-width: 680px;
+        margin: 0 auto 2rem auto;
+    }
+    .beauty-kicker {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        color: var(--beauty-blush);
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+    .beauty-heading {
+        font-family: var(--beauty-font-serif);
+        font-weight: 600;
+        font-size: clamp(1.55rem, 2.5vw, 2.1rem);
+        line-height: 1.25;
+        color: var(--beauty-text-main);
+        margin-bottom: 0.5rem;
+    }
+    .beauty-subheading {
+        font-size: 0.92rem;
+        color: var(--beauty-text-muted);
+        line-height: 1.55;
+    }
+
+    /* 2. Curated Ritual Category Runway */
     .ritual-tile {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-decoration: none;
         color: var(--beauty-text-main);
-        transition: transform 0.3s ease;
         text-align: center;
+        transition: transform 0.25s ease, color 0.25s ease;
     }
-
     .ritual-tile:hover {
         transform: translateY(-5px);
         color: var(--beauty-blush);
     }
-
     .ritual-circle {
-        width: 108px;
-        height: 108px;
-        border-radius: 50%;
+        width: 96px;
+        height: 96px;
+        border-radius: 26px;
         background: var(--beauty-surface);
-        border: 1px solid var(--beauty-border-subtle);
+        border: 1px solid var(--beauty-border);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 0.85rem;
-        position: relative;
-        box-shadow: 0 6px 18px rgba(45, 38, 33, 0.04);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        overflow: hidden;
+        margin-bottom: 0.65rem;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+        transition: all 0.25s ease;
     }
-
     .ritual-tile:hover .ritual-circle {
-        box-shadow: 0 12px 24px rgba(225, 29, 72, 0.15);
         border-color: var(--beauty-blush);
         background: var(--beauty-blush-light);
+        box-shadow: 0 12px 24px rgba(190, 24, 93, 0.14);
     }
-
     .ritual-tile-icon {
-        font-size: 2.2rem;
-        color: #887060;
-        transition: transform 0.3s ease, color 0.3s ease;
+        font-size: 2rem;
     }
-
-    .ritual-tile:hover .ritual-tile-icon {
-        transform: scale(1.12);
-        color: var(--beauty-blush);
-    }
-
     .ritual-name {
-        font-family: var(--beauty-font-sans);
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         font-weight: 600;
-        letter-spacing: -0.01em;
         line-height: 1.3;
     }
 
-    /* Section 6: Editorial Story Block */
-    .beauty-story-section {
-        background: linear-gradient(135deg, #f7f3ee 0%, #ede6dd 100%);
-        border-radius: 24px;
-        border: 1px solid var(--beauty-border-subtle);
-        padding: 4rem 3rem;
-        margin: 4rem 0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    [data-bs-theme="dark"] .beauty-story-section {
-        background: linear-gradient(135deg, #1f1b17 0%, #171513 100%);
-        border-color: var(--beauty-border);
-    }
-
-    /* Section 7: Official Brand Showcases */
-    .beauty-brand-pill {
+    /* 3. Concern Cards & Ingredient Chips */
+    .beauty-concern-card {
         background: var(--beauty-surface);
-        border: 1px solid var(--beauty-border-subtle);
+        border: 1px solid var(--beauty-border);
+        border-radius: 14px;
+        padding: 0.9rem 0.75rem;
+        text-decoration: none;
+        color: var(--beauty-text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 100%;
+        transition: all 0.22s ease;
+    }
+    .beauty-concern-card:hover {
+        border-color: var(--beauty-blush);
+        background: var(--beauty-blush-light);
+        color: var(--beauty-blush);
+        transform: translateY(-2px);
+    }
+    .beauty-ingredient-chip {
+        background: var(--beauty-surface);
+        border: 1px solid var(--beauty-border);
+        color: var(--beauty-text-main);
+        border-radius: 9999px;
+        padding: 5px 14px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .beauty-ingredient-chip:hover {
+        background: var(--beauty-blush);
+        border-color: var(--beauty-blush);
+        color: #ffffff;
+    }
+
+    /* 4. Interactive Filter Pills */
+    .beauty-filter-pill {
+        background: var(--beauty-surface);
+        border: 1px solid var(--beauty-border);
+        color: var(--beauty-text-main);
+        border-radius: 9999px;
+        padding: 6px 16px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .beauty-filter-pill:hover,
+    .beauty-filter-pill.active {
+        background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
+        border-color: transparent;
+        color: #ffffff;
+    }
+
+    /* 5. Spotlight Duo & Trust Cards */
+    .beauty-spotlight-card {
+        background: var(--beauty-surface);
+        border: 1px solid var(--beauty-border);
+        border-radius: 18px;
+        padding: 1.5rem;
+        height: 100%;
+        color: var(--beauty-text-main);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .beauty-spotlight-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(190, 24, 93, 0.1);
+    }
+    .beauty-spotlight-blush {
+        background: linear-gradient(135deg, var(--beauty-blush-light) 0%, var(--beauty-surface) 100%);
+    }
+    .beauty-pillar-card,
+    .beauty-brand-pill,
+    .routine-step-card {
+        background: var(--beauty-surface);
+        border: 1px solid var(--beauty-border);
         border-radius: 16px;
-        padding: 1.5rem 1rem;
+        color: var(--beauty-text-main);
+        transition: all 0.25s ease;
+    }
+    .beauty-pillar-card {
+        padding: 1.1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        height: 100%;
+    }
+    .beauty-pillar-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--beauty-blush-light);
+        color: var(--beauty-blush);
+        flex-shrink: 0;
+        font-size: 1.25rem;
+    }
+    .beauty-brand-pill {
+        padding: 1.25rem 0.85rem;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
         text-decoration: none;
-        color: var(--beauty-text-main);
-        transition: all 0.25s ease;
         height: 100%;
-        box-shadow: 0 2px 10px rgba(45, 38, 33, 0.02);
     }
-
-    .beauty-brand-pill:hover {
+    .beauty-brand-pill:hover,
+    .routine-step-card:hover {
         transform: translateY(-4px);
-        border-color: var(--beauty-gold);
-        box-shadow: 0 10px 24px rgba(45, 38, 33, 0.07);
-        color: var(--beauty-gold);
+        border-color: var(--beauty-blush);
+        box-shadow: 0 12px 26px rgba(190, 24, 93, 0.12);
     }
-
-    /* Section 8: Skincare Regimen Builder */
     .routine-step-card {
-        background: var(--beauty-surface);
-        border: 1px solid var(--beauty-border-subtle);
-        border-radius: 16px;
-        padding: 1.75rem 1.25rem;
-        position: relative;
+        padding: 1.5rem 1.15rem;
         text-align: center;
-        transition: all 0.3s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
     }
-
-    .routine-step-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(45, 38, 33, 0.08);
-        border-color: var(--beauty-gold);
-    }
-
     .routine-step-number {
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         background: var(--beauty-cashmere);
-        color: var(--beauty-gold);
+        color: var(--beauty-blush);
         font-family: var(--beauty-font-serif);
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 1rem auto;
+        margin: 0 auto 0.85rem;
         border: 1px solid var(--beauty-border);
     }
 
-    /* Section 9: Inner Glow Circle Newsletter */
-    .beauty-newsletter-box {
-        background: linear-gradient(135deg, #2d2621 0%, #1f1a16 100%);
-        border-radius: 24px;
-        padding: 3.5rem 3rem;
-        color: #ffffff;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 16px 40px rgba(45, 38, 33, 0.15);
+    /* Editorial Story & VIP Newsletter */
+    .beauty-story-section {
+        background: linear-gradient(135deg, var(--beauty-cashmere) 0%, var(--beauty-surface) 100%);
+        border-radius: 22px;
+        border: 1px solid var(--beauty-border);
+        padding: 3rem 2.25rem;
+        margin: 3.5rem 0;
     }
-
+    .beauty-story-glass {
+        background: var(--beauty-surface);
+        border: 1px solid var(--beauty-border);
+        border-radius: 18px;
+    }
+    .beauty-newsletter-box {
+        background: linear-gradient(135deg, #2d1822 0%, #1a1116 100%);
+        border-radius: 22px;
+        padding: 3rem 2.5rem;
+        color: #ffffff;
+    }
     .glow-coupon-pill {
         display: inline-flex;
         align-items: center;
         gap: 0.6rem;
         background: rgba(255, 255, 255, 0.12);
         border: 1px dashed rgba(245, 158, 11, 0.6);
-        padding: 0.45rem 1.25rem;
+        padding: 0.45rem 1.2rem;
         border-radius: 9999px;
         cursor: pointer;
-        transition: all 0.25s ease;
     }
 
-    .glow-coupon-pill:hover {
-        background: rgba(255, 255, 255, 0.2);
-        border-color: #f59e0b;
-        transform: scale(1.02);
-    }
-
-    /* Custom Carousel Indicators */
-    .beauty-carousel-indicators [data-bs-target] {
-        width: 32px;
-        height: 4px;
-        border-radius: 2px;
-        background-color: var(--beauty-text-main);
-        opacity: 0.3;
-        border: 0;
-        transition: all 0.3s ease;
-    }
-
-    .beauty-carousel-indicators .active {
-        width: 48px;
-        opacity: 0.95;
-        background-color: var(--beauty-blush);
+    @media (max-width: 767.98px) {
+        .beauty-hero-slide {
+            min-height: 340px;
+            padding: 1.5rem 0 2.75rem;
+        }
+        .ritual-circle {
+            width: 78px;
+            height: 78px;
+            border-radius: 22px;
+        }
+        .beauty-story-section,
+        .beauty-newsletter-box {
+            padding: 1.75rem 1.25rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="beauty-storefront-wrapper py-3 py-lg-4">
-    <div class="container-xl">
+<div class="beauty-storefront-wrapper">
 
-        <!-- ========================================== -->
-        <!-- SECTION 1: EDITORIAL BEAUTY HERO SHOWCASE -->
-        <!-- ========================================== -->
-        <section class="beauty-hero-showcase mb-5">
-            <div class="row g-4 align-items-stretch">
-                
-                <!-- Main Editorial Carousel -->
-                <div class="col-lg-8">
-                    <div id="beautyHeroCarousel" class="carousel slide carousel-fade h-100" data-bs-ride="carousel" data-bs-interval="6000">
-                        <!-- Indicators -->
-                        <div class="carousel-indicators beauty-carousel-indicators mb-3">
-                            <button type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                            <button type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                            <button type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                        </div>
+    <!-- ========================================================== -->
+    <!-- 1. OHSOGO-INSPIRED FULL-BLEED ARCHITECTURAL HERO CAROUSEL  -->
+    <!-- ========================================================== -->
+    <section class="beauty-runway-hero mb-5">
+        <div id="beautyHeroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5500">
+            <div class="carousel-indicators beauty-carousel-indicators">
+                <button type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
 
-                        <div class="carousel-inner h-100 rounded-4">
-                            
-                            <!-- Slide 1: Radiant Skin, Naturally Yours -->
-                            <div class="carousel-item active h-100">
-                                <div class="beauty-hero-slide h-100" style="background: linear-gradient(135deg, rgba(250, 248, 245, 0.95) 0%, rgba(245, 239, 230, 0.85) 60%, rgba(254, 242, 242, 0.7) 100%);">
-                                    <div class="beauty-hero-content">
-                                        <div class="beauty-badge-pill">
-                                            <i class="bi bi-sparkles text-danger"></i>
-                                            <span>{% if IS_BANGLA %}ক্লিন বোটানিক্যাল স্কিনকেয়ার{% else %}Clinically Proven Botanical Formulations{% endif %}</span>
-                                        </div>
-                                        <h1 class="beauty-hero-title">
-                                            {% if IS_BANGLA %}
-                                                প্রাকৃতিক উজ্জ্বলতা, সম্পূর্ণ আপনার
-                                            {% else %}
-                                                Radiant Skin, Naturally Yours
-                                            {% endif %}
-                                        </h1>
-                                        <p class="beauty-hero-desc">
-                                            {% if IS_BANGLA %}
-                                                কোরিয়ান এবং ইউরোপিয়ান সার্টিফাইড ক্লিন ফর্মুলা—গভীর আর্দ্রতা, মসৃণ টেক্সচার ও দীর্ঘস্থায়ী স্বাভাবিক গ্লো এর নিশ্চয়তা।
-                                            {% else %}
-                                                Directly sourced authentic formulations designed to restore your skin barrier, quench deep thirst, and awaken timeless radiance.
-                                            {% endif %}
-                                        </p>
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <a href="{% url 'product_list' %}" class="btn btn-beauty-primary shadow-sm">
-                                                <i class="bi bi-bag-heart me-1.5"></i>
-                                                {% if IS_BANGLA %}কালেকশন দেখুন{% else %}Explore Collection{% endif %}
-                                            </a>
-                                            <a href="#routineSection" class="btn btn-beauty-outline">
-                                                <i class="bi bi-compass me-1.5"></i>
-                                                {% if IS_BANGLA %}রুটিন বিল্ডার{% else %}Build Your Skincare Routine{% endif %}
-                                            </a>
-                                        </div>
+            <div class="carousel-inner">
+                <!-- Slide 1: Architectural Botanical Skincare Pedestal Showcase -->
+                <div class="carousel-item active">
+                    <div class="beauty-hero-slide beauty-slide-bg-1">
+                        <div class="container-xl">
+                            <div class="row align-items-center g-4">
+                                <div class="col-lg-6 text-center text-lg-start">
+                                    <div class="beauty-badge-pill">
+                                        <i class="bi bi-sparkles"></i>
+                                        <span>{% if IS_BANGLA %}ক্লিন বোটানিক্যাল স্কিনকেয়ার{% else %}Clinically Proven Botanical Formulations{% endif %}</span>
                                     </div>
-                                    <div class="position-absolute end-0 bottom-0 d-none d-md-block opacity-75 pe-4 pb-2" style="z-index: 1;">
-                                        <i class="bi bi-flower3" style="font-size: 16rem; color: rgba(226, 214, 203, 0.28); line-height: 0.8;"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Slide 2: The Art of Layering Hydration -->
-                            <div class="carousel-item h-100">
-                                <div class="beauty-hero-slide h-100" style="background: linear-gradient(135deg, rgba(245, 239, 230, 0.95) 0%, rgba(240, 253, 250, 0.85) 60%, rgba(236, 253, 245, 0.7) 100%);">
-                                    <div class="beauty-hero-content">
-                                        <div class="beauty-badge-pill">
-                                            <i class="bi bi-droplet-half text-teal" style="color: #0f766e;"></i>
-                                            <span>{% if IS_BANGLA %}গভীর আর্দ্রতা রিচুয়াল{% else %}Barrier Restoration & Deep Hydration{% endif %}</span>
-                                        </div>
-                                        <h2 class="beauty-hero-title">
-                                            {% if IS_BANGLA %}
-                                                হাইড্রেটিং সিরাম ও ব্যারিয়ার কেয়ার
-                                            {% else %}
-                                                Pure Dew & Active Barrier Serums
-                                            {% endif %}
-                                        </h2>
-                                        <p class="beauty-hero-desc">
-                                            {% if IS_BANGLA %}
-                                                হায়ালুরনিক অ্যাসিড, সিরামাইড এবং নিয়াসিনামাইড এর সমৃদ্ধ মিশ্রণে ত্বক পায় মসৃণ কোমলতা।
-                                            {% else %}
-                                                Infused with concentrated hyaluronic acid, multi-ceramides, and soothing cica to fortify and plump sensitive skin.
-                                            {% endif %}
-                                        </p>
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <a href="{% url 'product_list' %}?category=skincare-serums" class="btn btn-beauty-primary shadow-sm">
-                                                <i class="bi bi-stars me-1.5"></i>
-                                                {% if IS_BANGLA %}সিরাম সমূহ{% else %}Discover Concentrates{% endif %}
-                                            </a>
-                                            <a href="#routineSection" class="btn btn-beauty-outline">
-                                                {% if IS_BANGLA %}রুটিন স্টেপস{% else %}Routine Guide{% endif %}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="position-absolute end-0 bottom-0 d-none d-md-block opacity-75 pe-4 pb-2" style="z-index: 1;">
-                                        <i class="bi bi-droplet" style="font-size: 16rem; color: rgba(13, 148, 136, 0.12); line-height: 0.8;"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Slide 3: Invisible Sun Shield SPF 50+ -->
-                            <div class="carousel-item h-100">
-                                <div class="beauty-hero-slide h-100" style="background: linear-gradient(135deg, rgba(254, 242, 242, 0.95) 0%, rgba(255, 247, 237, 0.9) 60%, rgba(250, 248, 245, 0.8) 100%);">
-                                    <div class="beauty-hero-content">
-                                        <div class="beauty-badge-pill">
-                                            <i class="bi bi-sun-fill text-warning"></i>
-                                            <span>{% if IS_BANGLA %}দৈনিক ব্রড স্পেকট্রাম সুরক্ষা{% else %}Broad Spectrum Daily Protection{% endif %}</span>
-                                        </div>
-                                        <h2 class="beauty-hero-title">
-                                            {% if IS_BANGLA %}
-                                                হালকা সানস্ক্রিন, জিরো হোয়াইটকাস্ট
-                                            {% else %}
-                                                Weightless Invisible Sunscreen
-                                            {% endif %}
-                                        </h2>
-                                        <p class="beauty-hero-desc">
-                                            {% if IS_BANGLA %}
-                                                SPF 50+ PA++++ সুরক্ষা—কোনোরূপ আঠালো ভাব ছাড়া ত্বকে মিশে যায় নিমেষেই।
-                                            {% else %}
-                                                Silky fast-absorbing UV shields enriched with rice bran and probiotics for undetectable daily defense.
-                                            {% endif %}
-                                        </p>
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <a href="{% url 'product_list' %}?category=sunscreens-sun-care" class="btn btn-beauty-primary shadow-sm">
-                                                <i class="bi bi-shield-check me-1.5"></i>
-                                                {% if IS_BANGLA %}সানস্ক্রিন কালেকশন{% else %}Shop Sun Care{% endif %}
-                                            </a>
-                                            <a href="{% url 'product_list' %}" class="btn btn-beauty-outline">
-                                                {% if IS_BANGLA %}সব প্রোডাক্ট{% else %}View All Clean Beauty{% endif %}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="position-absolute end-0 bottom-0 d-none d-md-block opacity-75 pe-4 pb-2" style="z-index: 1;">
-                                        <i class="bi bi-brightness-high" style="font-size: 16rem; color: rgba(245, 158, 11, 0.12); line-height: 0.8;"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- Carousel Controls -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide="prev" style="width: 50px;">
-                            <span class="p-2 rounded-circle bg-white text-dark shadow-sm border border-secondary-subtle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="bi bi-chevron-left"></i>
-                            </span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide="next" style="width: 50px;">
-                            <span class="p-2 rounded-circle bg-white text-dark shadow-sm border border-secondary-subtle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="bi bi-chevron-right"></i>
-                            </span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 2 Side Editorial Spotlight Cards -->
-                <div class="col-lg-4 d-flex flex-column gap-3">
-                    
-                    <!-- Spotlight Card 1: Daily Glow Highlight -->
-                    <div class="beauty-spotlight-card flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge rounded-pill fw-semibold" style="background: rgba(180, 83, 9, 0.1); color: #92400e; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;">
-                                <i class="bi bi-award me-1 text-warning"></i>{% if IS_BANGLA %}ডেইলি গ্লো স্পটলাইট{% else %}Daily Glow Highlight{% endif %}
-                            </span>
-                            <span class="small text-muted" style="font-size: 0.72rem;">★ 4.9 (240+)</span>
-                        </div>
-                        
-                        <div class="d-flex align-items-center gap-3 my-auto py-2">
-                            <div class="rounded-3 p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 90px; height: 90px; background: linear-gradient(135deg, #faf8f5 0%, #f4eee7 100%); border: 1px solid var(--beauty-border-subtle);">
-                                {% if daily_glow_highlight and daily_glow_highlight.image %}
-                                    <img src="{{ daily_glow_highlight.image.url }}" alt="{{ daily_glow_highlight.name }}" class="img-fluid" style="max-height: 80px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
-                                {% else %}
-                                    <i class="bi bi-droplet-half fs-1" style="color: #b45309;"></i>
-                                {% endif %}
-                            </div>
-                            <div>
-                                <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.68rem; letter-spacing: 0.08em;">
-                                    {% if daily_glow_highlight and daily_glow_highlight.brand %}{{ daily_glow_highlight.brand.name }}{% else %}COSRX Snail Mucin{% endif %}
-                                </small>
-                                <h6 class="font-serif fw-bold mb-1 line-clamp-2" style="font-size: 0.95rem; color: var(--beauty-text-main);">
-                                    {% if daily_glow_highlight %}
-                                        <a href="{% url 'product_detail' daily_glow_highlight.pk %}" class="text-decoration-none text-reset hover-blush">
-                                            {{ daily_glow_highlight.name }}
+                                    <h1 class="beauty-hero-title">
+                                        {% if IS_BANGLA %}
+                                            প্রাকৃতিক উজ্জ্বলতা, সম্পূর্ণ আপনার
+                                        {% else %}
+                                            Radiant Skin, Naturally Yours
+                                        {% endif %}
+                                    </h1>
+                                    <p class="beauty-hero-desc mx-auto mx-lg-0">
+                                        {% if IS_BANGLA %}
+                                            কোরিয়ান ও গ্লোবাল সার্টিফাইড স্কিনকেয়ার এবং মেকআপ—গভীর আর্দ্রতা ও স্বাভাবিক গ্লো এর নিশ্চয়তা।
+                                        {% else %}
+                                            Directly sourced authentic formulations designed to restore your skin barrier, quench deep thirst, and awaken timeless radiance.
+                                        {% endif %}
+                                    </p>
+                                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2 gap-md-3">
+                                        <a href="{% url 'product_list' %}" class="btn btn-beauty-primary shadow-sm">
+                                            {% if IS_BANGLA %}কালেকশন দেখুন{% else %}Explore Collection{% endif %}
                                         </a>
-                                    {% else %}
-                                        Advanced Snail 96 Mucin Power Essence
-                                    {% endif %}
-                                </h6>
-                                <div class="d-flex align-items-baseline gap-2">
-                                    <span class="fw-bold font-serif fs-6" style="color: #2d2621;">
-                                        ৳{% if daily_glow_highlight %}{{ daily_glow_highlight.effective_price }}{% else %}1,850{% endif %}
-                                    </span>
-                                    {% if daily_glow_highlight and daily_glow_highlight.has_discount %}
-                                        <span class="text-muted text-decoration-line-through small" style="font-size: 0.78rem;">৳{{ daily_glow_highlight.price }}</span>
-                                    {% endif %}
+                                        <a href="#routineSection" class="btn btn-beauty-outline">
+                                            {% if IS_BANGLA %}রুটিন বিল্ডার{% else %}Build Your Skincare Routine{% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Architectural Sculpted Pedestal SVG Studio Art (OHSOGO Inspired) -->
+                                <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+                                    <svg viewBox="0 0 520 310" width="490" height="290" class="img-fluid" role="img" aria-label="Curated Skincare Bottle Pedestals">
+                                        <!-- Architectural backdrop plaque -->
+                                        <rect x="135" y="18" width="250" height="110" rx="4" fill="#d6cec4" fill-opacity="0.45"/>
+                                        <text x="260" y="64" text-anchor="middle" fill="currentColor" font-size="19" font-weight="700" font-family="Playfair Display, serif" letter-spacing="3" opacity="0.88">THE RADIANCE EDIT</text>
+                                        <text x="260" y="88" text-anchor="middle" fill="currentColor" font-size="11.5" font-family="sans-serif" letter-spacing="1.5" opacity="0.68">K-BEAUTY • DERM TESTED</text>
+                                        <line x1="210" y1="104" x2="310" y2="104" stroke="#be185d" stroke-width="2"/>
+                                        <!-- Left & Center Stepped Pedestals -->
+                                        <rect x="30" y="218" width="175" height="68" rx="4" fill="#c9bfb4" fill-opacity="0.72"/>
+                                        <rect x="195" y="242" width="135" height="44" rx="4" fill="#bfb4a8" fill-opacity="0.75"/>
+                                        <rect x="330" y="196" width="160" height="90" rx="4" fill="#cfc6bc" fill-opacity="0.7"/>
+                                        <!-- Cobalt SPF Tube -->
+                                        <rect x="64" y="102" width="48" height="96" rx="8" fill="#1d4ed8"/>
+                                        <rect x="74" y="198" width="28" height="20" rx="2" fill="#f8fafc"/>
+                                        <rect x="70" y="120" width="36" height="30" rx="3" fill="#ffffff" fill-opacity="0.92"/>
+                                        <text x="88" y="139" text-anchor="middle" fill="#1e3a8a" font-size="9" font-weight="800" font-family="sans-serif">SPF50+</text>
+                                        <!-- Cream Jar -->
+                                        <rect x="128" y="166" width="54" height="52" rx="10" fill="#ffffff" stroke="#e2d9d0" stroke-width="1.5"/>
+                                        <rect x="132" y="156" width="46" height="12" rx="4" fill="#e2d9d0"/>
+                                        <!-- Rose Serum Bottle -->
+                                        <rect x="234" y="140" width="54" height="102" rx="16" fill="#9f1239"/>
+                                        <rect x="249" y="122" width="24" height="18" rx="4" fill="#1c1917"/>
+                                        <rect x="242" y="168" width="38" height="36" rx="4" fill="#fff1f2"/>
+                                        <text x="261" y="190" text-anchor="middle" fill="#9f1239" font-size="8.5" font-weight="800" font-family="sans-serif">SERUM</text>
+                                        <!-- Botanical Essence Mist -->
+                                        <rect x="366" y="88" width="40" height="108" rx="12" fill="#7e22ce"/>
+                                        <rect x="378" y="66" width="16" height="22" rx="3" fill="#ffffff"/>
+                                        <rect x="372" y="114" width="28" height="38" rx="3" fill="#faf5ff"/>
+                                        <!-- Peach Botanical Soap / Balm -->
+                                        <ellipse cx="445" cy="176" rx="28" ry="18" fill="#f4a28c"/>
+                                        <circle cx="42" cy="196" r="14" fill="#e2d9d0" fill-opacity="0.8"/>
+                                        <circle cx="316" cy="228" r="10" fill="#e2d9d0" fill-opacity="0.85"/>
+                                    </svg>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mt-2 pt-2 border-top border-light-subtle d-flex justify-content-between align-items-center">
-                            <span class="small text-muted" style="font-size: 0.75rem;">
-                                <i class="bi bi-shield-check text-success me-1"></i>{% if IS_BANGLA %}১০০% অথেনটিক ব্যাচ{% else %}Direct Korean Import{% endif %}
-                            </span>
-                            {% if daily_glow_highlight %}
-                                <a href="{% url 'product_detail' daily_glow_highlight.pk %}" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1 fw-semibold" style="font-size: 0.78rem;">
-                                    {% if IS_BANGLA %}অর্ডার করুন{% else %}Shop Glow{% endif %} <i class="bi bi-arrow-right ms-1"></i>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1 fw-semibold" style="font-size: 0.78rem;">
-                                    Shop Glow <i class="bi bi-arrow-right ms-1"></i>
-                                </a>
-                            {% endif %}
-                        </div>
                     </div>
-
-                    <!-- Spotlight Card 2: Complimentary Luxury Sample Callout -->
-                    <div class="beauty-spotlight-card flex-grow-1" style="background: linear-gradient(135deg, rgba(255, 241, 242, 0.4) 0%, rgba(250, 248, 245, 0.9) 100%);">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="badge rounded-pill fw-semibold" style="background: rgba(190, 24, 93, 0.1); color: #9d174d; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;">
-                                <i class="bi bi-gift-fill me-1 text-danger"></i>{% if IS_BANGLA %}উপহার অফার{% else %}Complimentary Luxury Sample{% endif %}
-                            </span>
-                            <span class="badge bg-white text-dark border shadow-xs" style="font-size: 0.68rem;">Orders ৳1,500+</span>
-                        </div>
-
-                        <div class="my-auto py-1">
-                            <h6 class="font-serif fw-bold mb-1" style="font-size: 1rem; color: var(--beauty-text-main);">
-                                {% if IS_BANGLA %}প্রতিটি অর্ডারে ফ্রি ডিলাক্স স্কিনকেয়ার স্যাম্পল{% else %}Free Deluxe Travel Sample with Every Order{% endif %}
-                            </h6>
-                            <p class="small text-muted mb-2" style="font-size: 0.8rem; line-height: 1.45;">
-                                {% if IS_BANGLA %}
-                                    Laneige, COSRX বা CeraVe এর পরীক্ষিত ট্রাভেল সাইজ মিনি স্যাম্পল সম্পূর্ণ বিনামূল্যে উপভোগ করুন।
-                                {% else %}
-                                    Experience curated minis from Laneige, COSRX & CeraVe hand-packed in our eco-luxe cashmere pouches.
-                                {% endif %}
-                            </p>
-                        </div>
-
-                        <div class="pt-2 border-top border-light-subtle d-flex justify-content-between align-items-center">
-                            <span class="small text-muted" style="font-size: 0.73rem;">
-                                <i class="bi bi-check-circle-fill text-success me-1"></i>Auto-added at checkout
-                            </span>
-                            <a href="{% url 'product_list' %}" class="btn btn-sm btn-dark rounded-pill px-3 py-1 fw-semibold" style="font-size: 0.78rem;">
-                                {% if IS_BANGLA %}শপিং শুরু করুন{% else %}Claim Sample{% endif %}
-                            </a>
-                        </div>
-                    </div>
-
                 </div>
 
+                <!-- Slide 2: Pure Dew & Barrier Serums -->
+                <div class="carousel-item">
+                    <div class="beauty-hero-slide beauty-slide-bg-2">
+                        <div class="container-xl">
+                            <div class="row align-items-center g-4">
+                                <div class="col-lg-6 text-center text-lg-start">
+                                    <div class="beauty-badge-pill">
+                                        <i class="bi bi-droplet-half"></i>
+                                        <span>{% if IS_BANGLA %}গভীর আর্দ্রতা ও ব্যারিয়ার কেয়ার{% else %}Barrier Restoration &amp; K-Beauty Actives{% endif %}</span>
+                                    </div>
+                                    <h2 class="beauty-hero-title">
+                                        {% if IS_BANGLA %}
+                                            হাইড্রেটিং সিরাম ও গ্লাস স্কিন কেয়ার
+                                        {% else %}
+                                            Pure Dew &amp; Active Barrier Serums
+                                        {% endif %}
+                                    </h2>
+                                    <p class="beauty-hero-desc mx-auto mx-lg-0">
+                                        {% if IS_BANGLA %}
+                                            হায়ালুরনিক অ্যাসিড, সিরামাইড এবং নিয়াসিনামাইড সমৃদ্ধ আসল কোরিয়ান ফর্মুলা।
+                                        {% else %}
+                                            Infused with concentrated niacinamide, snail mucin, and multi-ceramides to visibly refine pores and fortify sensitive skin.
+                                        {% endif %}
+                                    </p>
+                                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2 gap-md-3">
+                                        <a href="{% url 'product_list' %}?category=skin-care" class="btn btn-beauty-primary shadow-sm">
+                                            {% if IS_BANGLA %}সিরাম ও স্কিনকেয়ার{% else %}Discover Concentrates{% endif %}
+                                        </a>
+                                        <button type="button" class="btn btn-beauty-outline" data-bs-toggle="modal" data-bs-target="#skinConsultationModal">
+                                            {% if IS_BANGLA %}ফ্রি স্কিন কুইজ{% else %}Take 60s Skin Quiz{% endif %}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+                                    <svg viewBox="0 0 520 310" width="490" height="290" class="img-fluid" role="img" aria-label="Barrier Serums Showcase">
+                                        <rect x="130" y="20" width="260" height="106" rx="4" fill="#be185d" fill-opacity="0.1"/>
+                                        <text x="260" y="66" text-anchor="middle" fill="currentColor" font-size="18" font-weight="700" font-family="Playfair Display, serif" letter-spacing="2.5">BARRIER SCIENCE</text>
+                                        <text x="260" y="90" text-anchor="middle" fill="currentColor" font-size="11" font-family="sans-serif" letter-spacing="1.4" opacity="0.7">NIACINAMIDE • CERAMIDES</text>
+                                        <rect x="65" y="205" width="390" height="75" rx="8" fill="#d9c6cf" fill-opacity="0.5"/>
+                                        <rect x="145" y="98" width="66" height="107" rx="14" fill="#be185d"/>
+                                        <rect x="166" y="72" width="24" height="26" rx="4" fill="#1c1917"/>
+                                        <rect x="155" y="130" width="46" height="44" rx="4" fill="#fff1f2"/>
+                                        <text x="178" y="156" text-anchor="middle" fill="#be185d" font-size="9.5" font-weight="800" font-family="sans-serif">10% B3</text>
+                                        <rect x="236" y="128" width="68" height="77" rx="12" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"/>
+                                        <text x="270" y="170" text-anchor="middle" fill="#9f1239" font-size="10" font-weight="800" font-family="sans-serif">MUCIN 96</text>
+                                        <rect x="330" y="142" width="60" height="63" rx="30" fill="#0f766e"/>
+                                        <text x="360" y="177" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="700" font-family="sans-serif">CICA</text>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Weightless SPF & Luxe Lip Tints -->
+                <div class="carousel-item">
+                    <div class="beauty-hero-slide beauty-slide-bg-3">
+                        <div class="container-xl">
+                            <div class="row align-items-center g-4">
+                                <div class="col-lg-6 text-center text-lg-start">
+                                    <div class="beauty-badge-pill">
+                                        <i class="bi bi-sun-fill text-warning"></i>
+                                        <span>{% if IS_BANGLA %}হোয়াইটকাস্ট মুক্ত সূর্য সুরক্ষা{% else %}Broad Spectrum Daily Protection{% endif %}</span>
+                                    </div>
+                                    <h2 class="beauty-hero-title">
+                                        {% if IS_BANGLA %}
+                                            হালকা সানস্ক্রিন, জিরো হোয়াইটকাস্ট
+                                        {% else %}
+                                            Weightless Invisible Sunscreen
+                                        {% endif %}
+                                    </h2>
+                                    <p class="beauty-hero-desc mx-auto mx-lg-0">
+                                        {% if IS_BANGLA %}
+                                            SPF 50+ PA++++ সুরক্ষা—আমাদের আবহাওয়ার জন্য তৈরি হালকা ও নন-গ্রিসি ফর্মুলা।
+                                        {% else %}
+                                            Silky fast-absorbing UV shields enriched with rice bran and probiotics for undetectable humid-weather defense.
+                                        {% endif %}
+                                    </p>
+                                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2 gap-md-3">
+                                        <a href="{% url 'product_list' %}?q=sunscreen" class="btn btn-beauty-primary shadow-sm">
+                                            {% if IS_BANGLA %}সানস্ক্রিন দেখুন{% else %}Shop Sun Care{% endif %}
+                                        </a>
+                                        <a href="{% url 'product_list' %}?category=makeup" class="btn btn-beauty-outline">
+                                            {% if IS_BANGLA %}মেকআপ ও লিপস{% else %}Explore Makeup{% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+                                    <svg viewBox="0 0 520 310" width="490" height="290" class="img-fluid" role="img" aria-label="Invisible Sun Care & Lip Tints">
+                                        <circle cx="260" cy="148" r="108" fill="#f59e0b" fill-opacity="0.14"/>
+                                        <rect x="85" y="210" width="350" height="68" rx="8" fill="#d6c5b3" fill-opacity="0.55"/>
+                                        <rect x="165" y="88" width="76" height="122" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+                                        <text x="203" y="148" text-anchor="middle" fill="#92400e" font-size="13" font-weight="800" font-family="sans-serif">SPF 50+</text>
+                                        <text x="203" y="166" text-anchor="middle" fill="#b45309" font-size="9" font-weight="700" font-family="sans-serif">PA++++</text>
+                                        <rect x="275" y="118" width="34" height="92" rx="6" fill="#be185d"/>
+                                        <rect x="281" y="96" width="22" height="22" rx="3" fill="#fbbf24"/>
+                                        <rect x="330" y="138" width="52" height="72" rx="10" fill="#1c1917"/>
+                                        <rect x="342" y="118" width="28" height="20" rx="3" fill="#f43f5e"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
 
-        <!-- ========================================== -->
-        <!-- SECTION 2: 4 CLEAN BEAUTY TRUST PILLARS   -->
-        <!-- ========================================== -->
-        <section class="beauty-trust-pillars mb-5">
-            <div class="row g-3 g-md-4">
-                
-                <!-- Pillar 1 -->
-                <div class="col-6 col-lg-3">
-                    <div class="beauty-pillar-card">
-                        <div class="beauty-pillar-icon-box">
-                            <i class="bi bi-patch-check-fill text-warning"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1" style="font-size: 0.88rem; color: var(--beauty-text-main);">
-                                {% if IS_BANGLA %}১০০% অথেনটিক ব্র্যান্ড{% else %}100% Authentic & Certified{% endif %}
-                            </h6>
-                            <p class="small text-muted mb-0" style="font-size: 0.75rem; line-height: 1.35;">
-                                {% if IS_BANGLA %}সরাসরি অফিশিয়াল গ্লোবাল ডিস্ট্রিবিউটর থেকে{% else %}Directly imported from official brand houses{% endif %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Side Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide="prev" style="width: 56px;">
+                <span class="beauty-hero-arrow"><i class="bi bi-chevron-left"></i></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#beautyHeroCarousel" data-bs-slide="next" style="width: 56px;">
+                <span class="beauty-hero-arrow"><i class="bi bi-chevron-right"></i></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
 
-                <!-- Pillar 2 -->
-                <div class="col-6 col-lg-3">
-                    <div class="beauty-pillar-card">
-                        <div class="beauty-pillar-icon-box" style="background: rgba(15, 118, 110, 0.08); color: #0f766e;">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1" style="font-size: 0.88rem; color: var(--beauty-text-main);">
-                                {% if IS_BANGLA %}ডার্মাটোলজিস্ট টেস্টেড{% else %}Dermatologically Approved{% endif %}
-                            </h6>
-                            <p class="small text-muted mb-0" style="font-size: 0.75rem; line-height: 1.35;">
-                                {% if IS_BANGLA %}সংবেদনশীল ত্বকের জন্য শতভাগ নিরাপদ{% else %}Clinically validated for sensitive skin barrier{% endif %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
+    <div class="container-xl pb-4">
 
-                <!-- Pillar 3 -->
-                <div class="col-6 col-lg-3">
-                    <div class="beauty-pillar-card">
-                        <div class="beauty-pillar-icon-box" style="background: rgba(190, 24, 93, 0.08); color: #be185d;">
-                            <i class="bi bi-calendar-check-fill"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1" style="font-size: 0.88rem; color: var(--beauty-text-main);">
-                                {% if IS_BANGLA %}ফ্রেশ ব্যাচ গ্যারান্টি{% else %}Fresh Batch Guarantee{% endif %}
-                            </h6>
-                            <p class="small text-muted mb-0" style="font-size: 0.75rem; line-height: 1.35;">
-                                {% if IS_BANGLA %}নিয়ন্ত্রিত তাপমাত্রায় সংরক্ষিত দীর্ঘ মেয়াদ{% else %}Strict shelf-life and climate-controlled storage{% endif %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pillar 4 -->
-                <div class="col-6 col-lg-3">
-                    <div class="beauty-pillar-card">
-                        <div class="beauty-pillar-icon-box" style="background: rgba(5, 150, 105, 0.08); color: #059669;">
-                            <i class="bi bi-heart-pulse-fill"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1" style="font-size: 0.88rem; color: var(--beauty-text-main);">
-                                {% if IS_BANGLA %}ক্রুয়েলটি-ফ্রি ও সচেতন{% else %}Cruelty-Free & Conscious{% endif %}
-                            </h6>
-                            <p class="small text-muted mb-0" style="font-size: 0.75rem; line-height: 1.35;">
-                                {% if IS_BANGLA %}প্যারাাবেন ও ক্ষতিকর রাসায়নিক মুক্ত{% else %}Zero animal testing, non-toxic clean formulas{% endif %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ========================================== -->
-        <!-- SECTION 3: CURATED RITUALS & CATEGORY TILE -->
-        <!-- ========================================== -->
-        <section class="beauty-rituals-discovery mb-5 pt-2">
+        <!-- ========================================================== -->
+        <!-- 2. CURATED RITUALS & VISUAL BEAUTY CATEGORIES              -->
+        <!-- ========================================================== -->
+        <section class="beauty-rituals-discovery mb-5">
             <div class="beauty-section-title-wrap">
                 <span class="beauty-kicker">{% if IS_BANGLA %}বিউটি রিচুয়াল{% else %}Curated Rituals{% endif %}</span>
-                <h2 class="beauty-heading">
-                    {% if IS_BANGLA %}আপনার ত্বকের প্রয়োজনীয় বিভাগ খুঁজুন{% else %}Tailored Formulations by Ritual{% endif %}
-                </h2>
-                <p class="beauty-subheading">
-                    {% if IS_BANGLA %}
-                        প্রতিটি ধাপের জন্য বিশেষভাবে বাছাইকৃত কোরিয়ান ও গ্লোবাল স্কিনকেয়ার ক্যাটাগরি।
-                    {% else %}
-                        Explore targeted solutions thoughtfully crafted to cleanse, revitalize, fortify, and protect every complexion.
-                    {% endif %}
+                <h2 class="beauty-heading">{% if IS_BANGLA %}আপনার ত্বকের প্রয়োজনীয় বিভাগ খুঁজুন{% else %}Shop by Beauty Category{% endif %}</h2>
+                <p class="beauty-subheading mb-0">
+                    {% if IS_BANGLA %}কোরিয়ান ও আন্তর্জাতিক শীর্ষ ব্র্যান্ডের আসল স্কিনকেয়ার, মেকআপ ও হেয়ারকেয়ার।{% else %}Explore authentic K-Beauty, clinical skincare, makeup, and luxury fragrances curated for South Asian skin tones and weather.{% endif %}
                 </p>
             </div>
 
-            <!-- 8 Visual Aesthetic Circular/Pill Tiles -->
             <div class="row row-cols-2 row-cols-sm-4 row-cols-lg-8 g-3 justify-content-center">
-                
-                <!-- Tile 1: Hydrating Serums -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=skincare-serums" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-droplet-half ritual-tile-icon" style="color: #0f766e;"></i>
-                        </div>
+                    <a href="{% url 'product_list' %}?category=skin-care" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-droplet-half ritual-tile-icon" style="color: #0f766e;"></i></div>
                         <span class="ritual-name">{% if IS_BANGLA %}হাইড্রেটিং সিরাম{% else %}Hydrating Serums{% endif %}</span>
                     </a>
                 </div>
-
-                <!-- Tile 2: Gentle Cleansers -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=facial-cleansers" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-magic ritual-tile-icon" style="color: #0284c7;"></i>
-                        </div>
+                    <a href="{% url 'product_list' %}?category=cleansers" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-magic ritual-tile-icon" style="color: #0284c7;"></i></div>
                         <span class="ritual-name">{% if IS_BANGLA %}জেন্টল ক্লিনজার{% else %}Gentle Cleansers{% endif %}</span>
                     </a>
                 </div>
-
-                <!-- Tile 3: Daily Moisturizers -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=moisturizers-creams" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-flower2 ritual-tile-icon" style="color: #b45309;"></i>
-                        </div>
+                    <a href="{% url 'product_list' %}?q=moisturizer" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-flower2 ritual-tile-icon" style="color: #b45309;"></i></div>
                         <span class="ritual-name">{% if IS_BANGLA %}ময়েশ্চারাইজার{% else %}Daily Moisturizers{% endif %}</span>
                     </a>
                 </div>
-
-                <!-- Tile 4: Broad Spectrum SPF -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=sunscreens-sun-care" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-sun-fill ritual-tile-icon" style="color: #f59e0b;"></i>
-                        </div>
+                    <a href="{% url 'product_list' %}?q=sunscreen" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-sun-fill ritual-tile-icon" style="color: #f59e0b;"></i></div>
                         <span class="ritual-name">{% if IS_BANGLA %}সানস্ক্রিন SPF{% else %}Broad Spectrum SPF{% endif %}</span>
                     </a>
                 </div>
-
-                <!-- Tile 5: Sheet Masks & Toners -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=sheet-masks-exfoliators" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-layers-fill ritual-tile-icon" style="color: #9333ea;"></i>
-                        </div>
-                        <span class="ritual-name">{% if IS_BANGLA %}শিট মাস্ক ও পিল{% else %}Sheet Masks{% endif %}</span>
+                    <a href="{% url 'product_list' %}?q=toner" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-layers-fill ritual-tile-icon" style="color: #9333ea;"></i></div>
+                        <span class="ritual-name">{% if IS_BANGLA %}টোনার ও মাস্ক{% else %}Toners &amp; Masks{% endif %}</span>
                     </a>
                 </div>
-
-                <!-- Tile 6: Lip Care & Tints -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=lipsticks-lip-care" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-heart-half ritual-tile-icon" style="color: #e11d48;"></i>
-                        </div>
-                        <span class="ritual-name">{% if IS_BANGLA %}লিপ কেয়ার ও টিন্ট{% else %}Lip Care & Tints{% endif %}</span>
+                    <a href="{% url 'product_list' %}?category=makeup" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-heart-half ritual-tile-icon" style="color: #e11d48;"></i></div>
+                        <span class="ritual-name">{% if IS_BANGLA %}মেকআপ ও লিপস{% else %}Makeup &amp; Lip Tints{% endif %}</span>
                     </a>
                 </div>
-
-                <!-- Tile 7: Haircare Essentials -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=hair-shampoos-conditioners" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-wind ritual-tile-icon" style="color: #0d9488;"></i>
-                        </div>
+                    <a href="{% url 'product_list' %}?category=hair-care" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-wind ritual-tile-icon" style="color: #0d9488;"></i></div>
                         <span class="ritual-name">{% if IS_BANGLA %}হেয়ারকেয়ার{% else %}Haircare Essentials{% endif %}</span>
                     </a>
                 </div>
-
-                <!-- Tile 8: Luxury Fragrance -->
                 <div class="col">
-                    <a href="{% url 'product_list' %}?category=luxury-fragrances-perfumes" class="ritual-tile">
-                        <div class="ritual-circle">
-                            <i class="bi bi-gem ritual-tile-icon" style="color: #be185d;"></i>
-                        </div>
-                        <span class="ritual-name">{% if IS_BANGLA %}লাক্সারি পারফিউম{% else %}Fragrance{% endif %}</span>
+                    <a href="{% url 'product_list' %}?category=fragrances" class="ritual-tile">
+                        <div class="ritual-circle"><i class="bi bi-gem ritual-tile-icon" style="color: #be185d;"></i></div>
+                        <span class="ritual-name">{% if IS_BANGLA %}পারফিউম{% else %}Fragrance{% endif %}</span>
                     </a>
                 </div>
-
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- SECTION 4: JUST IN: FRESH GLOW ESSENTIALS  -->
-        <!-- ========================================== -->
-        <section class="beauty-fresh-arrivals mb-5 pt-3">
-            <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 pb-2 border-bottom border-light-subtle">
+        <!-- ========================================================== -->
+        <!-- 3. SOUTH ASIAN CONCERN FINDER & ACTIVE INGREDIENTS STRIP   -->
+        <!-- ========================================================== -->
+        <section class="mb-5">
+            <div class="d-flex flex-wrap justify-content-between align-items-end mb-3 gap-2">
+                <div>
+                    <span class="beauty-kicker">{% if IS_BANGLA %}ত্বক ও চুলের সমস্যা{% else %}Targeted Solutions{% endif %}</span>
+                    <h3 class="beauty-heading mb-0" style="font-size: 1.65rem;">{% if IS_BANGLA %}সমস্যা অনুযায়ী বেছে নিন{% else %}Shop by Skin &amp; Hair Concern{% endif %}</h3>
+                </div>
+                <button type="button" class="btn beauty-routine-btn" data-bs-toggle="modal" data-bs-target="#skinConsultationModal">
+                    <i class="bi bi-stars me-1"></i> {% if IS_BANGLA %}৬০ সেকেন্ডে রুটিন কুইজ{% else %}60s Skin Quiz{% endif %}
+                </button>
+            </div>
+
+            <div class="row g-2 g-md-3 row-cols-2 row-cols-md-3 row-cols-lg-6 mb-3">
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=acne" class="beauty-concern-card">
+                        <i class="bi bi-droplet-fill fs-5 text-danger"></i>
+                        <span class="small fw-bold">{% if IS_BANGLA %}ব্রণ ও পোরস{% else %}Acne &amp; Pores{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=brightening" class="beauty-concern-card">
+                        <i class="bi bi-brightness-high-fill fs-5 text-warning"></i>
+                        <span class="small fw-bold">{% if IS_BANGLA %}উজ্জ্বলতা ও দাগ{% else %}Brightening &amp; Spots{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=hydration" class="beauty-concern-card">
+                        <i class="bi bi-moisture fs-5 text-info"></i>
+                        <span class="small fw-bold">{% if IS_BANGLA %}গভীর হাইড্রেশন{% else %}Dryness &amp; Barrier{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=sunscreen" class="beauty-concern-card">
+                        <i class="bi bi-shield-sun fs-5 text-warning"></i>
+                        <span class="small fw-bold">{% if IS_BANGLA %}সান ট্যান সুরক্ষা{% else %}Sun Tan &amp; SPF{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=oil" class="beauty-concern-card">
+                        <i class="bi bi-circle-half fs-5 text-success"></i>
+                        <span class="small fw-bold">{% if IS_BANGLA %}তৈলাক্ত ত্বক{% else %}Oil &amp; Sebum Control{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?category=hair-care" class="beauty-concern-card">
+                        <i class="bi bi-wind fs-5" style="color: var(--beauty-blush);"></i>
+                        <span class="small fw-bold">{% if IS_BANGLA %}চুল পড়া রোধ{% else %}Hair Fall &amp; Frizz{% endif %}</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Active Ingredient Quick Chips -->
+            <div class="d-flex flex-wrap align-items-center gap-2 pt-1">
+                <span class="small fw-bold text-uppercase me-1" style="font-size: 0.7rem; letter-spacing: 0.08em; color: var(--beauty-text-muted);">
+                    {% if IS_BANGLA %}জনপ্রিয় উপাদান:{% else %}Shop Actives:{% endif %}
+                </span>
+                <a href="{% url 'product_list' %}?q=Niacinamide" class="beauty-ingredient-chip">Niacinamide 10%</a>
+                <a href="{% url 'product_list' %}?q=Snail" class="beauty-ingredient-chip">Snail Mucin 96%</a>
+                <a href="{% url 'product_list' %}?q=Salicylic" class="beauty-ingredient-chip">Salicylic Acid (BHA)</a>
+                <a href="{% url 'product_list' %}?q=Vitamin+C" class="beauty-ingredient-chip">Vitamin C</a>
+                <a href="{% url 'product_list' %}?q=Hyaluronic" class="beauty-ingredient-chip">Hyaluronic Acid</a>
+                <a href="{% url 'product_list' %}?q=Ceramide" class="beauty-ingredient-chip">Ceramides</a>
+            </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <!-- 4. JUST IN: FRESH GLOW ESSENTIALS WITH LIVE FILTER TABS    -->
+        <!-- ========================================================== -->
+        <section class="beauty-fresh-arrivals mb-5 pt-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-end mb-3 gap-2">
                 <div>
                     <span class="beauty-kicker">{% if IS_BANGLA %}নতুন আগমন{% else %}Just In{% endif %}</span>
-                    <h3 class="beauty-heading mb-0" style="font-size: 1.85rem;">
+                    <h3 class="beauty-heading mb-0" style="font-size: 1.8rem;">
                         {% if IS_BANGLA %}ফ্রেশ গ্লো এসেনশিয়ালস{% else %}Fresh Glow Essentials{% endif %}
                     </h3>
                 </div>
-                <a href="{% url 'product_list' %}?sort=newest" class="text-decoration-none fw-semibold small text-muted hover-blush d-flex align-items-center gap-1 mt-2 mt-sm-0">
-                    {% if IS_BANGLA %}সকল নতুন প্রোডাক্ট{% else %}View All New Arrivals{% endif %}
-                    <i class="bi bi-arrow-right"></i>
+                <a href="{% url 'product_list' %}?sort=newest" class="text-decoration-none fw-semibold small" style="color: var(--beauty-blush);">
+                    {% if IS_BANGLA %}সকল নতুন প্রোডাক্ট{% else %}View All New Arrivals{% endif %} <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
 
-            <!-- Product Grid -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+            <!-- Live Category Filter Tabs -->
+            <div class="d-flex flex-wrap gap-2 mb-4" id="beautyFilterTabs">
+                <button type="button" class="beauty-filter-pill active" data-beauty-filter="all">All New</button>
+                {% for cat in featured_categories|slice:":4" %}
+                    <button type="button" class="beauty-filter-pill" data-beauty-filter="{{ cat.slug }}">{{ cat.name }}</button>
+                {% endfor %}
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4" id="beautyFreshGrid">
                 {% if fresh_glow_essentials %}
                     {% for product in fresh_glow_essentials|slice:":8" %}
-                        <div class="col">
+                        <div class="col beauty-grid-item" data-beauty-cat="{{ product.category.slug|default:'beauty' }}">
                             {% include 'themes/beauty-skincare/product_card.html' with product=product %}
                         </div>
                     {% endfor %}
                 {% elif latest_products %}
                     {% for product in latest_products|slice:":8" %}
-                        <div class="col">
+                        <div class="col beauty-grid-item" data-beauty-cat="{{ product.category.slug|default:'beauty' }}">
                             {% include 'themes/beauty-skincare/product_card.html' with product=product %}
                         </div>
                     {% endfor %}
@@ -894,376 +817,395 @@
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- SECTION 5: BESTSELLERS & COMMUNITY FAVORITE -->
-        <!-- ========================================== -->
-        <section class="beauty-bestsellers mb-5 pt-3" id="beauty_bestsellers">
-            <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 pb-2 border-bottom border-light-subtle">
+        <!-- ========================================================== -->
+        <!-- 5. DUAL EDITORIAL SPOTLIGHT DUO (Below Hero - Balanced 50/50) -->
+        <!-- ========================================================== -->
+        <section class="mb-5">
+            <div class="row g-3 g-md-4 align-items-stretch">
+                <!-- Left: Daily Glow Highlight -->
+                <div class="col-lg-6">
+                    <div class="beauty-spotlight-card d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge rounded-pill fw-semibold" style="background: rgba(180, 83, 9, 0.14); color: var(--beauty-gold); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;">
+                                    <i class="bi bi-award me-1"></i>{% if IS_BANGLA %}ডেইলি গ্লো স্পটলাইট{% else %}Daily Glow Highlight{% endif %}
+                                </span>
+                                <span class="small" style="color: var(--beauty-text-muted);">★ 4.9 (240+)</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3 py-1">
+                                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 96px; height: 96px; background: var(--beauty-cashmere); border: 1px solid var(--beauty-border);">
+                                    {% if daily_glow_highlight and daily_glow_highlight.image %}
+                                        <img src="{{ daily_glow_highlight.image.url }}" alt="{{ daily_glow_highlight.name }}" class="img-fluid" style="max-height: 82px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
+                                    {% else %}
+                                        <i class="bi bi-droplet-half fs-1" style="color: var(--beauty-blush);"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <small class="text-uppercase fw-bold d-block" style="font-size: 0.68rem; letter-spacing: 0.08em; color: var(--beauty-text-muted);">
+                                        {% if daily_glow_highlight and daily_glow_highlight.brand %}{{ daily_glow_highlight.brand.name }}{% else %}COSRX Snail Mucin{% endif %}
+                                    </small>
+                                    <h5 class="font-serif fw-bold mb-1" style="color: var(--beauty-text-main);">
+                                        {% if daily_glow_highlight %}
+                                            <a href="{% url 'product_detail' daily_glow_highlight.pk %}" class="text-decoration-none text-reset">
+                                                {{ daily_glow_highlight.name }}
+                                            </a>
+                                        {% else %}
+                                            Advanced Snail 96 Mucin Power Essence
+                                        {% endif %}
+                                    </h5>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                        <span class="fw-bold fs-5" style="color: var(--beauty-blush);">
+                                            ৳{% if daily_glow_highlight %}{{ daily_glow_highlight.effective_price }}{% else %}1,850{% endif %}
+                                        </span>
+                                        {% if daily_glow_highlight and daily_glow_highlight.has_discount %}
+                                            <span class="text-decoration-line-through small" style="color: var(--beauty-text-muted);">৳{{ daily_glow_highlight.price }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center" style="border-color: var(--beauty-border) !important;">
+                            <span class="small" style="color: var(--beauty-text-muted);">
+                                <i class="bi bi-shield-check text-success me-1"></i>{% if IS_BANGLA %}১০০% অথেনটিক ব্যাচ{% else %}Direct Korean Import{% endif %}
+                            </span>
+                            <a href="{% if daily_glow_highlight %}{% url 'product_detail' daily_glow_highlight.pk %}{% else %}{% url 'product_list' %}{% endif %}" class="btn btn-sm beauty-btn-pill px-4">
+                                {% if IS_BANGLA %}অর্ডার করুন{% else %}Shop Glow{% endif %} <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Complimentary Luxury Sample Callout -->
+                <div class="col-lg-6">
+                    <div class="beauty-spotlight-card beauty-spotlight-blush d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="badge rounded-pill fw-semibold" style="background: rgba(190, 24, 93, 0.14); color: var(--beauty-blush); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;">
+                                    <i class="bi bi-gift-fill me-1"></i>{% if IS_BANGLA %}উপহার অফার{% else %}Complimentary Luxury Sample{% endif %}
+                                </span>
+                                <span class="badge rounded-pill px-3 py-1" style="background: var(--beauty-surface); color: var(--beauty-text-main); border: 1px solid var(--beauty-border); font-size: 0.7rem;">Orders ৳1,500+</span>
+                            </div>
+
+                            <h5 class="font-serif fw-bold mb-2" style="color: var(--beauty-text-main);">
+                                {% if IS_BANGLA %}প্রতিটি অর্ডারে ফ্রি ডিলাক্স স্কিনকেয়ার স্যাম্পল{% else %}Free Deluxe Travel Sample with Every Order{% endif %}
+                            </h5>
+                            <p class="small mb-0" style="color: var(--beauty-text-muted); line-height: 1.55;">
+                                {% if IS_BANGLA %}
+                                    Laneige, COSRX বা CeraVe এর পরীক্ষিত ট্রাভেল সাইজ মিনি স্যাম্পল সম্পূর্ণ বিনামূল্যে উপভোগ করুন।
+                                {% else %}
+                                    Experience curated minis from Laneige, COSRX &amp; CeraVe hand-packed inside eco-luxe pouches with qualifying orders.
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center" style="border-color: var(--beauty-border) !important;">
+                            <span class="small" style="color: var(--beauty-text-muted);">
+                                <i class="bi bi-check-circle-fill text-success me-1"></i>Auto-added at checkout
+                            </span>
+                            <a href="{% url 'product_list' %}" class="btn btn-sm btn-beauty-primary py-1.5 px-4">
+                                {% if IS_BANGLA %}শপিং শুরু করুন{% else %}Claim Sample{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <!-- 6. BESTSELLERS & COMMUNITY FAVORITES                       -->
+        <!-- ========================================================== -->
+        <section class="beauty-bestsellers mb-5 pt-2" id="beauty_bestsellers">
+            <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 pb-2 border-bottom" style="border-color: var(--beauty-border) !important;">
                 <div>
-                    <span class="beauty-kicker">{% if IS_BANGLA %}কমিউনিটি প্রিয়{% else %}Most Loved & Proven{% endif %}</span>
-                    <h3 class="beauty-heading mb-0" style="font-size: 1.85rem;">
-                        {% if IS_BANGLA %}বেস্টসেলার বিউটি ফর্মুলা{% else %}Bestsellers & Community Favorites{% endif %}
+                    <span class="beauty-kicker">{% if IS_BANGLA %}কমিউনিটি প্রিয়{% else %}Most Loved &amp; Proven{% endif %}</span>
+                    <h3 class="beauty-heading mb-0" style="font-size: 1.8rem;">
+                        {% if IS_BANGLA %}বেস্টসেলার বিউটি ফর্মুলা{% else %}Bestsellers &amp; Community Favorites{% endif %}
                     </h3>
                 </div>
-                <a href="{% url 'product_list' %}?sort=rating" class="text-decoration-none fw-semibold small text-muted hover-blush d-flex align-items-center gap-1 mt-2 mt-sm-0">
-                    {% if IS_BANGLA %}সকল বেস্টসেলার{% else %}Explore All Bestsellers{% endif %}
-                    <i class="bi bi-arrow-right"></i>
+                <a href="{% url 'product_list' %}?sort=rating" class="text-decoration-none fw-semibold small" style="color: var(--beauty-blush);">
+                    {% if IS_BANGLA %}সকল বেস্টসেলার{% else %}Explore All Bestsellers{% endif %} <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
 
-            <!-- Bestseller Product Cards Grid -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
                 {% if beauty_bestsellers %}
                     {% for product in beauty_bestsellers|slice:":8" %}
-                        <div class="col">
-                            {% include 'themes/beauty-skincare/product_card.html' with product=product %}
-                        </div>
+                        <div class="col">{% include 'themes/beauty-skincare/product_card.html' with product=product %}</div>
                     {% endfor %}
                 {% elif best_sellers %}
                     {% for product in best_sellers|slice:":8" %}
-                        <div class="col">
-                            {% include 'themes/beauty-skincare/product_card.html' with product=product %}
-                        </div>
+                        <div class="col">{% include 'themes/beauty-skincare/product_card.html' with product=product %}</div>
                     {% endfor %}
                 {% endif %}
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- SECTION 6: EDITORIAL STORY BLOCK          -->
-        <!-- ========================================== -->
-        <section class="beauty-story-section">
-            <div class="row g-4 g-lg-5 align-items-center">
-                
-                <!-- Left Column: Texture / Lifestyle / Editorial Ethos -->
-                <div class="col-lg-6">
-                    <div class="position-relative p-4 p-md-5 rounded-4" style="background: rgba(255, 255, 255, 0.65); border: 1px solid var(--beauty-border-subtle); backdrop-filter: blur(10px);">
-                        <span class="beauty-kicker mb-2">{% if IS_BANGLA %}আমাদের দর্শন{% else %}The Conscious Philosophy{% endif %}</span>
-                        <h3 class="beauty-heading mb-3" style="font-size: 2.2rem;">
-                            {% if IS_BANGLA %}
-                                সরলতার মাঝে সৌন্দর্য
-                            {% else %}
-                                Beauty in Simplicity
-                            {% endif %}
-                        </h3>
-                        <p class="font-serif fst-italic fs-5 text-muted mb-4" style="line-height: 1.6;">
-                            "Pure botanicals, zero compromise. Formulated for resilient skin that breathes with effortless vitality."
-                        </p>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="rounded-circle p-2 d-flex align-items-center justify-content-center bg-white shadow-xs" style="width: 48px; height: 48px;">
-                                <i class="bi bi-patch-check-fill text-warning fs-5"></i>
-                            </div>
-                            <div>
-                                <strong class="d-block text-dark font-serif">Dr. Clara Vane</strong>
-                                <small class="text-muted">Lead Dermatological Advisor & Botanical Chemist</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column: Conscious Ethos Details -->
-                <div class="col-lg-6">
-                    <div class="ps-lg-3">
-                        <span class="beauty-kicker">{% if IS_BANGLA %}তিনটি মূল অঙ্গীকার{% else %}Our Tri-Pillar Standard{% endif %}</span>
-                        <h4 class="font-serif fw-bold mb-4" style="font-size: 1.75rem; color: var(--beauty-text-main);">
-                            {% if IS_BANGLA %}
-                                বিজ্ঞানের সাথে বোটানিক্যাল শক্তির নিখুঁত মেলবন্ধন
-                            {% else %}
-                                Where Clinical Rigor Meets Pure Botanical Potency
-                            {% endif %}
-                        </h4>
-
-                        <div class="d-flex flex-column gap-3 mb-4">
-                            <!-- Standard 1 -->
-                            <div class="d-flex gap-3">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: rgba(180, 83, 9, 0.1); color: #92400e;">
-                                    <i class="bi bi-check2"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-1" style="font-size: 0.95rem;">{% if IS_BANGLA %}বোটানিক্যাল কার্যকারিতা{% else %}Active Botanical Bio-Availability{% endif %}</h6>
-                                    <p class="small text-muted mb-0">Cold-pressed botanical extracts preserved at maximum bio-potency to penetrate deeply without surface irritation.</p>
-                                </div>
-                            </div>
-
-                            <!-- Standard 2 -->
-                            <div class="d-flex gap-3">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: rgba(15, 118, 110, 0.1); color: #0f766e;">
-                                    <i class="bi bi-check2"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-1" style="font-size: 0.95rem;">{% if IS_BANGLA %}জিরো টক্সিক উপাদান{% else %}100% Free From Harsh Additives{% endif %}</h6>
-                                    <p class="small text-muted mb-0">Zero artificial dyes, synthetic phthalates, parabens, drying alcohols, or heavy mineral oils.</p>
-                                </div>
-                            </div>
-
-                            <!-- Standard 3 -->
-                            <div class="d-flex gap-3">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: rgba(190, 24, 93, 0.1); color: #be185d;">
-                                    <i class="bi bi-check2"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-1" style="font-size: 0.95rem;">{% if IS_BANGLA %}সচেতন ও টেকসই প্যাকেজিং{% else %}Mindfully Crafted & Sustainable{% endif %}</h6>
-                                    <p class="small text-muted mb-0">Recyclable glass flacons and FSC-certified packaging sourced responsibly for a cleaner earth.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <a href="{% url 'product_list' %}" class="btn btn-beauty-primary">
-                            {% if IS_BANGLA %}আমাদের গল্প পড়ুন{% else %}Discover Our Conscious Range{% endif %}
-                            <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ========================================== -->
-        <!-- SECTION 7: OFFICIAL BRAND SHOWCASES        -->
-        <!-- ========================================== -->
+        <!-- ========================================================== -->
+        <!-- 7. OFFICIAL BRAND HOUSES                                   -->
+        <!-- ========================================================== -->
         <section class="beauty-brand-showcase mb-5 pt-2">
             <div class="beauty-section-title-wrap">
                 <span class="beauty-kicker">{% if IS_BANGLA %}অফিশিয়াল পার্টনার{% else %}Direct Brand Alliances{% endif %}</span>
-                <h3 class="beauty-heading" style="font-size: 2rem;">
-                    {% if IS_BANGLA %}বিশ্বখ্যাত বিউটি ব্র্যান্ডসমূহ{% else %}Official Brand Houses{% endif %}
-                </h3>
-                <p class="beauty-subheading">
-                    {% if IS_BANGLA %}
-                        সরাসরি প্রস্তুতকারক ও ভেরিফায়েড গ্লোবাল পার্টনারদের মাধ্যমে সংগৃহীত শতভাগ জেনুইন প্রোডাক্ট।
-                    {% else %}
-                        Authorized retail partnerships ensuring 100% batch authenticity, clinical fresh dates, and sealed packaging.
-                    {% endif %}
+                <h3 class="beauty-heading">{% if IS_BANGLA %}বিশ্বখ্যাত বিউটি ব্র্যান্ডসমূহ{% else %}Official Brand Houses{% endif %}</h3>
+                <p class="beauty-subheading mb-0">
+                    {% if IS_BANGLA %}সরাসরি অনুমোদিত ডিস্ট্রিবিউটর থেকে সংগৃহীত শতভাগ আসল প্রোডাক্ট।{% else %}Authorized partnerships ensuring 100% batch authenticity, fresh expiry dates, and sealed packaging.{% endif %}
                 </p>
             </div>
 
-            <!-- 7 Iconic Brands + Partners -->
             <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-7 g-3">
-                
-                <!-- Brand 1: The Ordinary -->
                 <div class="col">
                     <a href="{% url 'product_list' %}?brand=the-ordinary" class="beauty-brand-pill">
-                        <span class="badge rounded-pill bg-light text-muted border mb-2" style="font-size: 0.62rem;">Canada</span>
-                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem; letter-spacing: 0.05em;">THE ORDINARY</h6>
-                        <small class="text-muted" style="font-size: 0.72rem;">Clinical Formulations</small>
-                        <span class="text-success mt-2 small" style="font-size: 0.68rem;"><i class="bi bi-patch-check-fill me-0.5"></i>Official Partner</span>
+                        <span class="badge rounded-pill border mb-2" style="font-size: 0.62rem; color: var(--beauty-text-muted); border-color: var(--beauty-border) !important;">Canada</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.88rem; letter-spacing: 0.04em;">THE ORDINARY</h6>
+                        <small style="font-size: 0.7rem; color: var(--beauty-text-muted);">Clinical Actives</small>
                     </a>
                 </div>
-
-                <!-- Brand 2: COSRX -->
                 <div class="col">
                     <a href="{% url 'product_list' %}?brand=cosrx" class="beauty-brand-pill">
-                        <span class="badge rounded-pill bg-light text-muted border mb-2" style="font-size: 0.62rem;">Korea</span>
-                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem; letter-spacing: 0.05em;">COSRX</h6>
-                        <small class="text-muted" style="font-size: 0.72rem;">K-Beauty Solutions</small>
-                        <span class="text-success mt-2 small" style="font-size: 0.68rem;"><i class="bi bi-patch-check-fill me-0.5"></i>Official Partner</span>
+                        <span class="badge rounded-pill border mb-2" style="font-size: 0.62rem; color: var(--beauty-text-muted); border-color: var(--beauty-border) !important;">Korea</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.88rem; letter-spacing: 0.04em;">COSRX</h6>
+                        <small style="font-size: 0.7rem; color: var(--beauty-text-muted);">K-Beauty Snail</small>
                     </a>
                 </div>
-
-                <!-- Brand 3: CeraVe -->
                 <div class="col">
                     <a href="{% url 'product_list' %}?brand=cerave" class="beauty-brand-pill">
-                        <span class="badge rounded-pill bg-light text-muted border mb-2" style="font-size: 0.62rem;">USA</span>
-                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem; letter-spacing: 0.05em;">CERAVE</h6>
-                        <small class="text-muted" style="font-size: 0.72rem;">Essential Ceramides</small>
-                        <span class="text-success mt-2 small" style="font-size: 0.68rem;"><i class="bi bi-patch-check-fill me-0.5"></i>Official Partner</span>
+                        <span class="badge rounded-pill border mb-2" style="font-size: 0.62rem; color: var(--beauty-text-muted); border-color: var(--beauty-border) !important;">USA</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.88rem; letter-spacing: 0.04em;">CERAVE</h6>
+                        <small style="font-size: 0.7rem; color: var(--beauty-text-muted);">Ceramide Care</small>
                     </a>
                 </div>
-
-                <!-- Brand 4: Laneige -->
                 <div class="col">
                     <a href="{% url 'product_list' %}?brand=laneige" class="beauty-brand-pill">
-                        <span class="badge rounded-pill bg-light text-muted border mb-2" style="font-size: 0.62rem;">Korea</span>
-                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem; letter-spacing: 0.05em;">LANEIGE</h6>
-                        <small class="text-muted" style="font-size: 0.72rem;">Water Bank Science</small>
-                        <span class="text-success mt-2 small" style="font-size: 0.68rem;"><i class="bi bi-patch-check-fill me-0.5"></i>Official Partner</span>
+                        <span class="badge rounded-pill border mb-2" style="font-size: 0.62rem; color: var(--beauty-text-muted); border-color: var(--beauty-border) !important;">Korea</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.88rem; letter-spacing: 0.04em;">LANEIGE</h6>
+                        <small style="font-size: 0.7rem; color: var(--beauty-text-muted);">Water Bank</small>
                     </a>
                 </div>
-
-                <!-- Brand 5: La Roche-Posay -->
                 <div class="col">
                     <a href="{% url 'product_list' %}?brand=la-roche-posay" class="beauty-brand-pill">
-                        <span class="badge rounded-pill bg-light text-muted border mb-2" style="font-size: 0.62rem;">France</span>
-                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem; letter-spacing: 0.05em;">LA ROCHE-POSAY</h6>
-                        <small class="text-muted" style="font-size: 0.72rem;">Thermal Spring Care</small>
-                        <span class="text-success mt-2 small" style="font-size: 0.68rem;"><i class="bi bi-patch-check-fill me-0.5"></i>Official Partner</span>
+                        <span class="badge rounded-pill border mb-2" style="font-size: 0.62rem; color: var(--beauty-text-muted); border-color: var(--beauty-border) !important;">France</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.88rem; letter-spacing: 0.04em;">LA ROCHE-POSAY</h6>
+                        <small style="font-size: 0.7rem; color: var(--beauty-text-muted);">Derm Care</small>
                     </a>
                 </div>
-
-                <!-- Brand 6: Innisfree -->
                 <div class="col">
                     <a href="{% url 'product_list' %}?brand=innisfree" class="beauty-brand-pill">
-                        <span class="badge rounded-pill bg-light text-muted border mb-2" style="font-size: 0.62rem;">Jeju, Korea</span>
-                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem; letter-spacing: 0.05em;">INNISFREE</h6>
-                        <small class="text-muted" style="font-size: 0.72rem;">Jeju Green Tea</small>
-                        <span class="text-success mt-2 small" style="font-size: 0.68rem;"><i class="bi bi-patch-check-fill me-0.5"></i>Official Partner</span>
+                        <span class="badge rounded-pill border mb-2" style="font-size: 0.62rem; color: var(--beauty-text-muted); border-color: var(--beauty-border) !important;">Korea</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.88rem; letter-spacing: 0.04em;">INNISFREE</h6>
+                        <small style="font-size: 0.7rem; color: var(--beauty-text-muted);">Jeju Green Tea</small>
                     </a>
                 </div>
-
-                <!-- Brand 7: Neutrogena -->
                 <div class="col">
                     <a href="{% url 'product_list' %}?brand=neutrogena" class="beauty-brand-pill">
-                        <span class="badge rounded-pill bg-light text-muted border mb-2" style="font-size: 0.62rem;">USA</span>
-                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem; letter-spacing: 0.05em;">NEUTROGENA</h6>
-                        <small class="text-muted" style="font-size: 0.72rem;">Hydro Boost Hydration</small>
-                        <span class="text-success mt-2 small" style="font-size: 0.68rem;"><i class="bi bi-patch-check-fill me-0.5"></i>Official Partner</span>
+                        <span class="badge rounded-pill border mb-2" style="font-size: 0.62rem; color: var(--beauty-text-muted); border-color: var(--beauty-border) !important;">USA</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.88rem; letter-spacing: 0.04em;">NEUTROGENA</h6>
+                        <small style="font-size: 0.7rem; color: var(--beauty-text-muted);">Hydro Boost</small>
                     </a>
                 </div>
-
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- SECTION 8: SKINCARE REGIMEN BUILDER STEPS -->
-        <!-- ========================================== -->
-        <section class="beauty-regimen-builder mb-5 pt-3" id="routineSection">
+        <!-- ========================================================== -->
+        <!-- 8. 5-STEP SKINCARE REGIMEN BUILDER                         -->
+        <!-- ========================================================== -->
+        <section class="beauty-regimen-builder mb-5 pt-2" id="routineSection">
             <div class="beauty-section-title-wrap">
                 <span class="beauty-kicker">{% if IS_BANGLA %}স্টেপ-বাই-স্টেপ রুটিন{% else %}The Essential 5 Steps{% endif %}</span>
-                <h3 class="beauty-heading" style="font-size: 2rem;">
-                    {% if IS_BANGLA %}দৈনিক স্কিনকেয়ার রিচুয়াল বিল্ডার{% else %}The 5-Step Skincare Regimen Builder{% endif %}
-                </h3>
-                <p class="beauty-subheading">
-                    {% if IS_BANGLA %}
-                        সঠিক ক্রমানুসারে পণ্য ব্যবহার করুন সেরা কার্যকারিতা ও দীর্ঘস্থায়ী সুস্থ ত্বকের জন্য।
-                    {% else %}
-                        Layer scientifically formulated actives in precise order to optimize barrier absorption and seal in hydration.
-                    {% endif %}
+                <h3 class="beauty-heading">{% if IS_BANGLA %}দৈনিক স্কিনকেয়ার রিচুয়াল বিল্ডার{% else %}The 5-Step Skincare Regimen Builder{% endif %}</h3>
+                <p class="beauty-subheading mb-0">
+                    {% if IS_BANGLA %}সঠিক ক্রমানুসারে পণ্য ব্যবহার করুন সেরা কার্যকারিতা ও দীর্ঘস্থায়ী সুস্থ ত্বকের জন্য।{% else %}Layer scientifically formulated actives in precise order to optimize barrier absorption and seal in hydration.{% endif %}
                 </p>
             </div>
 
-            <!-- 5 Steps Routine Cards -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-3 g-lg-4">
-                
-                <!-- Step 1: Cleanse -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-3">
                 <div class="col">
                     <div class="routine-step-card">
                         <div class="routine-step-number">1</div>
-                        <span class="badge text-uppercase mb-2 text-muted fw-semibold" style="font-size: 0.65rem; letter-spacing: 0.1em;">AM & PM Ritual</span>
-                        <h5 class="font-serif fw-bold mb-1" style="font-size: 1.15rem; color: var(--beauty-text-main);">Cleanse</h5>
-                        <p class="small text-muted mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.45;">
-                            Remove impurities, excess sebum, and SPF without stripping natural moisture mantle.
-                        </p>
-                        <a href="{% url 'product_list' %}?category=facial-cleansers" class="btn btn-sm btn-outline-dark rounded-pill w-100 fw-semibold" style="font-size: 0.75rem;">
-                            Step 1 Cleanse <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
+                        <h5 class="font-serif fw-bold mb-1">Cleanse</h5>
+                        <p class="small mb-3 flex-grow-1" style="color: var(--beauty-text-muted);">Remove impurities, excess sebum, and SPF without stripping your moisture barrier.</p>
+                        <a href="{% url 'product_list' %}?q=cleanser" class="btn btn-sm btn-outline-secondary rounded-pill w-100 fw-semibold">Step 1 Cleanse</a>
                     </div>
                 </div>
-
-                <!-- Step 2: Tone -->
                 <div class="col">
                     <div class="routine-step-card">
                         <div class="routine-step-number">2</div>
-                        <span class="badge text-uppercase mb-2 text-muted fw-semibold" style="font-size: 0.65rem; letter-spacing: 0.1em;">Prep & Balance</span>
-                        <h5 class="font-serif fw-bold mb-1" style="font-size: 1.15rem; color: var(--beauty-text-main);">Tone</h5>
-                        <p class="small text-muted mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.45;">
-                            Rebalance skin pH, calm redness, and saturate pores for enhanced active absorption.
-                        </p>
-                        <a href="{% url 'product_list' %}?category=sheet-masks-exfoliators" class="btn btn-sm btn-outline-dark rounded-pill w-100 fw-semibold" style="font-size: 0.75rem;">
-                            Step 2 Tone <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
+                        <h5 class="font-serif fw-bold mb-1">Tone</h5>
+                        <p class="small mb-3 flex-grow-1" style="color: var(--beauty-text-muted);">Rebalance skin pH, calm redness, and prep pores for deep active absorption.</p>
+                        <a href="{% url 'product_list' %}?q=toner" class="btn btn-sm btn-outline-secondary rounded-pill w-100 fw-semibold">Step 2 Tone</a>
                     </div>
                 </div>
-
-                <!-- Step 3: Serum -->
                 <div class="col">
-                    <div class="routine-step-card" style="border-color: rgba(180, 83, 9, 0.45); background: linear-gradient(180deg, rgba(254, 243, 199, 0.15) 0%, var(--beauty-surface) 100%);">
-                        <div class="routine-step-number" style="background: #fef3c7; color: #b45309;">3</div>
-                        <span class="badge text-uppercase mb-2 text-warning-emphasis fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em;">Targeted Actives</span>
-                        <h5 class="font-serif fw-bold mb-1" style="font-size: 1.15rem; color: var(--beauty-text-main);">Serum</h5>
-                        <p class="small text-muted mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.45;">
-                            Deliver concentrated peptides, niacinamide, and antioxidants directly into dermal layers.
-                        </p>
-                        <a href="{% url 'product_list' %}?category=skincare-serums" class="btn btn-sm btn-dark rounded-pill w-100 fw-semibold" style="font-size: 0.75rem;">
-                            Step 3 Serum <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
+                    <div class="routine-step-card" style="border-color: var(--beauty-blush);">
+                        <div class="routine-step-number" style="background: var(--beauty-blush-light);">3</div>
+                        <h5 class="font-serif fw-bold mb-1">Serum</h5>
+                        <p class="small mb-3 flex-grow-1" style="color: var(--beauty-text-muted);">Deliver concentrated niacinamide, peptides, and snail mucin directly into skin.</p>
+                        <a href="{% url 'product_list' %}?category=skin-care" class="btn btn-sm beauty-btn-pill w-100 fw-semibold">Step 3 Serum</a>
                     </div>
                 </div>
-
-                <!-- Step 4: Moisturize -->
                 <div class="col">
                     <div class="routine-step-card">
                         <div class="routine-step-number">4</div>
-                        <span class="badge text-uppercase mb-2 text-muted fw-semibold" style="font-size: 0.65rem; letter-spacing: 0.1em;">Seal & Nourish</span>
-                        <h5 class="font-serif fw-bold mb-1" style="font-size: 1.15rem; color: var(--beauty-text-main);">Moisturize</h5>
-                        <p class="small text-muted mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.45;">
-                            Lock in active hydration with biomimetic ceramides and protective lipid barriers.
-                        </p>
-                        <a href="{% url 'product_list' %}?category=moisturizers-creams" class="btn btn-sm btn-outline-dark rounded-pill w-100 fw-semibold" style="font-size: 0.75rem;">
-                            Step 4 Moisturize <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
+                        <h5 class="font-serif fw-bold mb-1">Moisturize</h5>
+                        <p class="small mb-3 flex-grow-1" style="color: var(--beauty-text-muted);">Lock in hydration with ceramides and soothing barrier-strengthening creams.</p>
+                        <a href="{% url 'product_list' %}?q=moisturizer" class="btn btn-sm btn-outline-secondary rounded-pill w-100 fw-semibold">Step 4 Moisturize</a>
                     </div>
                 </div>
-
-                <!-- Step 5: Protect -->
                 <div class="col">
                     <div class="routine-step-card">
                         <div class="routine-step-number">5</div>
-                        <span class="badge text-uppercase mb-2 text-muted fw-semibold" style="font-size: 0.65rem; letter-spacing: 0.1em;">AM Essential</span>
-                        <h5 class="font-serif fw-bold mb-1" style="font-size: 1.15rem; color: var(--beauty-text-main);">Protect</h5>
-                        <p class="small text-muted mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.45;">
-                            Broad Spectrum SPF 50+ defense against photo-aging, UVA/UVB rays, and blue light.
-                        </p>
-                        <a href="{% url 'product_list' %}?category=sunscreens-sun-care" class="btn btn-sm btn-outline-dark rounded-pill w-100 fw-semibold" style="font-size: 0.75rem;">
-                            Step 5 Protect <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
+                        <h5 class="font-serif fw-bold mb-1">Protect</h5>
+                        <p class="small mb-3 flex-grow-1" style="color: var(--beauty-text-muted);">Broad Spectrum SPF 50+ defense against UVA/UVB rays and pigmentation.</p>
+                        <a href="{% url 'product_list' %}?q=sunscreen" class="btn btn-sm btn-outline-secondary rounded-pill w-100 fw-semibold">Step 5 Protect</a>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- SECTION 9: "JOIN THE INNER GLOW CIRCLE"    -->
-        <!-- ========================================== -->
+        <!-- ========================================================== -->
+        <!-- 9. 4 CLEAN BEAUTY TRUST PILLARS                            -->
+        <!-- ========================================================== -->
+        <section class="beauty-trust-pillars mb-5">
+            <div class="row g-3">
+                <div class="col-6 col-lg-3">
+                    <div class="beauty-pillar-card">
+                        <div class="beauty-pillar-icon-box"><i class="bi bi-patch-check-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1 small">{% if IS_BANGLA %}১০০% অথেনটিক ব্র্যান্ড{% else %}100% Authentic &amp; Certified{% endif %}</h6>
+                            <p class="small mb-0" style="font-size: 0.74rem; color: var(--beauty-text-muted);">Directly imported from official brand houses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="beauty-pillar-card">
+                        <div class="beauty-pillar-icon-box"><i class="bi bi-shield-check"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1 small">{% if IS_BANGLA %}ডার্মাটোলজিস্ট টেস্টেড{% else %}Dermatologically Approved{% endif %}</h6>
+                            <p class="small mb-0" style="font-size: 0.74rem; color: var(--beauty-text-muted);">Clinically validated for sensitive skin barrier</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="beauty-pillar-card">
+                        <div class="beauty-pillar-icon-box"><i class="bi bi-calendar-check-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1 small">{% if IS_BANGLA %}ফ্রেশ ব্যাচ গ্যারান্টি{% else %}Fresh Batch Guarantee{% endif %}</h6>
+                            <p class="small mb-0" style="font-size: 0.74rem; color: var(--beauty-text-muted);">Strict shelf-life and climate-controlled storage</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="beauty-pillar-card">
+                        <div class="beauty-pillar-icon-box"><i class="bi bi-heart-pulse-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1 small">{% if IS_BANGLA %}ক্রুয়েলটি-ফ্রি ও সচেতন{% else %}Cruelty-Free &amp; Conscious{% endif %}</h6>
+                            <p class="small mb-0" style="font-size: 0.74rem; color: var(--beauty-text-muted);">Zero animal testing, non-toxic clean formulas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <!-- 10. EDITORIAL STORY BLOCK ("Beauty in Simplicity")         -->
+        <!-- ========================================================== -->
+        <section class="beauty-story-section">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <div class="p-4 p-md-5 beauty-story-glass">
+                        <span class="beauty-kicker mb-2">{% if IS_BANGLA %}আমাদের দর্শন{% else %}The Conscious Philosophy{% endif %}</span>
+                        <h3 class="beauty-heading mb-3">{% if IS_BANGLA %}সরলতার মাঝে সৌন্দর্য{% else %}Beauty in Simplicity{% endif %}</h3>
+                        <p class="font-serif fst-italic fs-5 mb-4" style="color: var(--beauty-text-muted); line-height: 1.6;">
+                            "Pure botanicals, zero compromise. Formulated for resilient skin that breathes with effortless vitality."
+                        </p>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px; background: var(--beauty-blush-light); color: var(--beauty-blush);">
+                                <i class="bi bi-patch-check-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block font-serif">Dr. Clara Vane</strong>
+                                <small style="color: var(--beauty-text-muted);">Lead Dermatological Advisor &amp; Botanical Chemist</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="ps-lg-3">
+                        <span class="beauty-kicker">{% if IS_BANGLA %}তিনটি মূল অঙ্গীকার{% else %}Our Tri-Pillar Standard{% endif %}</span>
+                        <h4 class="font-serif fw-bold mb-4">Where Clinical Rigor Meets Pure Botanical Potency</h4>
+                        <div class="d-flex flex-column gap-3 mb-4">
+                            <div class="d-flex gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 34px; height: 34px; background: var(--beauty-blush-light); color: var(--beauty-blush);">
+                                    <i class="bi bi-check2"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 small">Active Botanical Bio-Availability</h6>
+                                    <p class="small mb-0" style="color: var(--beauty-text-muted);">Cold-pressed extracts preserved at maximum potency without surface irritation.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 34px; height: 34px; background: var(--beauty-blush-light); color: var(--beauty-blush);">
+                                    <i class="bi bi-check2"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 small">100% Free From Harsh Additives</h6>
+                                    <p class="small mb-0" style="color: var(--beauty-text-muted);">Zero artificial dyes, synthetic phthalates, parabens, or drying alcohols.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 34px; height: 34px; background: var(--beauty-blush-light); color: var(--beauty-blush);">
+                                    <i class="bi bi-check2"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 small">Mindfully Crafted &amp; Sustainable</h6>
+                                    <p class="small mb-0" style="color: var(--beauty-text-muted);">Recyclable glass flacons and responsible packaging for a cleaner earth.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{% url 'product_list' %}" class="btn btn-beauty-primary">
+                            Discover Our Conscious Range <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <!-- 11. JOIN THE INNER GLOW CIRCLE (VIP GLOW10)                -->
+        <!-- ========================================================== -->
         <section class="beauty-inner-glow-newsletter mb-4">
             <div class="beauty-newsletter-box">
                 <div class="row g-4 align-items-center">
-                    
                     <div class="col-lg-7">
-                        <span class="text-uppercase fw-bold text-warning small mb-2 d-inline-flex align-items-center gap-1.5" style="letter-spacing: 0.18em; font-size: 0.75rem;">
+                        <span class="text-uppercase fw-bold text-warning small mb-2 d-inline-flex align-items-center gap-1" style="letter-spacing: 0.16em;">
                             <i class="bi bi-stars"></i>
                             {% if IS_BANGLA %}ভিআইপি প্রিভিলেজ ক্লাব{% else %}Exclusive Beauty Circle{% endif %}
                         </span>
-                        
-                        <h3 class="font-serif fw-bold text-white mb-2" style="font-size: 2.25rem;">
+                        <h3 class="font-serif fw-bold text-white mb-2" style="font-size: 2rem;">
                             {% if IS_BANGLA %}ইনফিনিট গ্লো সার্কেলে যোগ দিন{% else %}Join the Inner Glow Circle{% endif %}
                         </h3>
-                        
-                        <p class="text-white-50 mb-3" style="font-size: 0.95rem; line-height: 1.6; max-width: 520px;">
-                            {% if IS_BANGLA %}
-                                আমাদের ভিআইপি সার্কেলে সাবস্ক্রাইব করুন এবং আপনার প্রথম অর্ডারে উপভোগ করুন ফ্ল্যাট ১০% ডিসকাউন্ট।
-                            {% else %}
-                                Subscribe for private boutique drops, complimentary deluxe skincare samples, and flat 10% off your premier order.
-                            {% endif %}
+                        <p class="text-white-50 mb-3" style="max-width: 500px;">
+                            {% if IS_BANGLA %}সাবস্ক্রাইব করুন এবং আপনার প্রথম অর্ডারে উপভোগ করুন ফ্ল্যাট ১০% ডিসকাউন্ট।{% else %}Subscribe for private K-Beauty drops, complimentary samples, and flat 10% off your first order.{% endif %}
                         </p>
-
-                        <!-- Discount Code Pill with 1-click Copy -->
-                        <div class="d-inline-flex align-items-center gap-2 mb-3">
-                            <span class="small text-white-50">{% if IS_BANGLA %}ডিসকাউন্ট কোড:{% else %}Use VIP Code:{% endif %}</span>
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <span class="small text-white-50">Use VIP Code:</span>
                             <div class="glow-coupon-pill" onclick="copyBeautyCoupon('GLOW10')" title="Click to copy 10% off code">
                                 <span class="fw-bold font-monospace text-warning fs-6" id="beautyCouponCode">GLOW10</span>
                                 <i class="bi bi-clipboard text-white-50" id="copyCouponIcon"></i>
                             </div>
-                            <span class="small text-success d-none" id="couponCopiedBadge">
-                                <i class="bi bi-check2-circle me-1"></i>Copied!
-                            </span>
+                            <span class="small text-success d-none" id="couponCopiedBadge"><i class="bi bi-check2-circle me-1"></i>Copied!</span>
                         </div>
                     </div>
 
                     <div class="col-lg-5">
-                        <div class="p-3 p-md-4 rounded-4" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px);">
+                        <div class="p-3 p-md-4 rounded-4" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
                             <form id="beautyNewsletterForm" onsubmit="handleBeautyNewsletter(event)">
-                                <label for="beautyEmailInput" class="form-label text-white small fw-semibold mb-2">
-                                    {% if IS_BANGLA %}আপনার ইমেইল অ্যাড্রেস লিখুন{% else %}Enter your email address{% endif %}
-                                </label>
+                                <label for="beautyEmailInput" class="form-label text-white small fw-semibold mb-2">Enter your email address</label>
                                 <div class="input-group mb-2">
-                                    <input type="email" id="beautyEmailInput" required class="form-control form-control-lg border-0" placeholder="yourname@domain.com" style="background: rgba(255, 255, 255, 0.95); font-size: 0.9rem; border-radius: 9999px 0 0 9999px !important;">
-                                    <button class="btn btn-warning text-dark fw-bold px-4" type="submit" style="border-radius: 0 9999px 9999px 0 !important; font-size: 0.88rem;">
-                                        {% if IS_BANGLA %}যোগ দিন{% else %}Join Now{% endif %}
-                                    </button>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between text-white-50 small mt-2" style="font-size: 0.72rem;">
-                                    <span><i class="bi bi-lock me-1"></i>Zero spam. Unsubscribe anytime.</span>
-                                    <span><i class="bi bi-gift me-1"></i>Code GLOW10 valid today</span>
+                                    <input type="email" id="beautyEmailInput" required class="form-control border-0" placeholder="yourname@domain.com" style="border-radius: 9999px 0 0 9999px !important;">
+                                    <button class="btn btn-warning text-dark fw-bold px-4" type="submit" style="border-radius: 0 9999px 9999px 0 !important;">Join Now</button>
                                 </div>
                             </form>
                             <div id="newsletterSuccessAlert" class="alert alert-success d-none mt-3 py-2 px-3 small rounded-3 mb-0" role="alert">
@@ -1271,7 +1213,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -1280,7 +1221,34 @@
 </div>
 
 <script>
-    /* 1-Click Clipboard Copy for GLOW10 Coupon */
+    // Interactive Category Filter Tabs on Fresh Glow Grid
+    (function() {
+        var btns = document.querySelectorAll('#beautyFilterTabs .beauty-filter-pill');
+        var items = document.querySelectorAll('#beautyFreshGrid .beauty-grid-item');
+        if (btns.length && items.length) {
+            btns.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    btns.forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    var filter = this.getAttribute('data-beauty-filter');
+                    var visible = 0;
+                    items.forEach(function(item) {
+                        var cat = item.getAttribute('data-beauty-cat');
+                        if (filter === 'all' || cat === filter) {
+                            item.style.display = '';
+                            visible++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    if (visible === 0) {
+                        items.forEach(function(item) { item.style.display = ''; });
+                    }
+                });
+            });
+        }
+    })();
+
     function copyBeautyCoupon(code) {
         if (!code) code = 'GLOW10';
         if (navigator.clipboard && window.isSecureContext) {
@@ -1288,7 +1256,6 @@
         } else {
             fallbackCopy();
         }
-
         function showCopiedFeedback() {
             var icon = document.getElementById('copyCouponIcon');
             var badge = document.getElementById('couponCopiedBadge');
@@ -1299,29 +1266,22 @@
                 if (badge) badge.classList.add('d-none');
             }, 3000);
         }
-
         function fallbackCopy() {
             var tempInput = document.createElement('input');
             tempInput.value = code;
             document.body.appendChild(tempInput);
             tempInput.select();
-            try {
-                document.execCommand('copy');
-                showCopiedFeedback();
-            } catch (err) {}
+            try { document.execCommand('copy'); showCopiedFeedback(); } catch (err) {}
             document.body.removeChild(tempInput);
         }
     }
 
-    /* Newsletter Submit Handler */
     function handleBeautyNewsletter(event) {
         event.preventDefault();
         var emailInput = document.getElementById('beautyEmailInput');
         var alertBox = document.getElementById('newsletterSuccessAlert');
         if (emailInput && emailInput.value) {
-            if (alertBox) {
-                alertBox.classList.remove('d-none');
-            }
+            if (alertBox) alertBox.classList.remove('d-none');
             emailInput.value = '';
         }
     }
