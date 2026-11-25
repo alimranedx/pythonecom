@@ -55,11 +55,11 @@
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <i class="bi bi-shield-lock-fill text-primary fs-3"></i>
-                        <span class="fs-4 fw-bold">Python<span class="text-primary">Ecom</span></span>
+                        <span class="fs-4 fw-bold">{{ site_settings.get_effective_site_name|default:CURRENT_THEME_DATA.brand_name|default:'Easy Purchase' }}</span>
                     </div>
-                    <small class="text-muted d-block">Enterprise Marketplace Platform</small>
+                    <small class="text-muted d-block">{{ CURRENT_THEME_DATA.name|default:'Enterprise Marketplace Platform' }}</small>
                     <small class="text-muted d-block">Dhaka, Bangladesh</small>
-                    <small class="text-muted d-block">support@easypuchase.com</small>
+                    <small class="text-muted d-block">{{ site_settings.support_email|default:'support@easypurchase.com' }}</small>
                 </div>
                 <div class="text-end">
                     <h2 class="fw-bold text-dark mb-1">CUSTOMER INVOICE</h2>
@@ -110,6 +110,13 @@
                     <div class="mt-2">
                         <span class="small text-muted me-2">bKash TrxID:</span>
                         <code class="fw-bold text-danger fs-6">{{ order.transaction_id }}</code>
+                    </div>
+                    {% endif %}
+                    {% if order.courier_name or order.tracking_number %}
+                    <div class="mt-2">
+                        <span class="small text-muted me-2">Courier:</span>
+                        <span class="badge bg-info-subtle text-info border border-info-subtle">{{ order.courier_name|default:'Assigned' }}</span>
+                        {% if order.tracking_number %}<code class="fw-bold text-dark ms-1">{{ order.tracking_number }}</code>{% endif %}
                     </div>
                     {% endif %}
                 </div>

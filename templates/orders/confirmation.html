@@ -138,6 +138,24 @@
                             <strong class="d-block small" style="font-size: 0.75rem;">Delivered</strong>
                         </div>
                     </div>
+
+                    {% if order.courier_name or order.tracking_number %}
+                    <div class="mt-3 pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-2 small">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-info-subtle text-info border border-info-subtle px-2.5 py-1">
+                                <i class="bi bi-truck me-1"></i> {{ order.get_courier_name_display|default:order.courier_name }}
+                            </span>
+                            {% if order.tracking_number %}
+                                <span class="text-muted">Tracking ID: <strong class="font-monospace text-dark">{{ order.tracking_number }}</strong></span>
+                            {% endif %}
+                        </div>
+                        {% if order.tracking_number %}
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-0" onclick="navigator.clipboard.writeText('{{ order.tracking_number }}'); this.innerHTML='<i class=\'bi bi-check\'></i> Copied'; setTimeout(() => this.innerHTML='<i class=\'bi bi-copy\'></i> Copy ID', 2000)">
+                                <i class="bi bi-copy"></i> Copy ID
+                            </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
 

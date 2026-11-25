@@ -48,6 +48,11 @@
                                     {% else %}
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle">{{ order.get_status_display }}</span>
                                     {% endif %}
+                                    {% if order.courier_name %}
+                                        <div class="mt-1 small text-muted" style="font-size: 0.75rem;">
+                                            <i class="bi bi-truck me-1 text-info"></i>{{ order.courier_name }}{% if order.tracking_number %} (<code class="text-dark">{{ order.tracking_number }}</code>){% endif %}
+                                        </div>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <span class="badge bg-light text-dark border d-block mb-1">{{ order.get_payment_method_display }}</span>{% if order.transaction_id %}<span class="badge bg-danger-subtle text-danger font-monospace border border-danger-subtle d-inline-block small" title="bKash TrxID"><i class="bi bi-receipt me-1"></i>{{ order.transaction_id }}</span>{% endif %}
