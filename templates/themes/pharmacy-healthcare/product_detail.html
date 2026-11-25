@@ -3,6 +3,45 @@
 
 {% block title %}{{ product.name }} | {{ site_settings.get_effective_site_name|default:'Arogya Healthcare & Pharmacy' }}{% endblock %}
 
+{% block extra_head %}
+<style>
+    .ph-detail-card {
+        background-color: #ffffff;
+        border: 1px solid #ccfbf1 !important;
+    }
+    .ph-detail-media {
+        background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
+        border-color: #ccfbf1 !important;
+    }
+    .ph-detail-title {
+        color: #042f2e;
+    }
+    .ph-detail-price-box {
+        background-color: #f0fdfa;
+    }
+    .ph-detail-price {
+        color: #0f766e;
+    }
+    [data-bs-theme="dark"] .ph-detail-card {
+        background-color: #102024 !important;
+        border-color: #1e3a3a !important;
+    }
+    [data-bs-theme="dark"] .ph-detail-media {
+        background: linear-gradient(180deg, #132c30 0%, #102024 100%) !important;
+        border-color: #1e3a3a !important;
+    }
+    [data-bs-theme="dark"] .ph-detail-title {
+        color: #f0fdfa !important;
+    }
+    [data-bs-theme="dark"] .ph-detail-price-box {
+        background-color: #132c30 !important;
+    }
+    [data-bs-theme="dark"] .ph-detail-price {
+        color: #2dd4bf !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container my-4 mb-5">
     <nav aria-label="breadcrumb" class="mb-3">
@@ -15,11 +54,11 @@
         </ol>
     </nav>
 
-    <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 mb-5" style="border: 1px solid #ccfbf1 !important;">
+    <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 mb-5 ph-detail-card">
         <div class="row g-4 align-items-start">
             <!-- Left: Image & Gallery -->
             <div class="col-lg-5">
-                <div class="rounded-4 p-4 text-center border mb-3" style="background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%); border-color: #ccfbf1 !important;">
+                <div class="rounded-4 p-4 text-center border mb-3 ph-detail-media">
                     {% if product.image %}
                         <img id="pharmaMainImg" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 320px; object-fit: contain;">
                     {% else %}
@@ -56,11 +95,11 @@
                     {% endif %}
                 </div>
 
-                <h2 class="fw-bold mb-2" style="color: #042f2e;">{{ product.name }}</h2>
+                <h2 class="fw-bold mb-2 ph-detail-title">{{ product.name }}</h2>
                 <p class="text-muted small mb-3">Pack / Unit: <strong>{{ product.unit|default:"Standard Pack" }}</strong> • Category: <strong>{{ product.category.name|default:"Healthcare" }}</strong></p>
 
-                <div class="d-flex align-items-baseline gap-3 mb-4 p-3 rounded-3" style="background-color: #f0fdfa;">
-                    <span class="display-6 fw-bold" style="color: #0f766e;">৳{{ product.effective_price }}</span>
+                <div class="d-flex align-items-baseline gap-3 mb-4 p-3 rounded-3 ph-detail-price-box">
+                    <span class="display-6 fw-bold ph-detail-price">৳{{ product.effective_price }}</span>
                     {% if product.has_discount %}
                         <span class="fs-5 text-decoration-line-through text-muted">৳{{ product.price }}</span>
                         <span class="badge bg-danger rounded-pill px-3 py-1.5">-{{ product.discount_percent }}% OFF</span>
@@ -112,7 +151,7 @@
     <!-- Related Medicines -->
     {% if related_products %}
     <section class="mb-4">
-        <h4 class="fw-bold mb-3" style="color: #042f2e;">{% if IS_BANGLA %}সম্পর্কিত ঔষধ ও স্বাস্থ্যপণ্য{% else %}Related Medicines &amp; Healthcare{% endif %}</h4>
+        <h4 class="fw-bold mb-3 ph-detail-title">{% if IS_BANGLA %}সম্পর্কিত ঔষধ ও স্বাস্থ্যপণ্য{% else %}Related Medicines &amp; Healthcare{% endif %}</h4>
         <div class="row g-3">
             {% for rel in related_products|slice:":4" %}
                 <div class="col-lg-3 col-md-4 col-6">

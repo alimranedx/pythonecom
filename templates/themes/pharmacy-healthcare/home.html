@@ -7,430 +7,992 @@
 
 {% block extra_head %}
 <style>
-    .pharmacy-hero-carousel {
-        border-radius: 18px;
-        overflow: hidden;
-        box-shadow: 0 12px 32px -8px rgba(4, 47, 46, 0.22);
+    .pharmacy-page-shell {
+        --ph-canvas-soft: #f0fdfa;
+        --ph-card-bg: #ffffff;
+        --ph-card-alt: #f8fafc;
+        --ph-border: #d1fae5;
+        --ph-border-subtle: #e2e8f0;
+        --ph-heading: #042f2e;
+        --ph-text: #334155;
+        --ph-muted: #64748b;
+        --ph-accent: #0f766e;
+        --ph-bright: #059669;
+        --ph-hero-bg: radial-gradient(circle at 22% 35%, rgba(16, 185, 129, 0.14) 0%, transparent 48%),
+                      radial-gradient(circle at 82% 20%, rgba(14, 165, 233, 0.12) 0%, transparent 45%),
+                      linear-gradient(180deg, #ecfdf5 0%, #f8fafc 100%);
+        --ph-dock-shadow: 0 18px 44px -12px rgba(4, 47, 46, 0.16);
     }
-    .pharmacy-hero-slide {
-        min-height: 390px;
+    [data-bs-theme="dark"] .pharmacy-page-shell {
+        --ph-canvas-soft: #0e2124;
+        --ph-card-bg: #102024;
+        --ph-card-alt: #0d1a1d;
+        --ph-border: #1e3a3a;
+        --ph-border-subtle: #1e3338;
+        --ph-heading: #f0fdfa;
+        --ph-text: #cbd5e1;
+        --ph-muted: #94a3b8;
+        --ph-accent: #2dd4bf;
+        --ph-bright: #10b981;
+        --ph-hero-bg: radial-gradient(circle at 22% 35%, rgba(16, 185, 129, 0.20) 0%, transparent 50%),
+                      radial-gradient(circle at 82% 20%, rgba(56, 189, 248, 0.16) 0%, transparent 48%),
+                      linear-gradient(180deg, #0b1c1e 0%, #0b1120 100%);
+        --ph-dock-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.55);
+    }
+
+    /* 1. PharmEasy-Inspired Clinical Hero + Floating Search Dock */
+    .ph-hero-band {
+        background: var(--ph-hero-bg);
+        padding: 2.25rem 0 4.5rem;
+        margin-top: -1.5rem;
+        border-bottom: 1px solid var(--ph-border-subtle);
         position: relative;
         overflow: hidden;
     }
-    .pharmacy-slide-1 {
-        background: linear-gradient(135deg, #042f2e 0%, #0f766e 60%, #059669 100%);
+    .ph-hero-inner {
+        max-width: 960px;
+        margin: 0 auto;
     }
-    .pharmacy-slide-2 {
-        background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 55%, #0d9488 100%);
-    }
-    .pharmacy-slide-3 {
-        background: linear-gradient(135deg, #064e3b 0%, #059669 55%, #10b981 100%);
-    }
-    .pharmacy-hero-carousel .carousel-item.active .hero-anim-up {
-        animation: pharmacyFadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-    @keyframes pharmacyFadeUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .pharmacy-hero-carousel .carousel-indicators [data-bs-target] {
-        width: 26px;
-        height: 5px;
+    .ph-hero-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
         border-radius: 9999px;
-        background-color: rgba(255, 255, 255, 0.45);
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border);
+        color: var(--ph-accent);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
+    }
+    .ph-hero-headline {
+        color: var(--ph-heading);
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+    }
+    .ph-hero-highlight {
+        color: var(--ph-bright);
+    }
+    .ph-hero-sub-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border-radius: 9999px;
+        border: 1.5px solid var(--ph-bright);
+        color: var(--ph-accent);
+        background: rgba(5, 150, 105, 0.07);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+    /* Overlapping Floating Search & Order Dock */
+    .ph-search-dock {
+        max-width: 880px;
+        margin: -3.2rem auto 0;
+        position: relative;
+        z-index: 10;
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border);
+        border-radius: 22px;
+        box-shadow: var(--ph-dock-shadow);
+        padding: 1.25rem 1.5rem 1.35rem;
+    }
+    .ph-dock-searchbar {
+        display: flex;
+        align-items: center;
+        background: var(--ph-card-alt);
+        border: 1.5px solid var(--ph-border-subtle);
+        border-radius: 14px;
+        padding: 6px 8px 6px 14px;
+        gap: 8px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .ph-dock-searchbar:focus-within {
+        border-color: var(--ph-bright);
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
+        background: var(--ph-card-bg);
+    }
+    .ph-dock-searchbar input {
         border: none;
-        transition: width 0.25s ease, background-color 0.25s ease;
+        background: transparent;
+        outline: none;
+        flex: 1;
+        min-width: 0;
+        color: var(--ph-heading);
+        font-size: 0.96rem;
+        padding: 8px 4px;
     }
-    .pharmacy-hero-carousel .carousel-indicators .active {
-        width: 44px;
-        background-color: #ffffff;
+    .ph-dock-searchbar input::placeholder {
+        color: var(--ph-muted);
     }
-    .pharmacy-quick-pill {
-        background: #ffffff;
-        border: 1px solid #ccfbf1;
-        border-radius: 14px;
-        padding: 14px 18px;
-        transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    .ph-quick-chip {
+        background: var(--ph-canvas-soft);
+        border: 1px solid var(--ph-border);
+        color: var(--ph-accent);
+        font-size: 0.74rem;
+        font-weight: 600;
+        border-radius: 9999px;
+        padding: 3px 11px;
         text-decoration: none;
-        color: #134e4a;
-        box-shadow: 0 2px 8px rgba(15, 118, 110, 0.06);
+        transition: all 0.2s ease;
     }
-    .pharmacy-quick-pill:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 22px rgba(15, 118, 110, 0.15);
-        border-color: #0d9488;
-        color: #0d9488;
+    .ph-quick-chip:hover {
+        background: var(--ph-bright);
+        border-color: var(--ph-bright);
+        color: #ffffff;
     }
-    .pharmacy-cat-card {
-        background: #ffffff;
-        border: 1px solid #ccfbf1;
-        border-radius: 14px;
+    .ph-dock-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 1rem 0 0.85rem;
+        color: var(--ph-muted);
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+    .ph-dock-divider::before,
+    .ph-dock-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--ph-border-subtle);
+    }
+    .ph-order-via-btn {
+        background: var(--ph-card-alt);
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 13px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        text-decoration: none;
+        color: var(--ph-heading);
+        width: 100%;
+        text-align: left;
+        transition: all 0.22s ease;
+    }
+    .ph-order-via-btn:hover {
+        border-color: var(--ph-bright);
+        background: var(--ph-canvas-soft);
+        transform: translateY(-2px);
+        color: var(--ph-heading);
+        box-shadow: 0 8px 18px rgba(15, 118, 110, 0.1);
+    }
+
+    /* Section Headings */
+    .ph-section-title {
+        color: var(--ph-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+    .ph-section-eyebrow {
+        color: var(--ph-accent);
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .ph-section-sub {
+        color: var(--ph-muted);
+    }
+
+    /* 2. Discover Our Offerings Strip (PharmEasy Signature Cards) */
+    .ph-offering-card {
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 16px;
+        padding: 1rem 0.75rem;
+        text-align: center;
+        text-decoration: none;
+        color: var(--ph-heading);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
         transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-        overflow: hidden;
     }
-    .pharmacy-cat-card:hover {
-        transform: translateY(-4px);
-        border-color: #059669;
-        box-shadow: 0 10px 24px -6px rgba(5, 150, 105, 0.18);
+    .ph-offering-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--ph-bright);
+        box-shadow: 0 12px 24px -8px rgba(15, 118, 110, 0.16);
+        color: var(--ph-heading);
     }
-    .pharmacy-cat-card img {
-        transition: transform 0.35s ease;
+    .ph-offering-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.55rem;
+        margin-bottom: 0.65rem;
     }
-    .pharmacy-cat-card:hover img {
-        transform: scale(1.08);
+
+    /* 3. Shop by Health Concern Tiles */
+    .ph-concern-tile {
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 14px;
+        padding: 0.9rem 0.65rem;
+        text-align: center;
+        text-decoration: none;
+        color: var(--ph-heading);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 100%;
+        transition: all 0.22s ease;
     }
+    .ph-concern-tile:hover {
+        border-color: var(--ph-bright);
+        background: var(--ph-canvas-soft);
+        transform: translateY(-3px);
+        color: var(--ph-accent);
+    }
+    .ph-concern-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+    }
+
+    /* 4. 3-Step Rx Trust Strip & Flash Box */
+    .ph-clinical-panel {
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border);
+        border-radius: 18px;
+    }
+    .ph-flash-box {
+        background: linear-gradient(135deg, var(--ph-canvas-soft) 0%, var(--ph-card-bg) 100%);
+        border: 1px solid var(--ph-border);
+        border-radius: 20px;
+    }
+    .ph-step-num {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0f766e, #059669);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 0.82rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* Filter Pills */
+    .ph-filter-pill {
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border-subtle);
+        color: var(--ph-text);
+        border-radius: 9999px;
+        padding: 6px 15px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .ph-filter-pill:hover,
+    .ph-filter-pill.active {
+        background: linear-gradient(135deg, #0f766e, #059669);
+        border-color: transparent;
+        color: #ffffff;
+    }
+
+    /* Department & Brand Cards */
+    .pharmacy-cat-card,
     .pharmacy-brand-tile {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 14px 16px;
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 14px;
+        color: var(--ph-heading);
         transition: all 0.25s ease;
     }
+    .pharmacy-cat-card:hover,
     .pharmacy-brand-tile:hover {
-        border-color: #0d9488;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 18px rgba(15, 118, 110, 0.12);
+        transform: translateY(-4px);
+        border-color: var(--ph-bright);
+        box-shadow: 0 10px 24px -6px rgba(5, 150, 105, 0.18);
     }
-    .pharmacy-pulse-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: #fde047;
-        display: inline-block;
-        animation: pulseGlow 1.6s infinite;
+
+    /* Refill Estimator Card */
+    .ph-estimator-card {
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border);
+        border-radius: 18px;
+        color: var(--ph-heading);
     }
-    @keyframes pulseGlow {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.4); opacity: 0.6; }
+    .ph-estimator-card .form-select,
+    .ph-estimator-card .form-control {
+        background: var(--ph-card-alt);
+        border-color: var(--ph-border-subtle);
+        color: var(--ph-heading);
     }
-    [data-bs-theme="dark"] .pharmacy-quick-pill,
-    [data-bs-theme="dark"] .pharmacy-cat-card,
-    [data-bs-theme="dark"] .pharmacy-brand-tile {
-        background: #1e293b !important;
-        border-color: #334155 !important;
-        color: #e2e8f0 !important;
-    }
-    [data-bs-theme="dark"] .pharmacy-brand-tile span {
-        color: #f8fafc !important;
+
+    @media (max-width: 767.98px) {
+        .ph-hero-band {
+            padding: 1.5rem 0 4rem;
+        }
+        .ph-search-dock {
+            padding: 1rem;
+            border-radius: 18px;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container my-3 my-md-4 mb-5">
-    <!-- 1. PHARMACY HERO CAROUSEL & CHRONIC CARE CARD -->
-    <div class="row g-3 mb-4 align-items-stretch">
-        <div class="col-lg-8">
-            <div id="pharmacyHeroCarousel" class="carousel slide pharmacy-hero-carousel pharmacy-hero-card h-100" data-bs-ride="carousel" data-bs-interval="5000">
-                <div class="carousel-indicators mb-3">
-                    <button type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                </div>
-                <div class="carousel-inner h-100">
-                    <!-- Slide 1 -->
-                    <div class="carousel-item active h-100">
-                        <div class="pharmacy-hero-slide pharmacy-slide-1 text-white p-4 p-md-5 d-flex align-items-center h-100">
-                            <div class="hero-anim-up">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);">
-                                    <i class="bi bi-shield-fill-check text-warning"></i>
-                                    <span class="small fw-semibold">{% if IS_BANGLA %}ডিজিডিএ মডেল ফার্মেসি লাইসেন্সপ্রাপ্ত{% else %}DGDA Licensed Model Pharmacy{% endif %}</span>
-                                </div>
-                                <h1 class="display-6 fw-bold mb-3 text-white">
-                                    {% if IS_BANGLA %}
-                                        {{ CURRENT_THEME_DATA.hero_headline|default:'১০০% আসল ও রেজিস্টার্ড ওষুধ এবং হেলথকেয়ার সল্যুশন' }}
-                                    {% else %}
-                                        {{ CURRENT_THEME_DATA.hero_headline|default:'Certified Genuine Medicines & Comprehensive Healthcare' }}
-                                    {% endif %}
-                                </h1>
-                                <p class="mb-4 text-light opacity-90" style="max-width: 540px;">
-                                    {% if IS_BANGLA %}
-                                        {{ CURRENT_THEME_DATA.hero_tagline|default:'তাপমাত্রা-নিয়ন্ত্রিত সংরক্ষণ ও রেজিস্টার্ড ফার্মাসিস্টদের তত্ত্বাবধানে নির্ভরযোগ্য সেবা।' }}
-                                    {% else %}
-                                        {{ CURRENT_THEME_DATA.hero_tagline|default:'Temperature-controlled storage, DGDA licensed pharmacists, and digital prescription review across Bangladesh.' }}
-                                    {% endif %}
-                                </p>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2" style="color: #0f766e;" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
-                                        <i class="bi bi-file-earmark-medical-fill text-danger fs-5"></i>
-                                        <span>{% if IS_BANGLA %}প্রেসক্রিপশন দিয়ে অর্ডার করুন{% else %}Order with Prescription{% endif %}</span>
-                                    </button>
-                                    <a href="{% url 'product_list' %}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-bold">
-                                        {% if IS_BANGLA %}সকল ঔষধ দেখুন{% else %}Browse Medicines{% endif %}
-                                    </a>
-                                </div>
-                            </div>
+<div class="pharmacy-page-shell">
+    <!-- 1. PHARMEASY-INSPIRED HERO BAND + FLOATING SEARCH & QUICK-ORDER DOCK -->
+    <section class="ph-hero-band pharmacy-hero-card">
+        <div class="container">
+            <div class="ph-hero-inner">
+                <div class="row align-items-center g-3 g-md-4">
+                    <!-- Left: Bespoke Inline SVG Clinical Pharmacist Visual -->
+                    <div class="col-md-5 text-center order-2 order-md-1">
+                        <div class="position-relative d-inline-block">
+                            <svg viewBox="0 0 320 220" width="290" height="200" class="img-fluid" role="img" aria-label="Licensed Pharmacy Care">
+                                <defs>
+                                    <linearGradient id="phShieldGrad" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0%" stop-color="#0f766e"/>
+                                        <stop offset="100%" stop-color="#10b981"/>
+                                    </linearGradient>
+                                    <linearGradient id="phCoatGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#ffffff"/>
+                                        <stop offset="100%" stop-color="#e2e8f0"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Soft Clinical Halo -->
+                                <circle cx="160" cy="112" r="94" fill="#10b981" fill-opacity="0.12"/>
+                                <circle cx="160" cy="112" r="72" fill="#0ea5e9" fill-opacity="0.10"/>
+                                <!-- Pharmacist Character -->
+                                <path d="M95 205 C95 156 122 142 160 142 C198 142 225 156 225 205 Z" fill="url(#phCoatGrad)" stroke="#cbd5e1" stroke-width="2"/>
+                                <path d="M144 143 L160 182 L176 143 Z" fill="#0f766e"/>
+                                <!-- Collar & Stethoscope -->
+                                <path d="M132 146 C132 175 152 188 160 188 C168 188 188 175 188 146" fill="none" stroke="#0f766e" stroke-width="4" stroke-linecap="round"/>
+                                <circle cx="188" cy="176" r="7" fill="#059669" stroke="#ffffff" stroke-width="2"/>
+                                <!-- Head & Hair -->
+                                <circle cx="160" cy="100" r="34" fill="#fde68a"/>
+                                <path d="M126 96 C126 68 144 58 162 58 C184 58 195 72 194 96 C186 82 172 78 158 80 C142 82 132 88 126 96 Z" fill="#1e293b"/>
+                                <!-- Friendly Glasses & Smile -->
+                                <rect x="139" y="92" width="17" height="12" rx="4" fill="none" stroke="#0f766e" stroke-width="2.2"/>
+                                <rect x="164" y="92" width="17" height="12" rx="4" fill="none" stroke="#0f766e" stroke-width="2.2"/>
+                                <line x1="156" y1="98" x2="164" y2="98" stroke="#0f766e" stroke-width="2"/>
+                                <path d="M150 115 Q160 123 170 115" fill="none" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+                                <!-- Floating Rx Verification Card -->
+                                <rect x="206" y="42" width="96" height="54" rx="12" fill="url(#phShieldGrad)"/>
+                                <text x="222" y="66" fill="#fde047" font-size="14" font-weight="800" font-family="sans-serif">Rx 100%</text>
+                                <text x="222" y="83" fill="#ffffff" font-size="10" font-weight="600" font-family="sans-serif">Pharmacist Verified</text>
+                                <!-- Floating Cold Chain Pill -->
+                                <rect x="16" y="130" width="98" height="36" rx="18" fill="#ffffff" stroke="#99f6e4" stroke-width="1.5"/>
+                                <circle cx="34" cy="148" r="7" fill="#0284c7"/>
+                                <text x="47" y="152" fill="#0f766e" font-size="10.5" font-weight="700" font-family="sans-serif">2°–8°C Active</text>
+                            </svg>
                         </div>
                     </div>
 
-                    <!-- Slide 2: Cold Chain & 2-Hour Express -->
-                    <div class="carousel-item h-100">
-                        <div class="pharmacy-hero-slide pharmacy-slide-2 text-white p-4 p-md-5 d-flex align-items-center h-100">
-                            <div class="hero-anim-up">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.25);">
-                                    <i class="bi bi-snow text-info"></i>
-                                    <span class="small fw-semibold">{% if IS_BANGLA %}কোল্ড-চেইন ২°-৮° সে. ডেলিভারি{% else %}Strict 2°–8°C Cold Chain Logistics{% endif %}</span>
-                                </div>
-                                <h2 class="display-6 fw-bold mb-3 text-white">
-                                    {% if IS_BANGLA %}জরুরি ইনসুলিন ও ভ্যাকসিন ২ ঘণ্টায় ঢাকায় ডেলিভারি{% else %}2-Hour Express Dhaka Delivery for Insulin &amp; Emergency Care{% endif %}
-                                </h2>
-                                <p class="mb-4 text-light opacity-90" style="max-width: 540px;">
-                                    {% if IS_BANGLA %}ইনসুলিন, বায়োলজিক্স ও সংবেদনশীল ওষুধগুলো ইনসুলেটেড কুলার বক্সে আপনার বাসায় পৌঁছে দেওয়া হয়।{% else %}Delivered in medical-grade insulated chillers to preserve full potency from our Tejgaon pharmacy hub to your doorstep.{% endif %}
-                                </p>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <a href="{% url 'product_list' %}?q=Insulin" class="btn btn-warning text-dark btn-lg rounded-pill px-4 fw-bold shadow-sm">
-                                        <i class="bi bi-lightning-charge-fill me-1"></i> {% if IS_BANGLA %}ডায়াবেটিস ও ইনসুলিন{% else %}Shop Diabetes &amp; Cold Chain{% endif %}
-                                    </a>
-                                </div>
-                            </div>
+                    <!-- Right: Clean High-Impact Clinical Headline -->
+                    <div class="col-md-7 text-center text-md-start order-1 order-md-2">
+                        <div class="ph-hero-badge-pill mb-2">
+                            <i class="bi bi-shield-fill-check text-success"></i>
+                            <span>
+                                {% if IS_BANGLA %}
+                                    {{ CURRENT_THEME_DATA.hero_badge|default:'ডিজিডিএ অনুমোদিত মডেল ফার্মেসি' }}
+                                {% else %}
+                                    {{ CURRENT_THEME_DATA.hero_badge|default:'DGDA Licensed Model Pharmacy' }}
+                                {% endif %}
+                            </span>
                         </div>
-                    </div>
 
-                    <!-- Slide 3: Monthly Chronic Refill -->
-                    <div class="carousel-item h-100">
-                        <div class="pharmacy-hero-slide pharmacy-slide-3 text-white p-4 p-md-5 d-flex align-items-center h-100">
-                            <div class="hero-anim-up">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.25);">
-                                    <span class="pharmacy-pulse-dot"></span>
-                                    <span class="small fw-semibold">{% if IS_BANGLA %}মাসিক রিফিল প্ল্যানে ১০% সাশ্রয়{% else %}Chronic Care Refill • Save Up to 10%{% endif %}</span>
-                                </div>
-                                <h2 class="display-6 fw-bold mb-3 text-white">
-                                    {% if IS_BANGLA %}ডায়াবেটিস, প্রেসার ও হার্টের নিয়মিত ওষুধে বাড়তি ছাড়{% else %}Monthly Care Refills for Diabetes, Blood Pressure &amp; Cardiac Health{% endif %}
-                                </h2>
-                                <p class="mb-4 text-light opacity-90" style="max-width: 540px;">
-                                    {% if IS_BANGLA %}Square, Beximco, Incepta ও Renata-র ১০০% আসল ওষুধ সরাসরি ফার্মাসিউটিক্যালস থেকে সংগৃহীত।{% else %}Direct-from-manufacturer authentic stock from Square, Beximco, Incepta, Renata &amp; Omron with nationwide COD &amp; bKash.{% endif %}
-                                </p>
-                                <a href="{% url 'product_list' %}?flash_sale=1" class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-sm" style="color: #065f46;">
-                                    <i class="bi bi-tags-fill me-1"></i> {% if IS_BANGLA %}অফারগুলো দেখুন{% else %}Explore Healthcare Deals{% endif %}
-                                </a>
-                            </div>
+                        <h1 class="display-5 ph-hero-headline mb-2">
+                            {% if IS_BANGLA %}
+                                ঔষধে <span class="ph-hero-highlight">১৫% পর্যন্ত ছাড়</span> ও ২ ঘণ্টায় এক্সপ্রেস সেবা
+                            {% else %}
+                                Save <span class="ph-hero-highlight">Up to 15%</span> on Genuine Medicines
+                            {% endif %}
+                        </h1>
+
+                        <p class="small ph-section-sub mb-3 mx-auto mx-md-0" style="max-width: 500px;">
+                            {% if IS_BANGLA %}
+                                {{ CURRENT_THEME_DATA.hero_tagline|default:'তাপমাত্রা-নিয়ন্ত্রিত সংরক্ষণ ও রেজিস্টার্ড ফার্মাসিস্টদের তত্ত্বাবধানে ১০০% আসল ওষুধ।' }}
+                            {% else %}
+                                {{ CURRENT_THEME_DATA.hero_tagline|default:'Temperature-controlled storage, DGDA licensed pharmacists, and fast digital prescription review.' }}
+                            {% endif %}
+                        </p>
+
+                        <div class="ph-hero-sub-pill">
+                            <i class="bi bi-patch-check-fill"></i>
+                            <span>{% if IS_BANGLA %}১০০% আসল ও সাশ্রয়ী ঔষধ • কোল্ড-চেইন ২°-৮°সে.{% else %}AFFORDABLE &amp; 100% GENUINE MEDICINES • 2°–8°C COLD CHAIN{% endif %}</span>
                         </div>
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
             </div>
         </div>
+    </section>
 
-        <!-- Right-side Clinical Refill & Express Care Panel -->
-        <div class="col-lg-4 d-flex flex-column gap-3">
-            <div class="p-4 rounded-4 text-white shadow-sm flex-grow-1 d-flex flex-column justify-content-between" style="background: linear-gradient(160deg, #0f766e 0%, #042f2e 100%);">
-                <div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1">
-                            <i class="bi bi-clock-history me-1"></i> 2h Express Dhaka
-                        </span>
-                        <span class="small text-white-50"><i class="bi bi-telephone-fill text-warning me-1"></i> 16263</span>
-                    </div>
-                    <h5 class="fw-bold text-white mb-2">{% if IS_BANGLA %}দ্রুত প্রেসক্রিপশন আপলোড{% else %}Instant Rx Pharmacist Desk{% endif %}</h5>
-                    <p class="small text-white-50 mb-3">
-                        {% if IS_BANGLA %}ডাক্তারের প্রেসক্রিপশনের ছবি পাঠান—আমাদের ফার্মাসিস্ট সঠিক ওষুধ ও ডোজ যাচাই করে পাঠাবে।{% else %}Upload your doctor's prescription photo. Our A-Grade pharmacists verify dosage &amp; prepare your pack.{% endif %}
-                    </p>
-                </div>
-                <div class="p-3 bg-white rounded-3 text-dark shadow-sm">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="fw-bold small" style="color: #0f766e;"><i class="bi bi-snow me-1 text-info"></i>Cold Chain 2°–8°C</span>
-                        <span class="badge bg-success-subtle text-success">Active</span>
-                    </div>
-                    <button type="button" class="btn btn-sm w-100 text-white fw-bold rounded-pill" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
-                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> {% if IS_BANGLA %}প্রেসক্রিপশন আপলোড{% else %}Upload Rx Photo Now{% endif %}
+    <!-- Overlapping PharmEasy-Style Search + Quick-Order Dock -->
+    <div class="container">
+        <div class="ph-search-dock">
+            <form action="{% url 'product_list' %}" method="get">
+                <div class="ph-dock-searchbar">
+                    <i class="bi bi-search fs-5" style="color: var(--ph-accent);"></i>
+                    <input type="text" name="q"
+                           placeholder="{% if IS_BANGLA %}ঔষধের নাম বা জেনেরিক খুঁজুন (যেমন: Napa, Omeprazole, ইনসুলিন)...{% else %}Search for Medicines, Generic Salts, or Health Devices...{% endif %}"
+                           value="{{ request.GET.q }}" aria-label="Search medicines">
+                    <button type="button" class="btn btn-sm rounded-3 border-0 d-none d-sm-inline-flex align-items-center gap-1 px-2 py-1"
+                            style="background: var(--ph-canvas-soft); color: var(--ph-accent); font-size: 0.78rem; font-weight: 700;"
+                            data-bs-toggle="modal" data-bs-target="#rxUploadModal" title="Search / Order by Prescription Photo">
+                        <i class="bi bi-camera-fill"></i>
+                        <span>Rx</span>
+                    </button>
+                    <button type="submit" class="btn rounded-3 px-4 py-2 fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
+                        {% if IS_BANGLA %}খুঁজুন{% else %}Search{% endif %}
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
+            </form>
 
-    <!-- 2. QUICK HEALTHCARE SHORTCUTS / PILLARS -->
-    <div class="row g-3 mb-5">
-        <div class="col-md-3 col-6">
-            <a href="{% url 'product_list' %}" class="pharmacy-quick-pill d-flex align-items-center gap-3 h-100">
-                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #059669; width: 44px; height: 44px;">
-                    <i class="bi bi-prescription fs-4"></i>
-                </div>
-                <div>
-                    <strong class="d-block small">{% if IS_BANGLA %}প্রেসক্রিপশন ঔষধ{% else %}Prescription Rx{% endif %}</strong>
-                    <small class="text-muted" style="font-size: 0.75rem;">100% Genuine Brands</small>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-6">
-            <a href="{% url 'product_list' %}?q=Diabetes" class="pharmacy-quick-pill d-flex align-items-center gap-3 h-100">
-                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #0284c7; width: 44px; height: 44px;">
-                    <i class="bi bi-activity fs-4"></i>
-                </div>
-                <div>
-                    <strong class="d-block small">{% if IS_BANGLA %}ডায়াবেটিস ও বিপি{% else %}Diabetes &amp; BP{% endif %}</strong>
-                    <small class="text-muted" style="font-size: 0.75rem;">Meters &amp; Strips</small>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-6">
-            <a href="{% url 'product_list' %}?q=Vitamin" class="pharmacy-quick-pill d-flex align-items-center gap-3 h-100">
-                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #0d9488; width: 44px; height: 44px;">
-                    <i class="bi bi-capsule fs-4"></i>
-                </div>
-                <div>
-                    <strong class="d-block small">{% if IS_BANGLA %}ভিটামিন ও ওটিসি{% else %}Vitamins &amp; OTC{% endif %}</strong>
-                    <small class="text-muted" style="font-size: 0.75rem;">Daily Immunity Care</small>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 col-6">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#rxUploadModal" class="pharmacy-quick-pill d-flex align-items-center gap-3 h-100">
-                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #e11d48; width: 44px; height: 44px;">
-                    <i class="bi bi-cloud-arrow-up-fill fs-4"></i>
-                </div>
-                <div>
-                    <strong class="d-block small text-danger">{% if IS_BANGLA %}প্রেসক্রিপশন আপলোড{% else %}Upload Rx{% endif %}</strong>
-                    <small class="text-muted" style="font-size: 0.75rem;">Fast Pharmacist Review</small>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <!-- 3. HEALTHCARE CATEGORIES SHOWCASE -->
-    {% if category_tiles or featured_categories %}
-    <section class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <span class="text-uppercase fw-bold small" style="color: #0d9488; letter-spacing: 0.06em;">{% if IS_BANGLA %}স্বাস্থ্য বিভাগসমূহ{% else %}Clinical Departments{% endif %}</span>
-                <h3 class="fw-bold mb-0" style="color: #042f2e;">{% if IS_BANGLA %}ক্যাটাগরি অনুযায়ী ঔষধ খুঁজুন{% else %}Shop by Healthcare Category{% endif %}</h3>
+            <!-- Instant Medicine Quick-Lookup Chips -->
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-2 pt-1">
+                <span class="small fw-semibold ph-section-sub" style="font-size: 0.75rem;">
+                    {% if IS_BANGLA %}জনপ্রিয় খোঁজ:{% else %}Popular:{% endif %}
+                </span>
+                <a href="{% url 'product_list' %}?q=Napa" class="ph-quick-chip">Napa / Paracetamol</a>
+                <a href="{% url 'product_list' %}?q=Omeprazole" class="ph-quick-chip">Omeprazole</a>
+                <a href="{% url 'product_list' %}?q=Insulin" class="ph-quick-chip"><i class="bi bi-snow me-1"></i>Insulin</a>
+                <a href="{% url 'product_list' %}?q=Vitamin" class="ph-quick-chip">Vitamin D3</a>
+                <a href="{% url 'product_list' %}?q=BP" class="ph-quick-chip">BP Monitor</a>
             </div>
-            <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
-                {% if IS_BANGLA %}সব বিভাগ{% else %}All Categories{% endif %} <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-        </div>
-        <div class="row g-3">
-            {% for cat in category_tiles|default:featured_categories|slice:":8" %}
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none text-dark">
-                        <div class="pharmacy-cat-card p-3 h-100 d-flex align-items-center gap-3">
-                            <div class="rounded-3 bg-light d-flex align-items-center justify-content-center flex-shrink-0 overflow-hidden" style="width: 56px; height: 56px; background-color: #f0fdfa !important;">
-                                {% if cat.image %}
-                                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-100 h-100 object-fit-contain p-1">
-                                {% else %}
-                                    <i class="bi bi-capsule fs-4" style="color: #0d9488;"></i>
-                                {% endif %}
-                            </div>
-                            <div class="overflow-hidden">
-                                <h6 class="fw-bold mb-0 text-truncate small">{{ cat.name }}</h6>
-                                <small class="text-muted" style="font-size: 0.74rem;">
-                                    {{ cat.prod_count|default:cat.products.count }} {% if IS_BANGLA %}টি আইটেম{% else %}Items{% endif %}
-                                </small>
-                            </div>
-                        </div>
+
+            <div class="ph-dock-divider">
+                <span>{% if IS_BANGLA %}অথবা সরাসরি অর্ডার করুন{% else %}You can also order via{% endif %}</span>
+            </div>
+
+            <!-- 3 Clean Quick-Order Paths -->
+            <div class="row g-2 g-md-3">
+                <div class="col-md-4">
+                    <button type="button" class="ph-order-via-btn" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
+                        <span class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px; background: #fee2e2; color: #e11d48;">
+                            <i class="bi bi-file-earmark-medical-fill fs-5"></i>
+                        </span>
+                        <span class="overflow-hidden">
+                            <strong class="d-block small text-truncate">{% if IS_BANGLA %}প্রেসক্রিপশন আপলোড{% else %}Upload Prescription{% endif %}</strong>
+                            <small class="ph-section-sub d-block text-truncate" style="font-size: 0.72rem;">{% if IS_BANGLA %}১৫ মিনিটে ফার্মাসিস্ট কল{% else %}15-min Pharmacist Review{% endif %}</small>
+                        </span>
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <a href="tel:16263" class="ph-order-via-btn">
+                        <span class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px; background: #dcfce7; color: #16a34a;">
+                            <i class="bi bi-telephone-inbound-fill fs-5"></i>
+                        </span>
+                        <span class="overflow-hidden">
+                            <strong class="d-block small text-truncate">{% if IS_BANGLA %}হটলাইন ১৬২৬৩{% else %}Call Hotline 16263{% endif %}</strong>
+                            <small class="ph-section-sub d-block text-truncate" style="font-size: 0.72rem;">{% if IS_BANGLA %}ফোনেই অর্ডার কনফার্ম করুন{% else %}Direct Pharmacist Order{% endif %}</small>
+                        </span>
                     </a>
                 </div>
-            {% endfor %}
-        </div>
-    </section>
-    {% endif %}
-
-    <!-- 4. HEALTHCARE FLASH DEALS -->
-    {% if flash_sales %}
-    <section class="mb-5 p-3 p-md-4 rounded-4 border" style="background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%); border-color: #99f6e4 !important;">
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-danger rounded-pill px-3 py-1.5 fw-bold">
-                    <i class="bi bi-lightning-charge-fill me-1"></i> {% if IS_BANGLA %}ফ্ল্যাশ হেলথকেয়ার অফার{% else %}Healthcare Flash Savings{% endif %}
-                </span>
-                <h4 class="fw-bold mb-0" style="color: #042f2e;">{% if IS_BANGLA %}সাশ্রয়ী মূল্যে জরুরি ঔষধ{% else %}Up to 15% Off Chronic &amp; Daily Care{% endif %}</h4>
-            </div>
-            <a href="{% url 'product_list' %}?flash_sale=1" class="btn btn-sm rounded-pill px-3 fw-bold text-white" style="background-color: #0f766e;">
-                {% if IS_BANGLA %}সব অফার দেখুন{% else %}View All Deals{% endif %} <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-        </div>
-        <div class="row g-3">
-            {% for product in flash_sales|slice:":4" %}
-                <div class="col-lg-3 col-md-4 col-6">
-                    {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
+                <div class="col-md-4">
+                    <a href="{% url 'product_list' %}?q=Insulin" class="ph-order-via-btn">
+                        <span class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px; background: #e0f2fe; color: #0284c7;">
+                            <i class="bi bi-snow fs-5"></i>
+                        </span>
+                        <span class="overflow-hidden">
+                            <strong class="d-block small text-truncate">{% if IS_BANGLA %}২ ঘণ্টায় কোল্ড চেইন{% else %}2h Cold-Chain Care{% endif %}</strong>
+                            <small class="ph-section-sub d-block text-truncate" style="font-size: 0.72rem;">{% if IS_BANGLA %}ইনসুলিন ২°-৮°সে. সুরক্ষা{% else %}Strict 2°–8°C Insulated Box{% endif %}</small>
+                        </span>
+                    </a>
                 </div>
-            {% endfor %}
-        </div>
-    </section>
-    {% endif %}
-
-    <!-- 5. FEATURED MEDICINES & HEALTHCARE PRODUCTS GRID -->
-    <div class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h3 class="fw-bold mb-1" style="color: #042f2e;">
-                    {% if IS_BANGLA %}প্রয়োজনীয় ঔষধ ও স্বাস্থ্যপণ্য{% else %}Essential Medicines &amp; Healthcare{% endif %}
-                </h3>
-                <p class="text-muted small mb-0">Verified authentic stock directly sourced from authorized pharmaceuticals.</p>
             </div>
-            <a href="{% url 'product_list' %}" class="btn btn-sm rounded-pill px-3 fw-bold text-white shadow-sm" style="background-color: #059669;">
-                {% if IS_BANGLA %}সব দেখুন{% else %}View All{% endif %} <i class="bi bi-arrow-right ms-1"></i>
-            </a>
         </div>
+    </div>
 
-        <div class="row g-3">
-            {% for product in featured_products %}
-                <div class="col-lg-3 col-md-4 col-6">
-                    {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
+    <!-- Main Container Sections Below Hero -->
+    <div class="container mt-5 mb-4">
+
+        <!-- 2. DISCOVER OUR HEALTHCARE OFFERINGS (PharmEasy Signature 6-Tile Strip) -->
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <div>
+                    <span class="ph-section-eyebrow">{% if IS_BANGLA %}সেবাসমূহ{% else %}Quick Healthcare Access{% endif %}</span>
+                    <h4 class="ph-section-title mb-0">{% if IS_BANGLA %}আমাদের স্বাস্থ্যসেবা সমূহ{% else %}Discover Our Offerings{% endif %}</h4>
                 </div>
-            {% empty %}
-                {% for product in latest_products %}
+                <a href="{% url 'product_list' %}" class="small fw-bold text-decoration-none" style="color: var(--ph-accent);">
+                    {% if IS_BANGLA %}সব দেখুন{% else %}Explore Catalog{% endif %} <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="row g-2 g-md-3 row-cols-2 row-cols-sm-3 row-cols-lg-6">
+                <div class="col">
+                    <a href="{% url 'product_list' %}" class="ph-offering-card">
+                        <div class="ph-offering-icon" style="background: #dcfce7; color: #059669;">
+                            <i class="bi bi-capsule"></i>
+                        </div>
+                        <span class="fw-bold small mb-1">{% if IS_BANGLA %}প্রেসক্রিপশন ঔষধ{% else %}Medicines{% endif %}</span>
+                        <span class="badge bg-success-subtle text-success rounded-pill" style="font-size: 0.68rem;">Save up to 15%</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Insulin" class="ph-offering-card">
+                        <div class="ph-offering-icon" style="background: #e0f2fe; color: #0284c7;">
+                            <i class="bi bi-thermometer-snow"></i>
+                        </div>
+                        <span class="fw-bold small mb-1">{% if IS_BANGLA %}কোল্ড চেইন{% else %}Cold Chain{% endif %}</span>
+                        <span class="badge bg-info-subtle text-info rounded-pill" style="font-size: 0.68rem;">2°–8°C Safe</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Vitamin" class="ph-offering-card">
+                        <div class="ph-offering-icon" style="background: #fef3c7; color: #d97706;">
+                            <i class="bi bi-brightness-high-fill"></i>
+                        </div>
+                        <span class="fw-bold small mb-1">{% if IS_BANGLA %}ভিটামিন ও ওটিসি{% else %}Vitamins &amp; OTC{% endif %}</span>
+                        <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill" style="font-size: 0.68rem;">Daily Immunity</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Monitor" class="ph-offering-card">
+                        <div class="ph-offering-icon" style="background: #ede9fe; color: #7c3aed;">
+                            <i class="bi bi-activity"></i>
+                        </div>
+                        <span class="fw-bold small mb-1">{% if IS_BANGLA %}হেলথ ডিভাইস{% else %}Health Devices{% endif %}</span>
+                        <span class="badge rounded-pill" style="background: rgba(124,58,237,0.12); color: #7c3aed; font-size: 0.68rem;">BP &amp; Sugar</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Baby" class="ph-offering-card">
+                        <div class="ph-offering-icon" style="background: #fce7f3; color: #db2777;">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <span class="fw-bold small mb-1">{% if IS_BANGLA %}মা ও শিশু যত্ন{% else %}Mother &amp; Baby{% endif %}</span>
+                        <span class="badge rounded-pill" style="background: rgba(219,39,119,0.12); color: #db2777; font-size: 0.68rem;">Gentle Care</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#rxUploadModal" class="ph-offering-card">
+                        <div class="ph-offering-icon" style="background: #ffe4e6; color: #e11d48;">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                        </div>
+                        <span class="fw-bold small mb-1">{% if IS_BANGLA %}প্রেসক্রিপশন আপলোড{% else %}Upload Rx{% endif %}</span>
+                        <span class="badge bg-danger-subtle text-danger rounded-pill" style="font-size: 0.68rem;">15-Min Verify</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SHOP BY HEALTH CONCERN (Symptom-First Discovery — Tata 1mg High-Conversion Pattern) -->
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <div>
+                    <span class="ph-section-eyebrow">{% if IS_BANGLA %}সমস্যা অনুযায়ী খুঁজুন{% else %}Symptom-First Finder{% endif %}</span>
+                    <h4 class="ph-section-title mb-0">{% if IS_BANGLA %}স্বাস্থ্য সমস্যা অনুযায়ী ঔষধ{% else %}Shop by Health Concern{% endif %}</h4>
+                </div>
+            </div>
+            <div class="row g-2 g-md-3 row-cols-2 row-cols-sm-4 row-cols-lg-8">
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Fever" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(239,68,68,0.12); color: #ef4444;"><i class="bi bi-thermometer-half"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}জ্বর ও ব্যথা{% else %}Fever &amp; Pain{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Gastric" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(245,158,11,0.14); color: #d97706;"><i class="bi bi-droplet-half"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}গ্যাস্ট্রিক ও এসিডিটি{% else %}Gastric Care{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Diabetes" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(14,165,233,0.14); color: #0284c7;"><i class="bi bi-moisture"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}ডায়াবেটিস{% else %}Diabetes Care{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Cardiac" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(225,29,72,0.12); color: #e11d48;"><i class="bi bi-heart-pulse"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}হৃদরোগ ও প্রেশার{% else %}Heart &amp; BP{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Cold" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(20,184,166,0.14); color: #0d9488;"><i class="bi bi-wind"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}সর্দি ও কাশি{% else %}Cold &amp; Allergy{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Skin" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(236,72,153,0.12); color: #db2777;"><i class="bi bi-stars"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}ত্বক ও ডার্মা{% else %}Skin &amp; Derma{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Bone" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(139,92,246,0.12); color: #7c3aed;"><i class="bi bi-person-arms-up"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}হাড় ও জয়েন্ট{% else %}Bone &amp; Joint{% endif %}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?q=Vitamin" class="ph-concern-tile">
+                        <div class="ph-concern-circle" style="background: rgba(16,185,129,0.14); color: #059669;"><i class="bi bi-shield-plus"></i></div>
+                        <span class="small fw-bold">{% if IS_BANGLA %}রোগ প্রতিরোধ{% else %}Immunity{% endif %}</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 3-STEP RX TRUST BAR (Capsule-Inspired Calm Clinical Workflow) -->
+        <section class="ph-clinical-panel p-3 p-md-4 mb-5">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-3">
+                    <span class="ph-section-eyebrow">{% if IS_BANGLA %}সহজ প্রক্রিয়া{% else %}Safe &amp; Simple{% endif %}</span>
+                    <h5 class="ph-section-title mb-1">{% if IS_BANGLA %}প্রেসক্রিপশনে অর্ডার করুন ৩ ধাপে{% else %}Order with Rx in 3 Steps{% endif %}</h5>
+                    <button type="button" class="btn btn-sm rounded-pill px-3 fw-bold text-white mt-2" style="background: linear-gradient(135deg, #0f766e, #059669);" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
+                        <i class="bi bi-cloud-arrow-up me-1"></i> {% if IS_BANGLA %}এখনই আপলোড করুন{% else %}Upload Rx Now{% endif %}
+                    </button>
+                </div>
+                <div class="col-lg-9">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start gap-2.5">
+                                <span class="ph-step-num">01</span>
+                                <div>
+                                    <strong class="d-block small" style="color: var(--ph-heading);">{% if IS_BANGLA %}প্রেসক্রিপশনের ছবি দিন{% else %}Upload Rx Photo / PDF{% endif %}</strong>
+                                    <small class="ph-section-sub" style="font-size: 0.76rem;">{% if IS_BANGLA %}ডাক্তারের প্রেসক্রিপশনের স্পষ্ট ছবি আপলোড করুন।{% else %}Snap a clear photo of your valid doctor prescription.{% endif %}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start gap-2.5">
+                                <span class="ph-step-num">02</span>
+                                <div>
+                                    <strong class="d-block small" style="color: var(--ph-heading);">{% if IS_BANGLA %}ফার্মাসিস্ট যাচাই ও কল{% else %}Pharmacist Audit (15m){% endif %}</strong>
+                                    <small class="ph-section-sub" style="font-size: 0.76rem;">{% if IS_BANGLA %}রেজিস্টার্ড ফার্মাসিস্ট ডোজ ও দাম যাচাই করে কল করবে।{% else %}A-Grade pharmacist confirms dosage, stock &amp; exact bill.{% endif %}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start gap-2.5">
+                                <span class="ph-step-num">03</span>
+                                <div>
+                                    <strong class="d-block small" style="color: var(--ph-heading);">{% if IS_BANGLA %}২ ঘণ্টায় সিল্ড ডেলিভারি{% else %}2h Cold-Chain Delivery{% endif %}</strong>
+                                    <small class="ph-section-sub" style="font-size: 0.76rem;">{% if IS_BANGLA %}ব্যাচ ও মেয়াদ নিশ্চিত করে বাসায় পৌঁছে দেওয়া হয়।{% else %}Tamper-proof sealed pack with batch &amp; expiry guarantee.{% endif %}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. HEALTHCARE FLASH SAVINGS -->
+        {% if flash_sales %}
+        <section class="mb-5 p-3 p-md-4 ph-flash-box">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge bg-danger rounded-pill px-3 py-1.5 fw-bold">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> {% if IS_BANGLA %}ফ্ল্যাশ হেলথকেয়ার অফার{% else %}Healthcare Flash Savings{% endif %}
+                    </span>
+                    <h4 class="ph-section-title mb-0">{% if IS_BANGLA %}সাশ্রয়ী মূল্যে জরুরি ঔষধ{% else %}Up to 15% Off Chronic &amp; Daily Care{% endif %}</h4>
+                </div>
+                <a href="{% url 'product_list' %}?flash_sale=1" class="btn btn-sm rounded-pill px-3 fw-bold text-white" style="background-color: #0f766e;">
+                    {% if IS_BANGLA %}সব অফার দেখুন{% else %}View All Deals{% endif %} <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="row g-3">
+                {% for product in flash_sales|slice:":4" %}
                     <div class="col-lg-3 col-md-4 col-6">
                         {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
                     </div>
-                {% empty %}
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-capsule fs-1 text-muted"></i>
-                        <p class="text-muted mt-2">No medicines listed yet.</p>
-                    </div>
                 {% endfor %}
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- 6. OFFICIAL PHARMACEUTICAL BRANDS SHOWCASE -->
-    {% if brands %}
-    <section class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <span class="text-uppercase fw-bold small" style="color: #0d9488; letter-spacing: 0.06em;">{% if IS_BANGLA %}অনুমোদিত পার্টনার{% else %}Authorized Manufacturers{% endif %}</span>
-                <h4 class="fw-bold mb-0" style="color: #042f2e;">{% if IS_BANGLA %}শীর্ষস্থানীয় ফার্মাসিউটিক্যালস ব্র্যান্ড{% else %}Trusted Pharmaceutical &amp; Device Brands{% endif %}</h4>
             </div>
-        </div>
-        <div class="row g-2 g-md-3">
-            {% for brand in brands|slice:":12" %}
-                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                    <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="text-decoration-none">
-                        <div class="pharmacy-brand-tile text-center h-100 d-flex flex-column align-items-center justify-content-center gap-2">
-                            {% if brand.logo %}
-                                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="height: 36px; max-width: 90px; object-fit: contain;">
-                            {% else %}
-                                <i class="bi bi-building-check fs-4" style="color: #0d9488;"></i>
-                            {% endif %}
-                            <span class="small fw-semibold text-dark text-truncate w-100">{{ brand.name }}</span>
-                        </div>
-                    </a>
+        </section>
+        {% endif %}
+
+        <!-- 6. ESSENTIAL MEDICINES WITH INTERACTIVE CATEGORY FILTER TABS -->
+        <section class="mb-5" id="phEssentialSection">
+            <div class="d-flex flex-wrap justify-content-between align-items-end mb-3 gap-2">
+                <div>
+                    <span class="ph-section-eyebrow">{% if IS_BANGLA %}অনুমোদিত ঔষধসমূহ{% else %}Pharmacist Curated{% endif %}</span>
+                    <h3 class="ph-section-title mb-0">
+                        {% if IS_BANGLA %}প্রয়োজনীয় ঔষধ ও স্বাস্থ্যপণ্য{% else %}Essential Medicines &amp; Healthcare{% endif %}
+                    </h3>
                 </div>
-            {% endfor %}
-        </div>
-    </section>
-    {% endif %}
-
-    <!-- 7. COLD CHAIN & MEDICAL ADVISORY NOTICE -->
-    <div class="p-4 rounded-4 text-white mb-4 shadow-sm" style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);">
-        <div class="row align-items-center g-3">
-            <div class="col-md-8">
-                <h5 class="fw-bold mb-2"><i class="bi bi-heart-pulse-fill text-warning me-2"></i>{% if IS_BANGLA %}রেজিস্টার্ড ফার্মাসিস্ট ফ্রি পরামর্শ{% else %}Licensed Pharmacist Free Consultation{% endif %}</h5>
-                <p class="small text-light opacity-90 mb-0">Unsure about dosage, interactions, or generics? Speak with our DGDA registered Pharmacist on hotline <strong>16263</strong> (8 AM - 11 PM).</p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <a href="tel:16263" class="btn btn-warning rounded-pill fw-bold px-4 shadow-sm text-dark">
-                    <i class="bi bi-telephone-outbound-fill me-1"></i> Call 16263
+                <a href="{% url 'product_list' %}" class="btn btn-sm rounded-pill px-3 fw-bold text-white shadow-sm" style="background-color: #059669;">
+                    {% if IS_BANGLA %}সব দেখুন{% else %}View All{% endif %} <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
-        </div>
+
+            <!-- Interactive Filter Pills -->
+            <div class="d-flex flex-wrap gap-2 mb-4" id="phMedicineFilterTabs">
+                <button type="button" class="ph-filter-pill active" data-cat-filter="all">
+                    {% if IS_BANGLA %}সকল ঔষধ{% else %}All Essentials{% endif %}
+                </button>
+                {% for cat in category_tiles|default:featured_categories|slice:":5" %}
+                    <button type="button" class="ph-filter-pill" data-cat-filter="{{ cat.slug }}">
+                        {{ cat.name }}
+                    </button>
+                {% endfor %}
+            </div>
+
+            <div class="row g-3" id="phMedicineGrid">
+                {% for product in featured_products %}
+                    <div class="col-lg-3 col-md-4 col-6 ph-med-item" data-cat-slug="{{ product.category.slug|default:'general' }}">
+                        {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
+                    </div>
+                {% empty %}
+                    {% for product in latest_products %}
+                        <div class="col-lg-3 col-md-4 col-6 ph-med-item" data-cat-slug="{{ product.category.slug|default:'general' }}">
+                            {% include 'themes/pharmacy-healthcare/product_card.html' with product=product %}
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center py-5 ph-clinical-panel">
+                            <i class="bi bi-capsule fs-1 ph-section-sub"></i>
+                            <p class="ph-section-sub mt-2 mb-0">No medicines listed yet.</p>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- 7. SHOP BY CLINICAL DEPARTMENT -->
+        {% if category_tiles or featured_categories %}
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="ph-section-eyebrow">{% if IS_BANGLA %}স্বাস্থ্য বিভাগসমূহ{% else %}Clinical Departments{% endif %}</span>
+                    <h4 class="ph-section-title mb-0">{% if IS_BANGLA %}ক্যাটাগরি অনুযায়ী ঔষধ খুঁজুন{% else %}Shop by Clinical Department{% endif %}</h4>
+                </div>
+                <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
+                    {% if IS_BANGLA %}সব বিভাগ{% else %}All Categories{% endif %} <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="row g-3">
+                {% for cat in category_tiles|default:featured_categories|slice:":8" %}
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none">
+                            <div class="pharmacy-cat-card p-3 h-100 d-flex align-items-center gap-3">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 overflow-hidden" style="width: 54px; height: 54px; background-color: var(--ph-canvas-soft);">
+                                    {% if cat.image %}
+                                        <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-100 h-100 object-fit-contain p-1">
+                                    {% else %}
+                                        <i class="bi {{ cat.icon|default:'bi-capsule' }} fs-4" style="color: var(--ph-accent);"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="fw-bold mb-0 text-truncate small" style="color: var(--ph-heading);">{{ cat.name }}</h6>
+                                    <small class="ph-section-sub" style="font-size: 0.74rem;">
+                                        {{ cat.prod_count|default:cat.products.count }} {% if IS_BANGLA %}টি আইটেম{% else %}Items{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- 8. CHRONIC CARE REFILL ESTIMATOR + COLD CHAIN & HELPLINE SPLIT -->
+        {% if CURRENT_THEME_CONFIG.show_dosage_calc_promo|default:True or CURRENT_THEME_CONFIG.show_cold_chain_banner|default:True %}
+        <section class="mb-5">
+            <div class="row g-3 align-items-stretch">
+                {% if CURRENT_THEME_CONFIG.show_dosage_calc_promo|default:True %}
+                <div class="col-lg-6">
+                    <div class="ph-estimator-card p-4 h-100 d-flex flex-column justify-content-between shadow-xs">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold">
+                                    <i class="bi bi-calculator me-1"></i> {% if IS_BANGLA %}মাসিক ডোজ ক্যালকুলেটর{% else %}Monthly Strip Estimator{% endif %}
+                                </span>
+                                <span class="small fw-bold" style="color: var(--ph-bright);">Save 10% on Refills</span>
+                            </div>
+                            <h5 class="fw-bold mb-1" style="color: var(--ph-heading);">{% if IS_BANGLA %}ক্রনিক কেয়ার রিফিল প্ল্যানার{% else %}Plan Your Monthly Diabetes / BP Refill{% endif %}</h5>
+                            <p class="small ph-section-sub mb-3">{% if IS_BANGLA %}দৈনিক ডোজ অনুযায়ী মাসে কতটি পাতা (Strip) প্রয়োজন তা সহজেই হিসাব করুন।{% else %}Estimate strips needed for 30 days &amp; send directly to our pharmacist desk.{% endif %}</p>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold mb-1" for="phDosePerDay">{% if IS_BANGLA %}দৈনিক ট্যাবলেট{% else %}Tablets / Day{% endif %}</label>
+                                    <select id="phDosePerDay" class="form-select form-select-sm rounded-3">
+                                        <option value="1">1 Tablet / Day</option>
+                                        <option value="2" selected>2 Tablets / Day</option>
+                                        <option value="3">3 Tablets / Day</option>
+                                        <option value="4">4 Tablets / Day</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold mb-1" for="phRefillDays">{% if IS_BANGLA %}সময়কাল (দিন){% else %}Duration{% endif %}</label>
+                                    <select id="phRefillDays" class="form-select form-select-sm rounded-3">
+                                        <option value="15">15 Days</option>
+                                        <option value="30" selected>30 Days (1 Month)</option>
+                                        <option value="60">60 Days (2 Months)</option>
+                                        <option value="90">90 Days (3 Months)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: var(--ph-canvas-soft); border: 1px solid var(--ph-border);">
+                            <div>
+                                <div class="small ph-section-sub">{% if IS_BANGLA %}প্রয়োজনীয় পরিমাণ (১০টির পাতা):{% else %}Estimated Pack (10s Strip):{% endif %}</div>
+                                <strong class="fs-5" style="color: var(--ph-accent);" id="phCalcResult">6 Strips (60 Tabs)</strong>
+                            </div>
+                            <button type="button" id="phApplyRefillNoteBtn" class="btn btn-sm rounded-pill px-3 fw-bold text-white" style="background: linear-gradient(135deg, #0f766e, #059669);" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
+                                <i class="bi bi-arrow-repeat me-1"></i> {% if IS_BANGLA %}রিফিল অর্ডার করুন{% else %}Request Refill{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if CURRENT_THEME_CONFIG.show_cold_chain_banner|default:True %}
+                <div class="{% if CURRENT_THEME_CONFIG.show_dosage_calc_promo|default:True %}col-lg-6{% else %}col-12{% endif %}">
+                    <div class="p-4 rounded-4 text-white h-100 d-flex flex-column justify-content-between shadow-sm" style="background: linear-gradient(135deg, #042f2e 0%, #0f766e 60%, #059669 100%);">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">
+                                    <i class="bi bi-snow me-1"></i> Cold Chain 2°–8°C Active
+                                </span>
+                                <span class="small text-white-50">8 AM – 11 PM Daily</span>
+                            </div>
+                            <h5 class="fw-bold text-white mb-2">
+                                <i class="bi bi-heart-pulse-fill text-warning me-2"></i>
+                                {% if IS_BANGLA %}রেজিস্টার্ড ফার্মাসিস্ট ফ্রি পরামর্শ ও ইনসুলিন ডেলিভারি{% else %}Licensed Pharmacist Advice &amp; 2-Hour Cold Chain{% endif %}
+                            </h5>
+                            <p class="small text-white-50 mb-3">
+                                {% if IS_BANGLA %}ওষুধের ডোজ, জেনেরিক বিকল্প বা ইনসুলিন সংরক্ষণ সম্পর্কে নিশ্চিত নন? সরাসরি ১৬২৬৩ নম্বরে আমাদের এ-গ্রেড ফার্মাসিস্টের সাথে কথা বলুন।{% else %}Unsure about dosage, generic equivalents, or cold-chain insulin storage? Speak directly with our DGDA registered pharmacists on hotline 16263.{% endif %}
+                            </p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="tel:16263" class="btn btn-warning rounded-pill fw-bold px-4 shadow-sm text-dark">
+                                <i class="bi bi-telephone-outbound-fill me-1"></i> Call 16263
+                            </a>
+                            <a href="{% url 'product_list' %}?q=Insulin" class="btn btn-outline-light rounded-pill fw-semibold px-3">
+                                <i class="bi bi-snow me-1"></i> {% if IS_BANGLA %}কোল্ড চেইন ঔষধ{% else %}Cold Chain Stock{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- 9. TRUSTED PHARMACEUTICAL & DEVICE BRANDS -->
+        {% if brands %}
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="ph-section-eyebrow">{% if IS_BANGLA %}অনুমোদিত পার্টনার{% else %}Authorized Manufacturers{% endif %}</span>
+                    <h4 class="ph-section-title mb-0">{% if IS_BANGLA %}শীর্ষস্থানীয় ফার্মাসিউটিক্যালস ব্র্যান্ড{% else %}Trusted Pharmaceutical &amp; Device Brands{% endif %}</h4>
+                </div>
+            </div>
+            <div class="row g-2 g-md-3">
+                {% for brand in brands|slice:":12" %}
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="text-decoration-none">
+                            <div class="pharmacy-brand-tile p-3 text-center h-100 d-flex flex-column align-items-center justify-content-center gap-2">
+                                {% if brand.logo %}
+                                    <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="height: 36px; max-width: 90px; object-fit: contain;">
+                                {% else %}
+                                    <i class="bi bi-building-check fs-4" style="color: var(--ph-accent);"></i>
+                                {% endif %}
+                                <span class="small fw-semibold text-truncate w-100" style="color: var(--ph-heading);">{{ brand.name }}</span>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- 10. CLINICAL COMPLIANCE & TRUST PILLARS -->
+        {% if CURRENT_THEME_CONFIG.show_trust_pillars|default:True and CURRENT_THEME_DATA.trust_pillars %}
+        <section class="mb-4">
+            <div class="row g-3">
+                {% for pillar in CURRENT_THEME_DATA.trust_pillars %}
+                    <div class="col-md-3 col-6">
+                        <div class="ph-clinical-panel p-3 h-100 d-flex align-items-start gap-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; background: var(--ph-canvas-soft); color: var(--ph-accent);">
+                                <i class="bi {{ pillar.icon|default:'bi-shield-check' }} fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold small mb-1" style="color: var(--ph-heading);">{{ pillar.title }}</h6>
+                                <p class="mb-0 ph-section-sub" style="font-size: 0.74rem;">{{ pillar.desc }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
     </div>
 </div>
+
+<script>
+(function() {
+    // 1. Interactive Essential Medicines Category Tabs
+    var tabButtons = document.querySelectorAll('#phMedicineFilterTabs .ph-filter-pill');
+    var medCards = document.querySelectorAll('#phMedicineGrid .ph-med-item');
+    if (tabButtons.length && medCards.length) {
+        tabButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                tabButtons.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                var filter = this.getAttribute('data-cat-filter');
+                var shown = 0;
+                medCards.forEach(function(card) {
+                    var slug = card.getAttribute('data-cat-slug');
+                    if (filter === 'all' || slug === filter) {
+                        card.style.display = '';
+                        shown++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                // Fallback if a selected category has 0 featured cards loaded on home
+                if (shown === 0) {
+                    medCards.forEach(function(card) { card.style.display = ''; });
+                }
+            });
+        });
+    }
+
+    // 2. Interactive Monthly Strip Estimator
+    var doseSel = document.getElementById('phDosePerDay');
+    var daysSel = document.getElementById('phRefillDays');
+    var resEl = document.getElementById('phCalcResult');
+    var applyBtn = document.getElementById('phApplyRefillNoteBtn');
+    function updateRefillEstimate() {
+        if (!doseSel || !daysSel || !resEl) return;
+        var dose = parseInt(doseSel.value, 10) || 1;
+        var days = parseInt(daysSel.value, 10) || 30;
+        var tabs = dose * days;
+        var strips = Math.ceil(tabs / 10);
+        resEl.textContent = strips + ' Strip' + (strips > 1 ? 's' : '') + ' (' + tabs + ' Tabs)';
+    }
+    if (doseSel && daysSel) {
+        doseSel.addEventListener('change', updateRefillEstimate);
+        daysSel.addEventListener('change', updateRefillEstimate);
+        updateRefillEstimate();
+    }
+    if (applyBtn && resEl) {
+        applyBtn.addEventListener('click', function() {
+            var notes = document.getElementById('rxNotes');
+            if (notes) {
+                notes.value = 'Monthly Chronic Refill Request: ' + resEl.textContent + ' (Apply 10% Chronic Refill Plan)';
+            }
+        });
+    }
+})();
+</script>
 {% endblock %}

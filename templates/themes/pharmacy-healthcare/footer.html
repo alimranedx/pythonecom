@@ -173,24 +173,24 @@
                 <form id="rxUploadForm">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}রোগীর নাম{% else %}Patient Full Name{% endif %} <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">{% if IS_BANGLA %}রোগীর নাম{% else %}Patient Full Name{% endif %} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control rounded-3" id="rxPatientName" placeholder="e.g. Md. Rafiqul Islam" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}মোবাইল নম্বর (বাংলাদেশ){% else %}Mobile Number (BD){% endif %} <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">{% if IS_BANGLA %}মোবাইল নম্বর (বাংলাদেশ){% else %}Mobile Number (BD){% endif %} <span class="text-danger">*</span></label>
                             <input type="tel" class="form-control rounded-3" id="rxPhone" placeholder="017XXXXXXXX" required>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}প্রেসক্রিপশনের ছবি আপলোড করুন{% else %}Prescription Photo / PDF{% endif %} <span class="text-danger">*</span></label>
-                            <div class="p-4 rounded-3 text-center border border-2 border-dashed" style="border-color: #14b8a6 !important; background-color: #f0fdfa; cursor: pointer;" onclick="document.getElementById('rxFileInput').click();">
+                            <label class="form-label fw-semibold small">{% if IS_BANGLA %}প্রেসক্রিপশনের ছবি আপলোড করুন{% else %}Prescription Photo / PDF{% endif %} <span class="text-danger">*</span></label>
+                            <div class="p-4 rounded-3 text-center border border-2 border-dashed" style="border-color: #14b8a6 !important; background-color: rgba(20, 184, 166, 0.08); cursor: pointer;" onclick="document.getElementById('rxFileInput').click();">
                                 <i class="bi bi-cloud-arrow-up-fill fs-1" style="color: #0d9488;"></i>
-                                <p class="fw-semibold mb-1 text-dark" id="rxFileNameDisplay">{% if IS_BANGLA %}ছবি বা পিডিএফ সিলেক্ট করতে ক্লিক করুন{% else %}Click to upload clear photo of your Rx (JPG, PNG, PDF){% endif %}</p>
+                                <p class="fw-semibold mb-1" id="rxFileNameDisplay">{% if IS_BANGLA %}ছবি বা পিডিএফ সিলেক্ট করতে ক্লিক করুন{% else %}Click to upload clear photo of your Rx (JPG, PNG, PDF){% endif %}</p>
                                 <small class="text-muted">Max 10MB • Keep doctor's signature &amp; medicine list visible</small>
                                 <input type="file" id="rxFileInput" accept="image/*,.pdf" class="d-none" required>
                             </div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold small text-dark">{% if IS_BANGLA %}ডেলিভারি ঠিকানা ও নোট{% else %}Delivery Area &amp; Pharmacist Notes{% endif %}</label>
+                            <label class="form-label fw-semibold small">{% if IS_BANGLA %}ডেলিভারি ঠিকানা ও নোট{% else %}Delivery Area &amp; Pharmacist Notes{% endif %}</label>
                             <textarea class="form-control rounded-3" id="rxNotes" rows="2" placeholder="e.g. Dhanmondi 27, Dhaka • Need 1 month dose for all items"></textarea>
                         </div>
                     </div>
