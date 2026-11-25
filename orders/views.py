@@ -278,8 +278,12 @@ def order_invoice(request, order_number):
 
 
 def rx_upload_submit(request):
-    """Handles Pharmacy & Healthcare prescription uploads via AJAX POST."""
+    """Handles Pharmacy & Healthcare prescription uploads via AJAX POST with strict file validation."""
+    import os
+    import uuid
     from django.http import JsonResponse
+    from core.validators import validate_image_file
+
     if request.method != 'POST':
         return JsonResponse({'ok': False, 'error': 'Method not allowed'}, status=405)
 
@@ -291,13 +295,32 @@ def rx_upload_submit(request):
     if not patient_name or not phone or not rx_file:
         return JsonResponse({'ok': False, 'error': 'Patient name, phone, and prescription file are required.'}, status=400)
 
-    if rx_file.size > 10 * 1024 * 1024:
-        return JsonResponse({'ok': False, 'error': 'File size must be under 10MB.'}, status=400)
+    if rx_file.size > 5 * 1024 * 1024:
+        return JsonResponse({'ok': False, 'error': 'File size must be under 5MB.'}, status=400)
+
+    ext = os.path.splitext(rx_file.name or '')[1].lower()
+    allowed_exts = {'.jpg', '.jpeg', '.png', '.webp', '.pdf'}
+    if ext not in allowed_exts:
+        return JsonResponse({'ok': False, 'error': 'Only JPG, PNG, WEBP, or PDF files are allowed.'}, status=400)
+
+    if ext == '.pdf':
+        header = rx_file.read(5)
+        rx_file.seek(0)
+        if header != b'%PDF-':
+            return JsonResponse({'ok': False, 'error': 'Invalid PDF file.'}, status=400)
+    else:
+        try:
+            validate_image_file(rx_file)
+            rx_file.seek(0)
+        except ValidationError:
+            return JsonResponse({'ok': False, 'error': 'Invalid or corrupted image file.'}, status=400)
+
+    rx_file.name = f"rx_{uuid.uuid4().hex}{ext}"
 
     rx = PrescriptionRequest.objects.create(
-        patient_name=patient_name,
-        phone=phone,
+        patient_name=patient_name[:150],
+        phone=phone[:30],
         prescription_file=rx_file,
-        notes=notes,
+        notes=notes[:1000],
     )
     return JsonResponse({'ok': True, 'rx_id': rx.pk})

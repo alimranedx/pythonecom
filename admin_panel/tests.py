@@ -759,10 +759,27 @@ class AdminSpecialistFeaturesTests(TestCase):
         self.assertEqual(self.order2.status, 'processing')
 
     def test_rx_upload_and_admin_prescription_inbox(self):
+        import io
+        from PIL import Image
         from django.core.files.uploadedfile import SimpleUploadedFile
         from orders.models import PrescriptionRequest
-        rx_file = SimpleUploadedFile('rx_test.jpg', b'fake-image-bytes', content_type='image/jpeg')
+
+        # Valid PNG image
+        buf = io.BytesIO()
+        Image.new('RGB', (20, 20), color='teal').save(buf, format='PNG')
+        buf.seek(0)
+        rx_file = SimpleUploadedFile('rx_test.png', buf.read(), content_type='image/png')
         anon = Client()
+
+        # Reject dangerous extension (.html)
+        bad_file = SimpleUploadedFile('evil.html', b'<script>alert(1)</script>', content_type='text/html')
+        bad_res = anon.post('/orders/rx-upload/', {
+            'patient_name': 'Attacker',
+            'phone': '01700000000',
+            'prescription_file': bad_file,
+        })
+        self.assertEqual(bad_res.status_code, 400)
+
         up_res = anon.post('/orders/rx-upload/', {
             'patient_name': 'Md. Hasan',
             'phone': '01755555555',
