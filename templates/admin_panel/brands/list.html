@@ -48,9 +48,11 @@
                     <tr>
                         <td class="ps-3">
                             {% if b.logo %}
-                                <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="rounded border p-1" style="width: 44px; height: 44px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
+                                <div class="rounded-3 border bg-white p-1 d-inline-flex align-items-center justify-content-center shadow-xs" style="width: 48px; height: 48px;">
+                                    <img src="{{ b.logo.url }}" alt="{{ b.name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
+                                </div>
                             {% else %}
-                                <div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <div class="rounded-3 border bg-light text-muted d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                                     <i class="bi bi-tag fs-5"></i>
                                 </div>
                             {% endif %}
@@ -60,8 +62,8 @@
                         </td>
                         <td><code class="text-muted">{{ b.slug }}</code></td>
                         <td>
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                {{ b.product_count }} products
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1">
+                                {{ b.product_count }} product{{ b.product_count|pluralize }}
                             </span>
                         </td>
                         <td class="text-end pe-3">

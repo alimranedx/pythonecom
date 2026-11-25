@@ -31,28 +31,34 @@
 
     <style>
         :root {
-            --sidebar-width: 260px;
-            --sidebar-bg: #0f172a;
-            --sidebar-hover: #1e293b;
+            --sidebar-width: 268px;
+            --sidebar-collapsed-width: 76px;
+            --sidebar-bg: #0b1120;
+            --sidebar-surface: #111827;
+            --sidebar-hover: rgba(255, 255, 255, 0.06);
             --sidebar-text: #94a3b8;
-            --sidebar-active: #2563eb;
+            --sidebar-active: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            --admin-bg: #f4f7fb;
+            --admin-border: #e2e8f0;
         }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f1f5f9;
+            background-color: var(--admin-bg);
             color: #334155;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         #sidebar {
             width: var(--sidebar-width);
-            background-color: var(--sidebar-bg);
+            background: linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
             height: 100vh;
             max-height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 1000;
-            transition: all 0.3s;
+            z-index: 1040;
+            transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1), transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -62,13 +68,59 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: margin-left 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        body.sidebar-collapsed #sidebar {
+            width: var(--sidebar-collapsed-width);
+        }
+        body.sidebar-collapsed #content-wrapper {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+        body.sidebar-collapsed .sidebar-hide-collapsed {
+            display: none !important;
+        }
+        body.sidebar-collapsed .sidebar-brand {
+            justify-content: center !important;
+            padding: 1.15rem 0.5rem;
+        }
+        body.sidebar-collapsed .sidebar-link {
+            justify-content: center;
+            padding: 0.65rem;
+            margin: 2px 10px;
+        }
+        body.sidebar-collapsed .sidebar-group-toggle {
+            justify-content: center;
+            padding: 0.6rem;
+        }
+        #sidebarBackdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(2px);
+            z-index: 1035;
+        }
+        @media (max-width: 991.98px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            body.sidebar-mobile-open #sidebar {
+                transform: translateX(0);
+            }
+            body.sidebar-mobile-open #sidebarBackdrop {
+                display: block;
+            }
+            #content-wrapper,
+            body.sidebar-collapsed #content-wrapper {
+                margin-left: 0;
+            }
         }
         .sidebar-brand {
-            padding: 1.25rem 1.5rem;
+            padding: 1.1rem 1.25rem;
             color: #fff;
             font-weight: 800;
-            font-size: 1.25rem;
-            border-bottom: 1px solid #1e293b;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
             flex-shrink: 0;
         }
         .brand-logo-img {
@@ -86,59 +138,146 @@
         a.use-text-fallback .brand-logo-fallback {
             display: inline-flex !important;
         }
+        .sidebar-search-wrap {
+            padding: 0.75rem 1rem 0.25rem;
+        }
+        .sidebar-search-input {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            color: #e2e8f0;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            padding: 0.45rem 0.75rem 0.45rem 2.1rem;
+        }
+        .sidebar-search-input::placeholder {
+            color: #64748b;
+        }
+        .sidebar-search-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #3b82f6;
+            color: #fff;
+            box-shadow: none;
+            outline: none;
+        }
         .sidebar-content {
             flex-grow: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding-bottom: 3.5rem;
+            padding: 0.5rem 0 1.5rem;
             scrollbar-width: thin;
-            scrollbar-color: #334155 #0f172a;
+            scrollbar-color: #334155 transparent;
         }
         .sidebar-content::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
         .sidebar-content::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: transparent;
         }
         .sidebar-content::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: rgba(148, 163, 184, 0.25);
             border-radius: 4px;
         }
-        .sidebar-content::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .nav-header {
-            color: #64748b;
+        .sidebar-group-toggle {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
             font-size: 0.72rem;
             text-transform: uppercase;
             font-weight: 700;
-            letter-spacing: 0.08em;
-            padding: 1rem 1.5rem 0.4rem;
+            letter-spacing: 0.07em;
+            padding: 0.75rem 1.25rem 0.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: color 0.18s ease;
+        }
+        .sidebar-group-toggle:hover {
+            color: #e2e8f0;
+        }
+        .sidebar-group-toggle .group-chevron {
+            transition: transform 0.2s ease;
+            font-size: 0.7rem;
+        }
+        .sidebar-group-toggle[aria-expanded="true"] .group-chevron {
+            transform: rotate(90deg);
         }
         .sidebar-link {
             display: flex;
             align-items: center;
-            padding: 0.65rem 1.5rem;
+            padding: 0.55rem 0.9rem;
+            margin: 2px 12px;
+            border-radius: 10px;
             color: var(--sidebar-text);
             text-decoration: none;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.18s ease;
+            gap: 0.65rem;
         }
         .sidebar-link:hover {
-            color: #fff;
+            color: #f8fafc;
             background-color: var(--sidebar-hover);
+            transform: translateX(2px);
         }
         .sidebar-link.active {
-            color: #fff;
-            background-color: var(--sidebar-active);
+            color: #ffffff;
+            background: var(--sidebar-active);
             font-weight: 600;
+            box-shadow: 0 4px 14px -3px rgba(37, 99, 235, 0.5);
+        }
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.7);
+            flex-shrink: 0;
         }
         .topbar {
-            height: 64px;
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
+            height: 66px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--admin-border);
             padding: 0 1.5rem;
+        }
+        .sidebar-toggle-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.18s ease;
+        }
+        .sidebar-toggle-btn:hover {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+        /* Global Admin Card & Table Polish */
+        main .card {
+            border: 1px solid rgba(226, 232, 240, 0.85);
+            box-shadow: 0 4px 18px -4px rgba(15, 23, 42, 0.05) !important;
+        }
+        main .table thead th {
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            font-weight: 700;
+            border-bottom: 1px solid #e2e8f0;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+        main .table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+        main .table tbody tr:hover {
+            background-color: #f8fafc;
         }
         /* Searchable Select Component */
         .searchable-select-wrapper {
@@ -238,81 +377,93 @@
 </head>
 <body>
 
+    <div id="sidebarBackdrop" onclick="document.body.classList.remove('sidebar-mobile-open')"></div>
+
     <!-- Dynamic RBAC Sidebar -->
     <nav id="sidebar">
         <div class="sidebar-brand d-flex align-items-center justify-content-between">
             <a href="{% url 'admin_dashboard' %}" class="d-flex align-items-center gap-2 text-decoration-none text-reset" title="{{ site_settings.get_effective_site_name|default:site_settings.site_name|default:'Easy Purchase' }}">
                 {% if site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
+                    <img src="{{ site_settings.brand_logo.url }}" alt="{{ site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 148px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                 {% elif site_settings.get_brand_logo_dark_url %}
-                    <img src="{{ site_settings.get_brand_logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
+                    <img src="{{ site_settings.get_brand_logo_dark_url }}" alt="{{ site_settings.get_effective_site_name|default:site_settings.site_name }}" height="32" style="height: 32px; width: auto; max-width: 148px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
                 {% else %}
                     <picture class="d-flex align-items-center">
                         <source srcset="{% static 'images/logo_dark.svg' %}" type="image/svg+xml">
-                        <img src="{% static 'images/logo_dark.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="32" width="152" style="height: 32px; width: 152px; max-width: 100%; object-fit: contain;" class="brand-logo-img" onerror="this.closest('a').classList.add('use-text-fallback');">
+                        <img src="{% static 'images/logo_dark.png' %}" alt="{{ site_settings.site_name|default:'Easy Purchase' }}" height="32" width="145" style="height: 32px; width: 145px; max-width: 100%; object-fit: contain;" class="brand-logo-img" onerror="this.closest('a').classList.add('use-text-fallback');">
                     </picture>
                     <span class="brand-logo-fallback align-items-center gap-2 text-white">
                         <i class="bi bi-bag-check-fill fs-5 text-primary"></i>
-                        <span class="fw-bold fs-6 text-white">{{ site_settings.site_name|default:'Easy Purchase' }}</span>
+                        <span class="fw-bold fs-6 text-white sidebar-hide-collapsed">{{ site_settings.site_name|default:'Easy Purchase' }}</span>
                     </span>
                 {% endif %}
             </a>
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle small" style="font-size: 0.65rem;">RBAC</span>
+            <span class="badge bg-primary bg-opacity-25 text-info border border-primary border-opacity-25 sidebar-hide-collapsed" style="font-size: 0.62rem; letter-spacing: 0.06em;">ADMIN</span>
         </div>
 
-        <div class="sidebar-content py-2">
+        <!-- Quick Sidebar Search -->
+        <div class="sidebar-search-wrap sidebar-hide-collapsed position-relative">
+            <i class="bi bi-search position-absolute text-secondary" style="left: 1.75rem; top: 1.25rem; font-size: 0.78rem;"></i>
+            <input type="text" id="sidebarNavSearch" class="form-control sidebar-search-input" placeholder="Quick jump (e.g. theme, order)..." autocomplete="off">
+        </div>
+
+        <div class="sidebar-content">
             <!-- Core Dashboard Link -->
-            <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
-                <i class="bi bi-speedometer2 me-2 fs-5"></i> Dashboard
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" title="Dashboard">
+                <i class="bi bi-grid-1x2-fill fs-6 flex-shrink-0"></i>
+                <span class="sidebar-hide-collapsed">Dashboard</span>
             </a>
 
             <!-- Dynamic Permitted Navigation Tree -->
             {% get_admin_menu request.user as menu_tree %}
             {% for item in menu_tree %}
-                <div class="nav-header">
-                    <i class="bi {{ item.module.icon }} me-1"></i> {{ item.module.name }}
+                <div class="sidebar-module-group">
+                    <button type="button" class="sidebar-group-toggle" data-bs-toggle="collapse" data-bs-target="#navGroup{{ forloop.counter }}" aria-expanded="true">
+                        <span class="d-flex align-items-center gap-2">
+                            <i class="bi {{ item.module.icon }}"></i>
+                            <span class="sidebar-hide-collapsed">{{ item.module.name }}</span>
+                        </span>
+                        <i class="bi bi-chevron-right group-chevron sidebar-hide-collapsed"></i>
+                    </button>
+                    <div class="collapse show" id="navGroup{{ forloop.counter }}">
+                        {% for sub in item.submodules %}
+                            {% if sub.menu_url and sub.menu_url != '#' %}
+                                <a href="{{ sub.menu_url }}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name or request.resolver_match.url_name|slice:':12' == sub.url_name|slice:':12' %}active{% endif %}" title="{{ sub.name }}">
+                                    <i class="bi bi-dot fs-5 flex-shrink-0"></i>
+                                    <span class="sidebar-hide-collapsed text-truncate">{{ sub.name }}</span>
+                                    {% if sub.code == 'settings.system_errors' and has_system_errors %}
+                                        <span class="badge bg-danger rounded-pill ms-auto sidebar-hide-collapsed" style="font-size: 0.65rem;">{{ unresolved_error_count }}</span>
+                                    {% endif %}
+                                </a>
+                            {% elif sub.menu_url == '#' %}
+                                <a href="#" class="sidebar-link opacity-75" title="{{ sub.name }}">
+                                    <i class="bi bi-dot fs-5 flex-shrink-0"></i>
+                                    <span class="sidebar-hide-collapsed text-truncate">{{ sub.name }}</span>
+                                </a>
+                            {% elif sub.url_name %}
+                                <a href="{% url sub.url_name %}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name or request.resolver_match.url_name|slice:':12' == sub.url_name|slice:':12' %}active{% endif %}" title="{{ sub.name }}">
+                                    <i class="bi bi-dot fs-5 flex-shrink-0"></i>
+                                    <span class="sidebar-hide-collapsed text-truncate">{{ sub.name }}</span>
+                                    {% if sub.code == 'settings.system_errors' and has_system_errors %}
+                                        <span class="badge bg-danger rounded-pill ms-auto sidebar-hide-collapsed" style="font-size: 0.65rem;">{{ unresolved_error_count }}</span>
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
-                {% for sub in item.submodules %}
-                    {% if sub.menu_url and sub.menu_url != '#' %}
-                        <a href="{{ sub.menu_url }}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name or request.resolver_match.url_name|slice:':12' == sub.url_name|slice:':12' %}active{% endif %}">
-                            <i class="bi bi-chevron-right me-2 small"></i> {{ sub.name }}
-                            {% if sub.code == 'settings.system_errors' and has_system_errors %}
-                                <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.65rem;">{{ unresolved_error_count }}</span>
-                            {% endif %}
-                        </a>
-                    {% elif sub.menu_url == '#' %}
-                        <a href="#" class="sidebar-link opacity-75" title="{{ sub.name }}">
-                            <i class="bi bi-chevron-right me-2 small"></i> {{ sub.name }}
-                        </a>
-                    {% elif sub.url_name %}
-                        <a href="{% url sub.url_name %}" class="sidebar-link {% if request.resolver_match.url_name == sub.url_name or request.resolver_match.url_name|slice:':12' == sub.url_name|slice:':12' %}active{% endif %}">
-                            <i class="bi bi-chevron-right me-2 small"></i> {{ sub.name }}
-                            {% if sub.code == 'settings.system_errors' and has_system_errors %}
-                                <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.65rem;">{{ unresolved_error_count }}</span>
-                            {% endif %}
-                        </a>
-                    {% endif %}
-                {% endfor %}
             {% empty %}
-                <div class="px-4 py-3 text-muted small">
+                <div class="px-4 py-3 text-muted small sidebar-hide-collapsed">
                     No modules permitted. Contact your Super Administrator.
                 </div>
             {% endfor %}
+        </div>
 
-            {% has_perm request.user 'settings.system_errors' 'view' as can_view_system_errors %}
-            {% if can_view_system_errors and request.resolver_match.url_name == 'admin_system_errors' or can_view_system_errors and not 'settings.system_errors' in user_perms %}
-            <div class="nav-header">System</div>
-            <a href="{% url 'admin_system_errors' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_system_errors' %}active{% endif %}">
-                <i class="bi bi-shield-exclamation me-2 text-danger"></i> Error Logs
-                {% if has_system_errors %}
-                    <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.65rem;">{{ unresolved_error_count }}</span>
-                {% endif %}
-            </a>
-            {% endif %}
-
-            <div class="nav-header">Storefront</div>
-            <a href="{% url 'home' %}" target="_blank" class="sidebar-link">
-                <i class="bi bi-box-arrow-up-right me-2"></i> View Storefront
+        <!-- Pinned Sidebar Footer -->
+        <div class="sidebar-footer">
+            <a href="{% url 'home' %}" target="_blank" class="btn btn-sm w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 text-white fw-semibold" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12);" title="View Live Storefront">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span class="sidebar-hide-collapsed">View Storefront</span>
             </a>
         </div>
     </nav>
@@ -320,13 +471,32 @@
     <!-- Main Content Wrapper -->
     <div id="content-wrapper">
         <!-- Topbar Header -->
-        <header class="topbar d-flex align-items-center justify-content-between sticky-top shadow-sm">
-            <div class="d-flex align-items-center gap-2">
-                <span class="fw-bold text-dark fs-5">{% block page_title %}Back-Office Portal{% endblock %}</span>
+        <header class="topbar d-flex align-items-center justify-content-between sticky-top shadow-xs">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" id="sidebarToggleBtn" class="sidebar-toggle-btn" title="Toggle Sidebar">
+                    <i class="bi bi-layout-sidebar-inset fs-5"></i>
+                </button>
+                <div>
+                    <span class="fw-bold text-dark fs-5 d-block lh-sm">{% block page_title %}Back-Office Portal{% endblock %}</span>
+                </div>
             </div>
 
-            <!-- User Info & Role Badge -->
-            <div class="d-flex align-items-center gap-3">
+            <!-- Right Controls: Active Theme Pill, Storefront, Errors, Profile -->
+            <div class="d-flex align-items-center gap-2 gap-md-3">
+                {% if CURRENT_THEME_DATA.name %}
+                    <a href="{% url 'admin_theme_manager' %}" class="btn btn-sm btn-light border rounded-pill px-3 d-none d-lg-inline-flex align-items-center gap-2 text-dark fw-semibold" title="Manage Storefront Theme">
+                        <span class="rounded-circle d-inline-block" style="width: 9px; height: 9px; background-color: {{ CURRENT_THEME_DATA.primary|default:'#2563eb' }};"></span>
+                        <span class="small">{{ CURRENT_THEME_DATA.name }}</span>
+                        <i class="bi bi-chevron-right text-muted" style="font-size: 0.7rem;"></i>
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'home' %}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 d-none d-md-inline-flex align-items-center gap-1 fw-semibold">
+                    <i class="bi bi-shop"></i>
+                    <span>Store</span>
+                </a>
+
+                {% has_perm request.user 'settings.system_errors' 'view' as can_view_system_errors %}
                 {% if has_system_errors and can_view_system_errors %}
                     <a href="{% url 'admin_system_errors' %}" class="btn btn-outline-danger btn-sm rounded-pill d-flex align-items-center gap-1 shadow-sm px-2 py-1" title="{{ unresolved_error_count }} unresolved system error(s)">
                         <i class="bi bi-exclamation-triangle-fill text-danger"></i>
@@ -334,8 +504,8 @@
                     </a>
                 {% endif %}
                 <div class="text-end d-none d-sm-block">
-                    <strong class="d-block text-dark small">{{ request.user.get_full_name|default:request.user.username }}</strong>
-                    <span class="badge bg-dark-subtle text-dark border" style="font-size: 0.72rem;">
+                    <strong class="d-block text-dark small lh-1 mb-1">{{ request.user.get_full_name|default:request.user.username }}</strong>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">
                         {% if request.user.is_superuser %}
                             <i class="bi bi-star-fill text-warning me-1"></i> Super Admin
                         {% elif request.user.user_roles.exists %}
@@ -619,7 +789,47 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', initSearchableSelects);
+    document.addEventListener('DOMContentLoaded', function() {
+        initSearchableSelects();
+
+        // Admin Sidebar Toggle (Desktop collapse + Mobile drawer)
+        var toggleBtn = document.getElementById('sidebarToggleBtn');
+        if (toggleBtn) {
+            if (window.innerWidth >= 992 && localStorage.getItem('admin_sidebar_collapsed') === '1') {
+                document.body.classList.add('sidebar-collapsed');
+            }
+            toggleBtn.addEventListener('click', function() {
+                if (window.innerWidth < 992) {
+                    document.body.classList.toggle('sidebar-mobile-open');
+                } else {
+                    document.body.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem('admin_sidebar_collapsed', document.body.classList.contains('sidebar-collapsed') ? '1' : '0');
+                }
+            });
+        }
+
+        // Quick Sidebar Nav Filter
+        var navSearch = document.getElementById('sidebarNavSearch');
+        if (navSearch) {
+            navSearch.addEventListener('input', function() {
+                var q = this.value.trim().toLowerCase();
+                document.querySelectorAll('.sidebar-module-group').forEach(function(grp) {
+                    var links = grp.querySelectorAll('.sidebar-link');
+                    var anyMatch = false;
+                    links.forEach(function(lnk) {
+                        var match = !q || lnk.textContent.toLowerCase().includes(q);
+                        lnk.style.display = match ? '' : 'none';
+                        if (match) anyMatch = true;
+                    });
+                    grp.style.display = anyMatch ? '' : 'none';
+                    if (q && anyMatch) {
+                        var col = grp.querySelector('.collapse');
+                        if (col) col.classList.add('show');
+                    }
+                });
+            });
+        }
+    });
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>
