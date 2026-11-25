@@ -243,8 +243,8 @@
                             </a>
                         </div>
                         <div class="col-lg-5">
-                            {% with slide_prod=slider_candidates.1|default:slider_candidates.0 %}
-                            {% if slide_prod and slide_prod.image %}
+                            {% for slide_prod in slider_candidates|slice:"1:2" %}
+                            {% if slide_prod.image %}
                                 <div class="card border-0 shadow-lg overflow-hidden rounded-4" style="aspect-ratio: 4/5;">
                                     <img src="{{ slide_prod.image.url }}" alt="{{ slide_prod.name }}" class="w-100 h-100 object-fit-cover">
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 23, 0.85) 100%);">
@@ -257,7 +257,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            {% endwith %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -283,8 +283,8 @@
                             </a>
                         </div>
                         <div class="col-lg-5">
-                            {% with slide_prod=slider_candidates.2|default:slider_candidates.0 %}
-                            {% if slide_prod and slide_prod.image %}
+                            {% for slide_prod in slider_candidates|slice:"2:3" %}
+                            {% if slide_prod.image %}
                                 <div class="card border-0 shadow-lg overflow-hidden rounded-4" style="aspect-ratio: 4/5;">
                                     <img src="{{ slide_prod.image.url }}" alt="{{ slide_prod.name }}" class="w-100 h-100 object-fit-cover">
                                     <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 23, 0.85) 100%);">
@@ -297,7 +297,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            {% endwith %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

@@ -686,18 +686,18 @@ class NonMarketplaceThemesFallbackRegressionTests(BaseMarketplaceThemeTestCase):
         # Header renders pharmacy header
         self.assertIn("pharmacy-header", html)
 
-        # Product list falls back cleanly to default product/list.html
+        # Product list renders dedicated pharmacy product_list.html
         res_list = self.client.get("/product/")
         self.assertEqual(res_list.status_code, 200)
-        self.assertTemplateUsed(res_list, "product/list.html")
+        self.assertTemplateUsed(res_list, "themes/pharmacy-healthcare/product_list.html")
         list_html = res_list.content.decode("utf-8")
         # Ensure marketplace catalog header is NOT leaked
         self.assertNotIn("marketplace-catalog-header", list_html)
 
-        # Product detail falls back cleanly to default product/detail.html
+        # Product detail renders dedicated pharmacy product_detail.html
         res_detail = self.client.get(f"/product/{self.product_pharma.pk}/")
         self.assertEqual(res_detail.status_code, 200)
-        self.assertTemplateUsed(res_detail, "product/detail.html")
+        self.assertTemplateUsed(res_detail, "themes/pharmacy-healthcare/product_detail.html")
         detail_html = res_detail.content.decode("utf-8")
         self.assertNotIn("marketplace-detail-card", detail_html)
 

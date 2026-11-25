@@ -110,7 +110,10 @@ def admin_dashboard(request):
     total_products = Product.objects.count()
     low_stock_products = Product.objects.filter(stock__lte=5).order_by('stock', 'name')
     total_customers = User.objects.filter(is_staff=False).count()
-    pending_rx_count = PrescriptionRequest.objects.filter(status='pending').count()
+    try:
+        pending_rx_count = PrescriptionRequest.objects.filter(status='pending').count()
+    except Exception:
+        pending_rx_count = 0
 
     # Fulfillment status breakdown
     status_counts = {
@@ -1635,18 +1638,23 @@ def admin_order_bulk_action(request):
 def admin_prescription_list(request):
     """Lists Pharmacy & Healthcare prescription uploads for pharmacist review."""
     status_filter = request.GET.get('status', '').strip()
-    qs = PrescriptionRequest.objects.all()
-    if status_filter in dict(PrescriptionRequest.STATUS_CHOICES):
-        qs = qs.filter(status=status_filter)
-
-    paginator = Paginator(qs, 15)
-    page_obj = paginator.get_page(request.GET.get('page'))
+    try:
+        qs = PrescriptionRequest.objects.all()
+        if status_filter in dict(PrescriptionRequest.STATUS_CHOICES):
+            qs = qs.filter(status=status_filter)
+        paginator = Paginator(qs, 15)
+        page_obj = paginator.get_page(request.GET.get('page'))
+        pending_count = PrescriptionRequest.objects.filter(status='pending').count()
+    except Exception:
+        page_obj = Paginator([], 15).get_page(1)
+        pending_count = 0
+        messages.warning(request, "Prescription table is initializing. Please run migrations or trigger deploy hook.")
     return render(request, 'admin_panel/orders/prescriptions.html', {
         'prescriptions': page_obj,
         'page_obj': page_obj,
         'status_filter': status_filter,
         'status_choices': PrescriptionRequest.STATUS_CHOICES,
-        'pending_count': PrescriptionRequest.objects.filter(status='pending').count(),
+        'pending_count': pending_count,
     })
 
 
@@ -1676,15 +1684,19 @@ def admin_prescription_update(request, pk):
 def admin_activity_logs(request):
     """Displays back-office staff audit trail."""
     q = request.GET.get('q', '').strip()
-    qs = AdminActivityLog.objects.select_related('user').all()
-    if q:
-        qs = qs.filter(
-            Q(username_snapshot__icontains=q) |
-            Q(action__icontains=q) |
-            Q(target_repr__icontains=q)
-        )
-    paginator = Paginator(qs, 25)
-    page_obj = paginator.get_page(request.GET.get('page'))
+    try:
+        qs = AdminActivityLog.objects.select_related('user').all()
+        if q:
+            qs = qs.filter(
+                Q(username_snapshot__icontains=q) |
+                Q(action__icontains=q) |
+                Q(target_repr__icontains=q)
+            )
+        paginator = Paginator(qs, 25)
+        page_obj = paginator.get_page(request.GET.get('page'))
+    except Exception:
+        page_obj = Paginator([], 25).get_page(1)
+        messages.warning(request, "Activity log table is initializing. Please run migrations or trigger deploy hook.")
     return render(request, 'admin_panel/settings/activity_logs.html', {
         'logs': page_obj,
         'page_obj': page_obj,

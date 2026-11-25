@@ -24,6 +24,7 @@ $mediaDirs = [
     __DIR__ . '/media/categories',
     __DIR__ . '/media/brands',
     __DIR__ . '/media/branding',
+    __DIR__ . '/media/prescriptions',
 ];
 foreach ($mediaDirs as $md) {
     if (!is_dir($md)) {
@@ -83,6 +84,59 @@ if (!empty($env['DB_NAME']) && !empty($env['DB_USER'])) {
             VALUES 
                 ('core', '0005_sitesetting_active_theme_and_more', NOW()),
                 ('core', '0006_alter_sitesetting_active_theme', NOW())
+        ");
+
+        // Ensure courier_name and tracking_number columns exist on orders_order
+        foreach (['courier_name' => "varchar(50) NOT NULL DEFAULT ''", 'tracking_number' => "varchar(100) NOT NULL DEFAULT ''"] as $col => $colDef) {
+            $colStmt = $pdo->prepare("
+                SELECT COUNT(*) AS cnt
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = :schema
+                  AND TABLE_NAME = 'orders_order'
+                  AND COLUMN_NAME = :col
+            ");
+            $colStmt->execute(['schema' => $env['DB_NAME'], 'col' => $col]);
+            if ((int)($colStmt->fetch()['cnt'] ?? 0) === 0) {
+                $pdo->exec("ALTER TABLE orders_order ADD COLUMN {$col} {$colDef}");
+                $dbStatus["orders_{$col}_added"] = true;
+            }
+        }
+
+        // Ensure orders_prescriptionrequest table exists
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS orders_prescriptionrequest (
+                id bigint AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                created_at datetime(6) NOT NULL,
+                updated_at datetime(6) NOT NULL,
+                patient_name varchar(150) NOT NULL,
+                phone varchar(30) NOT NULL,
+                prescription_file varchar(100) NOT NULL,
+                notes longtext NOT NULL,
+                status varchar(20) NOT NULL DEFAULT 'pending',
+                admin_notes longtext NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+
+        // Ensure admin_panel_adminactivitylog table exists
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS admin_panel_adminactivitylog (
+                id bigint AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                username_snapshot varchar(150) NOT NULL DEFAULT '',
+                action varchar(100) NOT NULL,
+                target_model varchar(80) NOT NULL DEFAULT '',
+                target_repr varchar(255) NOT NULL DEFAULT '',
+                details longtext NOT NULL,
+                ip_address char(39) NULL,
+                created_at datetime(6) NOT NULL,
+                user_id integer NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+
+        $pdo->exec("
+            INSERT IGNORE INTO django_migrations (app, name, applied)
+            VALUES
+                ('orders', '0004_prescriptionrequest_order_courier_name_and_more', NOW()),
+                ('admin_panel', '0001_initial', NOW())
         ");
         $dbStatus['migrations_synced'] = true;
 

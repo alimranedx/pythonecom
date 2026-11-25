@@ -198,39 +198,3 @@
         </div>
     </div>
 </header>
-
-<!-- Prescription Upload Modal -->
-<div class="modal fade" id="rxUploadModal" tabindex="-1" aria-labelledby="rxUploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header text-white" style="background: linear-gradient(135deg, #0f766e 0%, #059669 100%);">
-                <h5 class="modal-title fw-bold" id="rxUploadModalLabel">
-                    <i class="bi bi-file-earmark-medical-fill text-warning me-2"></i>{% if IS_BANGLA %}প্রেসক্রিপশন দিয়ে অর্ডার করুন{% else %}Order with Doctor Prescription{% endif %}
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="text-center p-3 border-2 border-dashed rounded-3 mb-3" style="border: 2px dashed #99f6e4; background-color: #f0fdfa;">
-                    <i class="bi bi-cloud-arrow-up-fill fs-1" style="color: #059669;"></i>
-                    <h6 class="fw-bold mt-2 text-dark">{% if IS_BANGLA %}প্রেসক্রিপশনের ছবি আপলোড করুন{% else %}Upload Prescription Photo{% endif %}</h6>
-                    <p class="text-muted small mb-3">{% if IS_BANGLA %}আমাদের নিবন্ধিত ফার্মাসিস্ট প্রেসক্রিপশন যাচাই করে আপনাকে কল করবেন।{% else %}Our licensed pharmacist will review the prescription and call you to confirm dosage and delivery.{% endif %}</p>
-                    <input type="file" class="form-control" accept="image/*,.pdf">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold text-dark">{% if IS_BANGLA %}যোগাযোগের ফোন নম্বর{% else %}Contact Phone Number{% endif %}</label>
-                    <input type="tel" class="form-control" placeholder="+880 1XXXXXXXXX" value="{{ request.user.profile.phone|default:'' }}">
-                </div>
-                <div class="small text-muted mb-0">
-                    <i class="bi bi-info-circle text-teal me-1" style="color: #0d9488;"></i> 
-                    {% if IS_BANGLA %}প্রেসক্রিপশন ছাড়া অ্যান্টিবায়োটিক বা সিডিউল ড্রাগ সরবরাহ করা হয় না।{% else %}Antibiotics and Schedule-H drugs are dispensed strictly in accordance with DGDA regulations.{% endif %}
-                </div>
-            </div>
-            <div class="modal-footer bg-light border-0">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn text-white btn-sm px-4 fw-bold" style="background-color: #059669;" onclick="alert('Thank you! Our registered pharmacist will review your prescription shortly.'); bootstrap.Modal.getInstance(document.getElementById('rxUploadModal')).hide();">
-                    {% if IS_BANGLA %}জমা দিন{% else %}Submit Prescription{% endif %}
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
