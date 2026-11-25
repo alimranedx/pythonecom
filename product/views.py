@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, Http404
 from django.db.models import Q, Avg, Count
@@ -137,12 +137,12 @@ def product_list(request, category_slug=None):
     if min_price:
         try:
             products = products.filter(price__gte=Decimal(min_price))
-        except (ValueError, TypeError):
+        except (InvalidOperation, ValueError, TypeError):
             pass
     if max_price:
         try:
             products = products.filter(price__lte=Decimal(max_price))
-        except (ValueError, TypeError):
+        except (InvalidOperation, ValueError, TypeError):
             pass
 
     # Sorting

@@ -644,3 +644,47 @@ class AdminPanelProfileTests(TestCase):
         self.assertTrue(self.staff_user.check_password('OldPassword123!'))
         self.assertFalse(self.staff_user.check_password('NewComplexPassword456!'))
 
+
+class AdminSecurityAndValidationTests(TestCase):
+    """Regression tests for CSV formula injection, invalid Decimal filters, and coupon validation."""
+
+    def setUp(self):
+        self.client = Client()
+        self.superuser = User.objects.create_superuser(
+            username='sec_admin', email='secadmin@test.com', password='Password123!'
+        )
+        self.client.force_login(self.superuser)
+
+    def test_order_list_invalid_amount_filter_does_not_500(self):
+        res = self.client.get('/app-admin/orders/?min_amount=abc&max_amount=xyz')
+        self.assertEqual(res.status_code, 200)
+
+    def test_csv_export_neutralizes_formula_injection(self):
+        Order.objects.create(
+            full_name='=CMD|"/C calc"!A0',
+            email='evil@test.com',
+            phone='+8801700000000',
+            street_address='@SUM(1+1)',
+            city='-Dhaka',
+            total_amount=Decimal('100.00'),
+        )
+        res = self.client.get('/app-admin/orders/?export=csv')
+        self.assertEqual(res.status_code, 200)
+        csv_text = res.content.decode('utf-8')
+        self.assertIn("'=CMD|", csv_text)
+        self.assertIn("'@SUM(1+1)", csv_text)
+        self.assertIn("'-Dhaka", csv_text)
+        self.assertIn("'+8801700000000", csv_text)
+
+    def test_coupon_create_invalid_numbers_handled_gracefully(self):
+        res = self.client.post('/app-admin/orders/coupons/create/', {
+            'code': 'BADCOUPON',
+            'discount_type': 'percent',
+            'discount_value': 'not-a-number',
+            'valid_days': 'abc',
+        })
+        self.assertEqual(res.status_code, 302)
+        from orders.models import Coupon
+        self.assertFalse(Coupon.objects.filter(code='BADCOUPON').exists())
+
+

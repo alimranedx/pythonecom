@@ -104,6 +104,13 @@
                         <span class="fw-semibold">৳{{ cart.subtotal }}</span>
                     </div>
 
+                    {% if cart.discount_amount > 0 %}
+                    <div class="d-flex justify-content-between mb-2 small text-success">
+                        <span>Coupon Discount ({{ cart.coupon.code }}):</span>
+                        <span class="fw-bold">-৳{{ cart.discount_amount }}</span>
+                    </div>
+                    {% endif %}
+
                     <div class="d-flex justify-content-between mb-2 small">
                         <span class="text-muted">{{ tr.delivery_fee }}:</span>
                         {% if cart.shipping_cost == 0 %}

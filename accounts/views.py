@@ -122,7 +122,7 @@ def customer_login(request):
             if guest_session_key:
                 CartService.merge_guest_cart(guest_session_key, user)
             messages.success(request, f"Welcome back, {user.first_name or user.username}!")
-            if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+            if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
                 return redirect(next_url)
             return redirect('customer_dashboard')
         else:
@@ -326,7 +326,7 @@ def google_login(request):
             "Google Sign-In is pending setup. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in the .env configuration."
         )
         next_param = request.GET.get('next')
-        return redirect(next_param if next_param and url_has_allowed_host_and_scheme(next_param, {request.get_host()}) else 'account_login')
+        return redirect(next_param if next_param and url_has_allowed_host_and_scheme(next_param, {request.get_host()}, require_https=request.is_secure()) else 'account_login')
 
     # Security: Generate CSRF state token
     state = secrets.token_urlsafe(32)
@@ -334,7 +334,7 @@ def google_login(request):
 
     # Capture optional post-auth redirect target
     next_url = request.GET.get('next') or request.POST.get('next')
-    if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+    if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
         request.session['google_oauth_next'] = next_url
     else:
         request.session.pop('google_oauth_next', None)
@@ -508,6 +508,6 @@ def google_callback(request):
     display_name = user.first_name or user.username
     messages.success(request, f"Welcome, {display_name}! Successfully authenticated with Google.")
 
-    if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+    if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
         return redirect(next_url)
     return redirect('customer_dashboard')

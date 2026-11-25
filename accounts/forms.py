@@ -149,6 +149,31 @@ class UserProfileForm(forms.ModelForm):
         if hasattr(self.instance, 'profile'):
             self.fields['phone'].initial = self.instance.profile.phone
 
+    def clean_cropped_avatar_base64(self):
+        b64_data = self.cleaned_data.get('cropped_avatar_base64', '')
+        if not b64_data:
+            return ''
+        if not ('data:image/' in b64_data and ';base64,' in b64_data):
+            raise forms.ValidationError("Invalid cropped avatar image format.")
+        import base64
+        import binascii
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        try:
+            header, imgstr = b64_data.split(';base64,', 1)
+            ext = header.split('/')[-1].lower().split('+')[0]
+            if ext == 'jpeg':
+                ext = 'jpg'
+            if ext not in ('jpg', 'png', 'webp', 'gif', 'bmp'):
+                raise forms.ValidationError("Unsupported avatar image format.")
+            decoded = base64.b64decode(imgstr, validate=True)
+            uploaded = SimpleUploadedFile(f"avatar.{ext}", decoded, content_type=f"image/{ext}")
+            validate_image_file(uploaded)
+        except forms.ValidationError:
+            raise
+        except (ValueError, binascii.Error):
+            raise forms.ValidationError("Corrupted or invalid base64 image payload.")
+        return b64_data
+
     def save(self, commit=True):
         user = super().save(commit=commit)
         profile, _ = CustomerProfile.objects.get_or_create(user=user)
@@ -161,9 +186,10 @@ class UserProfileForm(forms.ModelForm):
                 import base64
                 import time
                 from django.core.files.base import ContentFile
-                header, imgstr = b64_data.split(';base64,')
-                ext = header.split('/')[-1]
-                if ext == 'jpeg': ext = 'jpg'
+                header, imgstr = b64_data.split(';base64,', 1)
+                ext = header.split('/')[-1].lower().split('+')[0]
+                if ext == 'jpeg':
+                    ext = 'jpg'
                 filename = f"avatar_{user.id}_{int(time.time())}.{ext}"
                 profile.avatar.save(filename, ContentFile(base64.b64decode(imgstr)), save=False)
         profile.full_clean()

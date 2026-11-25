@@ -769,6 +769,26 @@ class ThemeIsolationSchemaAndFormsTests(TestCase):
         self.assertEqual(prod.theme, 'pharmacy_health')
 
 
+class ProductSecurityAndRegressionTests(TestCase):
+    """Regression tests for invalid price filters and inactive quick-view exposure."""
 
+    def setUp(self):
+        self.client = Client()
+        self.cat = Category.objects.create(name='Electronics', slug='elec-sec')
+        self.active_prod = Product.objects.create(
+            name='Active Phone', price=Decimal('15000.00'), stock=5, category=self.cat, is_active=True
+        )
+        self.inactive_prod = Product.objects.create(
+            name='Draft Secret Phone', price=Decimal('25000.00'), stock=5, category=self.cat, is_active=False
+        )
 
+    def test_invalid_price_filter_does_not_crash_with_500(self):
+        res = self.client.get('/product/?min_price=notanumber&max_price=invalid$$')
+        self.assertEqual(res.status_code, 200)
+
+    def test_quick_view_blocks_inactive_product(self):
+        res_active = self.client.get(f'/product/{self.active_prod.pk}/quick-view/')
+        self.assertEqual(res_active.status_code, 200)
+        res_inactive = self.client.get(f'/product/{self.inactive_prod.pk}/quick-view/')
+        self.assertEqual(res_inactive.status_code, 404)
 

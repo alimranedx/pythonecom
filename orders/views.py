@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import timedelta
 from django.utils import timezone
@@ -116,8 +117,9 @@ def checkout(request):
                 'delivery_slots': delivery_slots,
                 'available_dates': available_dates,
             })
-        except Exception as e:
-            messages.error(request, f"An unexpected error occurred during checkout: {e}")
+        except Exception:
+            logging.getLogger('django.request').exception("Unexpected error occurred during checkout")
+            messages.error(request, "An unexpected error occurred during checkout. Please try again.")
             return render(request, 'orders/checkout.html', {
                 'cart': cart,
                 'initial': shipping_data,
@@ -164,7 +166,13 @@ def bkash_callback(request):
         messages.error(request, "bKash transaction order record could not be found.")
         return redirect('home')
 
-    request.session['last_order_number'] = order.order_number
+    # Only grant session receipt access if this session initiated the payment or owns the order
+    is_owner = (
+        (order.user and request.user.is_authenticated and order.user == request.user)
+        or (order_number and order_number == order.order_number)
+    )
+    if is_owner:
+        request.session['last_order_number'] = order.order_number
 
     # Idempotency check: prevent duplicate execution or state flipping on page refresh
     if order.payment_status == 'paid':
@@ -172,6 +180,11 @@ def bkash_callback(request):
         return redirect('order_confirmation', order_number=order.order_number)
 
     if status == 'success':
+        if not payment_id:
+            order.payment_status = 'failed'
+            order.save(update_fields=['payment_status'])
+            messages.error(request, "bKash payment verification failed: missing payment ID.")
+            return redirect('order_confirmation', order_number=order.order_number)
         success, exec_res = BKashService.execute_payment(payment_id)
         if success:
             # Payment amount verification: prevent partial payment tampering

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from datetime import datetime, timedelta
 from django.utils import timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -521,13 +521,13 @@ def admin_order_list(request):
     if min_amount:
         try:
             orders = orders.filter(total_amount__gte=Decimal(min_amount))
-        except (ValueError, TypeError):
+        except (InvalidOperation, ValueError, TypeError):
             pass
 
     if max_amount:
         try:
             orders = orders.filter(total_amount__lte=Decimal(max_amount))
-        except (ValueError, TypeError):
+        except (InvalidOperation, ValueError, TypeError):
             pass
 
     # Count active non-empty filters
@@ -548,6 +548,12 @@ def admin_order_list(request):
         import csv
         from django.http import HttpResponse
 
+        def _safe_csv(val):
+            s = str(val) if val is not None else ''
+            if s and s[0] in ('=', '+', '-', '@', '\t', '\r'):
+                return "'" + s
+            return s
+
         response = HttpResponse(content_type='text/csv; charset=utf-8')
         response['Content-Disposition'] = f'attachment; filename="orders_report_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
 
@@ -561,20 +567,20 @@ def admin_order_list(request):
 
         for o in orders:
             writer.writerow([
-                o.order_number,
+                _safe_csv(o.order_number),
                 o.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                o.full_name,
-                o.email,
-                o.phone,
-                o.street_address,
-                o.city,
-                o.country,
+                _safe_csv(o.full_name),
+                _safe_csv(o.email),
+                _safe_csv(o.phone),
+                _safe_csv(o.street_address),
+                _safe_csv(o.city),
+                _safe_csv(o.country),
                 o.subtotal,
                 o.shipping_fee,
                 o.total_amount,
-                o.get_status_display(),
-                o.get_payment_status_display(),
-                o.get_payment_method_display(),
+                _safe_csv(o.get_status_display()),
+                _safe_csv(o.get_payment_status_display()),
+                _safe_csv(o.get_payment_method_display()),
             ])
         return response
 
@@ -1000,22 +1006,41 @@ def admin_coupon_create(request):
     if request.method == 'POST':
         code = request.POST.get('code', '').strip().upper()
         discount_type = request.POST.get('discount_type', 'percent')
-        discount_value = request.POST.get('discount_value', '0').strip()
-        min_order_amount = request.POST.get('min_order_amount', '0').strip()
-        max_discount_amount = request.POST.get('max_discount_amount', '').strip() or None
-        valid_days = int(request.POST.get('valid_days', '30'))
+        if discount_type not in ('percent', 'fixed'):
+            discount_type = 'percent'
+        discount_value_raw = request.POST.get('discount_value', '0').strip()
+        min_order_raw = request.POST.get('min_order_amount', '0').strip()
+        max_discount_raw = request.POST.get('max_discount_amount', '').strip() or None
+        valid_days_raw = request.POST.get('valid_days', '30').strip()
 
-        if not code or not discount_value:
+        if not code or not discount_value_raw:
             messages.error(request, "Code and Discount Value are required.")
+            return redirect('admin_coupon_list')
+
+        if Coupon.objects.filter(code=code).exists():
+            messages.error(request, f"A coupon with code '{code}' already exists.")
+            return redirect('admin_coupon_list')
+
+        try:
+            discount_value = Decimal(discount_value_raw)
+            min_order_amount = Decimal(min_order_raw or '0.00')
+            max_discount_amount = Decimal(max_discount_raw) if max_discount_raw else None
+            valid_days = int(valid_days_raw or '30')
+            if discount_value <= 0 or valid_days <= 0 or min_order_amount < 0:
+                raise ValueError("Coupon values must be positive.")
+            if discount_type == 'percent' and discount_value > 100:
+                raise ValueError("Percentage discount cannot exceed 100%.")
+        except (InvalidOperation, ValueError, TypeError) as exc:
+            messages.error(request, f"Invalid coupon numeric values: {exc}")
             return redirect('admin_coupon_list')
 
         now = timezone.now()
         Coupon.objects.create(
             code=code,
             discount_type=discount_type,
-            discount_value=Decimal(discount_value),
-            min_order_amount=Decimal(min_order_amount or '0.00'),
-            max_discount_amount=Decimal(max_discount_amount) if max_discount_amount else None,
+            discount_value=discount_value,
+            min_order_amount=min_order_amount,
+            max_discount_amount=max_discount_amount,
             valid_from=now,
             valid_to=now + timedelta(days=valid_days),
             is_active=True,

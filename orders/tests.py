@@ -210,3 +210,31 @@ class CouponAndDeliverySlotTests(TestCase):
         self.client.force_login(other_user)
         res_forbidden = self.client.get(f'/orders/invoice/{order.order_number}/')
         self.assertEqual(res_forbidden.status_code, 403)
+
+
+class BkashCallbackSecurityTests(TestCase):
+    """Ensure bKash callback does not grant guest order session access to unrelated sessions."""
+
+    def test_bkash_callback_does_not_leak_guest_order_session_to_attacker(self):
+        guest_order = Order.objects.create(
+            full_name='Guest Victim',
+            email='victim@example.com',
+            phone='01700000001',
+            street_address='Road 1',
+            city='Dhaka',
+            postal_code='1200',
+            subtotal=Decimal('500.00'),
+            total_amount=Decimal('500.00'),
+            payment_method='bkash',
+            payment_id='PAY-VICTIM-12345',
+        )
+        attacker_client = Client()
+        # Attacker hits callback with victim's paymentID and cancel status
+        res = attacker_client.get('/orders/bkash/callback/?paymentID=PAY-VICTIM-12345&status=cancel')
+        self.assertEqual(res.status_code, 302)
+        # Attacker must NOT be able to view victim's order confirmation or invoice
+        conf_res = attacker_client.get(f'/orders/confirmation/{guest_order.order_number}/')
+        self.assertEqual(conf_res.status_code, 403)
+        inv_res = attacker_client.get(f'/orders/invoice/{guest_order.order_number}/')
+        self.assertEqual(inv_res.status_code, 403)
+

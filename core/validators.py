@@ -110,7 +110,11 @@ def get_safe_redirect_url(request, target_url, fallback_endpoint):
     """
     Prevents Open Redirect (CWE-601) attacks by validating the target host and scheme.
     """
-    if target_url and url_has_allowed_host_and_scheme(url=target_url, allowed_hosts={request.get_host()}):
+    if target_url and url_has_allowed_host_and_scheme(
+        url=target_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
         return target_url
     from django.urls import reverse
     try:
