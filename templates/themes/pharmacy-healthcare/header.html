@@ -105,24 +105,44 @@
         background-color: var(--ph-nav-bg);
         border-top: 1px solid var(--ph-border);
     }
+    .theme-pharmacy-header .ph-nav-scroll {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        gap: 0.35rem;
+    }
+    .theme-pharmacy-header .ph-nav-scroll::-webkit-scrollbar {
+        display: none;
+    }
     .theme-pharmacy-header .ph-nav-link {
         color: var(--ph-text);
-        font-size: 0.86rem;
+        font-size: 0.84rem;
         font-weight: 600;
-        padding: 9px 12px;
+        padding: 8px 10px;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 5px;
         position: relative;
         white-space: nowrap;
+        flex-shrink: 0;
         transition: color 0.2s ease;
+    }
+    .theme-pharmacy-header .ph-nav-cat-text {
+        max-width: 155px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .theme-pharmacy-header .ph-nav-link::after {
         content: "";
         position: absolute;
-        left: 12px;
-        right: 12px;
+        left: 10px;
+        right: 10px;
         bottom: 0;
         height: 2.5px;
         border-radius: 2px;
@@ -141,9 +161,11 @@
         color: var(--ph-accent);
         border: 1px solid var(--ph-teal-border);
         border-radius: 9999px;
-        padding: 5px 14px;
-        font-size: 0.8rem;
+        padding: 4px 12px;
+        font-size: 0.78rem;
         font-weight: 700;
+        white-space: nowrap;
+        flex-shrink: 0;
         transition: all 0.2s ease;
     }
     .theme-pharmacy-header .ph-nav-rx-pill:hover {
@@ -193,8 +215,9 @@
                                 </span>
                             </span>
                         {% elif CURRENT_THEME_DATA.logo_url %}
-                            <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="40" style="height: 40px; width: auto; max-width: 190px; object-fit: contain;" class="brand-logo-img" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
-                            <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
+                            <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="40" style="height: 40px; width: auto; max-width: 190px; object-fit: contain;" class="brand-logo-img logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
+                            <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="40" style="height: 40px; width: auto; max-width: 190px; object-fit: contain;" class="brand-logo-img logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
+                            <span class="brand-logo-fallback align-items-center gap-2">
                                 <span class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #0f766e, #059669); width: 38px; height: 38px;">
                                     <i class="bi bi-capsule-pill fs-5"></i>
                                 </span>
@@ -349,12 +372,12 @@
         </div>
     </div>
 
-    <!-- Row 2: Clean Centered Horizontal Navigation (NO Left Menu Bar) -->
+    <!-- Row 2: Clean Single-Row Centered Horizontal Navigation (NO Left Menu Bar) -->
     <nav class="ph-centered-nav d-none d-md-block" aria-label="Pharmacy departments">
         <div class="container">
-            <div class="d-flex align-items-center justify-content-center flex-wrap gap-1 gap-lg-3">
+            <div class="ph-nav-scroll">
                 <!-- Medicines Megamenu Dropdown -->
-                <div class="dropdown">
+                <div class="dropdown flex-shrink-0">
                     <button class="ph-nav-link btn btn-link border-0 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-capsule" style="color: var(--ph-accent-bright);"></i>
                         <span>{% if IS_BANGLA %}সকল ঔষধ{% else %}Medicines{% endif %}</span>
@@ -380,10 +403,10 @@
                     </ul>
                 </div>
 
-                <!-- Dynamic Pharmacy Category Links -->
-                {% for cat in nav_categories|slice:":4" %}
-                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="ph-nav-link">
-                        {{ cat.name }}
+                <!-- Dynamic Pharmacy Category Links (Single Row, Clean Truncation) -->
+                {% for cat in nav_categories|slice:":3" %}
+                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="ph-nav-link" title="{{ cat.name }}">
+                        <span class="ph-nav-cat-text">{{ cat.name }}</span>
                     </a>
                 {% endfor %}
 
@@ -398,7 +421,7 @@
                 </a>
 
                 {% if CURRENT_THEME_CONFIG.show_prescription_cta|default:True %}
-                <button type="button" class="btn btn-sm ph-nav-rx-pill ms-lg-2 d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
+                <button type="button" class="btn btn-sm ph-nav-rx-pill ms-1 d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#rxUploadModal">
                     <i class="bi bi-file-earmark-medical-fill text-danger"></i>
                     <span>{% if IS_BANGLA %}প্রেসক্রিপশন আপলোড{% else %}Upload Rx{% endif %}</span>
                 </button>

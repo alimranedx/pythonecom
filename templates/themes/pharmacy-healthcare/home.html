@@ -40,18 +40,65 @@
         --ph-dock-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.55);
     }
 
-    /* 1. PharmEasy-Inspired Clinical Hero + Floating Search Dock */
+    /* 1. PharmEasy-Inspired Compact Hero Slider + Overlapping Search Dock */
     .ph-hero-band {
         background: var(--ph-hero-bg);
-        padding: 2.25rem 0 4.5rem;
+        padding: 0.6rem 0 0;
         margin-top: -1.5rem;
         border-bottom: 1px solid var(--ph-border-subtle);
         position: relative;
-        overflow: hidden;
     }
-    .ph-hero-inner {
-        max-width: 960px;
+    .ph-hero-carousel-wrap {
+        max-width: 980px;
         margin: 0 auto;
+        position: relative;
+    }
+    .ph-hero-slide {
+        padding: 0.65rem 2.75rem 4.35rem;
+        min-height: 195px;
+        display: flex;
+        align-items: center;
+    }
+    .ph-hero-carousel-wrap .carousel-control-prev,
+    .ph-hero-carousel-wrap .carousel-control-next {
+        width: 34px;
+        height: 34px;
+        top: 38%;
+        transform: translateY(-50%);
+        background: var(--ph-card-bg);
+        border: 1px solid var(--ph-border);
+        border-radius: 50%;
+        opacity: 0.92;
+        box-shadow: 0 4px 12px rgba(4, 47, 46, 0.14);
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .ph-hero-carousel-wrap .carousel-control-prev:hover,
+    .ph-hero-carousel-wrap .carousel-control-next:hover {
+        opacity: 1;
+        transform: translateY(-50%) scale(1.06);
+    }
+    .ph-hero-carousel-wrap .carousel-control-prev-icon,
+    .ph-hero-carousel-wrap .carousel-control-next-icon {
+        width: 14px;
+        height: 14px;
+        filter: invert(48%) sepia(79%) saturate(420%) hue-rotate(122deg) brightness(95%) contrast(92%);
+    }
+    .ph-hero-carousel-wrap .carousel-indicators {
+        bottom: 3.75rem;
+        margin-bottom: 0;
+    }
+    .ph-hero-carousel-wrap .carousel-indicators [data-bs-target] {
+        width: 18px;
+        height: 4px;
+        border-radius: 9999px;
+        background-color: var(--ph-accent);
+        opacity: 0.3;
+        border: none;
+        transition: width 0.25s ease, opacity 0.25s ease;
+    }
+    .ph-hero-carousel-wrap .carousel-indicators .active {
+        width: 32px;
+        opacity: 1;
     }
     .ph-hero-badge-pill {
         display: inline-flex;
@@ -71,6 +118,7 @@
     .ph-hero-headline {
         color: var(--ph-heading);
         font-weight: 800;
+        font-size: clamp(1.5rem, 2.6vw, 2.25rem);
         line-height: 1.15;
         letter-spacing: -0.025em;
     }
@@ -91,17 +139,17 @@
         letter-spacing: 0.03em;
     }
 
-    /* Overlapping Floating Search & Order Dock */
+    /* Overlapping Floating Search & Order Dock (Sits Higher Over Bottom of Slider) */
     .ph-search-dock {
-        max-width: 880px;
-        margin: -3.2rem auto 0;
+        max-width: 850px;
+        margin: -3.35rem auto 0;
         position: relative;
         z-index: 10;
         background: var(--ph-card-bg);
         border: 1px solid var(--ph-border);
-        border-radius: 22px;
+        border-radius: 20px;
         box-shadow: var(--ph-dock-shadow);
-        padding: 1.25rem 1.5rem 1.35rem;
+        padding: 0.95rem 1.3rem 1.1rem;
     }
     .ph-dock-searchbar {
         display: flex;
@@ -342,11 +390,20 @@
 
     @media (max-width: 767.98px) {
         .ph-hero-band {
-            padding: 1.5rem 0 4rem;
+            padding: 0.5rem 0 0;
+        }
+        .ph-hero-slide {
+            padding: 0.75rem 0.5rem 3.75rem;
+            min-height: 180px;
+        }
+        .ph-hero-carousel-wrap .carousel-control-prev,
+        .ph-hero-carousel-wrap .carousel-control-next {
+            display: none;
         }
         .ph-search-dock {
-            padding: 1rem;
+            padding: 0.9rem;
             border-radius: 18px;
+            margin-top: -3.1rem;
         }
     }
 </style>
@@ -354,89 +411,162 @@
 
 {% block content %}
 <div class="pharmacy-page-shell">
-    <!-- 1. PHARMEASY-INSPIRED HERO BAND + FLOATING SEARCH & QUICK-ORDER DOCK -->
+    <!-- 1. PHARMEASY-INSPIRED COMPACT HERO SLIDER + OVERLAPPING FLOATING SEARCH DOCK -->
     <section class="ph-hero-band pharmacy-hero-card">
         <div class="container">
-            <div class="ph-hero-inner">
-                <div class="row align-items-center g-3 g-md-4">
-                    <!-- Left: Bespoke Inline SVG Clinical Pharmacist Visual -->
-                    <div class="col-md-5 text-center order-2 order-md-1">
-                        <div class="position-relative d-inline-block">
-                            <svg viewBox="0 0 320 220" width="290" height="200" class="img-fluid" role="img" aria-label="Licensed Pharmacy Care">
-                                <defs>
-                                    <linearGradient id="phShieldGrad" x1="0" y1="0" x2="1" y2="1">
-                                        <stop offset="0%" stop-color="#0f766e"/>
-                                        <stop offset="100%" stop-color="#10b981"/>
-                                    </linearGradient>
-                                    <linearGradient id="phCoatGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#ffffff"/>
-                                        <stop offset="100%" stop-color="#e2e8f0"/>
-                                    </linearGradient>
-                                </defs>
-                                <!-- Soft Clinical Halo -->
-                                <circle cx="160" cy="112" r="94" fill="#10b981" fill-opacity="0.12"/>
-                                <circle cx="160" cy="112" r="72" fill="#0ea5e9" fill-opacity="0.10"/>
-                                <!-- Pharmacist Character -->
-                                <path d="M95 205 C95 156 122 142 160 142 C198 142 225 156 225 205 Z" fill="url(#phCoatGrad)" stroke="#cbd5e1" stroke-width="2"/>
-                                <path d="M144 143 L160 182 L176 143 Z" fill="#0f766e"/>
-                                <!-- Collar & Stethoscope -->
-                                <path d="M132 146 C132 175 152 188 160 188 C168 188 188 175 188 146" fill="none" stroke="#0f766e" stroke-width="4" stroke-linecap="round"/>
-                                <circle cx="188" cy="176" r="7" fill="#059669" stroke="#ffffff" stroke-width="2"/>
-                                <!-- Head & Hair -->
-                                <circle cx="160" cy="100" r="34" fill="#fde68a"/>
-                                <path d="M126 96 C126 68 144 58 162 58 C184 58 195 72 194 96 C186 82 172 78 158 80 C142 82 132 88 126 96 Z" fill="#1e293b"/>
-                                <!-- Friendly Glasses & Smile -->
-                                <rect x="139" y="92" width="17" height="12" rx="4" fill="none" stroke="#0f766e" stroke-width="2.2"/>
-                                <rect x="164" y="92" width="17" height="12" rx="4" fill="none" stroke="#0f766e" stroke-width="2.2"/>
-                                <line x1="156" y1="98" x2="164" y2="98" stroke="#0f766e" stroke-width="2"/>
-                                <path d="M150 115 Q160 123 170 115" fill="none" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
-                                <!-- Floating Rx Verification Card -->
-                                <rect x="206" y="42" width="96" height="54" rx="12" fill="url(#phShieldGrad)"/>
-                                <text x="222" y="66" fill="#fde047" font-size="14" font-weight="800" font-family="sans-serif">Rx 100%</text>
-                                <text x="222" y="83" fill="#ffffff" font-size="10" font-weight="600" font-family="sans-serif">Pharmacist Verified</text>
-                                <!-- Floating Cold Chain Pill -->
-                                <rect x="16" y="130" width="98" height="36" rx="18" fill="#ffffff" stroke="#99f6e4" stroke-width="1.5"/>
-                                <circle cx="34" cy="148" r="7" fill="#0284c7"/>
-                                <text x="47" y="152" fill="#0f766e" font-size="10.5" font-weight="700" font-family="sans-serif">2°–8°C Active</text>
-                            </svg>
+            <div id="pharmacyHeroCarousel" class="carousel slide ph-hero-carousel-wrap" data-bs-ride="carousel" data-bs-interval="4800">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                </div>
+
+                <div class="carousel-inner">
+                    <!-- Slide 1: Genuine Medicines & Up to 15% Off -->
+                    <div class="carousel-item active">
+                        <div class="ph-hero-slide">
+                            <div class="row align-items-center g-3 w-100 mx-0">
+                                <div class="col-md-5 text-center order-2 order-md-1">
+                                    <svg viewBox="0 0 320 190" width="235" height="145" class="img-fluid" role="img" aria-label="Licensed Pharmacy Care">
+                                        <defs>
+                                            <linearGradient id="phShieldGrad" x1="0" y1="0" x2="1" y2="1">
+                                                <stop offset="0%" stop-color="#0f766e"/>
+                                                <stop offset="100%" stop-color="#10b981"/>
+                                            </linearGradient>
+                                            <linearGradient id="phCoatGrad" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#ffffff"/>
+                                                <stop offset="100%" stop-color="#e2e8f0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <circle cx="160" cy="96" r="82" fill="#10b981" fill-opacity="0.14"/>
+                                        <path d="M100 182 C100 138 126 126 160 126 C194 126 220 138 220 182 Z" fill="url(#phCoatGrad)" stroke="#cbd5e1" stroke-width="2"/>
+                                        <path d="M145 127 L160 162 L175 127 Z" fill="#0f766e"/>
+                                        <path d="M134 130 C134 156 152 168 160 168 C168 168 186 156 186 130" fill="none" stroke="#0f766e" stroke-width="4" stroke-linecap="round"/>
+                                        <circle cx="186" cy="158" r="6.5" fill="#059669" stroke="#ffffff" stroke-width="2"/>
+                                        <circle cx="160" cy="86" r="32" fill="#fde68a"/>
+                                        <path d="M128 83 C128 56 144 46 162 46 C183 46 193 60 192 83 C184 70 170 66 158 68 C142 70 134 76 128 83 Z" fill="#1e293b"/>
+                                        <rect x="140" y="79" width="16" height="11" rx="3.5" fill="none" stroke="#0f766e" stroke-width="2.2"/>
+                                        <rect x="164" y="79" width="16" height="11" rx="3.5" fill="none" stroke="#0f766e" stroke-width="2.2"/>
+                                        <line x1="156" y1="84" x2="164" y2="84" stroke="#0f766e" stroke-width="2"/>
+                                        <path d="M150 100 Q160 108 170 100" fill="none" stroke="#92400e" stroke-width="2.4" stroke-linecap="round"/>
+                                        <rect x="205" y="28" width="96" height="48" rx="11" fill="url(#phShieldGrad)"/>
+                                        <text x="220" y="50" fill="#fde047" font-size="13" font-weight="800" font-family="sans-serif">Rx 100%</text>
+                                        <text x="220" y="65" fill="#ffffff" font-size="9.5" font-weight="600" font-family="sans-serif">Pharmacist Verified</text>
+                                        <rect x="14" y="108" width="96" height="32" rx="16" fill="#ffffff" stroke="#99f6e4" stroke-width="1.5"/>
+                                        <circle cx="31" cy="124" r="6.5" fill="#0284c7"/>
+                                        <text x="44" y="128" fill="#0f766e" font-size="10" font-weight="700" font-family="sans-serif">2°–8°C Active</text>
+                                    </svg>
+                                </div>
+                                <div class="col-md-7 text-center text-md-start order-1 order-md-2">
+                                    <div class="ph-hero-badge-pill mb-2">
+                                        <i class="bi bi-shield-fill-check text-success"></i>
+                                        <span>
+                                            {% if IS_BANGLA %}
+                                                {{ CURRENT_THEME_DATA.hero_badge|default:'ডিজিডিএ অনুমোদিত মডেল ফার্মেসি' }}
+                                            {% else %}
+                                                {{ CURRENT_THEME_DATA.hero_badge|default:'DGDA Licensed Model Pharmacy' }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <h1 class="ph-hero-headline mb-2">
+                                        {% if IS_BANGLA %}
+                                            ঔষধে <span class="ph-hero-highlight">১৫% পর্যন্ত ছাড়</span> ও আসল ঔষধ
+                                        {% else %}
+                                            Get <span class="ph-hero-highlight">Up to 15% OFF</span> on medicine orders
+                                        {% endif %}
+                                    </h1>
+                                    <div class="ph-hero-sub-pill">
+                                        <i class="bi bi-patch-check-fill"></i>
+                                        <span>{% if IS_BANGLA %}১০০% আসল ও সাশ্রয়ী ঔষধ • কোল্ড-চেইন ২°-৮°সে.{% else %}AFFORDABLE &amp; 100% GENUINE MEDICINES{% endif %}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right: Clean High-Impact Clinical Headline -->
-                    <div class="col-md-7 text-center text-md-start order-1 order-md-2">
-                        <div class="ph-hero-badge-pill mb-2">
-                            <i class="bi bi-shield-fill-check text-success"></i>
-                            <span>
-                                {% if IS_BANGLA %}
-                                    {{ CURRENT_THEME_DATA.hero_badge|default:'ডিজিডিএ অনুমোদিত মডেল ফার্মেসি' }}
-                                {% else %}
-                                    {{ CURRENT_THEME_DATA.hero_badge|default:'DGDA Licensed Model Pharmacy' }}
-                                {% endif %}
-                            </span>
+                    <!-- Slide 2: Cold Chain & 2-Hour Express Insulin -->
+                    <div class="carousel-item">
+                        <div class="ph-hero-slide">
+                            <div class="row align-items-center g-3 w-100 mx-0">
+                                <div class="col-md-5 text-center order-2 order-md-1">
+                                    <svg viewBox="0 0 320 190" width="235" height="145" class="img-fluid" role="img" aria-label="2-Hour Cold Chain Express">
+                                        <circle cx="160" cy="96" r="80" fill="#0ea5e9" fill-opacity="0.14"/>
+                                        <rect x="85" y="42" width="150" height="106" rx="18" fill="#0c4a6e" stroke="#38bdf8" stroke-width="2.5"/>
+                                        <rect x="103" y="60" width="42" height="70" rx="10" fill="#e0f2fe"/>
+                                        <rect x="111" y="50" width="26" height="14" rx="4" fill="#38bdf8"/>
+                                        <rect x="111" y="84" width="26" height="24" rx="4" fill="#0284c7"/>
+                                        <text x="158" y="84" fill="#38bdf8" font-size="16" font-weight="800" font-family="sans-serif">2°–8°C</text>
+                                        <text x="158" y="104" fill="#ffffff" font-size="11" font-weight="700" font-family="sans-serif">Cold Chain</text>
+                                        <rect x="158" y="114" width="62" height="20" rx="10" fill="#10b981"/>
+                                        <text x="167" y="128" fill="#ffffff" font-size="9.5" font-weight="700" font-family="sans-serif">2h Dhaka</text>
+                                    </svg>
+                                </div>
+                                <div class="col-md-7 text-center text-md-start order-1 order-md-2">
+                                    <div class="ph-hero-badge-pill mb-2">
+                                        <i class="bi bi-snow text-info"></i>
+                                        <span>{% if IS_BANGLA %}কোল্ড-চেইন ইনসুলিন ও ভ্যাকসিন{% else %}Strict 2°–8°C Cold Chain{% endif %}</span>
+                                    </div>
+                                    <h2 class="ph-hero-headline mb-2">
+                                        {% if IS_BANGLA %}
+                                            ইনসুলিন ও জরুরি ঔষধ <span class="ph-hero-highlight">২ ঘণ্টায় ডেলিভারি</span>
+                                        {% else %}
+                                            <span class="ph-hero-highlight">2-Hour Express</span> Insulin &amp; Biologics
+                                        {% endif %}
+                                    </h2>
+                                    <div class="ph-hero-sub-pill">
+                                        <i class="bi bi-thermometer-snow"></i>
+                                        <span>{% if IS_BANGLA %}মেডিকেল কুলার বক্সে সুরক্ষিত ডেলিভারি{% else %}MEDICAL-GRADE INSULATED CHILLER BOXES{% endif %}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <h1 class="display-5 ph-hero-headline mb-2">
-                            {% if IS_BANGLA %}
-                                ঔষধে <span class="ph-hero-highlight">১৫% পর্যন্ত ছাড়</span> ও ২ ঘণ্টায় এক্সপ্রেস সেবা
-                            {% else %}
-                                Save <span class="ph-hero-highlight">Up to 15%</span> on Genuine Medicines
-                            {% endif %}
-                        </h1>
-
-                        <p class="small ph-section-sub mb-3 mx-auto mx-md-0" style="max-width: 500px;">
-                            {% if IS_BANGLA %}
-                                {{ CURRENT_THEME_DATA.hero_tagline|default:'তাপমাত্রা-নিয়ন্ত্রিত সংরক্ষণ ও রেজিস্টার্ড ফার্মাসিস্টদের তত্ত্বাবধানে ১০০% আসল ওষুধ।' }}
-                            {% else %}
-                                {{ CURRENT_THEME_DATA.hero_tagline|default:'Temperature-controlled storage, DGDA licensed pharmacists, and fast digital prescription review.' }}
-                            {% endif %}
-                        </p>
-
-                        <div class="ph-hero-sub-pill">
-                            <i class="bi bi-patch-check-fill"></i>
-                            <span>{% if IS_BANGLA %}১০০% আসল ও সাশ্রয়ী ঔষধ • কোল্ড-চেইন ২°-৮°সে.{% else %}AFFORDABLE &amp; 100% GENUINE MEDICINES • 2°–8°C COLD CHAIN{% endif %}</span>
+                    <!-- Slide 3: Free Pharmacist Consult & Monthly Chronic Refill -->
+                    <div class="carousel-item">
+                        <div class="ph-hero-slide">
+                            <div class="row align-items-center g-3 w-100 mx-0">
+                                <div class="col-md-5 text-center order-2 order-md-1">
+                                    <svg viewBox="0 0 320 190" width="235" height="145" class="img-fluid" role="img" aria-label="Licensed Pharmacist Helpline 16263">
+                                        <circle cx="160" cy="96" r="80" fill="#059669" fill-opacity="0.14"/>
+                                        <rect x="78" y="42" width="164" height="106" rx="18" fill="#042f2e" stroke="#2dd4bf" stroke-width="2.5"/>
+                                        <circle cx="122" cy="95" r="24" fill="#10b981"/>
+                                        <text x="108" y="101" fill="#ffffff" font-size="16" font-weight="800" font-family="sans-serif">Rx</text>
+                                        <text x="158" y="82" fill="#fde047" font-size="17" font-weight="800" font-family="sans-serif">Call 16263</text>
+                                        <text x="158" y="101" fill="#ccfbf1" font-size="10.5" font-weight="600" font-family="sans-serif">A-Grade Pharmacist</text>
+                                        <rect x="158" y="112" width="68" height="20" rx="10" fill="#0f766e" stroke="#2dd4bf" stroke-width="1"/>
+                                        <text x="167" y="125" fill="#ffffff" font-size="9.5" font-weight="700" font-family="sans-serif">Free Advice</text>
+                                    </svg>
+                                </div>
+                                <div class="col-md-7 text-center text-md-start order-1 order-md-2">
+                                    <div class="ph-hero-badge-pill mb-2">
+                                        <i class="bi bi-telephone-inbound-fill text-success"></i>
+                                        <span>{% if IS_BANGLA %}মাসিক ক্রনিক কেয়ার রিফিল{% else %}Pharmacist Helpline • 16263{% endif %}</span>
+                                    </div>
+                                    <h2 class="ph-hero-headline mb-2">
+                                        {% if IS_BANGLA %}
+                                            ফার্মাসিস্ট পরামর্শ <span class="ph-hero-highlight">সম্পূর্ণ ফ্রি</span> ও রিফিলে ১০% ছাড়
+                                        {% else %}
+                                            Consult Pharmacists <span class="ph-hero-highlight">Free on 16263</span>
+                                        {% endif %}
+                                    </h2>
+                                    <div class="ph-hero-sub-pill">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                        <span>{% if IS_BANGLA %}ডায়াবেটিস ও প্রেশারের নিয়মিত ওষুধে বাড়তি সাশ্রয়{% else %}EXTRA 10% OFF ON MONTHLY CHRONIC REFILLS{% endif %}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Left & Right Slider Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide="prev" aria-label="Previous slide">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#pharmacyHeroCarousel" data-bs-slide="next" aria-label="Next slide">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
             </div>
         </div>
     </section>
@@ -518,7 +648,7 @@
     </div>
 
     <!-- Main Container Sections Below Hero -->
-    <div class="container mt-5 mb-4">
+    <div class="container mt-4 mb-4">
 
         <!-- 2. DISCOVER OUR HEALTHCARE OFFERINGS (PharmEasy Signature 6-Tile Strip) -->
         <section class="mb-5">
