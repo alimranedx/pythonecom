@@ -7,6 +7,28 @@
 {% has_perm request.user 'orders.orders' 'view' as can_view_orders %}
 {% has_perm request.user 'catalog.products' 'edit' as can_edit_products %}
 
+<!-- Quick Actions Toolbar -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div class="d-flex flex-wrap gap-2">
+        {% if can_edit_products %}
+            <a href="{% url 'admin_product_create' %}" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-xs">
+                <i class="bi bi-plus-lg me-1"></i> Add Product
+            </a>
+        {% endif %}
+        {% if can_view_orders %}
+            <a href="{% url 'admin_order_list' %}?status=pending" class="btn btn-sm btn-outline-warning text-dark rounded-pill px-3 fw-semibold bg-white">
+                <i class="bi bi-clock-history me-1 text-warning"></i> Pending Orders ({{ pending_orders }})
+            </a>
+            <a href="{% url 'admin_prescription_list' %}" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold bg-white">
+                <i class="bi bi-file-earmark-medical me-1"></i> Rx Inbox
+            </a>
+        {% endif %}
+        <a href="{% url 'admin_theme_manager' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold bg-white">
+            <i class="bi bi-palette2 me-1"></i> Themes
+        </a>
+    </div>
+</div>
+
 <!-- Date Range Filter & Rx Alert Bar -->
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div class="btn-group btn-group-sm bg-white p-1 rounded-pill shadow-xs border" role="group">

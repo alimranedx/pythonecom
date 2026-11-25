@@ -529,10 +529,26 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25) !important;
         }
+        @keyframes cartBadgePop {
+            0% { transform: scale(1); }
+            45% { transform: scale(1.32); }
+            100% { transform: scale(1); }
+        }
+        .cart-badge-pop {
+            animation: cartBadgePop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
     </style>
     {% if THEME_CUSTOM_CSS %}
     <style id="theme-custom-css">
         {{ THEME_CUSTOM_CSS|safe }}
+        @keyframes cartBadgePop {
+            0% { transform: scale(1); }
+            45% { transform: scale(1.32); }
+            100% { transform: scale(1); }
+        }
+        .cart-badge-pop {
+            animation: cartBadgePop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
     </style>
     {% endif %}
     {% block extra_head %}{% endblock %}
@@ -1365,6 +1381,11 @@
     <button type="button" id="backToTopBtn" class="btn btn-primary" aria-label="Back to top" title="Back to top">
         <i class="bi bi-arrow-up fs-5"></i>
     </button>
+    <!-- Floating Helpline / WhatsApp Quick Support Pill -->
+    <a href="tel:{{ site_settings.support_phone|default:'16263' }}" class="btn btn-success rounded-pill shadow-md d-none d-md-inline-flex align-items-center gap-2 px-3 py-2" style="position: fixed; left: 24px; bottom: 82px; z-index: 1034; font-size: 0.8rem; font-weight: 600;" title="Customer Care Helpline">
+        <i class="bi bi-headset"></i>
+        <span>Help: {{ site_settings.support_phone|default:'16263' }}</span>
+    </a>
     <script>
         (function() {
             const topBtn = document.getElementById('backToTopBtn');
