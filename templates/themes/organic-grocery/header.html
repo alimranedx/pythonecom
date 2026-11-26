@@ -1,87 +1,81 @@
 {% load static %}
-<!-- Organic Food & Daily Grocery Flagship Header (Khaas Food / Ghorer Bazar / Chaldal Inspired) -->
-<header id="grocerySiteHeader" class="grocery-header sticky-top shadow-xs">
+<!-- Organic Food & Daily Grocery Flagship Header (Botanical Olive-Linen & Khaas/Chaldal Hybrid) -->
+<header id="grocerySiteHeader" class="grocery-header sticky-top">
     <style>
         .grocery-header {
-            --gh-bg: #fcfaf4;
+            --gh-bg: #fbf9f2;
             --gh-surface: #ffffff;
-            --gh-surface-soft: #f3ede0;
-            --gh-nav-bg: #f6f1e6;
-            --gh-border: #e5dccb;
-            --gh-text: #1c241d;
-            --gh-muted: #5e685d;
-            --gh-forest: #1b5e3f;
-            --gh-forest-deep: #123c28;
-            --gh-amber: #d97706;
-            --gh-amber-soft: #fef3c7;
-            --gh-pill-bg: #ebf6ef;
-            --gh-pill-border: #bfe3cc;
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --gh-surface-soft: #f2ece0;
+            --gh-nav-bg: #f6f1e5;
+            --gh-border: #e2d8c5;
+            --gh-text: #162419;
+            --gh-muted: #5a6658;
+            --gh-forest: #163020;
+            --gh-forest-mid: #1e4d33;
+            --gh-amber: #c97310;
+            --gh-terracotta: #a84420;
+            --gh-pill-bg: #e6f2ea;
+            --gh-pill-border: #b8dac4;
+            font-family: 'Plus Jakarta Sans', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--gh-text);
             background-color: var(--gh-bg) !important;
             border-bottom: 1px solid var(--gh-border) !important;
+            box-shadow: 0 4px 20px rgba(22, 48, 32, 0.05);
             z-index: 1030;
             transition: background-color 0.25s ease, border-color 0.25s ease;
         }
         [data-bs-theme="dark"] .grocery-header {
-            --gh-bg: #101b14 !important;
-            --gh-surface: #16251c !important;
-            --gh-surface-soft: #1d3024 !important;
-            --gh-nav-bg: #132018 !important;
-            --gh-border: #273e30 !important;
-            --gh-text: #f3efe6 !important;
-            --gh-muted: #a4b3a6 !important;
+            --gh-bg: #0c1610 !important;
+            --gh-surface: #132119 !important;
+            --gh-surface-soft: #1a2d22 !important;
+            --gh-nav-bg: #101c15 !important;
+            --gh-border: #264030 !important;
+            --gh-text: #f5f1e8 !important;
+            --gh-muted: #a2b3a5 !important;
             --gh-forest: #4ade80 !important;
-            --gh-forest-deep: #22c55e !important;
+            --gh-forest-mid: #34d399 !important;
             --gh-amber: #fbbf24 !important;
-            --gh-amber-soft: rgba(245, 158, 11, 0.16) !important;
+            --gh-terracotta: #fb923c !important;
             --gh-pill-bg: rgba(74, 222, 128, 0.12) !important;
-            --gh-pill-border: rgba(74, 222, 128, 0.3) !important;
+            --gh-pill-border: rgba(74, 222, 128, 0.28) !important;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
         }
         .grocery-top-bar {
-            background: linear-gradient(90deg, #113825 0%, #1b5e3f 50%, #113825 100%);
-            border-bottom: 1px solid #0d2b1c;
-            color: #ecfdf5;
-            font-size: 0.76rem;
+            background: linear-gradient(90deg, #102519 0%, #163020 50%, #102519 100%);
+            border-bottom: 1px solid #0c1c13;
+            color: #eef7f0;
+            font-size: 0.75rem;
             letter-spacing: 0.015em;
         }
         [data-bs-theme="dark"] .grocery-top-bar {
-            background: linear-gradient(90deg, #091d13 0%, #113523 50%, #091d13 100%) !important;
-            border-color: #1c3f2c !important;
+            background: linear-gradient(90deg, #07130c 0%, #0e2618 50%, #07130c 100%) !important;
+            border-color: #1c3b29 !important;
         }
-        .grocery-top-bar a {
-            color: #d1fae5;
-            text-decoration: none;
-            transition: color 0.15s ease;
-        }
-        .grocery-top-bar a:hover {
-            color: #fde68a;
-        }
+        .grocery-top-bar a { color: #d1fae5; text-decoration: none; }
+        .grocery-top-bar a:hover { color: #fde68a; }
         .grocery-slot-pill {
-            background: rgba(255, 255, 255, 0.13);
-            border: 1px solid rgba(253, 230, 138, 0.35);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(253, 230, 138, 0.38);
             color: #ffffff !important;
             border-radius: 9999px;
-            padding: 0.2rem 0.72rem;
-            font-size: 0.74rem;
+            padding: 0.18rem 0.72rem;
+            font-size: 0.73rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            text-decoration: none;
         }
         .grocery-slot-pill:hover {
             background: rgba(255, 255, 255, 0.22);
             border-color: #fde68a;
-            color: #fef08a !important;
         }
         .grocery-hub-chip {
             background: var(--gh-pill-bg);
             border: 1px solid var(--gh-pill-border);
             border-radius: 12px;
-            padding: 0.32rem 0.75rem;
+            padding: 0.3rem 0.72rem;
             color: var(--gh-text);
             text-align: left;
             transition: all 0.2s ease;
@@ -98,8 +92,8 @@
             transition: all 0.2s ease;
         }
         .grocery-search-wrap:focus-within {
-            border-color: var(--gh-forest);
-            box-shadow: 0 0 0 3px rgba(27, 94, 63, 0.16);
+            border-color: var(--gh-forest-mid);
+            box-shadow: 0 0 0 3px rgba(30, 77, 51, 0.14);
         }
         .grocery-search-wrap input,
         .grocery-search-wrap select {
@@ -110,22 +104,19 @@
             background-color: var(--gh-surface);
             color: var(--gh-text);
         }
-        .grocery-search-wrap input::placeholder {
-            color: var(--gh-muted);
-        }
+        .grocery-search-wrap input::placeholder { color: var(--gh-muted); }
         .grocery-search-btn {
-            background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);
+            background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);
             color: #ffffff !important;
             border: none;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             border-radius: 9999px;
-            padding: 0.45rem 1.3rem;
+            padding: 0.42rem 1.25rem;
             transition: all 0.2s ease;
         }
         .grocery-search-btn:hover {
-            background: linear-gradient(135deg, #144930 0%, #0b291b 100%);
-            box-shadow: 0 4px 12px rgba(27, 94, 63, 0.28);
+            background: linear-gradient(135deg, #102519 0%, #163020 100%);
             transform: translateY(-1px);
         }
         .grocery-control-pill {
@@ -136,22 +127,21 @@
             transition: all 0.2s ease;
         }
         .grocery-control-pill:hover {
-            border-color: var(--gh-forest) !important;
+            border-color: var(--gh-forest-mid) !important;
             background: var(--gh-surface-soft);
         }
         .grocery-btn-basket {
-            background: linear-gradient(135deg, #1b5e3f 0%, #144930 100%);
+            background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);
             color: #ffffff !important;
             border-radius: 9999px;
             font-size: 0.83rem;
             font-weight: 700;
             border: none;
-            box-shadow: 0 4px 12px rgba(27, 94, 63, 0.24);
+            box-shadow: 0 4px 14px rgba(22, 48, 32, 0.24);
             transition: all 0.2s ease;
         }
         .grocery-btn-basket:hover {
-            background: linear-gradient(135deg, #144930 0%, #0b291b 100%);
-            box-shadow: 0 6px 16px rgba(27, 94, 63, 0.34);
+            background: linear-gradient(135deg, #102519 0%, #163020 100%);
             transform: translateY(-1px);
         }
         .grocery-sub-navbar {
@@ -165,55 +155,66 @@
             overflow-x: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            gap: 0.35rem;
+            gap: 0.25rem;
         }
-        .grocery-aisle-scroll::-webkit-scrollbar {
-            display: none;
-        }
+        .grocery-aisle-scroll::-webkit-scrollbar { display: none; }
         .grocery-nav-link {
             color: var(--gh-text);
             font-weight: 600;
-            font-size: 0.82rem;
-            padding: 0.38rem 0.68rem;
-            border-radius: 9999px;
-            transition: all 0.16s ease;
+            font-size: 0.81rem;
+            padding: 0.48rem 0.72rem;
+            position: relative;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
             white-space: nowrap;
             flex-shrink: 0;
+            transition: color 0.18s ease;
+        }
+        .grocery-nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0.72rem;
+            right: 0.72rem;
+            bottom: 2px;
+            height: 2.5px;
+            border-radius: 2px;
+            background-color: var(--gh-amber);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
         }
         .grocery-nav-link:hover,
         .grocery-nav-link.active {
             color: var(--gh-forest);
-            background-color: var(--gh-pill-bg);
+        }
+        .grocery-nav-link:hover::after,
+        .grocery-nav-link.active::after {
+            transform: scaleX(1);
         }
         .grocery-aisle-btn {
-            background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);
+            background: #163020;
             color: #ffffff !important;
             font-weight: 700;
-            font-size: 0.81rem;
+            font-size: 0.8rem;
             border-radius: 9999px;
-            padding: 0.38rem 0.95rem;
-            border: none;
+            padding: 0.36rem 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.14);
             flex-shrink: 0;
             transition: all 0.2s ease;
         }
-        .grocery-aisle-btn:hover {
-            background: linear-gradient(135deg, #144930 0%, #0b291b 100%);
-        }
+        .grocery-aisle-btn:hover { background: #1e4d33; }
         .grocery-dropdown-menu {
             border-radius: 16px;
             border: 1px solid var(--gh-border);
             background: var(--gh-surface);
             color: var(--gh-text);
-            box-shadow: 0 14px 36px rgba(17, 56, 37, 0.14);
+            box-shadow: 0 16px 38px rgba(22, 48, 32, 0.16);
             font-size: 0.84rem;
         }
         .grocery-dropdown-item {
             color: var(--gh-text);
-            padding: 0.48rem 0.9rem;
+            padding: 0.46rem 0.9rem;
             transition: all 0.15s ease;
             border-radius: 10px;
             margin: 0.08rem 0.3rem;
@@ -225,7 +226,7 @@
         .grocery-badge-counter {
             font-size: 0.64rem;
             font-weight: 700;
-            background-color: #d97706 !important;
+            background-color: #a84420 !important;
             color: #ffffff !important;
             padding: 0.24em 0.52em;
         }
@@ -264,26 +265,24 @@
             transition: all 0.2s ease;
         }
         .slot-pill-option:hover {
-            border-color: var(--gh-forest);
+            border-color: var(--gh-forest-mid);
             background-color: var(--gh-pill-bg);
         }
         .btn-check:checked + .slot-pill-option,
         .slot-pill-option.active {
-            border-color: var(--gh-forest);
+            border-color: var(--gh-forest-mid);
             background-color: var(--gh-pill-bg);
             color: var(--gh-forest);
             font-weight: 600;
         }
-        .grocery-muted {
-            color: var(--gh-muted);
-        }
+        .grocery-muted { color: var(--gh-muted); }
         .grocery-surface-soft {
             background-color: var(--gh-surface-soft);
             border-color: var(--gh-border) !important;
         }
     </style>
 
-    <!-- 1. Top Bangladeshi Organic Concierge & Delivery Slot Ribbon -->
+    <!-- 1. Top Announcement & Delivery Ribbon -->
     <div class="grocery-top-bar py-1 px-3 d-none d-sm-block">
         <div class="container d-flex justify-content-between align-items-center gap-2">
             <div class="d-flex align-items-center gap-2 gap-md-3 text-truncate">
@@ -303,9 +302,8 @@
             </div>
 
             <div class="d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
-                <!-- Delivery Location & Slot Selector Teaser -->
                 <button type="button"
-                        class="grocery-slot-pill shadow-xs"
+                        class="grocery-slot-pill"
                         data-bs-toggle="modal"
                         data-bs-target="#deliverySlotModal"
                         title="{% if IS_BANGLA %}ডেলিভারি এলাকা ও স্লট পরিবর্তন করুন{% else %}Select Delivery Area &amp; Slot{% endif %}">
@@ -349,18 +347,17 @@
     <!-- 2. Main Desktop Header -->
     <div class="container py-2.5 d-none d-md-block">
         <div class="d-flex align-items-center justify-content-between gap-2 gap-lg-3">
-            <!-- Brand Logo (Light/Dark Aware) + Quick Hub Selector -->
             <div class="d-flex align-items-center gap-2 gap-xl-3 flex-shrink-0">
                 <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 me-0" title="{{ site_settings.get_effective_site_name|default:'Pure Harvest Organic Grocery' }}">
                     {% if site_settings.brand_logo %}
                         <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="42" class="brand-logo-img" style="height: 42px; width: auto; max-width: 195px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
                         <span class="brand-logo-fallback align-items-center gap-2">
-                            <span class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0 shadow-xs" style="background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%); width: 40px; height: 40px; border: 1.5px solid #4ade80;">
+                            <span class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0" style="background: linear-gradient(135deg, #163020 0%, #1e4d33 100%); width: 40px; height: 40px; border: 1.5px solid #4ade80;">
                                 <i class="bi bi-basket2-fill fs-5" style="color: #fde68a;"></i>
                             </span>
                             <span class="lh-sm">
                                 <span class="fw-bold fs-5 d-block" style="color: var(--gh-text); letter-spacing: -0.02em;">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
-                                <small class="text-uppercase fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gh-forest);">
+                                <small class="text-uppercase fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gh-forest-mid);">
                                     {% if IS_BANGLA %}খাঁটি অর্গানিক বাজার{% else %}BD ORGANIC &amp; GROCERY{% endif %}
                                 </small>
                             </span>
@@ -369,23 +366,23 @@
                         <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 195px; object-fit: contain;" class="brand-logo-img logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
                         <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="42" style="height: 42px; width: auto; max-width: 195px; object-fit: contain;" class="brand-logo-img logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
                         <span class="brand-logo-fallback align-items-center gap-2">
-                            <span class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0 shadow-xs" style="background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%); width: 40px; height: 40px; border: 1.5px solid #4ade80;">
+                            <span class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0" style="background: linear-gradient(135deg, #163020 0%, #1e4d33 100%); width: 40px; height: 40px; border: 1.5px solid #4ade80;">
                                 <i class="bi bi-basket2-fill fs-5" style="color: #fde68a;"></i>
                             </span>
                             <span class="lh-sm">
                                 <span class="fw-bold fs-5 d-block" style="color: var(--gh-text); letter-spacing: -0.02em;">{{ CURRENT_THEME_DATA.brand_name|default:'PURE HARVEST' }}</span>
-                                <small class="text-uppercase fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gh-forest);">
+                                <small class="text-uppercase fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gh-forest-mid);">
                                     {% if IS_BANGLA %}খাঁটি অর্গানিক বাজার{% else %}BD ORGANIC &amp; GROCERY{% endif %}
                                 </small>
                             </span>
                         </span>
                     {% else %}
-                        <span class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0 shadow-xs" style="background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%); width: 40px; height: 40px; border: 1.5px solid #4ade80;">
+                        <span class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0" style="background: linear-gradient(135deg, #163020 0%, #1e4d33 100%); width: 40px; height: 40px; border: 1.5px solid #4ade80;">
                             <i class="bi bi-basket2-fill fs-5" style="color: #fde68a;"></i>
                         </span>
                         <span class="lh-sm">
                             <span class="fw-bold fs-5 d-block" style="color: var(--gh-text); letter-spacing: -0.02em;">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
-                            <small class="text-uppercase fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gh-forest);">
+                            <small class="text-uppercase fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gh-forest-mid);">
                                 {% if IS_BANGLA %}খাঁটি অর্গানিক বাজার{% else %}BD ORGANIC &amp; GROCERY{% endif %}
                             </small>
                         </span>
@@ -407,7 +404,7 @@
                 </button>
             </div>
 
-            <!-- Middle: Search Bar with Accurate BD Category Dropdown -->
+            <!-- Middle Search -->
             <div class="flex-grow-1" style="max-width: 580px;">
                 <form action="{% url 'product_list' %}" method="get" class="grocery-search-form">
                     <div class="input-group grocery-search-wrap p-1 shadow-xs">
@@ -440,14 +437,14 @@
                 </form>
             </div>
 
-            <!-- Right: Account, Wishlist & Grocery Basket -->
+            <!-- Right Controls -->
             <div class="d-flex align-items-center gap-2 flex-shrink-0">
                 <div class="dropdown">
                     <button class="btn grocery-control-pill px-2.5 py-1.5 d-flex align-items-center gap-2 shadow-xs" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         {% if request.user.is_authenticated and not request.user.is_staff and request.user.profile.avatar %}
-                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border" style="width: 28px; height: 28px; border-color: var(--gh-forest) !important;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
+                            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border" style="width: 28px; height: 28px; border-color: var(--gh-forest-mid) !important;" onerror="this.onerror=null; this.src='/static/images/default-avatar.svg';">
                         {% else %}
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 28px; height: 28px; background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 28px; height: 28px; background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);">
                                 <i class="bi bi-person-fill small"></i>
                             </div>
                         {% endif %}
@@ -472,7 +469,7 @@
                     <ul class="dropdown-menu dropdown-menu-end grocery-dropdown-menu mt-2 p-2" style="min-width: 245px;">
                         {% if request.user.is_authenticated and not request.user.is_staff %}
                             <li class="px-3 py-2 border-bottom d-flex align-items-center gap-2 mb-1" style="border-color: var(--gh-border) !important;">
-                                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #1b5e3f; width: 34px; height: 34px;">
+                                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="background: #163020; width: 34px; height: 34px;">
                                     <i class="bi bi-person-fill"></i>
                                 </div>
                                 <div class="overflow-hidden">
@@ -480,9 +477,9 @@
                                     <strong class="text-truncate d-block small" style="color: var(--gh-text);">{{ request.user.get_full_name|default:request.user.username }}</strong>
                                 </div>
                             </li>
-                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-speedometer2 me-2" style="color: var(--gh-forest);"></i> {{ tr.dashboard }}</a></li>
-                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-basket3 me-2" style="color: var(--gh-forest);"></i> {% if IS_BANGLA %}গ্রোসারি অর্ডারসমূহ{% else %}Grocery Orders{% endif %}</a></li>
-                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'address_list' %}"><i class="bi bi-geo-alt me-2" style="color: var(--gh-forest);"></i> {% if IS_BANGLA %}ডেলিভারি ঠিকানাসমূহ{% else %}Delivery Addresses{% endif %}</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'customer_dashboard' %}"><i class="bi bi-speedometer2 me-2" style="color: var(--gh-forest-mid);"></i> {{ tr.dashboard }}</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-basket3 me-2" style="color: var(--gh-forest-mid);"></i> {% if IS_BANGLA %}গ্রোসারি অর্ডারসমূহ{% else %}Grocery Orders{% endif %}</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'address_list' %}"><i class="bi bi-geo-alt me-2" style="color: var(--gh-forest-mid);"></i> {% if IS_BANGLA %}ডেলিভারি ঠিকানাসমূহ{% else %}Delivery Addresses{% endif %}</a></li>
                             <li>
                                 <a class="dropdown-item grocery-dropdown-item py-2 fw-semibold" href="{% url 'customer_orders' %}?action=repeat" style="color: var(--gh-amber);">
                                     <i class="bi bi-arrow-repeat me-2"></i> {% if IS_BANGLA %}পূর্বের বাজার রিপিট করুন{% else %}Repeat Last Order{% endif %}
@@ -498,16 +495,15 @@
                                 </a>
                                 <small class="grocery-muted d-block mt-2" style="font-size: 0.74rem;">
                                     {% if IS_BANGLA %}নতুন গ্রাহক?{% else %}New customer?{% endif %}
-                                    <a href="{% url 'account_register' %}" class="text-decoration-none fw-bold" style="color: var(--gh-forest);">{{ tr.create_account }}</a>
+                                    <a href="{% url 'account_register' %}" class="text-decoration-none fw-bold" style="color: var(--gh-forest-mid);">{{ tr.create_account }}</a>
                                 </small>
                             </li>
-                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-truck me-2" style="color: var(--gh-forest);"></i> {% if IS_BANGLA %}অর্ডার ট্র্যাকিং{% else %}Track Delivery{% endif %}</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'customer_orders' %}"><i class="bi bi-truck me-2" style="color: var(--gh-forest-mid);"></i> {% if IS_BANGLA %}অর্ডার ট্র্যাকিং{% else %}Track Delivery{% endif %}</a></li>
                             <li><a class="dropdown-item grocery-dropdown-item py-2" href="{% url 'wishlist_view' %}"><i class="bi bi-heart me-2 text-danger"></i> {{ tr.wishlist }}</a></li>
                         {% endif %}
                     </ul>
                 </div>
 
-                <!-- Wishlist -->
                 <a href="{% url 'wishlist_view' %}" class="btn grocery-control-pill px-2.5 py-1.5 d-flex align-items-center gap-2 position-relative shadow-xs" title="{{ tr.wishlist }}">
                     <i class="bi bi-heart-fill fs-5 text-danger"></i>
                     <div class="text-start d-none d-xxl-block lh-sm">
@@ -519,7 +515,6 @@
                     </span>
                 </a>
 
-                <!-- Grocery Basket Trigger -->
                 <button class="btn grocery-btn-basket px-3 py-1.5 d-flex align-items-center gap-2 position-relative"
                         type="button"
                         id="cartDrawerTrigger"
@@ -545,11 +540,10 @@
         </div>
     </div>
 
-    <!-- 3. Single-Row Organic Pantry Aisles Navigation -->
-    <div class="grocery-sub-navbar py-1.5 d-none d-md-block">
+    <!-- 3. Single-Row Botanical Aisle Strip -->
+    <div class="grocery-sub-navbar py-1 d-none d-md-block">
         <div class="container d-flex align-items-center justify-content-between gap-2 small">
             <div class="d-flex align-items-center gap-2 flex-grow-1 overflow-hidden">
-                <!-- "Browse All Aisles" Mega Dropdown -->
                 <div class="dropdown flex-shrink-0">
                     <button class="btn btn-sm grocery-aisle-btn d-flex align-items-center gap-2 shadow-xs"
                             type="button"
@@ -579,17 +573,16 @@
                                 </a>
                             </li>
                         {% empty %}
-                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=cold-pressed-mustard-oils"><i class="bi bi-droplet-fill me-2" style="color: #d97706;"></i>Cold-Pressed Mustard Oils</a></li>
-                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=raw-wild-honey"><i class="bi bi-flower2 me-2" style="color: #d97706;"></i>Sundarban Raw Honey</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=cold-pressed-mustard-oils"><i class="bi bi-droplet-fill me-2" style="color: #c97310;"></i>Cold-Pressed Mustard Oils</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=raw-wild-honey"><i class="bi bi-flower2 me-2" style="color: #c97310;"></i>Sundarban Raw Honey</a></li>
                             <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=desi-ghee-dairy-butter"><i class="bi bi-cup-hot-fill me-2" style="color: #b45309;"></i>Pure Desi Cow Ghee</a></li>
-                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=whole-ground-spices"><i class="bi bi-fire me-2" style="color: #c2410c;"></i>Hand-Ground Spices</a></li>
-                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=aromatic-rice-grains"><i class="bi bi-basket3-fill me-2" style="color: #1b5e3f;"></i>Chinigura &amp; Heritage Rice</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=whole-ground-spices"><i class="bi bi-fire me-2" style="color: #a84420;"></i>Hand-Ground Spices</a></li>
+                            <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=aromatic-rice-grains"><i class="bi bi-basket3-fill me-2" style="color: #163020;"></i>Chinigura &amp; Heritage Rice</a></li>
                             <li><a class="dropdown-item grocery-dropdown-item py-1.5 px-3" href="{% url 'product_list' %}?category=fresh-farm-vegetables"><i class="bi bi-tree-fill me-2 text-success"></i>Fresh Farm Produce</a></li>
                         {% endfor %}
                     </ul>
                 </div>
 
-                <!-- Single-Row Scrollable Quick Aisles -->
                 <nav class="grocery-aisle-scroll" aria-label="Organic Grocery Aisles">
                     <a href="{% url 'product_list' %}?category=cold-pressed-mustard-oils" class="grocery-nav-link">
                         <i class="bi bi-droplet-half" style="color: var(--gh-amber);"></i>
@@ -600,15 +593,15 @@
                         <span>{% if IS_BANGLA %}সুন্দরবনের মধু{% else %}Raw Honey{% endif %}</span>
                     </a>
                     <a href="{% url 'product_list' %}?category=desi-ghee-dairy-butter" class="grocery-nav-link">
-                        <i class="bi bi-cup-hot-fill" style="color: #b45309;"></i>
+                        <i class="bi bi-cup-hot-fill" style="color: var(--gh-terracotta);"></i>
                         <span>{% if IS_BANGLA %}গাওয়া ঘি{% else %}Desi Ghee{% endif %}</span>
                     </a>
                     <a href="{% url 'product_list' %}?category=whole-ground-spices" class="grocery-nav-link">
-                        <i class="bi bi-fire" style="color: #c2410c;"></i>
+                        <i class="bi bi-fire" style="color: var(--gh-terracotta);"></i>
                         <span>{% if IS_BANGLA %}খাঁটি মসলা{% else %}Pure Spices{% endif %}</span>
                     </a>
                     <a href="{% url 'product_list' %}?category=aromatic-rice-grains" class="grocery-nav-link">
-                        <i class="bi bi-layers-fill" style="color: var(--gh-forest);"></i>
+                        <i class="bi bi-layers-fill" style="color: var(--gh-forest-mid);"></i>
                         <span>{% if IS_BANGLA %}চিনিগুঁড়া চাল ও ডাল{% else %}Rice &amp; Daal{% endif %}</span>
                     </a>
                     <a href="{% url 'product_list' %}?category=fresh-farm-vegetables" class="grocery-nav-link d-none d-lg-inline-flex">
@@ -620,17 +613,16 @@
                         <span>{% if IS_BANGLA %}খেজুর ও বাদাম{% else %}Dates &amp; Nuts{% endif %}</span>
                     </a>
                     <a href="{% url 'product_list' %}?category=organic-tea-beverages" class="grocery-nav-link d-none d-xxl-inline-flex">
-                        <i class="bi bi-cup-straw" style="color: var(--gh-forest);"></i>
+                        <i class="bi bi-cup-straw" style="color: var(--gh-forest-mid);"></i>
                         <span>{% if IS_BANGLA %}অর্গানিক চা{% else %}Organic Tea{% endif %}</span>
                     </a>
                 </nav>
             </div>
 
-            <!-- Right Callout: Delivery Slots Available Badge -->
             <div class="d-flex align-items-center gap-2 flex-shrink-0">
                 <button type="button"
                         class="btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-1 fw-semibold"
-                        style="background-color: var(--gh-pill-bg); color: var(--gh-forest); border: 1px solid var(--gh-pill-border); border-radius: 9999px; font-size: 0.75rem;"
+                        style="background-color: var(--gh-pill-bg); color: var(--gh-forest); border: 1px solid var(--gh-pill-border); border-radius: 9999px; font-size: 0.74rem;"
                         data-bs-toggle="modal"
                         data-bs-target="#deliverySlotModal"
                         title="{% if IS_BANGLA %}আজকের ডেলিভারি স্লট বুক করুন{% else %}Reserve your preferred fresh delivery window{% endif %}">
@@ -642,7 +634,7 @@
         </div>
     </div>
 
-    <!-- 4. Dedicated Mobile Grocery Header & Controls -->
+    <!-- 4. Mobile Header -->
     <div class="grocery-mobile-header d-md-none py-2 px-3">
         <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
             <button class="btn btn-sm rounded-pill p-2 border-0"
@@ -662,7 +654,7 @@
                     <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="32" style="height: 32px; width: auto; max-width: 155px; object-fit: contain;" class="logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3';">
                     <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="32" style="height: 32px; width: auto; max-width: 155px; object-fit: contain;" class="logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3';">
                 {% else %}
-                    <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b5e3f; width: 30px; height: 30px;">
+                    <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #163020; width: 30px; height: 30px;">
                         <i class="bi bi-basket2-fill small text-warning"></i>
                     </span>
                     <span class="fw-bold fs-6" style="color: var(--gh-text); letter-spacing: -0.01em;">
@@ -694,7 +686,6 @@
             </div>
         </div>
 
-        <!-- Mobile Delivery Slot & Location Pill Bar -->
         <div class="mb-2">
             <button type="button"
                     class="w-100 btn btn-sm d-flex align-items-center justify-content-between px-3 py-1.5 text-start"
@@ -706,14 +697,13 @@
                     <span>{% if IS_BANGLA %}ডেলিভারি:{% else %}To:{% endif %} <strong class="current-delivery-location">Dhaka</strong></span>
                 </span>
                 <span class="d-inline-flex align-items-center gap-1">
-                    <i class="bi bi-clock-fill" style="color: var(--gh-forest);"></i>
+                    <i class="bi bi-clock-fill" style="color: var(--gh-forest-mid);"></i>
                     <span class="current-delivery-slot-text">Today 4 PM - 7 PM</span>
                     <i class="bi bi-chevron-down small grocery-muted" style="font-size: 0.65rem;"></i>
                 </span>
             </button>
         </div>
 
-        <!-- Mobile Search Bar -->
         <form action="{% url 'product_list' %}" method="get" class="grocery-mobile-search-form">
             <div class="input-group grocery-search-wrap p-1 shadow-xs">
                 <input type="text" name="q" class="form-control border-0 px-3 py-1 small"
@@ -727,11 +717,11 @@
         </form>
     </div>
 
-    <!-- 5. Dedicated Mobile Grocery Drawer (#mobileGroceryOffcanvas) -->
+    <!-- 5. Mobile Offcanvas Drawer (#mobileGroceryOffcanvas) -->
     <div class="offcanvas offcanvas-start shadow grocery-offcanvas-panel" tabindex="-1" id="mobileGroceryOffcanvas" aria-labelledby="mobileGroceryOffcanvasLabel">
         <div class="offcanvas-header border-bottom py-3 grocery-surface-soft">
             <div class="d-flex align-items-center gap-2">
-                <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b5e3f; width: 34px; height: 34px;">
+                <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #163020; width: 34px; height: 34px;">
                     <i class="bi bi-basket2-fill text-warning"></i>
                 </div>
                 <h5 class="offcanvas-title fw-bold mb-0" id="mobileGroceryOffcanvasLabel" style="font-size: 1.02rem; color: var(--gh-text);">
@@ -742,8 +732,7 @@
         </div>
 
         <div class="offcanvas-body p-3">
-            <!-- Delivery Slot Selector Shortcut Banner -->
-            <div class="p-3 rounded-3 mb-3 text-white shadow-sm" style="background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);">
+            <div class="p-3 rounded-3 mb-3 text-white shadow-sm" style="background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);">
                 <div class="d-flex align-items-center justify-content-between mb-1">
                     <strong class="small d-flex align-items-center gap-1">
                         <i class="bi bi-clock-history text-warning"></i>
@@ -754,12 +743,11 @@
                 <p class="small text-white-50 mb-2" style="font-size: 0.74rem;">
                     {% if IS_BANGLA %}আপনার পছন্দের নির্ধারিত সময়ে ডেলিভারি পেতে এলাকা ও স্লট নির্বাচন করুন।{% else %}Choose your neighborhood and convenient time slot for same-day delivery.{% endif %}
                 </p>
-                <button type="button" class="btn btn-sm btn-light fw-bold w-100 rounded-pill" data-bs-toggle="modal" data-bs-target="#deliverySlotModal" data-bs-dismiss="offcanvas" style="color: #123c28; font-size: 0.78rem;">
+                <button type="button" class="btn btn-sm btn-light fw-bold w-100 rounded-pill" data-bs-toggle="modal" data-bs-target="#deliverySlotModal" data-bs-dismiss="offcanvas" style="color: #163020; font-size: 0.78rem;">
                     <span class="current-delivery-location">Dhaka</span> &bull; <span class="current-delivery-slot-text">Today 4 PM - 7 PM</span>
                 </button>
             </div>
 
-            <!-- Grocery Aisles Navigation Links -->
             <div class="mb-3">
                 <div class="text-uppercase grocery-muted fw-bold mb-2 ps-1" style="font-size: 0.7rem; letter-spacing: 0.08em;">
                     {% if IS_BANGLA %}গ্রোসারি আইলসমূহ{% else %}Grocery Aisles{% endif %}
@@ -784,61 +772,41 @@
                             <i class="bi bi-chevron-right small grocery-muted"></i>
                         </a>
                         <a href="{% url 'product_list' %}?category=whole-ground-spices" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2">
-                            <span><i class="bi bi-fire me-2" style="color: #c2410c;"></i> Pure Spices &amp; Masala</span>
+                            <span><i class="bi bi-fire me-2" style="color: var(--gh-terracotta);"></i> Pure Spices &amp; Masala</span>
                             <i class="bi bi-chevron-right small grocery-muted"></i>
                         </a>
                         <a href="{% url 'product_list' %}?category=aromatic-rice-grains" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2">
-                            <span><i class="bi bi-layers-fill me-2" style="color: var(--gh-forest);"></i> Rice, Daal &amp; Grains</span>
+                            <span><i class="bi bi-layers-fill me-2" style="color: var(--gh-forest-mid);"></i> Rice, Daal &amp; Grains</span>
                             <i class="bi bi-chevron-right small grocery-muted"></i>
                         </a>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Account & Assistance -->
             <div class="mb-3">
                 <div class="text-uppercase grocery-muted fw-bold mb-2 ps-1" style="font-size: 0.7rem; letter-spacing: 0.08em;">
                     {% if IS_BANGLA %}কাস্টমার সার্ভিস ও অ্যাকাউন্ট{% else %}Account &amp; Assistance{% endif %}
                 </div>
                 <div class="list-group list-group-flush rounded-3 overflow-hidden border" style="border-color: var(--gh-border) !important;">
                     {% if request.user.is_authenticated and not request.user.is_staff %}
-                        <a href="{% url 'customer_dashboard' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-person-circle" style="color: var(--gh-forest);"></i> <span>{{ tr.dashboard }}</span>
-                        </a>
-                        <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-basket3" style="color: var(--gh-forest);"></i> <span>{{ tr.my_orders }}</span>
-                        </a>
-                        <a href="{% url 'address_list' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-geo-alt" style="color: var(--gh-forest);"></i> <span>{{ tr.address_book }}</span>
-                        </a>
-                        <a href="{% url 'wishlist_view' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-heart text-danger"></i> <span>{{ tr.wishlist }} ({{ global_wishlist_count|default:0 }})</span>
-                        </a>
-                        <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-danger fw-semibold">
-                            <i class="bi bi-box-arrow-right"></i> <span>{{ tr.logout }}</span>
-                        </a>
+                        <a href="{% url 'customer_dashboard' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"><i class="bi bi-person-circle" style="color: var(--gh-forest-mid);"></i> <span>{{ tr.dashboard }}</span></a>
+                        <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"><i class="bi bi-basket3" style="color: var(--gh-forest-mid);"></i> <span>{{ tr.my_orders }}</span></a>
+                        <a href="{% url 'address_list' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"><i class="bi bi-geo-alt" style="color: var(--gh-forest-mid);"></i> <span>{{ tr.address_book }}</span></a>
+                        <a href="{% url 'wishlist_view' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"><i class="bi bi-heart text-danger"></i> <span>{{ tr.wishlist }} ({{ global_wishlist_count|default:0 }})</span></a>
+                        <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2 text-danger fw-semibold"><i class="bi bi-box-arrow-right"></i> <span>{{ tr.logout }}</span></a>
                     {% else %}
-                        <a href="{% url 'account_login' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-box-arrow-in-right" style="color: var(--gh-forest);"></i> <span>{{ tr.sign_in }}</span>
-                        </a>
-                        <a href="{% url 'account_register' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-person-plus" style="color: var(--gh-forest);"></i> <span>{{ tr.create_account }}</span>
-                        </a>
-                        <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-truck" style="color: var(--gh-forest);"></i> <span>{% if IS_BANGLA %}ডেলিভারি ট্র্যাক করুন{% else %}Track Delivery{% endif %}</span>
-                        </a>
+                        <a href="{% url 'account_login' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"><i class="bi bi-box-arrow-in-right" style="color: var(--gh-forest-mid);"></i> <span>{{ tr.sign_in }}</span></a>
+                        <a href="{% url 'account_register' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"><i class="bi bi-person-plus" style="color: var(--gh-forest-mid);"></i> <span>{{ tr.create_account }}</span></a>
+                        <a href="{% url 'customer_orders' %}" class="list-group-item list-group-item-action py-2 d-flex align-items-center gap-2"><i class="bi bi-truck" style="color: var(--gh-forest-mid);"></i> <span>{% if IS_BANGLA %}ডেলিভারি ট্র্যাক করুন{% else %}Track Delivery{% endif %}</span></a>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Language, Dark Mode & Hotline -->
             <div class="p-3 rounded-3 mt-3 border grocery-surface-soft">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <span class="small fw-semibold grocery-muted">{% if IS_BANGLA %}ভাষা ও থিম:{% else %}Language &amp; Theme:{% endif %}</span>
                     <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" onclick="toggleTheme()">
-                            <i class="bi bi-moon-stars-fill text-warning"></i>
-                        </button>
+                        <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill text-warning"></i></button>
                         <div class="btn-group btn-group-sm">
                             <a href="{% url 'set_language' 'en' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}btn-success active{% else %}btn-outline-secondary{% endif %} py-0 px-2">EN</a>
                             <a href="{% url 'set_language' 'bn' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'bn' %}btn-success active{% else %}btn-outline-secondary{% endif %} py-0 px-2">বাং</a>
@@ -846,7 +814,7 @@
                     </div>
                 </div>
                 <div class="small grocery-muted d-flex align-items-center gap-2">
-                    <i class="bi bi-telephone-fill" style="color: var(--gh-forest);"></i>
+                    <i class="bi bi-telephone-fill" style="color: var(--gh-forest-mid);"></i>
                     <span>{{ site_settings.contact_phone|default:'+880 9610-000000' }}</span>
                 </div>
             </div>
@@ -858,9 +826,9 @@
 <div class="modal fade" id="deliverySlotModal" tabindex="-1" aria-labelledby="deliverySlotModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg grocery-modal-shell">
-            <div class="modal-header text-white p-4 border-0" style="background: linear-gradient(135deg, #1b5e3f 0%, #113825 100%);">
+            <div class="modal-header text-white p-4 border-0" style="background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; color: #1b5e3f;">
+                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; color: #163020;">
                         <i class="bi bi-clock-history fs-4"></i>
                     </div>
                     <div>
@@ -985,7 +953,7 @@
                 <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">
                     {% if IS_BANGLA %}বন্ধ করুন{% else %}Close{% endif %}
                 </button>
-                <button type="button" class="btn text-white btn-sm rounded-pill px-4 fw-bold" style="background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);" onclick="saveGroceryDeliverySlot()">
+                <button type="button" class="btn text-white btn-sm rounded-pill px-4 fw-bold" style="background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);" onclick="saveGroceryDeliverySlot()">
                     <i class="bi bi-check2-circle me-1"></i>
                     {% if IS_BANGLA %}স্লট নিশ্চিত করুন{% else %}Confirm Slot{% endif %}
                 </button>
