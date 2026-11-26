@@ -156,63 +156,109 @@
     }
 
     /* =========================================================================
-       1. SUNLIT NATURA MARKET EDITORIAL HERO
+       1. SUNLIT NATURA MARKET EDITORIAL HERO SLIDER
        ========================================================================= */
     .natura-hero-wrapper {
         margin-top: -1.5rem;
-        background: radial-gradient(circle at 85% 20%, #f1f8ec 0%, var(--grocery-hero-canvas) 65%, var(--grocery-bg) 100%);
+        background: radial-gradient(circle at 80% 15%, var(--grocery-surface-soft) 0%, var(--grocery-hero-canvas) 55%, var(--grocery-bg) 100%);
         border-bottom: 1px solid var(--grocery-border);
         position: relative;
         overflow: hidden;
     }
 
-    .natura-hero-stage {
+    .natura-hero-slider {
         position: relative;
-        min-height: 540px;
+    }
+
+    .natura-hero-slide {
+        position: relative;
+        min-height: 490px;
         display: flex;
         align-items: center;
+        padding: 2.5rem 0 3.75rem;
     }
 
-    /* Full-bleed Studio Backdrop aligned right on desktop */
-    .natura-hero-backdrop {
-        position: relative;
-        border-radius: 26px;
-        overflow: hidden;
-        background: var(--grocery-hero-canvas);
+    /* Desktop Light Mode vs Dark Mode / Mobile visibility cleanly separated */
+    .natura-light-only-bg {
+        display: none;
     }
+    .natura-dark-only-frame {
+        display: block;
+    }
+
     @media (min-width: 992px) {
-        .natura-hero-backdrop {
-            position: static;
-            border-radius: 0;
-            background: transparent;
+        .natura-hero-slide {
+            min-height: 515px;
+            padding: 3rem 0 4.5rem;
         }
-        .natura-hero-media {
-            position: relative;
+        html:not([data-bs-theme="dark"]) .natura-light-only-bg {
+            display: block;
+            position: absolute;
+            inset: 0;
             z-index: 1;
-        }
-    }
-
-    .natura-hero-photo {
-        width: 100%;
-        height: auto;
-        max-height: 495px;
-        object-fit: cover;
-        object-position: right center;
-        border-radius: 24px;
-        box-shadow: 0 22px 44px -18px rgba(20, 35, 24, 0.14);
-    }
-    @media (min-width: 992px) {
-        .natura-hero-photo {
-            box-shadow: none;
-            border-radius: 24px;
-            max-height: 510px;
-            object-fit: contain;
-            object-position: right bottom;
+            overflow: hidden;
+            pointer-events: none;
             background: #f8faf5;
         }
-        [data-bs-theme="dark"] .natura-hero-photo {
-            filter: brightness(0.95) contrast(1.03);
-            border: 1px solid var(--grocery-border);
+        html:not([data-bs-theme="dark"]) .natura-light-only-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, #f8faf5 0%, #f8faf5 36%, rgba(248, 250, 245, 0.88) 46%, rgba(248, 250, 245, 0) 60%);
+        }
+        html:not([data-bs-theme="dark"]) .natura-light-only-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: right center;
+            display: block;
+        }
+        html:not([data-bs-theme="dark"]) .natura-dark-only-frame {
+            display: none !important;
+        }
+        html:not([data-bs-theme="dark"]) .natura-hero-right-col {
+            min-height: 400px;
+        }
+    }
+
+    /* Mobile / Tablet & Dark Mode cropped showcase window without blank cream void */
+    .natura-dark-only-frame {
+        position: relative;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #f8faf5;
+        border: 1px solid var(--grocery-border);
+        box-shadow: 0 20px 44px -16px rgba(20, 35, 24, 0.16);
+    }
+
+    .natura-dark-only-frame img {
+        width: 100%;
+        height: 295px;
+        object-fit: cover;
+        object-position: 96% center;
+        display: block;
+    }
+
+    [data-bs-theme="dark"] .natura-hero-slide {
+        padding: 2rem 0 4.25rem;
+    }
+    [data-bs-theme="dark"] .natura-slide-stage-dark {
+        background: linear-gradient(135deg, #132219 0%, #172b1f 100%);
+        border: 1px solid var(--grocery-border);
+        border-radius: 26px;
+        padding: 1.75rem;
+        box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.55);
+    }
+    @media (min-width: 992px) {
+        [data-bs-theme="dark"] .natura-slide-stage-dark {
+            padding: 2.15rem 2.5rem;
+        }
+        [data-bs-theme="dark"] .natura-dark-only-frame img {
+            height: 380px;
+            object-fit: cover;
+            object-position: 100% center;
+            transform: scale(1.16);
+            transform-origin: 96% 52%;
         }
     }
 
@@ -222,18 +268,18 @@
         gap: 0.45rem;
         background: var(--grocery-primary-light);
         color: var(--grocery-primary);
-        border: 1px solid rgba(27, 122, 61, 0.2);
+        border: 1px solid rgba(27, 122, 61, 0.22);
         border-radius: 9999px;
-        padding: 0.4rem 1rem;
-        font-size: 0.8rem;
+        padding: 0.38rem 0.95rem;
+        font-size: 0.78rem;
         font-weight: 700;
     }
 
     .natura-hero-h1 {
         font-family: var(--grocery-font-display);
-        font-size: clamp(2.2rem, 4.3vw, 3.65rem);
+        font-size: clamp(2rem, 3.85vw, 3.35rem);
         font-weight: 700;
-        line-height: 1.07;
+        line-height: 1.08;
         letter-spacing: -0.03em;
         color: var(--grocery-text-main);
     }
@@ -241,7 +287,77 @@
         color: var(--grocery-primary);
     }
 
-    /* 3 Frosted-Glass Floating Cards on Hero Image */
+    /* Slider Nav Arrows & Interactive Pill Tabs */
+    .natura-slider-arrow {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--grocery-border);
+        color: #142318;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 46%;
+        transform: translateY(-50%);
+        opacity: 0.85;
+        transition: all 0.22s ease;
+        box-shadow: 0 8px 20px -6px rgba(20, 35, 24, 0.18);
+    }
+    .natura-slider-arrow:hover {
+        opacity: 1;
+        background: #1b7a3d;
+        border-color: #1b7a3d;
+        color: #ffffff;
+    }
+    [data-bs-theme="dark"] .natura-slider-arrow {
+        background: rgba(22, 36, 27, 0.92);
+        color: #f3f7f2;
+    }
+    #groceryHeroCarousel .carousel-control-prev { left: 14px; width: auto; }
+    #groceryHeroCarousel .carousel-control-next { right: 14px; width: auto; }
+
+    .natura-slider-indicators {
+        position: absolute;
+        bottom: 2.35rem;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        z-index: 12;
+        gap: 0.45rem;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 0.32rem 0.55rem;
+        border-radius: 9999px;
+        border: 1px solid var(--grocery-border);
+        box-shadow: 0 8px 20px -8px rgba(20, 35, 24, 0.15);
+    }
+    [data-bs-theme="dark"] .natura-slider-indicators {
+        background: rgba(22, 36, 27, 0.9);
+    }
+    .natura-slider-indicators [data-bs-target] {
+        width: auto !important;
+        height: auto !important;
+        text-indent: 0 !important;
+        margin: 0 !important;
+        padding: 0.28rem 0.78rem;
+        border-radius: 9999px;
+        border: none !important;
+        background: transparent;
+        color: var(--grocery-text-muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        opacity: 1;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+    .natura-slider-indicators [data-bs-target].active {
+        background: #1b7a3d;
+        color: #ffffff;
+    }
+
+    /* 3 Frosted-Glass Floating Cards Clear of Basket & Product Labels */
     .natura-float-card {
         position: absolute;
         z-index: 6;
@@ -250,47 +366,47 @@
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(227, 236, 224, 0.95);
         border-radius: 16px;
-        padding: 0.72rem 1rem;
+        padding: 0.68rem 0.95rem;
         box-shadow: 0 14px 30px -10px rgba(20, 35, 24, 0.16);
         display: flex;
         align-items: center;
-        gap: 0.7rem;
-        max-width: 240px;
+        gap: 0.65rem;
+        max-width: 235px;
         transition: transform 0.25s ease;
     }
     .natura-float-card:hover { transform: translateY(-3px); }
     [data-bs-theme="dark"] .natura-float-card {
-        background: rgba(22, 36, 27, 0.92);
+        background: rgba(22, 36, 27, 0.94);
         border-color: var(--grocery-border);
         color: var(--grocery-text-main);
     }
     .natura-float-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 11px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        font-size: 1.05rem;
+        font-size: 1rem;
     }
-    .natura-float-top { top: 8%; left: 6%; }
-    .natura-float-bottom { bottom: 16%; left: 2%; cursor: pointer; }
-    .natura-float-right { bottom: 26%; right: 2%; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+    .natura-float-top { top: 8%; left: 3%; }
+    .natura-float-bottom { bottom: 10%; left: 1%; cursor: pointer; }
+    .natura-float-right { top: 7%; right: 2%; flex-direction: column; align-items: flex-start; gap: 0.3rem; }
 
     .natura-avatar-stack {
         display: flex;
         align-items: center;
     }
     .natura-avatar-circle {
-        width: 26px;
-        height: 26px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         border: 2px solid #ffffff;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.65rem;
+        font-size: 0.62rem;
         font-weight: 800;
         color: #ffffff;
         margin-left: -6px;
@@ -568,143 +684,285 @@
 <div class="grocery-store-home pb-5">
 
     <!-- ====================================================== -->
-    <!-- SECTION 1: SUNLIT NATURA MARKET EDITORIAL HERO         -->
+    <!-- SECTION 1: SUNLIT NATURA MARKET 3-SLIDE HERO SLIDER    -->
     <!-- ====================================================== -->
-    <section class="natura-hero-wrapper pt-4 pb-5">
-        <div class="container">
-            <div class="natura-hero-stage">
-                <div class="row align-items-center g-4 w-100">
-                    <!-- Left: Crisp Serif Messaging & Pill CTAs -->
-                    <div class="col-lg-5 position-relative" style="z-index: 5;">
-                        <span class="natura-pill-kicker mb-3">
-                            <i class="bi bi-flower2"></i>
-                            {% if IS_BANGLA %}
-                                পরিবারের জন্য খাঁটি। প্রকৃতির কাছ থেকে সরাসরি।
-                            {% else %}
-                                Good for Bangladeshi Families. Pure by Nature.
-                            {% endif %}
-                        </span>
+    <section class="natura-hero-wrapper">
+        <div id="groceryHeroCarousel" class="carousel slide natura-hero-slider" data-bs-ride="carousel" data-bs-interval="6000">
 
-                        <h1 class="natura-hero-h1 mb-3">
-                            {% if IS_BANGLA %}
-                                প্রকৃতির <span class="text-nature-green">তাজা উপহার</span>,<br>সরাসরি আপনার টেবিলে
-                            {% else %}
-                                Fresh From <span class="text-nature-green">Nature</span>,<br>Delivered to Your Table
-                            {% endif %}
-                        </h1>
+            <!-- Clickable Pill Slide Indicators -->
+            <div class="carousel-indicators natura-slider-indicators d-none d-md-flex">
+                <button type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1: Harvest Basket">
+                    <i class="bi bi-flower2 me-1"></i>Harvest Basket
+                </button>
+                <button type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2: Honey, Gur and Red Sugar">
+                    <i class="bi bi-droplet-fill me-1"></i>Honey, Gur &amp; Red Sugar
+                </button>
+                <button type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3: Mustard Oil and Nuts">
+                    <i class="bi bi-gem me-1"></i>Mustard Oil &amp; Nuts
+                </button>
+            </div>
 
-                        <p class="fw-semibold mb-2" style="color: var(--grocery-primary); font-size: 0.92rem;">
-                            {% if IS_BANGLA %}
-                                গ্রামবাংলার খামার ও সুন্দরবন থেকে সংগৃহীত খাঁটি অর্গানিক খাদ্য
-                            {% else %}
-                                Raw Honey, Crispy Nuts, Red Sugar (লাল চিনি), Winter Khejur Gur &amp; Wood-Pressed Mustard Oil.
-                            {% endif %}
-                        </p>
+            <div class="carousel-inner">
 
-                        <p class="grocery-text-muted mb-4" style="font-size: 0.96rem; line-height: 1.6;">
-                            {% if IS_BANGLA %}
-                                সুন্দরবনের প্রাকৃতিক মধু, রাজশাহীর খেজুর গুড়, আখের লাল চিনি, কাঠবাদাম-কাজু, সিরাজগঞ্জের ঘানি ভাঙা সরিষার তেল ও প্রতিদিনের তাজা সবজি এখন এক ক্লিকে ঘরে।
-                            {% else %}
-                                Discover 100% pure, adulteration-free groceries sourced directly from Sirajganj, Sundarbans, Rajshahi &amp; Dinajpur farms for healthier daily living.
-                            {% endif %}
-                        </p>
-
-                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
-                            <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-grocery-primary">
-                                <span>{% if IS_BANGLA %}এখনই কিনুন{% else %}Shop Farm Harvest{% endif %}</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </a>
-                            <a href="#harvest-categories" class="btn btn-grocery-amber">
-                                <span>{% if IS_BANGLA %}পণ্য দেখুন{% else %}Explore Products{% endif %}</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </a>
+                <!-- ========================================== -->
+                <!-- SLIDE 1: COMPLETE FARM HARVEST & PANTRY    -->
+                <!-- ========================================== -->
+                <div class="carousel-item active">
+                    <div class="natura-hero-slide">
+                        <!-- Desktop Light Mode: Seamless full-bleed studio photo -->
+                        <div class="natura-light-only-bg">
+                            <img src="{% static 'images/themes/grocery_organic/hero-natura-harvest.jpg' %}"
+                                 alt="Fresh organic produce basket, mustard oil, raw honey, nuts, Khejur Gur and red sugar">
                         </div>
 
-                        <div class="d-flex flex-wrap align-items-center gap-3 small grocery-text-muted pt-1">
-                            <button type="button" class="btn btn-link p-0 text-decoration-none fw-semibold small d-inline-flex align-items-center gap-1" style="color: var(--grocery-primary);" data-bs-toggle="modal" data-bs-target="#deliverySlotModal">
-                                <i class="bi bi-clock-history"></i>
-                                <span>Schedule Delivery Slot</span>
-                            </button>
-                            <span>&bull;</span>
-                            <span><i class="bi bi-shield-check text-success me-1"></i>Zero Formalin &amp; Chemical-Free</span>
-                        </div>
-                    </div>
+                        <div class="container position-relative" style="z-index: 4;">
+                            <div class="natura-slide-stage-dark">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-lg-6 position-relative" style="z-index: 5;">
+                                        <span class="natura-pill-kicker mb-3">
+                                            <i class="bi bi-flower2"></i>
+                                            {% if IS_BANGLA %}পরিবারের জন্য খাঁটি। প্রকৃতির কাছ থেকে সরাসরি।{% else %}Good for Bangladeshi Families. Pure by Nature.{% endif %}
+                                        </span>
 
-                    <!-- Right: Bespoke Studio Bangladeshi Harvest Carousel & 3 Floating Glass Badges -->
-                    <div class="col-lg-7">
-                        <div class="position-relative natura-hero-backdrop">
-                            <div id="groceryHeroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5500">
-                                <div class="carousel-inner rounded-4">
-                                    <!-- Slide 1: Bespoke Full-Spread Bangladeshi Organic Pantry & Produce -->
-                                    <div class="carousel-item active">
-                                        <div class="natura-hero-media">
-                                            <img src="{% static 'images/themes/grocery_organic/hero-natura-harvest.jpg' %}"
-                                                 alt="Fresh organic produce basket, cold-pressed mustard oil, raw honey, nuts, Khejur Gur and red sugar"
-                                                 class="natura-hero-photo img-fluid">
+                                        <h1 class="natura-hero-h1 mb-3">
+                                            {% if IS_BANGLA %}প্রকৃতির <span class="text-nature-green">তাজা উপহার</span>,<br>সরাসরি আপনার টেবিলে{% else %}Fresh From <span class="text-nature-green">Nature</span>,<br>Delivered to Your Table{% endif %}
+                                        </h1>
+
+                                        <p class="fw-semibold mb-2" style="color: var(--grocery-primary); font-size: 0.92rem;">
+                                            {% if IS_BANGLA %}সুন্দরবনের মধু, খেজুর গুড়, লাল চিনি, বাদাম ও ঘানি ভাঙা সরিষার তেল{% else %}Raw Honey, Crispy Nuts, Red Sugar (লাল চিনি), Winter Khejur Gur &amp; Wood-Pressed Mustard Oil.{% endif %}
+                                        </p>
+
+                                        <p class="grocery-text-muted mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+                                            {% if IS_BANGLA %}গ্রামবাংলার খামার থেকে সংগৃহীত ১০০% নির্ভেজাল ও কেমিক্যালমুক্ত অর্গানিক খাদ্য এখন আপনার ঘরের দরজায়।{% else %}Discover 100% pure, adulteration-free groceries sourced directly from Sirajganj, Sundarbans, Rajshahi &amp; Dinajpur farms for healthier daily living.{% endif %}
+                                        </p>
+
+                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                                            <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-grocery-primary">
+                                                <span>{% if IS_BANGLA %}এখনই কিনুন{% else %}Shop Farm Harvest{% endif %}</span>
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                            <a href="#harvest-categories" class="btn btn-grocery-amber">
+                                                <span>{% if IS_BANGLA %}পণ্য দেখুন{% else %}Explore Products{% endif %}</span>
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                        </div>
+
+                                        <div class="d-flex flex-wrap align-items-center gap-3 small grocery-text-muted pt-1">
+                                            <button type="button" class="btn btn-link p-0 text-decoration-none fw-semibold small d-inline-flex align-items-center gap-1" style="color: var(--grocery-primary);" data-bs-toggle="modal" data-bs-target="#deliverySlotModal">
+                                                <i class="bi bi-clock-history"></i>
+                                                <span>Schedule Delivery Slot</span>
+                                            </button>
+                                            <span>&bull;</span>
+                                            <span><i class="bi bi-shield-check text-success me-1"></i>Zero Formalin &amp; Chemical-Free</span>
                                         </div>
                                     </div>
 
-                                    <!-- Slide 2: Honey, Khejur Gur, Nuts & Red Sugar Pantry Highlight -->
-                                    <div class="carousel-item">
-                                        <div class="natura-hero-media position-relative">
+                                    <div class="col-lg-6 position-relative natura-hero-right-col">
+                                        <!-- Mobile & Dark Mode Tight-Cropped Studio Showcase -->
+                                        <div class="natura-dark-only-frame">
                                             <img src="{% static 'images/themes/grocery_organic/hero-natura-harvest.jpg' %}"
-                                                 alt="Sundarbans Raw Honey, Khejur Gur, Red Sugar and Crispy Nuts"
-                                                 class="natura-hero-photo img-fluid"
-                                                 style="object-position: right center;">
-                                            <div class="position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill shadow-sm d-none d-sm-inline-flex align-items-center gap-2" style="background: rgba(255,255,255,0.94); border: 1px solid #e3ece0; font-size: 0.78rem; font-weight: 700; color: #142318;">
-                                                <span class="badge bg-warning text-dark rounded-pill">WINTER SPECIAL</span>
-                                                <span>Patali Khejur Gur &amp; Raw Honey Fresh Batch</span>
+                                                 alt="Bangladeshi Organic Harvest: Honey, Khejur Gur, Red Sugar, Mustard Oil &amp; Nuts">
+                                        </div>
+
+                                        <!-- Floating Frosted Badges (positioned clear of foreground products) -->
+                                        <div class="natura-float-card natura-float-top d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: #eef7f0; color: #1b7a3d;"><i class="bi bi-shield-fill-check"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">100% Pure &amp; Natural</div>
+                                                <div class="grocery-text-muted" style="font-size: 0.69rem;">No chemicals. Lab tested.</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-bottom d-none d-md-flex" data-bs-toggle="modal" data-bs-target="#deliverySlotModal" role="button">
+                                            <div class="natura-float-icon" style="background: #fef7e0; color: #b45309;"><i class="bi bi-truck"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Same Day Express</div>
+                                                <div class="grocery-text-muted" style="font-size: 0.69rem;">Farm-to-Door in 2 Hours</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-right d-none d-md-flex">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 26px; height: 26px; background: #fef7e0; color: #eab308;"><i class="bi bi-star-fill small"></i></span>
+                                                <div class="lh-1">
+                                                    <div class="fw-bold small">4.9/5</div>
+                                                    <div class="grocery-text-muted" style="font-size: 0.66rem;">12K+ Family Reviews</div>
+                                                </div>
+                                            </div>
+                                            <div class="natura-avatar-stack ps-1">
+                                                <span class="natura-avatar-circle" style="background: #1b7a3d;">N</span>
+                                                <span class="natura-avatar-circle" style="background: #c25525;">R</span>
+                                                <span class="natura-avatar-circle" style="background: #b45309;">T</span>
+                                                <span class="natura-avatar-circle" style="background: #0f766e;">S</span>
+                                                <span class="natura-avatar-circle" style="background: #1b7a3d;">+</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- Floating Glass Badge 1: 100% Pure & Natural -->
-                            <div class="natura-float-card natura-float-top d-none d-md-flex">
-                                <div class="natura-float-icon" style="background: #eef7f0; color: #1b7a3d;">
-                                    <i class="bi bi-shield-fill-check"></i>
-                                </div>
-                                <div class="lh-sm">
-                                    <div class="fw-bold small">100% Pure &amp; Natural</div>
-                                    <div class="grocery-text-muted" style="font-size: 0.7rem;">No chemicals. Lab tested.</div>
-                                </div>
-                            </div>
+                <!-- ========================================== -->
+                <!-- SLIDE 2: HONEY, KHEJUR GUR & RED SUGAR     -->
+                <!-- ========================================== -->
+                <div class="carousel-item">
+                    <div class="natura-hero-slide">
+                        <div class="natura-light-only-bg">
+                            <img src="{% static 'images/themes/grocery_organic/hero-slide-sweeteners.jpg' %}"
+                                 alt="Sundarbans Raw Honey, Patali Khejur Gur and Unrefined Red Sugar (Lal Chini)">
+                        </div>
 
-                            <!-- Floating Glass Badge 2: Same Day Express Delivery Slot -->
-                            <div class="natura-float-card natura-float-bottom d-none d-md-flex" data-bs-toggle="modal" data-bs-target="#deliverySlotModal" role="button" title="Select Dhaka Express Delivery Slot">
-                                <div class="natura-float-icon" style="background: #fef7e0; color: #b45309;">
-                                    <i class="bi bi-truck"></i>
-                                </div>
-                                <div class="lh-sm">
-                                    <div class="fw-bold small">Same Day Express</div>
-                                    <div class="grocery-text-muted" style="font-size: 0.7rem;">Farm-to-Door in 2 Hours</div>
-                                </div>
-                            </div>
+                        <div class="container position-relative" style="z-index: 4;">
+                            <div class="natura-slide-stage-dark">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-lg-6 position-relative" style="z-index: 5;">
+                                        <span class="natura-pill-kicker mb-3" style="background: var(--grocery-amber-soft); color: var(--grocery-amber-deep); border-color: rgba(245, 184, 46, 0.35);">
+                                            <i class="bi bi-stars"></i>
+                                            {% if IS_BANGLA %}সুন্দরবন ও রাজশাহীর শীতকালীন খাঁটি সংগ্রহ{% else %}Sundarbans &amp; Rajshahi Natural Sweeteners{% endif %}
+                                        </span>
 
-                            <!-- Floating Glass Badge 3: 4.9/5 12K Reviews -->
-                            <div class="natura-float-card natura-float-right d-none d-md-flex">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; background: #fef7e0; color: #eab308;">
-                                        <i class="bi bi-star-fill small"></i>
-                                    </span>
-                                    <div class="lh-1">
-                                        <div class="fw-bold small">4.9/5</div>
-                                        <div class="grocery-text-muted" style="font-size: 0.68rem;">12K+ Family Reviews</div>
+                                        <h2 class="natura-hero-h1 mb-3">
+                                            {% if IS_BANGLA %}খাঁটি <span class="text-nature-green">মধু, খেজুর গুড়</span><br>ও আখের লাল চিনি{% else %}Raw Honey, <span class="text-nature-green">Khejur Gur</span><br>&amp; Unrefined Red Sugar{% endif %}
+                                        </h2>
+
+                                        <p class="fw-semibold mb-2" style="color: var(--grocery-primary); font-size: 0.92rem;">
+                                            {% if IS_BANGLA %}পাটালি ও ঝোলা খেজুর গুড়, প্রাকৃতিক চাকের মধু এবং অপরিশোধিত লাল চিনি (Lal Chini){% else %}Pure Honeycomb Nectar, Artisan Patali &amp; Nolen Khejur Gur, and Mineral-Rich Lal Chini.{% endif %}
+                                        </p>
+
+                                        <p class="grocery-text-muted mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+                                            {% if IS_BANGLA %}কোনো কৃত্রিম চিনি বা ফিটকিরি ছাড়াই সনাতনী পদ্ধতিতে তৈরি খাঁটি খেজুর গুড় ও সুন্দরবনের অরিজিনাল মধু।{% else %}Gathered in small village batches without artificial syrup, chemical bleach, or sulfur — preserving rich iron, enzymes &amp; authentic Bengal aroma.{% endif %}
+                                        </p>
+
+                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                                            <a href="{% url 'product_list' %}?category=raw-wild-honey" class="btn btn-grocery-primary">
+                                                <span>{% if IS_BANGLA %}মধু ও গুড় কিনুন{% else %}Shop Honey &amp; Gur{% endif %}</span>
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                            <a href="{% url 'product_list' %}?q=Sugar" class="btn btn-grocery-amber">
+                                                <span>{% if IS_BANGLA %}লাল চিনি দেখুন{% else %}Shop Red Sugar{% endif %}</span>
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                        </div>
+
+                                        <div class="small grocery-text-muted pt-1">
+                                            <i class="bi bi-patch-check-fill text-success me-1"></i>100% Lab-Verified Sundarban Honey &bull; Authentic Winter Gur Batch
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="natura-avatar-stack ps-1">
-                                    <span class="natura-avatar-circle" style="background: #1b7a3d;">N</span>
-                                    <span class="natura-avatar-circle" style="background: #c25525;">R</span>
-                                    <span class="natura-avatar-circle" style="background: #b45309;">T</span>
-                                    <span class="natura-avatar-circle" style="background: #0f766e;">S</span>
-                                    <span class="natura-avatar-circle" style="background: #1b7a3d;">+</span>
+
+                                    <div class="col-lg-6 position-relative natura-hero-right-col">
+                                        <div class="natura-dark-only-frame">
+                                            <img src="{% static 'images/themes/grocery_organic/hero-slide-sweeteners.jpg' %}"
+                                                 alt="Raw Honey Jar, Earthen Patali Khejur Gur Bowl and Red Sugar Pouch">
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-top d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: #fef7e0; color: #b45309;"><i class="bi bi-hexagon-fill"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Artisanal Patali Gur</div>
+                                                <div class="grocery-text-muted" style="font-size: 0.69rem;">Zero added sugar or soda</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-bottom d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: #eef7f0; color: #1b7a3d;"><i class="bi bi-droplet-fill"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Unfiltered Raw Honey</div>
+                                                <div class="grocery-text-muted" style="font-size: 0.69rem;">Direct Sundarbans harvest</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- ========================================== -->
+                <!-- SLIDE 3: MUSTARD OIL, CRISPY NUTS & FARM   -->
+                <!-- ========================================== -->
+                <div class="carousel-item">
+                    <div class="natura-hero-slide">
+                        <div class="natura-light-only-bg">
+                            <img src="{% static 'images/themes/grocery_organic/hero-slide-oils-nuts.jpg' %}"
+                                 alt="Cold-Pressed Mustard Oil, Crispy Nuts, Medjool Dates and Fresh Farm Basket">
+                        </div>
+
+                        <div class="container position-relative" style="z-index: 4;">
+                            <div class="natura-slide-stage-dark">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-lg-6 position-relative" style="z-index: 5;">
+                                        <span class="natura-pill-kicker mb-3">
+                                            <i class="bi bi-droplet-half"></i>
+                                            {% if IS_BANGLA %}সিরাজগঞ্জের কাঠের ঘানি ও খামার-তাজা ড্রাই ফ্রুটস{% else %}Wood-Pressed Below 38°C &amp; Farm-Fresh Nuts{% endif %}
+                                        </span>
+
+                                        <h2 class="natura-hero-h1 mb-3">
+                                            {% if IS_BANGLA %}ঘানি ভাঙা <span class="text-nature-green">সরিষার তেল</span>,<br>তাজা বাদাম ও সবজি{% else %}Ghani <span class="text-nature-green">Mustard Oil</span>,<br>Crispy Nuts &amp; Produce{% endif %}
+                                        </h2>
+
+                                        <p class="fw-semibold mb-2" style="color: var(--grocery-primary); font-size: 0.92rem;">
+                                            {% if IS_BANGLA %}দেশি মাঘী সরিষার তেল, ক্যালিফোর্নিয়া কাঠবাদাম-কাজু, খেজুর ও সকালের তাজা শাকসবজি{% else %}Sirajganj Maghi Mustard Oil, Baghabari Cow Ghee, Roasted Almonds, Cashews, Medjool Dates &amp; Greens.{% endif %}
+                                        </p>
+
+                                        <p class="grocery-text-muted mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+                                            {% if IS_BANGLA %}কোনো কেমিক্যাল প্রিজারভেটিভ বা রিফাইনিং ছাড়াই আপনার দৈনন্দিন সুস্বাস্থ্য ও ঐতিহ্যবাহী রান্নার সেরা সঙ্গী।{% else %}Cold-milled slowly to lock in bold pungent aroma and paired with crisp whole dry fruits, jumbo dates, and dawn-picked organic vegetables.{% endif %}
+                                        </p>
+
+                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                                            <a href="{% url 'product_list' %}?category=cold-pressed-mustard-oils" class="btn btn-grocery-primary">
+                                                <span>{% if IS_BANGLA %}সরিষার তেল কিনুন{% else %}Shop Cold-Pressed Oils{% endif %}</span>
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                            <a href="{% url 'product_list' %}?category=premium-dry-fruits-nuts" class="btn btn-grocery-amber">
+                                                <span>{% if IS_BANGLA %}বাদাম ও খেজুর দেখুন{% else %}Shop Nuts &amp; Dates{% endif %}</span>
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                        </div>
+
+                                        <div class="small grocery-text-muted pt-1">
+                                            <i class="bi bi-truck text-success me-1"></i>Same-Day Chilled Van Delivery Across Dhaka &bull; 1-Hr Express Ready
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6 position-relative natura-hero-right-col">
+                                        <div class="natura-dark-only-frame">
+                                            <img src="{% static 'images/themes/grocery_organic/hero-slide-oils-nuts.jpg' %}"
+                                                 alt="Cold-Pressed Mustard Oil Bottle, Fresh Harvest Basket, Honey and Roasted Almonds">
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-top d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: #fefce8; color: #ca8a04;"><i class="bi bi-moisture"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Wood Ghani Oil</div>
+                                                <div class="grocery-text-muted" style="font-size: 0.69rem;">Sirajganj Maghi Mustard</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-bottom d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: #eef7f0; color: #1b7a3d;"><i class="bi bi-gem"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Jumbo Nuts &amp; Dates</div>
+                                                <div class="grocery-text-muted" style="font-size: 0.69rem;">Vacuum packed fresh crop</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- Slider Prev/Next Circular Frosted Buttons -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide="prev" aria-label="Previous Hero Slide">
+                <span class="natura-slider-arrow" aria-hidden="true"><i class="bi bi-chevron-left fw-bold"></i></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide="next" aria-label="Next Hero Slide">
+                <span class="natura-slider-arrow" aria-hidden="true"><i class="bi bi-chevron-right fw-bold"></i></span>
+            </button>
         </div>
     </section>
 
