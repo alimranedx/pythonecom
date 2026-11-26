@@ -4,53 +4,55 @@
 <style>
     .grocery-product-card {
         --gc-bg: #ffffff;
-        --gc-img-bg: radial-gradient(circle at 50% 45%, #fcfcf9 0%, #f1f6ee 100%);
-        --gc-border: #e3ece0;
-        --gc-title: #142318;
-        --gc-muted: #556658;
+        --gc-img-bg: #f4f7f1;
+        --gc-border: #dde5d8;
+        --gc-title: #132217;
+        --gc-muted: #526356;
         --gc-brand: #1b7a3d;
         --gc-price: #1b7a3d;
-        --gc-chip-bg: #f4f8f2;
-        --gc-chip-border: #dbe7d8;
+        --gc-chip-bg: #f1f5ed;
+        --gc-chip-border: #d5dfd0;
         --gc-chip-text: #354739;
-        --gc-stepper-bg: #f4f8f2;
-        --gc-stepper-border: #cfe2d3;
+        --gc-stepper-bg: #f4f7f1;
+        --gc-stepper-border: #cde0d1;
         background: var(--gc-bg) !important;
         border: 1px solid var(--gc-border) !important;
-        border-radius: 18px !important;
+        border-radius: 16px !important;
+        box-shadow: none !important;
         overflow: hidden;
-        transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.26s ease, border-color 0.25s ease;
+        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
     }
     [data-bs-theme="dark"] .grocery-product-card {
-        --gc-bg: #16241b !important;
-        --gc-img-bg: radial-gradient(circle at 50% 45%, #1d3124 0%, #132118 100%) !important;
-        --gc-border: #274030 !important;
-        --gc-title: #f3f7f2 !important;
-        --gc-muted: #a4b7a8 !important;
+        --gc-bg: #132018 !important;
+        --gc-img-bg: #17271d !important;
+        --gc-border: #253b2d !important;
+        --gc-title: #f1f6f0 !important;
+        --gc-muted: #9eb1a3 !important;
         --gc-brand: #4ade80 !important;
         --gc-price: #4ade80 !important;
         --gc-chip-bg: #1b2e22 !important;
         --gc-chip-border: #2c4a38 !important;
         --gc-chip-text: #d6dfd7 !important;
-        --gc-stepper-bg: #1b2e22 !important;
+        --gc-stepper-bg: #17271d !important;
         --gc-stepper-border: #2c4a38 !important;
     }
     .grocery-product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 16px 32px -10px rgba(27, 122, 61, 0.16) !important;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 26px -14px rgba(19, 34, 23, 0.22) !important;
         border-color: var(--gc-brand) !important;
     }
     .grocery-product-card .grocery-card-img-wrapper {
         background: var(--gc-img-bg);
-        min-height: 205px;
-        height: 205px;
+        min-height: 196px;
+        height: 196px;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        padding: 1.1rem;
-        margin: 0.45rem 0.45rem 0;
-        border-radius: 14px;
+        padding: 1rem;
+        margin: 0;
+        border-bottom: 1px solid var(--gc-border);
+        border-radius: 0;
         position: relative;
     }
     .grocery-product-card .grocery-card-img {
