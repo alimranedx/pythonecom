@@ -3,17 +3,17 @@
 <footer class="grocery-footer pt-5 pb-3 mt-auto">
     <style>
         .grocery-footer {
-            --gf-bg: #f2ece0;
+            --gf-bg: #f4f8f2;
             --gf-card: #ffffff;
-            --gf-border: #e1d7c4;
-            --gf-text: #162419;
-            --gf-muted: #5a6658;
-            --gf-forest: #163020;
-            --gf-forest-mid: #1e4d33;
-            --gf-amber: #c97310;
-            --gf-pill-bg: #e6f2ea;
-            --gf-pill-border: #b8dac4;
-            --gf-voucher-bg: #fef3c7;
+            --gf-border: #e3ece0;
+            --gf-text: #142318;
+            --gf-muted: #556658;
+            --gf-forest: #1b7a3d;
+            --gf-forest-mid: #145c2d;
+            --gf-amber: #d97706;
+            --gf-pill-bg: #eef7f0;
+            --gf-pill-border: #cce3d2;
+            --gf-voucher-bg: #fef7e0;
             --gf-voucher-text: #92400e;
             background-color: var(--gf-bg);
             border-top: 1px solid var(--gf-border);
@@ -22,15 +22,15 @@
             font-size: 0.88rem;
         }
         [data-bs-theme="dark"] .grocery-footer {
-            --gf-bg: #0b140f !important;
-            --gf-card: #132119 !important;
-            --gf-border: #253d2e !important;
-            --gf-text: #f5f1e8 !important;
-            --gf-muted: #a1b2a4 !important;
+            --gf-bg: #0f1912 !important;
+            --gf-card: #16241b !important;
+            --gf-border: #274030 !important;
+            --gf-text: #f3f7f2 !important;
+            --gf-muted: #a4b7a8 !important;
             --gf-forest: #4ade80 !important;
-            --gf-forest-mid: #34d399 !important;
+            --gf-forest-mid: #22c55e !important;
             --gf-amber: #fbbf24 !important;
-            --gf-pill-bg: rgba(74, 222, 128, 0.13) !important;
+            --gf-pill-bg: rgba(74, 222, 128, 0.14) !important;
             --gf-pill-border: rgba(74, 222, 128, 0.28) !important;
             --gf-voucher-bg: #2a2110 !important;
             --gf-voucher-text: #fde68a !important;
@@ -44,7 +44,7 @@
         }
         .grocery-footer .gf-pillar-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 24px rgba(22, 48, 32, 0.12);
+            box-shadow: 0 10px 24px rgba(27, 122, 61, 0.12);
             border-color: var(--gf-forest-mid);
         }
         .grocery-footer .gf-pillar-icon-wrap {
@@ -61,9 +61,9 @@
             transition: all 0.2s ease;
         }
         .grocery-footer .gf-pillar-card:hover .gf-pillar-icon-wrap {
-            background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);
+            background: #1b7a3d;
             color: #ffffff;
-            border-color: #163020;
+            border-color: #1b7a3d;
         }
         .grocery-footer .gf-heading {
             font-size: 0.8rem;
@@ -101,9 +101,9 @@
             text-decoration: none;
         }
         .grocery-footer .gf-social-icon:hover {
-            background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);
+            background: #1b7a3d;
             color: #ffffff;
-            border-color: #163020;
+            border-color: #1b7a3d;
             transform: translateY(-2px);
         }
         .grocery-footer .gf-payment-chip {
@@ -120,7 +120,7 @@
         }
         .grocery-footer .gf-newsletter-input {
             background-color: var(--gf-card);
-            border: 1.5px solid var(--gf-forest-mid);
+            border: 1.5px solid #1b7a3d;
             color: var(--gf-text);
             border-radius: 9999px 0 0 9999px;
             padding: 0.55rem 1rem;
@@ -128,9 +128,9 @@
         }
         .grocery-footer .gf-newsletter-input::placeholder { color: var(--gf-muted); }
         .grocery-footer .gf-newsletter-btn {
-            background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);
+            background: #1b7a3d;
             color: #ffffff;
-            border: 1.5px solid #163020;
+            border: 1.5px solid #1b7a3d;
             border-radius: 0 9999px 9999px 0;
             font-size: 0.82rem;
             font-weight: 700;
@@ -202,18 +202,18 @@
                     {% if site_settings.brand_logo %}
                         <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
                         <span class="brand-logo-fallback align-items-center gap-2">
-                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #163020; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
+                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
                             <span class="fw-bold fs-5 gf-title">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
                         </span>
                     {% elif CURRENT_THEME_DATA.logo_url %}
                         <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
                         <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
                         <span class="brand-logo-fallback align-items-center gap-2">
-                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #163020; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
+                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
                             <span class="fw-bold fs-5 gf-title">{{ CURRENT_THEME_DATA.brand_name|default:'PURE HARVEST' }}</span>
                         </span>
                     {% else %}
-                        <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #163020; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
+                        <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
                         <span class="fw-bold fs-5 gf-title">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
                     {% endif %}
                 </a>

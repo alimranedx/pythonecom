@@ -4,17 +4,17 @@
 <style>
     .grocery-product-card {
         --gc-bg: #ffffff;
-        --gc-img-bg: radial-gradient(circle at 50% 45%, #fffcf4 0%, #f3ece0 100%);
-        --gc-border: #e4d9c6;
-        --gc-title: #162419;
-        --gc-muted: #5a6658;
-        --gc-brand: #1e4d33;
-        --gc-price: #163020;
-        --gc-chip-bg: #f5efe3;
-        --gc-chip-border: #dfd3be;
-        --gc-chip-text: #474139;
-        --gc-stepper-bg: #f6f2e8;
-        --gc-stepper-border: #cbe0d2;
+        --gc-img-bg: radial-gradient(circle at 50% 45%, #fcfcf9 0%, #f1f6ee 100%);
+        --gc-border: #e3ece0;
+        --gc-title: #142318;
+        --gc-muted: #556658;
+        --gc-brand: #1b7a3d;
+        --gc-price: #1b7a3d;
+        --gc-chip-bg: #f4f8f2;
+        --gc-chip-border: #dbe7d8;
+        --gc-chip-text: #354739;
+        --gc-stepper-bg: #f4f8f2;
+        --gc-stepper-border: #cfe2d3;
         background: var(--gc-bg) !important;
         border: 1px solid var(--gc-border) !important;
         border-radius: 18px !important;
@@ -22,22 +22,22 @@
         transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.26s ease, border-color 0.25s ease;
     }
     [data-bs-theme="dark"] .grocery-product-card {
-        --gc-bg: #132119 !important;
-        --gc-img-bg: radial-gradient(circle at 50% 45%, #1c3124 0%, #111e16 100%) !important;
-        --gc-border: #264030 !important;
-        --gc-title: #f5f1e8 !important;
-        --gc-muted: #a2b3a5 !important;
+        --gc-bg: #16241b !important;
+        --gc-img-bg: radial-gradient(circle at 50% 45%, #1d3124 0%, #132118 100%) !important;
+        --gc-border: #274030 !important;
+        --gc-title: #f3f7f2 !important;
+        --gc-muted: #a4b7a8 !important;
         --gc-brand: #4ade80 !important;
         --gc-price: #4ade80 !important;
-        --gc-chip-bg: #1b2f23 !important;
+        --gc-chip-bg: #1b2e22 !important;
         --gc-chip-border: #2c4a38 !important;
         --gc-chip-text: #d6dfd7 !important;
-        --gc-stepper-bg: #182b20 !important;
+        --gc-stepper-bg: #1b2e22 !important;
         --gc-stepper-border: #2c4a38 !important;
     }
     .grocery-product-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 16px 32px -10px rgba(22, 48, 32, 0.2) !important;
+        box-shadow: 0 16px 32px -10px rgba(27, 122, 61, 0.16) !important;
         border-color: var(--gc-brand) !important;
     }
     .grocery-product-card .grocery-card-img-wrapper {
@@ -57,7 +57,7 @@
         max-height: 168px;
         width: auto;
         object-fit: contain;
-        filter: drop-shadow(0 8px 14px rgba(22, 48, 32, 0.1));
+        filter: drop-shadow(0 8px 14px rgba(20, 35, 24, 0.08));
         transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .grocery-product-card:hover .grocery-card-img { transform: scale(1.06); }
@@ -84,15 +84,15 @@
     .grocery-product-card .grocery-basket-btn {
         height: 36px;
         font-size: 0.8rem;
-        background: linear-gradient(135deg, #163020 0%, #1e4d33 100%);
+        background: #1b7a3d;
         color: #ffffff;
         border: none;
         border-radius: 9999px;
         transition: all 0.22s ease;
     }
     .grocery-product-card .grocery-basket-btn:hover {
-        background: linear-gradient(135deg, #102519 0%, #163020 100%);
-        box-shadow: 0 4px 12px rgba(22, 48, 32, 0.28);
+        background: #145c2d;
+        box-shadow: 0 4px 12px rgba(27, 122, 61, 0.28);
     }
 </style>
 
@@ -102,13 +102,13 @@
         <!-- Top Left Badges -->
         <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style="z-index: 3;">
             {% if product.has_discount %}
-                <span class="badge shadow-xs fw-bold px-2 py-0.5 rounded-pill" style="background: #a84420; color: #ffffff; font-size: 0.67rem;">
+                <span class="badge shadow-xs fw-bold px-2 py-0.5 rounded-pill" style="background: #c25525; color: #ffffff; font-size: 0.67rem;">
                     -{{ product.discount_percent }}%
                 </span>
             {% endif %}
 
             {% if "oil" in product.name|lower or "ghee" in product.name|lower %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #163020; color: #ffffff; font-size: 0.63rem;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #1b7a3d; color: #ffffff; font-size: 0.63rem;">
                     <i class="bi bi-droplet-fill text-warning me-0.5"></i>Cold Pressed
                 </span>
             {% elif "honey" in product.name|lower %}
@@ -116,11 +116,11 @@
                     <i class="bi bi-flower2 me-0.5"></i>100% Pure Raw
                 </span>
             {% elif product.is_featured %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #163020; color: #dcfce7; font-size: 0.63rem;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #1b7a3d; color: #ffffff; font-size: 0.63rem;">
                     <i class="bi bi-patch-check-fill text-warning me-0.5"></i>100% Pure
                 </span>
             {% else %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: rgba(255, 255, 255, 0.94); color: #163020; border: 1px solid #b8dac4; font-size: 0.62rem;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: rgba(255, 255, 255, 0.94); color: #1b7a3d; border: 1px solid #cce3d2; font-size: 0.62rem;">
                     <i class="bi bi-shield-check me-0.5"></i>Chemical Free
                 </span>
             {% endif %}
