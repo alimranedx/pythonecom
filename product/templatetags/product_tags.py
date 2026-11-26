@@ -982,22 +982,22 @@ def grocery_nutrition_table(product):
             {'standard': 'Packaging Integrity', 'detail': 'Food-Grade Airtight Sealed to Preserve Freshness & Essential Oils'},
         ]
 
-    # Build responsive HTML table
+    # Build responsive HTML table (theme-aware light & dark mode classes)
     html_lines = [
-        '<div class="grocery-nutrition-wrapper border rounded-3 p-3 bg-white shadow-xs">',
+        '<div class="grocery-nutrition-wrapper border rounded-3 p-3 shadow-xs">',
         '  <div class="row g-4">',
         '    <div class="col-md-7">',
         '      <div class="d-flex align-items-center justify-content-between mb-2">',
-        '        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-heart-pulse text-success me-1.5"></i>Nutritional Facts</h6>',
-        '        <span class="badge bg-light text-muted border" style="font-size: 0.72rem;">Per 100g Serving</span>',
+        '        <h6 class="fw-bold mb-0"><i class="bi bi-heart-pulse text-success me-1.5"></i>Nutritional Facts</h6>',
+        '        <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.72rem;">Per 100g Serving</span>',
         '      </div>',
         '      <div class="table-responsive">',
         '        <table class="table table-sm table-striped align-middle mb-0" style="font-size: 0.82rem;">',
-        '          <thead class="table-light">',
+        '          <thead>',
         '            <tr>',
-        '              <th class="py-1.5 text-secondary">Nutrient Component</th>',
-        '              <th class="py-1.5 text-end text-secondary">Amount</th>',
-        '              <th class="py-1.5 text-end text-secondary">% Daily Value*</th>',
+        '              <th class="py-1.5">Nutrient Component</th>',
+        '              <th class="py-1.5 text-end">Amount</th>',
+        '              <th class="py-1.5 text-end">% Daily Value*</th>',
         '            </tr>',
         '          </thead>',
         '          <tbody>',
@@ -1005,26 +1005,26 @@ def grocery_nutrition_table(product):
     for row in facts:
         html_lines.append(
             f'            <tr>'
-            f'<td class="py-1.5 fw-medium text-dark">{escape(row["parameter"])}</td>'
+            f'<td class="py-1.5 fw-medium">{escape(row["parameter"])}</td>'
             f'<td class="py-1.5 text-end text-success fw-semibold">{escape(row["value"])}</td>'
-            f'<td class="py-1.5 text-end text-muted small">{escape(row["daily_val"])}</td>'
+            f'<td class="py-1.5 text-end opacity-75 small">{escape(row["daily_val"])}</td>'
             f'</tr>'
         )
     html_lines.extend([
         '          </tbody>',
         '        </table>',
         '      </div>',
-        '      <div class="mt-2 text-muted" style="font-size: 0.7rem;">*Percent Daily Values are based on a 2,000 calorie balanced organic diet.</div>',
+        '      <div class="mt-2 opacity-75" style="font-size: 0.7rem;">*Percent Daily Values are based on a 2,000 calorie balanced organic diet.</div>',
         '    </div>',
         '    <div class="col-md-5">',
-        '      <h6 class="fw-bold text-dark mb-2"><i class="bi bi-shield-check text-primary me-1.5"></i>Purity & Standard Verification</h6>',
+        '      <h6 class="fw-bold mb-2"><i class="bi bi-shield-check text-primary me-1.5"></i>Purity & Standard Verification</h6>',
         '      <div class="d-flex flex-column gap-2">',
     ])
     for std in standards:
         html_lines.append(
-            f'        <div class="p-2.5 rounded-2 border" style="background: #fdfbf7; font-size: 0.8rem;">'
-            f'<div class="fw-bold text-dark mb-0.5"><i class="bi bi-check-circle-fill text-success me-1"></i>{escape(std["standard"])}</div>'
-            f'<div class="text-secondary small">{escape(std["detail"])}</div>'
+            f'        <div class="p-2.5 rounded-2 border grocery-std-card" style="font-size: 0.8rem;">'
+            f'<div class="fw-bold mb-0.5"><i class="bi bi-check-circle-fill text-success me-1"></i>{escape(std["standard"])}</div>'
+            f'<div class="opacity-75 small">{escape(std["detail"])}</div>'
             f'</div>'
         )
     html_lines.extend([

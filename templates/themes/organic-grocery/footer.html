@@ -1,53 +1,80 @@
 {% load static %}
-<!-- Organic Food & Daily Grocery Multi-Column Flagship Footer (Chaldal / Khaas Food Inspired) -->
-<footer class="grocery-footer pt-5 pb-3 mt-auto" style="background-color: #f7f4ed; border-top: 1px solid #e7e0d3; color: #292524;">
-    <!-- Scoped Organic Grocery Footer Styles -->
+<!-- Organic Food & Daily Grocery Flagship Footer (Khaas Food / Ghorer Bazar / Chaldal Inspired) -->
+<footer class="grocery-footer pt-5 pb-3 mt-auto">
     <style>
         .grocery-footer {
+            --gf-bg: #f4efe4;
+            --gf-card: #ffffff;
+            --gf-border: #e2d9c6;
+            --gf-text: #1c241d;
+            --gf-muted: #5c655a;
+            --gf-forest: #1b5e3f;
+            --gf-forest-deep: #123c28;
+            --gf-amber: #d97706;
+            --gf-pill-bg: #e9f5ee;
+            --gf-pill-border: #bfe3cc;
+            --gf-voucher-bg: #fef3c7;
+            --gf-voucher-text: #92400e;
+            background-color: var(--gf-bg);
+            border-top: 1px solid var(--gf-border);
+            color: var(--gf-text);
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             font-size: 0.88rem;
         }
-        .grocery-pillar-card {
-            background-color: #ffffff;
-            border: 1px solid #e7e0d3;
+        [data-bs-theme="dark"] .grocery-footer {
+            --gf-bg: #0c1510 !important;
+            --gf-card: #15231b !important;
+            --gf-border: #263c2f !important;
+            --gf-text: #f3efe6 !important;
+            --gf-muted: #a2b2a5 !important;
+            --gf-forest: #4ade80 !important;
+            --gf-forest-deep: #22c55e !important;
+            --gf-amber: #fbbf24 !important;
+            --gf-pill-bg: rgba(74, 222, 128, 0.14) !important;
+            --gf-pill-border: rgba(74, 222, 128, 0.3) !important;
+            --gf-voucher-bg: #2a2110 !important;
+            --gf-voucher-text: #fde68a !important;
+        }
+        .grocery-footer .gf-pillar-card {
+            background-color: var(--gf-card);
+            border: 1px solid var(--gf-border);
             border-radius: 16px;
-            padding: 1.25rem 1rem;
+            padding: 1.2rem 1rem;
             transition: all 0.25s ease;
         }
-        .grocery-pillar-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 22px rgba(45, 106, 79, 0.1);
-            border-color: #2d6a4f;
+        .grocery-footer .gf-pillar-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(27, 94, 63, 0.12);
+            border-color: var(--gf-forest);
         }
-        .grocery-pillar-icon-wrap {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #e8f5e9;
-            color: #2d6a4f;
-            border: 1px solid #c8e6c9;
+        .grocery-footer .gf-pillar-icon-wrap {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--gf-pill-bg);
+            color: var(--gf-forest);
+            border: 1px solid var(--gf-pill-border);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             transition: all 0.2s ease;
         }
-        .grocery-pillar-card:hover .grocery-pillar-icon-wrap {
-            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+        .grocery-footer .gf-pillar-card:hover .gf-pillar-icon-wrap {
+            background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);
             color: #ffffff;
-            border-color: #1b4332;
+            border-color: #1b5e3f;
         }
-        .grocery-footer-heading {
-            font-size: 0.86rem;
-            font-weight: 700;
+        .grocery-footer .gf-heading {
+            font-size: 0.82rem;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            color: #1b4332;
-            margin-bottom: 1.15rem;
-            position: relative;
+            color: var(--gf-forest);
+            margin-bottom: 1.1rem;
         }
-        .grocery-footer-link {
-            color: #57534e;
+        .grocery-footer .gf-link {
+            color: var(--gf-muted);
             text-decoration: none;
             transition: all 0.2s ease;
             display: inline-flex;
@@ -56,196 +83,155 @@
             margin-bottom: 0.55rem;
             font-size: 0.84rem;
         }
-        .grocery-footer-link:hover {
-            color: #2d6a4f;
+        .grocery-footer .gf-link:hover {
+            color: var(--gf-forest);
             transform: translateX(3px);
         }
-        .grocery-social-icon {
+        .grocery-footer .gf-social-icon {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background-color: #ffffff;
-            border: 1px solid #e7e0d3;
+            background-color: var(--gf-card);
+            border: 1px solid var(--gf-border);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: #2d6a4f;
+            color: var(--gf-forest);
             transition: all 0.2s ease;
             text-decoration: none;
         }
-        .grocery-social-icon:hover {
-            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+        .grocery-footer .gf-social-icon:hover {
+            background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);
             color: #ffffff;
-            border-color: #1b4332;
+            border-color: #1b5e3f;
             transform: translateY(-2px);
         }
-        .grocery-payment-chip {
-            padding: 0.35rem 0.65rem;
+        .grocery-footer .gf-payment-chip {
+            padding: 0.34rem 0.65rem;
             border-radius: 8px;
-            background-color: #ffffff;
-            border: 1px solid #e7e0d3;
+            background-color: var(--gf-card);
+            border: 1px solid var(--gf-border);
             font-size: 0.74rem;
             font-weight: 600;
-            color: #44403c;
+            color: var(--gf-text);
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         }
-        .grocery-newsletter-input {
-            border: 1.5px solid #2d6a4f;
+        .grocery-footer .gf-newsletter-input {
+            background-color: var(--gf-card);
+            border: 1.5px solid var(--gf-forest);
+            color: var(--gf-text);
             border-radius: 9999px 0 0 9999px;
             padding: 0.55rem 1rem;
             font-size: 0.84rem;
         }
-        .grocery-newsletter-input:focus {
-            box-shadow: none;
-            border-color: #1b4332;
+        .grocery-footer .gf-newsletter-input::placeholder {
+            color: var(--gf-muted);
         }
-        .grocery-newsletter-btn {
-            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+        .grocery-footer .gf-newsletter-input:focus {
+            box-shadow: none;
+            border-color: var(--gf-forest-deep);
+        }
+        .grocery-footer .gf-newsletter-btn {
+            background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);
             color: #ffffff;
-            border: 1.5px solid #2d6a4f;
+            border: 1.5px solid #1b5e3f;
             border-radius: 0 9999px 9999px 0;
             font-size: 0.82rem;
-            font-weight: 600;
-            padding: 0.55rem 1.1rem;
+            font-weight: 700;
+            padding: 0.55rem 1.15rem;
             transition: all 0.2s ease;
         }
-        .grocery-newsletter-btn:hover {
-            background: #1b4332;
+        .grocery-footer .gf-newsletter-btn:hover {
+            background: #123c28;
             color: #ffffff;
         }
-        .grocery-voucher-tag {
-            background-color: #fef3c7;
-            border: 1px dashed #d97706;
-            color: #92400e;
-            border-radius: 8px;
-            padding: 0.4rem 0.65rem;
+        .grocery-footer .gf-voucher-tag {
+            background-color: var(--gf-voucher-bg);
+            border: 1.5px dashed var(--gf-amber);
+            color: var(--gf-voucher-text);
+            border-radius: 10px;
+            padding: 0.45rem 0.75rem;
             font-size: 0.76rem;
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.45rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .grocery-voucher-tag:hover {
-            background-color: #fde68a;
-            border-color: #b45309;
+        .grocery-footer .gf-voucher-tag:hover {
+            transform: scale(1.02);
         }
-
-        /* Dark Mode Theme Support */
-        [data-bs-theme="dark"] .grocery-footer {
-            background-color: #121814 !important;
-            border-color: #243328 !important;
-            color: #d1d5db !important;
+        .grocery-footer .gf-muted {
+            color: var(--gf-muted);
         }
-        [data-bs-theme="dark"] .grocery-pillar-card {
-            background-color: #1b241e !important;
-            border-color: #28372b !important;
-            color: #e5e7eb !important;
-        }
-        [data-bs-theme="dark"] .grocery-pillar-icon-wrap {
-            background: #233327 !important;
-            border-color: #314a38 !important;
-            color: #4ade80 !important;
-        }
-        [data-bs-theme="dark"] .grocery-footer-heading {
-            color: #4ade80 !important;
-        }
-        [data-bs-theme="dark"] .grocery-footer-link {
-            color: #9ca3af !important;
-        }
-        [data-bs-theme="dark"] .grocery-footer-link:hover {
-            color: #4ade80 !important;
-        }
-        [data-bs-theme="dark"] .grocery-social-icon {
-            background-color: #1e2a22 !important;
-            border-color: #2d3e32 !important;
-            color: #4ade80 !important;
-        }
-        [data-bs-theme="dark"] .grocery-payment-chip {
-            background-color: #1e2a22 !important;
-            border-color: #2d3e32 !important;
-            color: #e5e7eb !important;
-        }
-        [data-bs-theme="dark"] .grocery-newsletter-input {
-            background-color: #1b241e !important;
-            border-color: #3b5a45 !important;
-            color: #f3f4f1 !important;
-        }
-        [data-bs-theme="dark"] .grocery-voucher-tag {
-            background-color: #2c2512 !important;
-            border-color: #b45309 !important;
-            color: #fde68a !important;
+        .grocery-footer .gf-title {
+            color: var(--gf-text);
         }
     </style>
 
     <div class="container">
         <!-- 1. 4 Fresh Food Assurance Pillars -->
         <div class="row g-3 mb-5">
-            <!-- Pillar 1: 100% Pure & Adulteration-Free -->
             <div class="col-lg-3 col-sm-6">
-                <div class="grocery-pillar-card h-100 d-flex align-items-center gap-3">
-                    <div class="grocery-pillar-icon-wrap">
+                <div class="gf-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="gf-pillar-icon-wrap">
                         <i class="bi bi-shield-check fs-4"></i>
                     </div>
                     <div>
-                        <h6 class="mb-1 fw-bold text-dark small" style="font-size: 0.86rem;">
+                        <h6 class="mb-1 fw-bold gf-title" style="font-size: 0.86rem;">
                             {% if IS_BANGLA %}১০০% খাঁটি ও নির্ভেজাল{% else %}100% Pure &amp; Adulteration-Free{% endif %}
                         </h6>
-                        <p class="text-muted mb-0 small" style="font-size: 0.74rem; line-height: 1.35;">
+                        <p class="gf-muted mb-0" style="font-size: 0.74rem; line-height: 1.35;">
                             {% if IS_BANGLA %}লোকাল ট্রাস্টেড খামারিদের থেকে সরাসরি সংগৃহীত।{% else %}Directly procured from verified traditional farmers.{% endif %}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Pillar 2: 24h Express Farm-to-Door Delivery -->
             <div class="col-lg-3 col-sm-6">
-                <div class="grocery-pillar-card h-100 d-flex align-items-center gap-3">
-                    <div class="grocery-pillar-icon-wrap">
+                <div class="gf-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="gf-pillar-icon-wrap">
                         <i class="bi bi-truck fs-4"></i>
                     </div>
                     <div>
-                        <h6 class="mb-1 fw-bold text-dark small" style="font-size: 0.86rem;">
+                        <h6 class="mb-1 fw-bold gf-title" style="font-size: 0.86rem;">
                             {% if IS_BANGLA %}২৪ ঘণ্টায় খামার থেকে ঘরে{% else %}24h Express Farm-to-Door{% endif %}
                         </h6>
-                        <p class="text-muted mb-0 small" style="font-size: 0.74rem; line-height: 1.35;">
+                        <p class="gf-muted mb-0" style="font-size: 0.74rem; line-height: 1.35;">
                             {% if IS_BANGLA %}স্বাস্থ্যকর ফুড-গ্রেড প্যাকেটে তাপনিয়ন্ত্রিত ডেলিভারি।{% else %}Packed in hygienic temperature-safe packaging.{% endif %}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Pillar 3: Traditional Cold-Pressed & Wood-Milled Extraction -->
             <div class="col-lg-3 col-sm-6">
-                <div class="grocery-pillar-card h-100 d-flex align-items-center gap-3">
-                    <div class="grocery-pillar-icon-wrap">
-                        <i class="bi bi-droplet-half fs-4" style="color: #d97706;"></i>
+                <div class="gf-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="gf-pillar-icon-wrap" style="color: var(--gf-amber);">
+                        <i class="bi bi-droplet-half fs-4"></i>
                     </div>
                     <div>
-                        <h6 class="mb-1 fw-bold text-dark small" style="font-size: 0.86rem;">
+                        <h6 class="mb-1 fw-bold gf-title" style="font-size: 0.86rem;">
                             {% if IS_BANGLA %}কাঠের ঘানি ও কোল্ড-প্রেসড{% else %}Traditional Cold-Pressed{% endif %}
                         </h6>
-                        <p class="text-muted mb-0 small" style="font-size: 0.74rem; line-height: 1.35;">
+                        <p class="gf-muted mb-0" style="font-size: 0.74rem; line-height: 1.35;">
                             {% if IS_BANGLA %}প্রাকৃতিক পুষ্টিগুণ ও ঘ্রাণ অটুট রেখে ভাঙানো।{% else %}Wood-milled extraction preserving natural aroma.{% endif %}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Pillar 4: Easy No-Questions-Asked Replacement Guarantee -->
             <div class="col-lg-3 col-sm-6">
-                <div class="grocery-pillar-card h-100 d-flex align-items-center gap-3">
-                    <div class="grocery-pillar-icon-wrap">
+                <div class="gf-pillar-card h-100 d-flex align-items-center gap-3">
+                    <div class="gf-pillar-icon-wrap">
                         <i class="bi bi-arrow-repeat fs-4"></i>
                     </div>
                     <div>
-                        <h6 class="mb-1 fw-bold text-dark small" style="font-size: 0.86rem;">
+                        <h6 class="mb-1 fw-bold gf-title" style="font-size: 0.86rem;">
                             {% if IS_BANGLA %}ইনস্ট্যান্ট রিপ্লেসমেন্ট সুবিধা{% else %}Easy Doorstep Replacement{% endif %}
                         </h6>
-                        <p class="text-muted mb-0 small" style="font-size: 0.74rem; line-height: 1.35;">
+                        <p class="gf-muted mb-0" style="font-size: 0.74rem; line-height: 1.35;">
                             {% if IS_BANGLA %}পণ্য দেখে নিন, পছন্দ না হলে সাথে সাথে ফেরত দিন।{% else %}No-questions-asked doorstep return guarantee.{% endif %}
                         </p>
                     </div>
@@ -255,152 +241,137 @@
 
         <!-- 2. Multi-Column Layout -->
         <div class="row g-4 mb-5">
-            <!-- Column 1: Store info, site name, organic mission statement, hotline, address -->
             <div class="col-lg-4 col-md-6">
                 <a href="{% url 'home' %}" class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none">
                     {% if site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
-                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
-                            <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #2d6a4f; width: 34px; height: 34px;">
-                                <i class="bi bi-basket2-fill small"></i>
-                            </div>
-                            <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.01em;">
-                                {{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}
+                        <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <span class="brand-logo-fallback align-items-center gap-2">
+                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b5e3f; width: 34px; height: 34px;">
+                                <i class="bi bi-basket2-fill small text-warning"></i>
                             </span>
+                            <span class="fw-bold fs-5 gf-title" style="letter-spacing: -0.01em;">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
                         </span>
                     {% elif CURRENT_THEME_DATA.logo_url %}
-                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';};">
-                        <span class="brand-logo-fallback align-items-center gap-2" style="display: none;">
-                            <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #2d6a4f; width: 34px; height: 34px;">
-                                <i class="bi bi-basket2-fill small"></i>
-                            </div>
-                            <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.01em;">
-                                {{ CURRENT_THEME_DATA.brand_name|default:'PURE HARVEST' }}
+                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <span class="brand-logo-fallback align-items-center gap-2">
+                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b5e3f; width: 34px; height: 34px;">
+                                <i class="bi bi-basket2-fill small text-warning"></i>
                             </span>
+                            <span class="fw-bold fs-5 gf-title" style="letter-spacing: -0.01em;">{{ CURRENT_THEME_DATA.brand_name|default:'PURE HARVEST' }}</span>
                         </span>
                     {% else %}
-                        <div class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #2d6a4f; width: 34px; height: 34px;">
-                            <i class="bi bi-basket2-fill small"></i>
-                        </div>
-                        <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.01em;">
-                            {{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}
+                        <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b5e3f; width: 34px; height: 34px;">
+                            <i class="bi bi-basket2-fill small text-warning"></i>
                         </span>
+                        <span class="fw-bold fs-5 gf-title" style="letter-spacing: -0.01em;">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
                     {% endif %}
                 </a>
 
-                <p class="text-muted small mb-3" style="line-height: 1.6;">
+                <p class="gf-muted small mb-3" style="line-height: 1.6;">
                     {% if IS_BANGLA %}
                         আমাদের লক্ষ্য গ্রামীণ প্রান্তিক কৃষকদের শ্রমের সঠিক মূল্যায়ন এবং নগরবাসীর খাবার টেবিলে ১০০% নিরাপদ, খাঁটি ও নির্ভেজাল পুষ্টিকর খাদ্য পৌঁছে দেওয়া।
                     {% else %}
-                        Dedicated to reviving traditional wholesome nutrition by connecting local organic farmers directly with urban households. 100% chemical-free, cold-pressed, and farm-fresh daily.
+                        Dedicated to reviving traditional wholesome nutrition by connecting Bangladeshi organic farmers directly with urban households. 100% chemical-free, cold-pressed, and farm-fresh daily.
                     {% endif %}
                 </p>
 
-                <!-- Contact & Packaging Hub Desk -->
-                <div class="small text-muted d-flex flex-column gap-2 mb-3">
+                <div class="small gf-muted d-flex flex-column gap-2 mb-3">
                     <div class="d-flex align-items-start gap-2">
                         <i class="bi bi-geo-alt-fill text-danger flex-shrink-0 mt-1"></i>
                         <span>{{ site_settings.contact_address|default:'Central Packaging Hub: Tejgaon Industrial Area, Dhaka 1208, Bangladesh' }}</span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <i class="bi bi-telephone-inbound-fill text-success flex-shrink-0"></i>
-                        <span>Customer Helpline: <strong class="text-dark">{{ site_settings.contact_phone|default:'+880 9610-000000' }}</strong> (8 AM – 10 PM)</span>
+                        <span>Customer Helpline: <strong class="gf-title">{{ site_settings.contact_phone|default:'+880 9610-000000' }}</strong> (8 AM – 10 PM)</span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <i class="bi bi-envelope-fill text-warning flex-shrink-0"></i>
-                        <span>Support Email: <strong class="text-dark">{{ site_settings.contact_email|default:'care@pureharvest.com.bd' }}</strong></span>
+                        <span>Support Email: <strong class="gf-title">{{ site_settings.contact_email|default:'care@pureharvest.com.bd' }}</strong></span>
                     </div>
                 </div>
 
-                <!-- Social Links -->
                 <div class="d-flex align-items-center gap-2 pt-1">
-                    <a href="https://facebook.com" class="grocery-social-icon" target="_blank" rel="noopener" title="Facebook"><i class="bi bi-facebook"></i></a>
-                    <a href="https://instagram.com" class="grocery-social-icon" target="_blank" rel="noopener" title="Instagram"><i class="bi bi-instagram"></i></a>
-                    <a href="https://youtube.com" class="grocery-social-icon" target="_blank" rel="noopener" title="YouTube"><i class="bi bi-youtube"></i></a>
-                    <a href="https://wa.me/8801700000000" class="grocery-social-icon" target="_blank" rel="noopener" title="WhatsApp Support"><i class="bi bi-whatsapp"></i></a>
+                    <a href="https://facebook.com" class="gf-social-icon" target="_blank" rel="noopener" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="https://instagram.com" class="gf-social-icon" target="_blank" rel="noopener" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="https://youtube.com" class="gf-social-icon" target="_blank" rel="noopener" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    <a href="https://wa.me/8801700000000" class="gf-social-icon" target="_blank" rel="noopener" title="WhatsApp Support"><i class="bi bi-whatsapp"></i></a>
                 </div>
             </div>
 
-            <!-- Column 2: Grocery Aisles -->
             <div class="col-lg-2 col-md-3 col-6">
-                <h6 class="grocery-footer-heading">
+                <h6 class="gf-heading">
                     {% if IS_BANGLA %}জনপ্রিয় আইলসমূহ{% else %}Grocery Aisles{% endif %}
                 </h6>
                 <div class="d-flex flex-column">
-                    <a href="{% url 'product_list' %}?category=pure-oils" class="grocery-footer-link">
-                        <i class="bi bi-chevron-right small text-muted"></i>
+                    <a href="{% url 'product_list' %}?category=cold-pressed-mustard-oils" class="gf-link">
+                        <i class="bi bi-chevron-right small"></i>
                         <span>Cold-Pressed Mustard Oil</span>
                     </a>
-                    <a href="{% url 'product_list' %}?category=honey-dry-fruits" class="grocery-footer-link">
-                        <i class="bi bi-chevron-right small text-muted"></i>
+                    <a href="{% url 'product_list' %}?category=raw-wild-honey" class="gf-link">
+                        <i class="bi bi-chevron-right small"></i>
                         <span>Sundarbans Raw Honey</span>
                     </a>
-                    <a href="{% url 'product_list' %}?category=spices-masala" class="grocery-footer-link">
-                        <i class="bi bi-chevron-right small text-muted"></i>
+                    <a href="{% url 'product_list' %}?category=whole-ground-spices" class="gf-link">
+                        <i class="bi bi-chevron-right small"></i>
                         <span>Hand-Pounded Spices</span>
                     </a>
-                    <a href="{% url 'product_list' %}?category=rice-grains" class="grocery-footer-link">
-                        <i class="bi bi-chevron-right small text-muted"></i>
+                    <a href="{% url 'product_list' %}?category=aromatic-rice-grains" class="gf-link">
+                        <i class="bi bi-chevron-right small"></i>
                         <span>Aromatic Kalijira Rice</span>
                     </a>
-                    <a href="{% url 'product_list' %}?category=pure-oils" class="grocery-footer-link">
-                        <i class="bi bi-chevron-right small text-muted"></i>
+                    <a href="{% url 'product_list' %}?category=desi-ghee-dairy-butter" class="gf-link">
+                        <i class="bi bi-chevron-right small"></i>
                         <span>Bilona Cultured Cow Ghee</span>
                     </a>
-                    <a href="{% url 'product_list' %}?category=fresh-agro" class="grocery-footer-link">
-                        <i class="bi bi-chevron-right small text-muted"></i>
+                    <a href="{% url 'product_list' %}?category=fresh-farm-vegetables" class="gf-link">
+                        <i class="bi bi-chevron-right small"></i>
                         <span>Fresh Farm Vegetables</span>
                     </a>
-                    <a href="{% url 'product_list' %}?category=nuts-superfoods" class="grocery-footer-link">
-                        <i class="bi bi-chevron-right small text-muted"></i>
+                    <a href="{% url 'product_list' %}?category=superfoods-organic-seeds" class="gf-link">
+                        <i class="bi bi-chevron-right small"></i>
                         <span>Organic Chia &amp; Nuts</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Column 3: Customer Care & Services -->
             <div class="col-lg-2 col-md-3 col-6">
-                <h6 class="grocery-footer-heading">
+                <h6 class="gf-heading">
                     {% if IS_BANGLA %}কাস্টমার কেয়ার{% else %}Customer Care{% endif %}
                 </h6>
                 <div class="d-flex flex-column">
-                    <a href="javascript:void(0)" class="grocery-footer-link" data-bs-toggle="modal" data-bs-target="#deliverySlotModal">
-                        <i class="bi bi-clock-history small" style="color: #2d6a4f;"></i>
+                    <a href="javascript:void(0)" class="gf-link" data-bs-toggle="modal" data-bs-target="#deliverySlotModal">
+                        <i class="bi bi-clock-history small" style="color: var(--gf-forest);"></i>
                         <span>Delivery Slots Schedule</span>
                     </a>
-                    <a href="{% url 'customer_orders' %}" class="grocery-footer-link">
-                        <i class="bi bi-truck small" style="color: #2d6a4f;"></i>
+                    <a href="{% url 'customer_orders' %}" class="gf-link">
+                        <i class="bi bi-truck small" style="color: var(--gf-forest);"></i>
                         <span>Track Fresh Delivery</span>
                     </a>
-                    <a href="{% url 'customer_orders' %}?action=repeat" class="grocery-footer-link">
+                    <a href="{% url 'customer_orders' %}?action=repeat" class="gf-link">
                         <i class="bi bi-arrow-repeat small text-warning"></i>
                         <span>Repeat Last Order</span>
                     </a>
-                    <a href="#replacement-guarantee" class="grocery-footer-link">
+                    <a href="{% url 'product_list' %}" class="gf-link">
                         <i class="bi bi-shield-check small text-success"></i>
                         <span>Replacement Policy</span>
                     </a>
-                    <a href="#farm-partners" class="grocery-footer-link">
-                        <i class="bi bi-people small text-muted"></i>
-                        <span>Farm Partner Onboarding</span>
+                    <a href="{% url 'product_list' %}?in_stock=1" class="gf-link">
+                        <i class="bi bi-people small"></i>
+                        <span>Farm Partner Sourcing</span>
                     </a>
-                    <a href="#grocery-faqs" class="grocery-footer-link">
-                        <i class="bi bi-question-circle small text-muted"></i>
-                        <span>Frequently Asked FAQs</span>
-                    </a>
-                    <a href="#terms" class="grocery-footer-link">
-                        <i class="bi bi-file-earmark-text small text-muted"></i>
-                        <span>Terms &amp; Freshness Purity</span>
+                    <a href="{% url 'wishlist_view' %}" class="gf-link">
+                        <i class="bi bi-heart small text-danger"></i>
+                        <span>Saved Grocery List</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Column 4: Newsletter, Voucher Code & Payment Trust -->
             <div class="col-lg-4 col-md-12">
-                <h6 class="grocery-footer-heading">
+                <h6 class="gf-heading">
                     {% if IS_BANGLA %}মৌসুমি ফসল ও উইকলি ভেজিটেবল বক্স{% else %}Seasonal Harvest &amp; Weekly Box{% endif %}
                 </h6>
-                <p class="text-muted small mb-2" style="font-size: 0.8rem; line-height: 1.45;">
+                <p class="gf-muted small mb-2" style="font-size: 0.8rem; line-height: 1.45;">
                     {% if IS_BANGLA %}
                         আমাদের সাপ্তাহিক নতুন ফসল ও খামার অফারের আপডেট পেতে ইমেইল সাবস্ক্রাইব করুন এবং প্রথম অর্ডারে ৳১০০ ডিসকাউন্ট পান।
                     {% else %}
@@ -408,73 +379,71 @@
                     {% endif %}
                 </p>
 
-                <!-- ৳100 Voucher Code Chip -->
                 <div class="mb-3">
-                    <div class="grocery-voucher-tag shadow-sm" onclick="copyGroceryVoucher('HARVEST100')" title="Click to copy voucher code">
-                        <i class="bi bi-tag-fill text-warning"></i>
+                    <div class="gf-voucher-tag shadow-xs" onclick="copyGroceryVoucher('HARVEST100')" title="Click to copy voucher code">
+                        <i class="bi bi-tag-fill" style="color: var(--gf-amber);"></i>
                         <span>{% if IS_BANGLA %}কুপন কোড:{% else %}Voucher Code:{% endif %}</span>
-                        <strong class="font-monospace text-dark">HARVEST100</strong>
-                        <span class="badge bg-warning-subtle text-dark border border-warning" style="font-size: 0.65rem;" id="groceryCopyStatus">Copy</span>
+                        <strong class="font-monospace">HARVEST100</strong>
+                        <span class="badge bg-warning text-dark" style="font-size: 0.64rem;" id="groceryCopyStatus">Copy</span>
                     </div>
                 </div>
 
-                <!-- Newsletter Input Form -->
-                <form class="mb-3" onsubmit="event.preventDefault(); alert('Thank you for subscribing to Pure Harvest updates!'); this.reset();">
+                <form class="mb-3" onsubmit="event.preventDefault(); const msg = document.getElementById('footerSubStatus'); if(msg){ msg.classList.remove('d-none'); } this.reset();">
                     <div class="input-group">
-                        <input type="email" class="form-control grocery-newsletter-input" placeholder="{% if IS_BANGLA %}আপনার ইমেইল ঠিকানা...{% else %}Enter your email address...{% endif %}" required aria-label="Email address for harvest newsletter">
-                        <button class="btn grocery-newsletter-btn" type="submit">
+                        <input type="email" class="form-control gf-newsletter-input" placeholder="{% if IS_BANGLA %}আপনার ইমেইল ঠিকানা...{% else %}Enter your email address...{% endif %}" required aria-label="Email address for harvest newsletter">
+                        <button class="btn gf-newsletter-btn" type="submit">
                             {% if IS_BANGLA %}যুক্ত হোন{% else %}Subscribe{% endif %}
                         </button>
                     </div>
+                    <small id="footerSubStatus" class="text-success fw-semibold d-none mt-1">
+                        <i class="bi bi-check-circle-fill me-1"></i>Subscribed! Use HARVEST100 at checkout.
+                    </small>
                 </form>
 
-                <!-- Accepted Payment Chips -->
                 <div class="mt-3">
-                    <span class="d-block text-muted small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                    <span class="d-block gf-muted small fw-bold text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 0.05em;">
                         <i class="bi bi-credit-card-2-back me-1 text-success"></i>
                         {% if IS_BANGLA %}অনুমোদিত পেমেন্ট মাধ্যমসমূহ{% else %}Accepted Payment Methods{% endif %}
                     </span>
                     <div class="d-flex flex-wrap gap-2 align-items-center">
-                        <div class="grocery-payment-chip">
+                        <div class="gf-payment-chip">
                             <span class="rounded-circle bg-success d-inline-block" style="width: 7px; height: 7px;"></span>
                             <span class="fw-bold" style="color: #e2136e;">bKash</span>
                             <span class="badge bg-success-subtle text-success" style="font-size: 0.58rem; padding: 2px 4px;">Active</span>
                         </div>
-                        <div class="grocery-payment-chip">
+                        <div class="gf-payment-chip">
                             <i class="bi bi-cash-stack text-success"></i>
-                            <span class="fw-bold text-dark">Cash on Delivery</span>
+                            <span class="fw-bold">Cash on Delivery</span>
                             <span class="badge bg-success-subtle text-success" style="font-size: 0.58rem; padding: 2px 4px;">COD</span>
                         </div>
-                        <div class="grocery-payment-chip">
-                            <span class="fw-bold" style="color: #f7941d;">Nagad</span>
+                        <div class="gf-payment-chip">
+                            <span class="fw-bold" style="color: #f97316;">Nagad</span>
                         </div>
-                        <div class="grocery-payment-chip">
+                        <div class="gf-payment-chip">
                             <i class="bi bi-credit-card text-primary"></i>
                             <span>Visa / Mastercard</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 100% Purity Guarantee Seal -->
                 <div class="mt-3 pt-2 d-flex align-items-center gap-2">
                     <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
                         <i class="bi bi-patch-check-fill"></i>
                     </div>
                     <div class="lh-sm">
-                        <strong class="d-block text-dark small" style="font-size: 0.78rem;">100% Certified Chemical-Free</strong>
-                        <small class="text-muted" style="font-size: 0.7rem;">Lab Tested &amp; BSTI Verified Purity Standards</small>
+                        <strong class="d-block gf-title small" style="font-size: 0.78rem;">100% Certified Chemical-Free</strong>
+                        <small class="gf-muted" style="font-size: 0.7rem;">Lab Tested &amp; BSTI Verified Purity Standards</small>
                     </div>
                 </div>
             </div>
         </div>
 
-        <hr style="border-color: #e7e0d3; opacity: 0.75;" class="my-4">
+        <hr style="border-color: var(--gf-border); opacity: 0.8;" class="my-4">
 
-        <!-- 3. Sub-footer with Copyright, Standards Badge & Smooth Back to Top -->
-        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 small text-muted">
-            <!-- Copyright Notice -->
+        <!-- 3. Sub-footer -->
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 small gf-muted">
             <div>
-                &copy; {% now "Y" %} <strong class="text-dark">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</strong>. 
+                &copy; {% now "Y" %} <strong class="gf-title">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</strong>.
                 {% if IS_BANGLA %}
                     সর্বস্বত্ব সংরক্ষিত। খাঁটি খাদ্য ও কৃষকের সমৃদ্ধি।
                 {% else %}
@@ -482,19 +451,17 @@
                 {% endif %}
             </div>
 
-            <!-- Organic Standards Badge -->
-            <div class="d-none d-lg-flex align-items-center gap-2 text-muted" style="font-size: 0.76rem;">
+            <div class="d-none d-lg-flex align-items-center gap-2 gf-muted" style="font-size: 0.76rem;">
                 <i class="bi bi-award-fill text-warning"></i>
                 <span>Direct Farmer Fair Trade &bull; Zero Formalin &bull; Hygienic Cold Storage</span>
             </div>
 
-            <!-- Smooth Back to Top Button -->
             <div>
-                <button type="button" 
-                        class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1 border" 
-                        onclick="window.scrollTo({top: 0, behavior: 'smooth'});" 
+                <button type="button"
+                        class="btn btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1"
+                        onclick="window.scrollTo({top: 0, behavior: 'smooth'});"
                         title="Back to top"
-                        style="border-color: #dcd4c6 !important; font-size: 0.78rem; color: #2d6a4f;">
+                        style="background: var(--gf-card); border: 1px solid var(--gf-border); font-size: 0.78rem; color: var(--gf-forest);">
                     <i class="bi bi-arrow-up"></i>
                     <span>{% if IS_BANGLA %}উপরে যান{% else %}Back to Top{% endif %}</span>
                 </button>
@@ -503,20 +470,19 @@
     </div>
 </footer>
 
-<!-- Voucher Copy Script -->
 <script>
     function copyGroceryVoucher(code) {
         if (navigator.clipboard) {
             navigator.clipboard.writeText(code).then(function() {
-                const status = document.getElementById('groceryCopyStatus');
+                var status = document.getElementById('groceryCopyStatus');
                 if (status) {
                     status.textContent = 'Copied!';
-                    status.classList.remove('bg-warning-subtle', 'text-dark');
+                    status.classList.remove('bg-warning', 'text-dark');
                     status.classList.add('bg-success', 'text-white');
                     setTimeout(function() {
                         status.textContent = 'Copy';
                         status.classList.remove('bg-success', 'text-white');
-                        status.classList.add('bg-warning-subtle', 'text-dark');
+                        status.classList.add('bg-warning', 'text-dark');
                     }, 2500);
                 }
             });

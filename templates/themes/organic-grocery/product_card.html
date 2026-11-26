@@ -1,39 +1,137 @@
 {% load static %}
 {% load product_tags %}
 
+<style>
+    .grocery-product-card {
+        --gc-bg: #ffffff;
+        --gc-img-bg: linear-gradient(180deg, #fcf9f2 0%, #f4ede0 100%);
+        --gc-border: #e5dccb;
+        --gc-title: #1b241c;
+        --gc-muted: #5c655a;
+        --gc-brand: #1b5e3f;
+        --gc-price: #123c28;
+        --gc-chip-bg: #f4efe4;
+        --gc-chip-border: #dfd5c2;
+        --gc-chip-text: #44403c;
+        --gc-stepper-bg: #f6f3ec;
+        --gc-stepper-border: #cce3d6;
+        background: var(--gc-bg) !important;
+        border: 1px solid var(--gc-border) !important;
+        border-radius: 16px !important;
+        overflow: hidden;
+        transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    [data-bs-theme="dark"] .grocery-product-card {
+        --gc-bg: #142019 !important;
+        --gc-img-bg: linear-gradient(180deg, #192920 0%, #132018 100%) !important;
+        --gc-border: #284031 !important;
+        --gc-title: #f3efe6 !important;
+        --gc-muted: #a4b4a7 !important;
+        --gc-brand: #4ade80 !important;
+        --gc-price: #4ade80 !important;
+        --gc-chip-bg: #1d3024 !important;
+        --gc-chip-border: #2f4d3b !important;
+        --gc-chip-text: #d6dfd6 !important;
+        --gc-stepper-bg: #1a2a20 !important;
+        --gc-stepper-border: #2e4d3b !important;
+    }
+    .grocery-product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 28px -8px rgba(27, 94, 63, 0.18) !important;
+        border-color: var(--gc-brand) !important;
+    }
+    .grocery-product-card .grocery-card-img-wrapper {
+        background: var(--gc-img-bg);
+        min-height: 200px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 1rem;
+        position: relative;
+    }
+    .grocery-product-card .grocery-card-img {
+        max-height: 165px;
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.06));
+        transition: transform 0.35s ease;
+    }
+    .grocery-product-card:hover .grocery-card-img {
+        transform: scale(1.06);
+    }
+    .grocery-product-card .grocery-title-link {
+        color: var(--gc-title);
+        text-decoration: none;
+    }
+    .grocery-product-card .grocery-title-link:hover {
+        color: var(--gc-brand);
+    }
+    .grocery-product-card .grocery-weight-chip {
+        background: var(--gc-chip-bg);
+        color: var(--gc-chip-text);
+        border: 1px solid var(--gc-chip-border);
+        font-size: 0.67rem;
+    }
+    .grocery-product-card .grocery-card-stepper {
+        max-width: 90px;
+        border: 1px solid var(--gc-stepper-border);
+        border-radius: 9px;
+        overflow: hidden;
+        background: var(--gc-stepper-bg);
+    }
+    .grocery-product-card .grocery-card-stepper button,
+    .grocery-product-card .grocery-card-stepper input {
+        color: var(--gc-title) !important;
+    }
+    .grocery-product-card .grocery-basket-btn {
+        height: 35px;
+        font-size: 0.8rem;
+        background: linear-gradient(135deg, #1b5e3f 0%, #123c28 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 9px;
+        transition: all 0.2s ease;
+    }
+    .grocery-product-card .grocery-basket-btn:hover {
+        background: linear-gradient(135deg, #144930 0%, #0b281a 100%);
+        box-shadow: 0 4px 12px rgba(27, 94, 63, 0.25);
+    }
+</style>
+
 <!-- Organic Food & Daily Grocery Compact Product Card -->
-<div class="card h-100 border product-card grocery-product-card shadow-xs position-relative" style="border-radius: 12px; border-color: rgba(224, 218, 206, 0.85); background: var(--surface-card, #ffffff); overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
-    <!-- Produce / Bottle Image on Warm Natural Cream Canvas -->
-    <div class="position-relative text-center grocery-card-img-wrapper" style="background: linear-gradient(180deg, #fdfbf7 0%, #f6f2ea 100%); min-height: 200px; height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 1rem;">
-        <!-- Top Left Badges: Discount Pill, 100% Pure, Cold Pressed, Chemical Free -->
-        <div class="position-absolute top-0 start-0 m-2.5 d-flex flex-column gap-1.5" style="z-index: 3;">
+<div class="card h-100 product-card grocery-product-card shadow-xs position-relative">
+    <div class="text-center grocery-card-img-wrapper">
+        <!-- Top Left Badges -->
+        <div class="position-absolute top-0 start-0 m-2.5 d-flex flex-column gap-1" style="z-index: 3;">
             {% if product.has_discount %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5" style="background: #d97706; color: #ffffff; border-radius: 6px; font-size: 0.68rem; letter-spacing: 0.3px;">
+                <span class="badge shadow-xs fw-bold px-2 py-0.5" style="background: #c2410c; color: #ffffff; border-radius: 6px; font-size: 0.68rem;">
                     -{{ product.discount_percent }}%
                 </span>
             {% endif %}
 
             {% if "oil" in product.name|lower or "ghee" in product.name|lower %}
-                <span class="badge shadow-xs fw-medium px-2 py-0.5" style="background: #2d6a4f; color: #ffffff; border-radius: 6px; font-size: 0.64rem; letter-spacing: 0.3px;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5" style="background: #1b5e3f; color: #ffffff; border-radius: 6px; font-size: 0.64rem;">
                     <i class="bi bi-droplet-fill me-0.5"></i>Cold Pressed
                 </span>
             {% elif "honey" in product.name|lower %}
-                <span class="badge shadow-xs fw-medium px-2 py-0.5" style="background: #b45309; color: #ffffff; border-radius: 6px; font-size: 0.64rem; letter-spacing: 0.3px;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5" style="background: #b45309; color: #ffffff; border-radius: 6px; font-size: 0.64rem;">
                     <i class="bi bi-flower2 me-0.5"></i>100% Pure Raw
                 </span>
             {% elif product.is_featured %}
-                <span class="badge shadow-xs fw-medium px-2 py-0.5" style="background: #1b4332; color: #e8f5e9; border-radius: 6px; font-size: 0.64rem; letter-spacing: 0.3px;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5" style="background: #123c28; color: #dcfce7; border-radius: 6px; font-size: 0.64rem;">
                     <i class="bi bi-patch-check-fill me-0.5"></i>100% Pure
                 </span>
             {% else %}
-                <span class="badge shadow-xs fw-medium px-2 py-0.5" style="background: rgba(255, 255, 255, 0.92); color: #2d6a4f; border: 1px solid #b7e4c7; backdrop-filter: blur(4px); border-radius: 6px; font-size: 0.62rem; letter-spacing: 0.2px;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5" style="background: rgba(255, 255, 255, 0.94); color: #1b5e3f; border: 1px solid #b7e4c7; border-radius: 6px; font-size: 0.62rem;">
                     <i class="bi bi-shield-check me-0.5"></i>Chemical Free
                 </span>
             {% endif %}
         </div>
 
-        <!-- Wishlist Toggle Heart Button -->
-        <button type="button" class="btn btn-sm rounded-circle shadow-xs position-absolute top-0 end-0 m-2.5 p-0 d-flex align-items-center justify-content-center grocery-wishlist-btn" style="width: 32px; height: 32px; z-index: 5; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(220, 214, 202, 0.85); backdrop-filter: blur(4px); transition: all 0.2s ease;" onclick="toggleWishlist({{ product.pk }}, this)" title="Add to Grocery Wishlist" aria-label="Add to Wishlist">
+        <!-- Wishlist Button -->
+        <button type="button" class="btn btn-sm rounded-circle shadow-xs position-absolute top-0 end-0 m-2.5 p-0 d-flex align-items-center justify-content-center grocery-wishlist-btn" style="width: 32px; height: 32px; z-index: 5; background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(215, 205, 185, 0.9);" onclick="toggleWishlist({{ product.pk }}, this)" title="Add to Grocery Wishlist" aria-label="Add to Wishlist">
             {% if product.pk in user_wishlist_ids %}
                 <i class="bi bi-heart-fill text-danger fs-6"></i>
             {% else %}
@@ -41,98 +139,87 @@
             {% endif %}
         </button>
 
-        <!-- Product Image Link with Gentle Hover Zoom -->
+        <!-- Product Image -->
         <a href="{% url 'product_detail' product.pk %}" class="d-flex align-items-center justify-content-center w-100 h-100 text-decoration-none">
             {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid grocery-card-img" style="max-height: 165px; width: auto; object-fit: contain; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.05)); transition: transform 0.35s ease;" loading="lazy" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid grocery-card-img" loading="lazy" onerror="this.onerror=null; this.src='/static/images/placeholder.svg';">
             {% else %}
                 <div class="text-secondary opacity-40 py-4"><i class="bi bi-basket display-4"></i></div>
             {% endif %}
         </a>
     </div>
 
-    <!-- Card Body -->
-    <div class="card-body p-3 d-flex flex-column" style="background: var(--surface-card, #ffffff);">
-        <!-- Brand Tag & Package Weight / Volume Indicator -->
-        <div class="d-flex justify-content-between align-items-center mb-1.5" style="font-size: 0.72rem;">
-            {% if product.brand %}
-                <span class="fw-bold text-uppercase" style="letter-spacing: 1px; color: #2d6a4f; font-size: 0.68rem;">
-                    {{ product.brand.name|upper }}
-                </span>
-            {% else %}
-                <span class="fw-bold text-uppercase" style="letter-spacing: 1px; color: #2d6a4f; font-size: 0.68rem;">
-                    ORGANIC HARVEST
-                </span>
-            {% endif %}
+    <div class="card-body p-3 d-flex flex-column">
+        <!-- Brand & Package Size -->
+        <div class="d-flex justify-content-between align-items-center mb-1.5 gap-1" style="font-size: 0.72rem;">
+            <span class="fw-bold text-uppercase text-truncate" style="letter-spacing: 0.8px; color: var(--gc-brand); font-size: 0.67rem;">
+                {% if product.brand %}{{ product.brand.name|upper }}{% else %}ORGANIC HARVEST{% endif %}
+            </span>
 
-            <!-- Net Weight / Volume / Package Size tag -->
-            <span class="badge fw-medium px-2 py-0.5 rounded-pill" style="background: #f4f1ea; color: #495057; border: 1px solid #e2ddd3; font-size: 0.68rem;">
+            <span class="badge fw-semibold px-2 py-0.5 rounded-pill flex-shrink-0 grocery-weight-chip">
                 <i class="bi bi-box-seam me-0.5 opacity-75"></i>{{ product|grocery_package_size }}
             </span>
         </div>
 
-        <!-- Product Title with Clean 2-Line Clamp -->
-        <h6 class="grocery-title fw-semibold mb-1.5" style="font-size: 0.88rem; line-height: 1.35; height: 2.7em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; color: #1c1917;">
-            <a href="{% url 'product_detail' product.pk %}" class="text-decoration-none text-dark hover-forest" title="{{ product.name }}">
+        <!-- Product Title -->
+        <h6 class="grocery-title fw-semibold mb-1.5" style="font-size: 0.88rem; line-height: 1.35; height: 2.7em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            <a href="{% url 'product_detail' product.pk %}" class="grocery-title-link" title="{{ product.name }}">
                 {{ product.name }}
             </a>
         </h6>
 
-        <!-- Freshness Stock Availability Strip -->
-        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 0.72rem;">
+        <!-- Freshness Stock & Rating -->
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 0.71rem;">
             {% if product.stock > 0 %}
-                <span class="text-success fw-medium d-inline-flex align-items-center gap-1">
+                <span class="text-success fw-semibold d-inline-flex align-items-center gap-1">
                     <span class="rounded-circle d-inline-block bg-success" style="width: 6px; height: 6px;"></span>
                     In Stock - Fresh Batch
                 </span>
             {% else %}
-                <span class="text-danger fw-medium d-inline-flex align-items-center gap-1">
+                <span class="text-danger fw-semibold d-inline-flex align-items-center gap-1">
                     <span class="rounded-circle d-inline-block bg-danger" style="width: 6px; height: 6px;"></span>
                     Sold Out
                 </span>
             {% endif %}
 
-            <!-- Rating Stars with Review Count -->
-            <div class="d-inline-flex align-items-center gap-1 text-muted" style="font-size: 0.72rem;">
+            <div class="d-inline-flex align-items-center gap-1" style="color: var(--gc-muted);">
                 <span class="text-warning"><i class="bi bi-star-fill" style="font-size: 0.68rem;"></i></span>
-                <span class="fw-bold text-dark">{% if product.avg_rating %}{{ product.avg_rating|floatformat:1 }}{% else %}4.9{% endif %}</span>
+                <span class="fw-bold" style="color: var(--gc-title);">{% if product.avg_rating %}{{ product.avg_rating|floatformat:1 }}{% else %}4.9{% endif %}</span>
                 <span>({% if product.reviews_count %}{{ product.reviews_count }}{% elif product.reviews.count %}{{ product.reviews.count }}{% else %}88{% endif %})</span>
             </div>
         </div>
 
-        <!-- Price Block: Current Price in ৳ + Unit Price Breakdown + Strikethrough Price -->
+        <!-- Price & Unit Breakdown -->
         <div class="d-flex align-items-baseline flex-wrap gap-1.5 mb-2.5">
-            <span class="fs-5 fw-bold" style="color: #1b4332; letter-spacing: -0.3px;">৳{{ product.effective_price }}</span>
-            <span class="text-muted small fw-medium" style="font-size: 0.76rem;">{{ product|grocery_unit_price }}</span>
+            <span class="fs-5 fw-bold" style="color: var(--gc-price); letter-spacing: -0.3px;">৳{{ product.effective_price }}</span>
+            <span class="small fw-medium" style="font-size: 0.75rem; color: var(--gc-muted);">{{ product|grocery_unit_price }}</span>
             {% if product.has_discount %}
-                <span class="text-decoration-line-through text-muted small ms-1" style="font-size: 0.76rem;">৳{{ product.price }}</span>
+                <span class="text-decoration-line-through small ms-1" style="font-size: 0.75rem; color: var(--gc-muted);">৳{{ product.price }}</span>
             {% endif %}
         </div>
 
-        <!-- Quick Add-to-Basket with Interactive Stepper (AJAX enabled) -->
+        <!-- Quick Add-to-Basket with Stepper -->
         <div class="mt-auto">
             {% if product.stock > 0 %}
                 <form action="{% url 'add_to_cart' product.pk %}" method="post" class="d-flex align-items-center gap-1.5 w-100 grocery-add-basket-form">
                     {% csrf_token %}
-                    <!-- Compact Stepper -->
-                    <div class="input-group input-group-sm flex-nowrap grocery-card-stepper" style="max-width: 90px; border: 1px solid #cce3de; border-radius: 8px; overflow: hidden; background: #f8faf9;">
-                        <button type="button" class="btn btn-sm btn-link text-dark p-0 px-1 text-decoration-none border-0" onclick="const input = this.parentNode.querySelector('input'); input.value = Math.max(1, parseInt(input.value || 1) - 1);" style="width: 26px; height: 32px; line-height: 1;">
+                    <div class="input-group input-group-sm flex-nowrap grocery-card-stepper">
+                        <button type="button" class="btn btn-sm btn-link p-0 px-1 text-decoration-none border-0" onclick="const input = this.parentNode.querySelector('input'); input.value = Math.max(1, parseInt(input.value || 1) - 1);" style="width: 26px; height: 33px; line-height: 1;" aria-label="Decrease">
                             <i class="bi bi-dash fw-bold"></i>
                         </button>
-                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock|default:99 }}" class="form-control form-control-sm text-center border-0 p-0 fw-semibold bg-transparent" style="font-size: 0.8rem; width: 34px; height: 32px;" readonly>
-                        <button type="button" class="btn btn-sm btn-link text-dark p-0 px-1 text-decoration-none border-0" onclick="const input = this.parentNode.querySelector('input'); input.value = Math.min({{ product.stock|default:99 }}, parseInt(input.value || 1) + 1);" style="width: 26px; height: 32px; line-height: 1;">
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock|default:99 }}" class="form-control form-control-sm text-center border-0 p-0 fw-semibold bg-transparent" style="font-size: 0.8rem; width: 34px; height: 33px;" readonly aria-label="Quantity">
+                        <button type="button" class="btn btn-sm btn-link p-0 px-1 text-decoration-none border-0" onclick="const input = this.parentNode.querySelector('input'); input.value = Math.min({{ product.stock|default:99 }}, parseInt(input.value || 1) + 1);" style="width: 26px; height: 33px; line-height: 1;" aria-label="Increase">
                             <i class="bi bi-plus fw-bold"></i>
                         </button>
                     </div>
 
-                    <!-- 1-Click Add to Basket Button -->
-                    <button type="submit" class="btn btn-sm flex-grow-1 fw-semibold d-flex align-items-center justify-content-center gap-1.5 grocery-basket-btn" style="height: 34px; font-size: 0.8rem; background: #2d6a4f; color: #ffffff; border: 1px solid #2d6a4f; border-radius: 8px; transition: all 0.2s ease;">
+                    <button type="submit" class="btn btn-sm flex-grow-1 fw-bold d-flex align-items-center justify-content-center gap-1.5 grocery-basket-btn">
                         <i class="bi bi-basket2-fill fs-6"></i>
                         <span>Add</span>
                     </button>
                 </form>
             {% else %}
-                <button type="button" class="btn w-100 btn-sm rounded-3 fw-medium disabled" style="height: 34px; font-size: 0.8rem; background: #e9ecef; color: #6c757d; border: 1px solid #dee2e6;">
+                <button type="button" class="btn w-100 btn-sm rounded-3 fw-medium disabled" style="height: 35px; font-size: 0.8rem; background: var(--gc-chip-bg); color: var(--gc-muted); border: 1px solid var(--gc-border);">
                     <i class="bi bi-x-circle me-1"></i>Stock Out
                 </button>
             {% endif %}
