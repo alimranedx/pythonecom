@@ -1,18 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 54" width="280" height="54">
-            <defs>
-                <style>
-                    .brand-title { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; fill: #14532d; }
-                    .brand-sub { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 9px; letter-spacing: 2px; fill: #16a34a; text-transform: uppercase; }
-                </style>
-            </defs>
-            
-        <g transform="translate(6, 6) scale(0.9545454545454546)">
-            <rect x="2" y="2" width="40" height="40" rx="10" fill="#16a34a"/>
-            <path d="M14 28c0-8 6-14 14-14 0 8-6 14-14 14z" fill="#ffffff"/>
-            <path d="M14 28c4-4 8-6 14-14" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="28" cy="14" r="3" fill="#eab308"/>
-        </g>
-        
-            <text x="60" y="27" class="brand-title">PURE HARVEST</text>
-            <text x="60" y="42" class="brand-sub">ORGANIC &amp; GROCERIES</text>
-        </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 48" width="260" height="48">
+  <defs>
+    <style>
+      .natura-word-main { font-family: Georgia, 'Playfair Display', 'Times New Roman', serif; font-weight: 700; font-size: 22px; letter-spacing: -0.4px; fill: #152418; }
+      .natura-word-accent { font-family: Georgia, 'Playfair Display', 'Times New Roman', serif; font-weight: 400; font-size: 22px; letter-spacing: -0.2px; fill: #1e7a32; }
+    </style>
+  </defs>
+  <g transform="translate(4, 4)">
+    <circle cx="20" cy="20" r="18" fill="#1e7a32"/>
+    <path d="M20 31C12.5 29 9.5 21 12 13.5c4.5 2.5 7 6.8 8 11.5 1-4.7 3.5-9 8-11.5C30.5 21 27.5 29 20 31Z" fill="#ffffff"/>
+    <path d="M20 31V11.5" stroke="#1e7a32" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M20 11.5c1.5-2 3.2-3 5-3.2-0.4 1.9-1.5 3.4-3.2 4.3" fill="#f6c431"/>
+  </g>
+  <text x="50" y="31" class="natura-word-main">Pure <tspan class="natura-word-accent">Harvest</tspan></text>
+</svg>

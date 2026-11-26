@@ -1,154 +1,132 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="100%" height="100%">
   <defs>
-    <linearGradient id="grocery-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f0fdf4" />
-      <stop offset="50%" stop-color="#dcfce7" />
-      <stop offset="100%" stop-color="#ffffff" />
+    <linearGradient id="natura-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#faf9f3" />
+      <stop offset="55%" stop-color="#f7f7ee" />
+      <stop offset="100%" stop-color="#edf5e8" />
     </linearGradient>
-    <linearGradient id="grocery-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#15803d" />
-      <stop offset="100%" stop-color="#16a34a" />
-    </linearGradient>
-    <linearGradient id="card-fresh" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" />
-      <stop offset="100%" stop-color="#f7fee7" />
-    </linearGradient>
-    <filter id="fresh-shadow" x="-5%" y="-5%" width="110%" height="115%">
-      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#15803d" flood-opacity="0.1" />
+    <filter id="soft-shadow" x="-5%" y="-5%" width="110%" height="118%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#152418" flood-opacity="0.09" />
     </filter>
   </defs>
 
   <!-- Browser Frame -->
-  <rect width="800" height="520" rx="12" fill="#064e3b" />
-  
-  <!-- Window Header -->
-  <circle cx="24" cy="18" r="5" fill="#ef4444" />
-  <circle cx="38" cy="18" r="5" fill="#f59e0b" />
-  <circle cx="52" cy="18" r="5" fill="#10b981" />
-  <rect x="75" y="9" width="370" height="18" rx="5" fill="#022c22" />
-  <text x="85" y="22" font-family="-apple-system,sans-serif" font-size="10" fill="#a7f3d0">https://easypurchase.com/organic-grocery • Chaldal &amp; Khaas Food Style</text>
+  <rect width="800" height="520" rx="12" fill="#165e26" />
+  <circle cx="24" cy="18" r="5" fill="#f6c431" />
+  <circle cx="38" cy="18" r="5" fill="#4ade80" />
+  <circle cx="52" cy="18" r="5" fill="#ffffff" fill-opacity="0.7" />
+  <rect x="75" y="9" width="380" height="18" rx="5" fill="#10441b" />
+  <text x="85" y="22" font-family="-apple-system,sans-serif" font-size="10" fill="#e2f5dc">https://easypurchase.com/organic-grocery • Sunlit Natura Harvest</text>
 
-  <!-- Canvas -->
-  <rect x="0" y="32" width="800" height="488" fill="url(#grocery-bg)" />
+  <!-- Sunlit Cream Canvas -->
+  <rect x="0" y="32" width="800" height="488" fill="url(#natura-bg)" />
 
-  <!-- Top Announcement Bar -->
-  <rect x="0" y="32" width="800" height="24" fill="#064e3b" />
-  <rect x="24" y="36" width="105" height="16" rx="8" fill="#16a34a" />
-  <text x="32" y="48" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#ffffff">🌱 1-HOUR DELIVERY</text>
-  <text x="140" y="48" font-family="sans-serif" font-size="9" fill="#dcfce7">Farm Fresh Organic Harvest • 100% Chemical Free Guarantee • Dhaka Express</text>
-  <text x="690" y="48" font-family="sans-serif" font-size="9" fill="#86efac">Order Helpline: 16710</text>
+  <!-- Top Botanical Announcement Strip -->
+  <rect x="0" y="32" width="800" height="22" fill="#1e7a32" />
+  <text x="24" y="46" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#f1f8ee">🌿 Free Same-Day Delivery on ৳750+ • 100% Pure &amp; Adulteration-Free Organic Harvest</text>
 
-  <!-- Header -->
-  <rect x="0" y="56" width="800" height="50" fill="#ffffff" filter="url(#fresh-shadow)" />
-  <!-- Logo -->
-  <circle cx="45" cy="81" r="14" fill="#dcfce7" />
-  <text x="39" y="86" font-family="sans-serif" font-size="14" fill="#15803d">🥦</text>
-  <text x="68" y="85" font-family="sans-serif" font-size="16" font-weight="800" fill="#064e3b">PURE<tspan fill="#16a34a">FARM</tspan></text>
-  
-  <!-- Search Bar with Location Pin (Chaldal Style) -->
-  <rect x="220" y="66" width="360" height="30" rx="15" fill="#f0fdf4" stroke="#86efac" stroke-width="1" />
-  <text x="236" y="85" font-family="sans-serif" font-size="10" fill="#166534">📍 Dhanmondi, Dhaka • Search fresh fruits, milk, organic rice, eggs...</text>
-  <rect x="525" y="67" width="54" height="28" rx="14" fill="#16a34a" />
-  <text x="536" y="85" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Search</text>
+  <!-- Airy Single-Row Header -->
+  <rect x="0" y="54" width="800" height="46" fill="#faf9f3" stroke="#dfe9d8" stroke-width="1" />
+  <circle cx="38" cy="77" r="12" fill="#1e7a32" />
+  <text x="33" y="81" font-family="sans-serif" font-size="11" fill="#ffffff">🌿</text>
+  <text x="58" y="82" font-family="Georgia,serif" font-size="15" font-weight="bold" fill="#152418">Pure <tspan fill="#1e7a32" font-weight="normal">Harvest</tspan></text>
+  <text x="200" y="81" font-family="sans-serif" font-size="10" font-weight="bold" fill="#1e7a32">Home</text>
+  <rect x="200" y="87" width="28" height="2" rx="1" fill="#1e7a32" />
+  <text x="248" y="81" font-family="sans-serif" font-size="10" fill="#152418">Shop</text>
+  <text x="292" y="81" font-family="sans-serif" font-size="10" fill="#152418">Categories</text>
+  <text x="364" y="81" font-family="sans-serif" font-size="10" fill="#152418">Origins</text>
 
-  <!-- Header Controls -->
-  <rect x="635" y="70" width="75" height="22" rx="11" fill="#f0fdf4" stroke="#86efac" stroke-width="1" />
-  <text x="643" y="85" font-family="sans-serif" font-size="9" font-weight="bold" fill="#15803d">Delivery Slots</text>
-  <circle cx="735" cy="81" r="12" fill="#dcfce7" />
-  <text x="731" y="85" font-family="sans-serif" font-size="11" fill="#15803d">🧺</text>
-  <circle cx="743" cy="74" r="5" fill="#16a34a" />
-  <text x="741" y="77" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">5</text>
+  <rect x="490" y="65" width="160" height="24" rx="12" fill="#ffffff" stroke="#dfe9d8" stroke-width="1" />
+  <text x="504" y="80" font-family="sans-serif" font-size="8.5" fill="#5a6b5d">Search honey, gur, nuts...</text>
+  <circle cx="670" cy="77" r="11" fill="#ffffff" stroke="#dfe9d8" />
+  <rect x="692" y="64" width="84" height="26" rx="13" fill="#1e7a32" />
+  <text x="712" y="81" font-family="sans-serif" font-size="9.5" font-weight="bold" fill="#ffffff">Cart (0)</text>
 
-  <!-- Categories Sub-bar -->
-  <rect x="0" y="106" width="800" height="28" fill="#ffffff" stroke="#dcfce7" stroke-width="1" />
-  <text x="24" y="124" font-family="sans-serif" font-size="10" font-weight="bold" fill="#15803d">Fresh Produce</text>
-  <text x="130" y="124" font-family="sans-serif" font-size="10" fill="#166534">Dairy, Ghee &amp; Eggs</text>
-  <text x="260" y="124" font-family="sans-serif" font-size="10" fill="#166534">Pure Mustard Oil &amp; Spices</text>
-  <text x="430" y="124" font-family="sans-serif" font-size="10" fill="#166534">Organic Rice &amp; Pulses</text>
-  <text x="575" y="124" font-family="sans-serif" font-size="10" fill="#166534">Raw Honey &amp; Nuts</text>
-  <rect x="710" y="111" width="65" height="18" rx="9" fill="#dcfce7" stroke="#16a34a" stroke-width="1" />
-  <text x="718" y="123" font-family="sans-serif" font-size="8" font-weight="bold" fill="#15803d">FARM DIRECT</text>
+  <!-- Hero Section -->
+  <rect x="30" y="122" width="175" height="22" rx="11" fill="#edf6ea" stroke="#d2e6cb" />
+  <text x="42" y="136" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1e7a32">🌿 Good for You. Good for Nature.</text>
 
-  <!-- Hero Section (Chaldal / Khaas Food Style) -->
-  <rect x="24" y="144" width="752" height="150" rx="12" fill="url(#grocery-grad)" filter="url(#fresh-shadow)" />
-  <circle cx="680" cy="219" r="80" fill="#ffffff" fill-opacity="0.1" />
-  
-  <rect x="44" y="162" width="130" height="18" rx="9" fill="#ffffff" />
-  <text x="52" y="174" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#15803d">🌿 FRESH FROM VILLAGE FARMS</text>
-  <text x="44" y="210" font-family="sans-serif" font-size="20" font-weight="800" fill="#ffffff">Pure Nutrition At Your Kitchen Door</text>
-  <text x="44" y="228" font-family="sans-serif" font-size="11" fill="#dcfce7">Zero chemical preservatives, lab-tested mustard oil, unadulterated honey.</text>
+  <text x="30" y="176" font-family="Georgia,serif" font-size="25" font-weight="bold" fill="#152418">Fresh From <tspan fill="#1e7a32">Nature</tspan>,</text>
+  <text x="30" y="206" font-family="Georgia,serif" font-size="25" font-weight="bold" fill="#152418">Delivered to Your Table</text>
+  <text x="30" y="228" font-family="sans-serif" font-size="9.5" fill="#5a6b5d">Sundarbans raw honey, Patali Khejur Gur, Red Sugar &amp; cold-pressed oil.</text>
 
-  <rect x="44" y="246" width="125" height="30" rx="15" fill="#ffffff" />
-  <text x="58" y="265" font-family="sans-serif" font-size="11" font-weight="bold" fill="#15803d">Shop Daily Fresh →</text>
-  <rect x="179" y="246" width="115" height="30" rx="15" fill="#064e3b" fill-opacity="0.4" stroke="#ffffff" stroke-width="1" />
-  <text x="191" y="265" font-family="sans-serif" font-size="11" font-weight="bold" fill="#ffffff">Select 1-Hr Slot</text>
+  <!-- Two Pill CTAs -->
+  <rect x="30" y="246" width="122" height="30" rx="15" fill="#1e7a32" filter="url(#soft-shadow)" />
+  <text x="45" y="265" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Shop Harvest →</text>
+  <rect x="164" y="246" width="128" height="30" rx="15" fill="#f6c431" filter="url(#soft-shadow)" />
+  <text x="178" y="265" font-family="sans-serif" font-size="10" font-weight="bold" fill="#152418">Explore Products →</text>
 
-  <!-- Hero Imagery -->
-  <g transform="translate(570, 160)">
-    <rect width="170" height="118" rx="10" fill="#ffffff" fill-opacity="0.2" stroke="#ffffff" stroke-width="1" />
-    <circle cx="85" cy="50" r="30" fill="#ffffff" />
-    <text x="73" y="58" font-size="26">🍯</text>
-    <rect x="30" y="88" width="110" height="18" rx="9" fill="#ffffff" />
-    <text x="38" y="100" font-family="sans-serif" font-size="8" font-weight="bold" fill="#15803d">Sundarban Raw Honey</text>
+  <!-- Right Studio Composition & Floating Glass Pills -->
+  <circle cx="585" cy="210" r="95" fill="#edf6ea" />
+  <text x="545" y="232" font-size="74">🧺</text>
+  <rect x="435" y="124" width="132" height="38" rx="12" fill="#ffffff" stroke="#dfe9d8" filter="url(#soft-shadow)" />
+  <circle cx="454" cy="143" r="11" fill="#edf6ea" />
+  <text x="472" y="141" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#152418">100% Natural</text>
+  <text x="472" y="152" font-family="sans-serif" font-size="7" fill="#5a6b5d">No chemicals</text>
+
+  <rect x="396" y="238" width="142" height="38" rx="12" fill="#ffffff" stroke="#dfe9d8" filter="url(#soft-shadow)" />
+  <circle cx="415" cy="257" r="11" fill="#fef6df" />
+  <text x="433" y="255" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#152418">Same Day Delivery</text>
+  <text x="433" y="266" font-family="sans-serif" font-size="7" fill="#5a6b5d">Freshness, fast</text>
+
+  <rect x="655" y="200" width="115" height="44" rx="12" fill="#ffffff" stroke="#dfe9d8" filter="url(#soft-shadow)" />
+  <text x="670" y="218" font-family="sans-serif" font-size="9" font-weight="bold" fill="#152418">⭐ 4.9/5</text>
+  <text x="670" y="231" font-family="sans-serif" font-size="7.5" fill="#5a6b5d">12K+ Reviews</text>
+
+  <!-- Floating White 4-Pillar Trust Bar -->
+  <rect x="30" y="294" width="740" height="48" rx="14" fill="#ffffff" stroke="#dfe9d8" filter="url(#soft-shadow)" />
+  <circle cx="62" cy="318" r="14" fill="#edf6ea" />
+  <text x="84" y="315" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#152418">100% Organic</text>
+  <text x="84" y="326" font-family="sans-serif" font-size="7" fill="#5a6b5d">Adulteration-free</text>
+
+  <circle cx="242" cy="318" r="14" fill="#edf6ea" />
+  <text x="264" y="315" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#152418">Cold-Pressed</text>
+  <text x="264" y="326" font-family="sans-serif" font-size="7" fill="#5a6b5d">Wood ghani purity</text>
+
+  <circle cx="422" cy="318" r="14" fill="#edf6ea" />
+  <text x="444" y="315" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#152418">Eco Packaging</text>
+  <text x="444" y="326" font-family="sans-serif" font-size="7" fill="#5a6b5d">Glass &amp; kraft pouches</text>
+
+  <circle cx="602" cy="318" r="14" fill="#edf6ea" />
+  <text x="624" y="315" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#152418">Happy Families</text>
+  <text x="624" y="326" font-family="sans-serif" font-size="7" fill="#5a6b5d">24,000+ households</text>
+
+  <!-- Product Grid Preview -->
+  <text x="30" y="366" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#152418">Daily Pantry Essentials</text>
+  <g transform="translate(30, 376)">
+    <rect width="174" height="128" rx="12" fill="#ffffff" stroke="#dfe9d8" />
+    <rect x="8" y="8" width="158" height="62" rx="9" fill="#f2f6ee" />
+    <text x="87" y="48" font-size="26" text-anchor="middle">🍯</text>
+    <text x="12" y="88" font-family="sans-serif" font-size="9" font-weight="bold" fill="#152418">Sundarban Raw Honey</text>
+    <text x="12" y="108" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1e7a32">৳590</text>
+    <rect x="112" y="96" width="52" height="20" rx="10" fill="#1e7a32" />
+    <text x="127" y="109" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#ffffff">Add</text>
   </g>
-
-  <!-- Showcase Section -->
-  <text x="24" y="318" font-family="sans-serif" font-size="13" font-weight="800" fill="#064e3b">Morning Fresh Harvest • 1-Hour Delivery</text>
-  <text x="735" y="318" font-family="sans-serif" font-size="10" font-weight="bold" fill="#16a34a">View All &gt;</text>
-
-  <!-- Product 1 -->
-  <g transform="translate(24, 328)">
-    <rect width="176" height="170" rx="10" fill="url(#card-fresh)" stroke="#bbf7d0" stroke-width="1" filter="url(#fresh-shadow)" />
-    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdf4" />
-    <text x="76" y="58" font-size="28" text-anchor="middle">🥑</text>
-    <rect x="16" y="14" width="46" height="14" rx="7" fill="#16a34a" />
-    <text x="22" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">ORGANIC</text>
-    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#064e3b">Farm Fresh Hass Avocados</text>
-    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#15803d">Per 500g • Chemical Free</text>
-    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#16a34a">৳420</text>
-    <rect x="110" y="132" width="54" height="22" rx="11" fill="#16a34a" />
-    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
+  <g transform="translate(218, 376)">
+    <rect width="174" height="128" rx="12" fill="#ffffff" stroke="#dfe9d8" />
+    <rect x="8" y="8" width="158" height="62" rx="9" fill="#f2f6ee" />
+    <text x="87" y="48" font-size="26" text-anchor="middle">🫒</text>
+    <text x="12" y="88" font-family="sans-serif" font-size="9" font-weight="bold" fill="#152418">Wood-Ghani Mustard Oil</text>
+    <text x="12" y="108" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1e7a32">৳250</text>
+    <rect x="112" y="96" width="52" height="20" rx="10" fill="#1e7a32" />
+    <text x="127" y="109" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#ffffff">Add</text>
   </g>
-
-  <!-- Product 2 -->
-  <g transform="translate(216, 328)">
-    <rect width="176" height="170" rx="10" fill="url(#card-fresh)" stroke="#bbf7d0" stroke-width="1" filter="url(#fresh-shadow)" />
-    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdf4" />
-    <text x="76" y="58" font-size="28" text-anchor="middle">🌾</text>
-    <rect x="16" y="14" width="48" height="14" rx="7" fill="#ca8a04" />
-    <text x="22" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">PREMIUM</text>
-    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#064e3b">Aromatic Kalijira Polao Rice</text>
-    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#15803d">5kg Pack • Dinajpur Origin</text>
-    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#16a34a">৳720</text>
-    <rect x="110" y="132" width="54" height="22" rx="11" fill="#16a34a" />
-    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
+  <g transform="translate(406, 376)">
+    <rect width="174" height="128" rx="12" fill="#ffffff" stroke="#dfe9d8" />
+    <rect x="8" y="8" width="158" height="62" rx="9" fill="#f2f6ee" />
+    <text x="87" y="48" font-size="26" text-anchor="middle">🌾</text>
+    <text x="12" y="88" font-family="sans-serif" font-size="9" font-weight="bold" fill="#152418">Patali Khejur Gur</text>
+    <text x="12" y="108" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1e7a32">৳380</text>
+    <rect x="112" y="96" width="52" height="20" rx="10" fill="#1e7a32" />
+    <text x="127" y="109" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#ffffff">Add</text>
   </g>
-
-  <!-- Product 3 -->
-  <g transform="translate(408, 328)">
-    <rect width="176" height="170" rx="10" fill="url(#card-fresh)" stroke="#bbf7d0" stroke-width="1" filter="url(#fresh-shadow)" />
-    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdf4" />
-    <text x="76" y="58" font-size="28" text-anchor="middle">🍯</text>
-    <rect x="16" y="14" width="46" height="14" rx="7" fill="#b45309" />
-    <text x="22" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">NATURAL</text>
-    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#064e3b">Cold Pressed Mustard Oil</text>
-    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#15803d">1 Litre Bottle • Ghani Bhanga</text>
-    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#16a34a">৳350</text>
-    <rect x="110" y="132" width="54" height="22" rx="11" fill="#16a34a" />
-    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
-  </g>
-
-  <!-- Product 4 -->
-  <g transform="translate(600, 328)">
-    <rect width="176" height="170" rx="10" fill="url(#card-fresh)" stroke="#bbf7d0" stroke-width="1" filter="url(#fresh-shadow)" />
-    <rect x="12" y="10" width="152" height="85" rx="8" fill="#f0fdf4" />
-    <text x="76" y="58" font-size="28" text-anchor="middle">🥚</text>
-    <rect x="16" y="14" width="46" height="14" rx="7" fill="#16a34a" />
-    <text x="22" y="24" font-family="sans-serif" font-size="7" font-weight="bold" fill="#ffffff">DAILY FRESH</text>
-    <text x="14" y="112" font-family="sans-serif" font-size="10" font-weight="bold" fill="#064e3b">Organic Free-Range Eggs</text>
-    <text x="14" y="126" font-family="sans-serif" font-size="8.5" fill="#15803d">12 Pcs Pack • Deshi Murgi</text>
-    <text x="14" y="146" font-family="sans-serif" font-size="12" font-weight="800" fill="#16a34a">৳195</text>
-    <rect x="110" y="132" width="54" height="22" rx="11" fill="#16a34a" />
-    <text x="122" y="146" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff">+ Add</text>
+  <g transform="translate(594, 376)">
+    <rect width="174" height="128" rx="12" fill="#ffffff" stroke="#dfe9d8" />
+    <rect x="8" y="8" width="158" height="62" rx="9" fill="#f2f6ee" />
+    <text x="87" y="48" font-size="26" text-anchor="middle">🥜</text>
+    <text x="12" y="88" font-family="sans-serif" font-size="9" font-weight="bold" fill="#152418">California Almonds</text>
+    <text x="12" y="108" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1e7a32">৳640</text>
+    <rect x="112" y="96" width="52" height="20" rx="10" fill="#1e7a32" />
+    <text x="127" y="109" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#ffffff">Add</text>
   </g>
 </svg>

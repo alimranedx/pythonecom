@@ -9,28 +9,30 @@
 {% block extra_head %}
 <style>
     :root {
-        --gl-bg: #fcfbf8;
+        --gl-bg: #faf9f3;
         --gl-surface: #ffffff;
-        --gl-soft: #f4f8f2;
-        --gl-border: #e3ece0;
-        --gl-text: #142318;
-        --gl-muted: #556658;
-        --gl-forest: #1b7a3d;
+        --gl-soft: #f2f6ee;
+        --gl-border: #dfe9d8;
+        --gl-text: #152418;
+        --gl-muted: #5a6b5d;
+        --gl-forest: #1e7a32;
         --gl-amber: #d97706;
-        --gl-pill-bg: #eef7f0;
-        --gl-pill-border: #cce3d2;
+        --gl-gold: #f6c431;
+        --gl-pill-bg: #edf6ea;
+        --gl-pill-border: #d2e6cb;
     }
     [data-bs-theme="dark"] {
-        --gl-bg: #0f1912 !important;
-        --gl-surface: #16241b !important;
-        --gl-soft: #1b2e22 !important;
-        --gl-border: #274030 !important;
-        --gl-text: #f3f7f2 !important;
-        --gl-muted: #a4b7a8 !important;
-        --gl-forest: #4ade80 !important;
+        --gl-bg: #0c160f !important;
+        --gl-surface: #142218 !important;
+        --gl-soft: #192b1f !important;
+        --gl-border: #273e2d !important;
+        --gl-text: #f3f6ef !important;
+        --gl-muted: #9eb1a2 !important;
+        --gl-forest: #34d399 !important;
         --gl-amber: #fbbf24 !important;
-        --gl-pill-bg: rgba(74, 222, 128, 0.14) !important;
-        --gl-pill-border: rgba(74, 222, 128, 0.28) !important;
+        --gl-gold: #fbbf24 !important;
+        --gl-pill-bg: rgba(52, 211, 153, 0.14) !important;
+        --gl-pill-border: rgba(52, 211, 153, 0.28) !important;
     }
     body {
         background-color: var(--gl-bg) !important;
@@ -77,9 +79,9 @@
     .grocery-shortcut-pill:hover,
     .grocery-shortcut-pill.active {
         border-color: transparent;
-        background: #1b7a3d;
+        background: #1e7a32;
         color: #ffffff;
-        box-shadow: 0 4px 12px rgba(27, 122, 61, 0.22);
+        box-shadow: 0 4px 12px rgba(30, 122, 50, 0.24);
     }
 
     .grocery-filter-sidebar,
@@ -121,8 +123,8 @@
         font-weight: 700;
     }
     .grocery-form-check .form-check-input:checked {
-        background-color: #1b7a3d;
-        border-color: #1b7a3d;
+        background-color: #1e7a32;
+        border-color: #1e7a32;
     }
     .grocery-active-chip {
         display: inline-flex;
@@ -155,9 +157,9 @@
     }
     .grocery-budget-pill:hover,
     .grocery-budget-pill.active {
-        background: #1b7a3d;
+        background: #1e7a32;
         color: #ffffff;
-        border-color: #1b7a3d;
+        border-color: #1e7a32;
     }
 
     .grocery-filter-sidebar .form-control,
@@ -516,7 +518,7 @@
                     {% for num in elided_page_range %}
                         {% if num == page_obj.number %}
                             <li class="page-item active" aria-current="page">
-                                <span class="page-link rounded-2 px-3 fw-bold" style="background: #1b7a3d; border-color: #1b7a3d; color: #ffffff;">{{ num }}</span>
+                                <span class="page-link rounded-2 px-3 fw-bold" style="background: #1e7a32; border-color: #1e7a32; color: #ffffff;">{{ num }}</span>
                             </li>
                         {% elif num == ellipsis %}
                             <li class="page-item disabled"><span class="page-link border-0 gl-muted">{{ num }}</span></li>

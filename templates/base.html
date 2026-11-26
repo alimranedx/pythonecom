@@ -1,6 +1,6 @@
 {% load static theme_tags %}
 <!DOCTYPE html>
-<html lang="{{ CURRENT_LANGUAGE|default:'en' }}" data-bs-theme="light">
+<html lang="{{ CURRENT_LANGUAGE|default:'en' }}" data-bs-theme="light" data-store-theme="{{ CURRENT_THEME_ID|default:'' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,6 +42,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    {% if CURRENT_THEME_ID == 'organic-grocery' %}
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    {% endif %}
 
     <style>
         :root {
@@ -205,7 +208,7 @@
         #backToTopBtn {
             position: fixed;
             left: 24px;
-            bottom: 28px;
+            bottom: 70px;
             z-index: 1035;
             width: 44px;
             height: 44px;
@@ -536,6 +539,165 @@
         }
         .cart-badge-pop {
             animation: cartBadgePop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* =====================================================================
+           ORGANIC GROCERY GLOBAL BACKGROUND & HARMONIOUS BOTANICAL PALETTE
+           Sunlit Warm Ivory (#FAF9F3) + Soft Sage (#F2F6EE) + Leaf Green (#1E7A32) + Honey Gold (#F6C431)
+           ===================================================================== */
+        [data-store-theme="organic-grocery"] {
+            --light-bg: #faf9f3;
+            --surface-card: #ffffff;
+            --surface-muted: #f2f6ee;
+            --border-color: #dfe9d8;
+            --dark-color: #152418;
+            --text-main: #1f2f22;
+            --text-muted: #5a6b5d;
+            --glass-bg: rgba(250, 249, 243, 0.94);
+            --glass-border: rgba(30, 122, 50, 0.12);
+            --bs-body-bg: #faf9f3;
+            --bs-body-color: #1f2f22;
+            --bs-light-rgb: 242, 246, 238;
+            --bs-success: #1e7a32;
+            --bs-success-rgb: 30, 122, 50;
+            --bs-warning: #f6c431;
+            --bs-warning-rgb: 246, 196, 49;
+        }
+        [data-store-theme="organic-grocery"] body {
+            background-color: #faf9f3 !important;
+            background-image: radial-gradient(circle at 12% 8%, rgba(237, 246, 234, 0.85) 0%, rgba(250, 249, 243, 0) 42%),
+                              radial-gradient(circle at 88% 14%, rgba(254, 246, 223, 0.65) 0%, rgba(250, 249, 243, 0) 40%);
+            color: var(--text-main);
+        }
+        [data-store-theme="organic-grocery"] .announcement-bar {
+            background: linear-gradient(90deg, #165e26 0%, #1e7a32 50%, #165e26 100%) !important;
+            color: #f1f8ee !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+        }
+        [data-store-theme="organic-grocery"] .announcement-bar .lang-toggle-pill .btn-primary {
+            background-color: #f6c431 !important;
+            border-color: #f6c431 !important;
+            color: #152418 !important;
+        }
+        [data-store-theme="organic-grocery"] .announcement-bar .theme-toggle-btn:hover,
+        [data-store-theme="organic-grocery"] .announcement-bar .theme-toggle-btn:focus,
+        [data-store-theme="organic-grocery"] .announcement-bar .theme-toggle-btn:active {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.55) !important;
+        }
+        [data-store-theme="organic-grocery"] .floating-help-pill {
+            left: 14px !important;
+            bottom: 16px !important;
+            width: 40px;
+            height: 40px;
+            padding: 0 !important;
+            justify-content: center;
+        }
+        [data-store-theme="organic-grocery"] .floating-help-pill .floating-help-label {
+            display: none;
+        }
+        [data-store-theme="organic-grocery"] .floating-help-pill:hover {
+            width: auto;
+            padding: 0 14px !important;
+        }
+        [data-store-theme="organic-grocery"] .floating-help-pill:hover .floating-help-label {
+            display: inline;
+        }
+        [data-store-theme="organic-grocery"] .floating-cart-widget {
+            background-color: #165e26 !important;
+            border: 2px solid #f6c431 !important;
+            box-shadow: 0 12px 26px -6px rgba(22, 94, 38, 0.42) !important;
+        }
+        [data-store-theme="organic-grocery"] .floating-cart-widget:hover {
+            background-color: #1e7a32 !important;
+        }
+        [data-store-theme="organic-grocery"] .product-card:hover {
+            border-color: rgba(30, 122, 50, 0.35) !important;
+        }
+        [data-store-theme="organic-grocery"] .product-img-wrapper {
+            background: #f2f6ee;
+        }
+        [data-store-theme="organic-grocery"] .mobile-bottom-nav {
+            background-color: rgba(250, 249, 243, 0.96) !important;
+            border-color: #dfe9d8 !important;
+        }
+        [data-store-theme="organic-grocery"] .bg-light {
+            background-color: #f2f6ee !important;
+        }
+        [data-store-theme="organic-grocery"] .offcanvas {
+            background-color: #faf9f3 !important;
+            color: #1f2f22;
+        }
+        [data-store-theme="organic-grocery"] .offcanvas-header {
+            background-color: #f2f6ee !important;
+            border-color: #dfe9d8 !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] {
+            --light-bg: #0c160f;
+            --surface-card: #142218;
+            --surface-muted: #1b2d20;
+            --border-color: #273e2d;
+            --dark-color: #f3f6ef;
+            --text-main: #e6efe7;
+            --text-muted: #9eb1a2;
+            --primary-light: rgba(52, 211, 153, 0.14);
+            --glass-bg: rgba(12, 22, 15, 0.94);
+            --glass-border: rgba(52, 211, 153, 0.18);
+            --bs-body-bg: #0c160f;
+            --bs-body-color: #e6efe7;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] body {
+            background-color: #0c160f !important;
+            background-image: radial-gradient(circle at 15% 10%, rgba(22, 94, 38, 0.18) 0%, rgba(12, 22, 15, 0) 45%) !important;
+            color: #e6efe7 !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .announcement-bar {
+            background: linear-gradient(90deg, #09140c 0%, #112417 50%, #09140c 100%) !important;
+            border-bottom: 1px solid #273e2d !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .bg-white,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .card,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .product-card,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .dropdown-menu {
+            background-color: #142218 !important;
+            border-color: #273e2d !important;
+            color: #e6efe7 !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .bg-light,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .product-img-wrapper,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .offcanvas-header,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .input-group-text {
+            background-color: #1b2d20 !important;
+            border-color: #273e2d !important;
+            color: #d6e4d8 !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .offcanvas,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .form-control,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .form-select {
+            background-color: #0f1b13 !important;
+            border-color: #273e2d !important;
+            color: #f3f6ef !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .form-control:focus,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .form-select:focus {
+            border-color: #34d399 !important;
+            box-shadow: 0 0 0 0.25rem rgba(52, 211, 153, 0.2) !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .border,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .border-top,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .border-bottom,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .border-start,
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .border-end {
+            border-color: #273e2d !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .mobile-bottom-nav {
+            background-color: rgba(12, 22, 15, 0.96) !important;
+            border-color: #273e2d !important;
+        }
+        [data-store-theme="organic-grocery"][data-bs-theme="dark"] .floating-cart-widget {
+            background-color: #145c2d !important;
+            border-color: #fbbf24 !important;
         }
     </style>
     {% if THEME_CUSTOM_CSS %}
@@ -1382,9 +1544,9 @@
         <i class="bi bi-arrow-up fs-5"></i>
     </button>
     <!-- Floating Helpline / WhatsApp Quick Support Pill -->
-    <a href="tel:{{ site_settings.support_phone|default:'16263' }}" class="btn btn-success rounded-pill shadow-md d-none d-md-inline-flex align-items-center gap-2 px-3 py-2" style="position: fixed; left: 24px; bottom: 82px; z-index: 1034; font-size: 0.8rem; font-weight: 600;" title="Customer Care Helpline">
+    <a href="tel:{{ site_settings.support_phone|default:'16263' }}" class="btn btn-success rounded-pill shadow-md d-none d-md-inline-flex align-items-center gap-2 px-3 py-1.5 floating-help-pill" style="position: fixed; left: 24px; bottom: 20px; z-index: 1034; font-size: 0.78rem; font-weight: 600;" title="Customer Care Helpline: {{ site_settings.support_phone|default:'16263' }}" aria-label="Help: {{ site_settings.support_phone|default:'16263' }}">
         <i class="bi bi-headset"></i>
-        <span>Help: {{ site_settings.support_phone|default:'16263' }}</span>
+        <span class="floating-help-label">Help: {{ site_settings.support_phone|default:'16263' }}</span>
     </a>
     <script>
         (function() {

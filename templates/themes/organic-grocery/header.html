@@ -3,50 +3,50 @@
 <header id="grocerySiteHeader" class="grocery-header sticky-top">
     <style>
         .grocery-header {
-            --gh-bg: rgba(252, 252, 249, 0.96);
+            --gh-bg: rgba(250, 249, 243, 0.94);
             --gh-surface: #ffffff;
-            --gh-surface-soft: #f3f7f0;
-            --gh-border: rgba(23, 89, 47, 0.1);
-            --gh-text: #16261a;
-            --gh-muted: #5d6e60;
-            --gh-green: #1b7a3d;
-            --gh-green-dark: #145c2d;
-            --gh-amber: #eab308;
-            --gh-pill-bg: #eef7f0;
-            --gh-pill-border: #cde6d3;
+            --gh-surface-soft: #f2f6ee;
+            --gh-border: rgba(30, 122, 50, 0.12);
+            --gh-text: #152418;
+            --gh-muted: #5a6b5d;
+            --gh-green: #1e7a32;
+            --gh-green-dark: #165e26;
+            --gh-amber: #f6c431;
+            --gh-pill-bg: #edf6ea;
+            --gh-pill-border: #d2e6cb;
             font-family: 'Plus Jakarta Sans', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--gh-text);
             background-color: var(--gh-bg) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--gh-border) !important;
             z-index: 1030;
             transition: background-color 0.25s ease, border-color 0.25s ease;
         }
         [data-bs-theme="dark"] .grocery-header {
-            --gh-bg: rgba(15, 25, 19, 0.96) !important;
-            --gh-surface: #16251c !important;
-            --gh-surface-soft: #1d3024 !important;
-            --gh-border: rgba(74, 222, 128, 0.16) !important;
-            --gh-text: #f3f5f0 !important;
+            --gh-bg: rgba(12, 22, 15, 0.95) !important;
+            --gh-surface: #142218 !important;
+            --gh-surface-soft: #1b2d20 !important;
+            --gh-border: rgba(52, 211, 153, 0.18) !important;
+            --gh-text: #f3f6ef !important;
             --gh-muted: #9eb1a2 !important;
             --gh-green: #34d399 !important;
             --gh-green-dark: #10b981 !important;
             --gh-amber: #fbbf24 !important;
-            --gh-pill-bg: rgba(52, 211, 153, 0.12) !important;
-            --gh-pill-border: rgba(52, 211, 153, 0.26) !important;
+            --gh-pill-bg: rgba(52, 211, 153, 0.14) !important;
+            --gh-pill-border: rgba(52, 211, 153, 0.28) !important;
         }
         .grocery-top-bar {
-            background: #145c2d;
-            color: #eef7f0;
+            background: linear-gradient(90deg, #165e26 0%, #1e7a32 50%, #165e26 100%);
+            color: #f1f8ee;
             font-size: 0.74rem;
         }
-        .grocery-top-bar a { color: #dcfce7; text-decoration: none; }
+        .grocery-top-bar a { color: #e2f5dc; text-decoration: none; }
         .grocery-nav-link {
             color: var(--gh-text);
             font-weight: 600;
-            font-size: 0.87rem;
-            padding: 0.42rem 0.2rem;
+            font-size: 0.88rem;
+            padding: 0.45rem 0.22rem;
             position: relative;
             text-decoration: none;
             display: inline-flex;
@@ -63,7 +63,7 @@
             left: 0;
             right: 0;
             bottom: -2px;
-            height: 2px;
+            height: 2.5px;
             border-radius: 2px;
             background-color: var(--gh-green);
             transform: scaleX(0);
@@ -82,11 +82,11 @@
             background: var(--gh-surface);
             border-radius: 9999px;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 10px rgba(20, 92, 45, 0.04);
+            box-shadow: 0 2px 10px rgba(22, 94, 38, 0.04);
         }
         .grocery-search-wrap:focus-within {
             border-color: var(--gh-green);
-            box-shadow: 0 0 0 3px rgba(27, 122, 61, 0.12);
+            box-shadow: 0 0 0 3px rgba(30, 122, 50, 0.12);
         }
         .grocery-search-wrap input {
             background-color: transparent !important;
@@ -128,26 +128,27 @@
             color: var(--gh-green);
         }
         .grocery-btn-basket {
-            background: #1b7a3d;
+            background: #1e7a32;
             color: #ffffff !important;
-            border-radius: 10px;
+            border-radius: 9999px;
             font-size: 0.83rem;
             font-weight: 700;
             border: none;
-            padding: 0.48rem 0.95rem;
-            box-shadow: 0 4px 12px rgba(27, 122, 61, 0.22);
+            padding: 0.5rem 1.05rem;
+            box-shadow: 0 6px 14px -4px rgba(30, 122, 50, 0.34);
             transition: all 0.2s ease;
         }
         .grocery-btn-basket:hover {
-            background: #145c2d;
+            background: #165e26;
             transform: translateY(-1px);
+            box-shadow: 0 10px 18px -4px rgba(22, 94, 38, 0.4);
         }
         .grocery-slot-chip {
             background: var(--gh-pill-bg);
             border: 1px solid var(--gh-pill-border);
             color: var(--gh-green);
             border-radius: 9999px;
-            padding: 0.25rem 0.7rem;
+            padding: 0.26rem 0.72rem;
             font-size: 0.74rem;
             font-weight: 600;
             display: inline-flex;
@@ -157,8 +158,8 @@
             transition: all 0.2s ease;
         }
         .grocery-slot-chip:hover {
-            background: #1b7a3d;
-            border-color: #1b7a3d;
+            background: #1e7a32;
+            border-color: #1e7a32;
             color: #ffffff;
         }
         .grocery-dropdown-menu {
@@ -166,7 +167,7 @@
             border: 1px solid var(--gh-border);
             background: var(--gh-surface);
             color: var(--gh-text);
-            box-shadow: 0 16px 38px rgba(22, 48, 32, 0.14);
+            box-shadow: 0 16px 38px rgba(21, 36, 24, 0.14);
             font-size: 0.84rem;
         }
         .grocery-dropdown-item {
@@ -183,7 +184,7 @@
         .grocery-badge-counter {
             font-size: 0.62rem;
             font-weight: 700;
-            background-color: #ef4444 !important;
+            background-color: #c85528 !important;
             color: #ffffff !important;
             padding: 0.2em 0.45em;
         }
@@ -230,25 +231,25 @@
             border-color: var(--gh-border) !important;
         }
         .natura-brand-serif {
-            font-family: 'Fraunces', 'Playfair Display', Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
             letter-spacing: -0.02em;
         }
     </style>
 
     <!-- Fallback Top Ribbon ONLY when base.html announcement_enabled is off -->
     {% if not site_settings.announcement_enabled %}
-    <div class="grocery-top-bar py-1 px-3 d-none d-sm-block">
+    <div class="grocery-top-bar py-1.5 px-3 d-none d-sm-block">
         <div class="container d-flex justify-content-between align-items-center gap-2">
             <span class="text-truncate">
-                <i class="bi bi-truck me-1 text-warning"></i>
+                <i class="bi bi-truck me-1" style="color: #f6c431;"></i>
                 {% if IS_BANGLA %}৳৭৫০+ অর্ডারে ফ্রি সেম-ডে ডেলিভারি | খাঁটি ও ফরমালিনমুক্ত{% else %}Free Same-Day Delivery on orders over ৳750 | Direct from BD Organic Farms{% endif %}
             </span>
             <div class="d-flex align-items-center gap-3 flex-shrink-0">
-                <a href="tel:{{ site_settings.contact_phone|default:'+880 9610-000000' }}"><i class="bi bi-telephone-fill text-warning me-1"></i>{{ site_settings.contact_phone|default:'+880 9610-000000' }}</a>
-                <button type="button" class="btn btn-xs btn-outline-light theme-toggle-btn py-0 px-2 rounded-pill" onclick="toggleTheme()" style="font-size: 0.72rem;"><i class="bi bi-moon-stars-fill theme-icon text-warning"></i> <span class="theme-text">Mode</span></button>
+                <a href="tel:{{ site_settings.contact_phone|default:'+880 9610-000000' }}"><i class="bi bi-telephone-fill me-1" style="color: #f6c431;"></i>{{ site_settings.contact_phone|default:'+880 9610-000000' }}</a>
+                <button type="button" class="btn btn-xs btn-outline-light theme-toggle-btn py-0 px-2 rounded-pill" onclick="toggleTheme()" style="font-size: 0.72rem;"><i class="bi bi-moon-stars-fill theme-icon" style="color: #f6c431;"></i> <span class="theme-text">Mode</span></button>
                 <div class="btn-group btn-group-sm lang-toggle-pill" role="group">
-                    <a href="{% url 'set_language' 'en' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}btn-warning text-dark fw-bold{% else %}btn-outline-light{% endif %} py-0 px-2 rounded-start-pill" style="font-size: 0.7rem;">EN</a>
-                    <a href="{% url 'set_language' 'bn' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'bn' %}btn-warning text-dark fw-bold{% else %}btn-outline-light{% endif %} py-0 px-2 rounded-end-pill" style="font-size: 0.7rem;">বাং</a>
+                    <a href="{% url 'set_language' 'en' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'en' %}fw-bold{% else %}btn-outline-light{% endif %} py-0 px-2 rounded-start-pill" style="font-size: 0.7rem; {% if CURRENT_LANGUAGE == 'en' %}background:#f6c431; color:#152418; border-color:#f6c431;{% endif %}">EN</a>
+                    <a href="{% url 'set_language' 'bn' %}" class="btn btn-xs {% if CURRENT_LANGUAGE == 'bn' %}fw-bold{% else %}btn-outline-light{% endif %} py-0 px-2 rounded-end-pill" style="font-size: 0.7rem; {% if CURRENT_LANGUAGE == 'bn' %}background:#f6c431; color:#152418; border-color:#f6c431;{% endif %}">বাং</a>
                 </div>
             </div>
         </div>
@@ -261,20 +262,20 @@
             <!-- Left: Clean Botanical Brand Mark -->
             <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 me-0 flex-shrink-0" title="{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}">
                 {% if site_settings.brand_logo %}
-                    <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" class="brand-logo-img" style="height: 38px; width: auto; max-width: 175px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
+                    <img src="{{ site_settings.brand_logo.url }}?v=4" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" class="brand-logo-img" style="height: 38px; width: auto; max-width: 175px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.svg?v=4'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
                     <span class="brand-logo-fallback align-items-center gap-2">
-                        <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-leaf-fill fs-6"></i></span>
+                        <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 34px; height: 34px;"><i class="bi bi-flower2 fs-6"></i></span>
                         <span class="natura-brand-serif fw-bold fs-4" style="color: var(--gh-text);">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</span>
                     </span>
                 {% elif CURRENT_THEME_DATA.logo_url %}
-                    <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="36" style="height: 36px; width: auto; max-width: 175px; object-fit: contain;" class="brand-logo-img logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
-                    <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="36" style="height: 36px; width: auto; max-width: 175px; object-fit: contain;" class="brand-logo-img logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
+                    <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=4" alt="{{ CURRENT_THEME_DATA.name }}" height="36" style="height: 36px; width: auto; max-width: 185px; object-fit: contain;" class="brand-logo-img logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=4'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
+                    <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=4" alt="{{ CURRENT_THEME_DATA.name }}" height="36" style="height: 36px; width: auto; max-width: 185px; object-fit: contain;" class="brand-logo-img logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=4'; this.onerror=function(){this.closest('.navbar-brand').classList.add('use-text-fallback');};">
                     <span class="brand-logo-fallback align-items-center gap-2">
-                        <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-flower2 fs-6"></i></span>
+                        <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 34px; height: 34px;"><i class="bi bi-flower2 fs-6"></i></span>
                         <span class="natura-brand-serif fw-bold fs-4" style="color: var(--gh-text);">{{ CURRENT_THEME_DATA.brand_name|default:'Pure Harvest' }}</span>
                     </span>
                 {% else %}
-                    <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-flower2 fs-6"></i></span>
+                    <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 34px; height: 34px;"><i class="bi bi-flower2 fs-6"></i></span>
                     <span class="natura-brand-serif fw-bold fs-4" style="color: var(--gh-text);">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</span>
                 {% endif %}
             </a>
@@ -297,12 +298,12 @@
                                 <span>{% if IS_BANGLA %}সকল গ্রোসারি আইল{% else %}Browse All Aisles{% endif %}</span>
                             </a>
                         </li>
-                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=raw-wild-honey"><i class="bi bi-flower2 me-2 text-warning"></i>Sundarban Raw Honey</a></li>
-                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?q=Gur"><i class="bi bi-award me-2 text-warning"></i>Khejur Gur &amp; Red Sugar</a></li>
-                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=premium-dry-fruits-nuts"><i class="bi bi-gem me-2 text-warning"></i>Organic Nuts &amp; Dates</a></li>
-                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=cold-pressed-mustard-oils"><i class="bi bi-droplet-fill me-2 text-success"></i>Wood-Pressed Mustard Oil</a></li>
-                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=desi-ghee-dairy-butter"><i class="bi bi-cup-hot-fill me-2 text-warning"></i>Desi Cow Ghee</a></li>
-                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=aromatic-rice-grains"><i class="bi bi-basket2-fill me-2 text-success"></i>Chinigura &amp; Heritage Rice</a></li>
+                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=raw-wild-honey"><i class="bi bi-flower2 me-2" style="color: #d97706;"></i>Sundarban Raw Honey</a></li>
+                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?q=Gur"><i class="bi bi-award me-2" style="color: #b45309;"></i>Khejur Gur &amp; Red Sugar</a></li>
+                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=premium-dry-fruits-nuts"><i class="bi bi-gem me-2" style="color: #d97706;"></i>Organic Nuts &amp; Dates</a></li>
+                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=cold-pressed-mustard-oils"><i class="bi bi-droplet-fill me-2" style="color: var(--gh-green);"></i>Wood-Pressed Mustard Oil</a></li>
+                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=desi-ghee-dairy-butter"><i class="bi bi-cup-hot-fill me-2" style="color: #d97706;"></i>Desi Cow Ghee</a></li>
+                        <li><a class="dropdown-item grocery-dropdown-item py-1.5" href="{% url 'product_list' %}?category=aromatic-rice-grains"><i class="bi bi-basket2-fill me-2" style="color: var(--gh-green);"></i>Chinigura &amp; Heritage Rice</a></li>
                         {% if all_categories %}
                             <li><hr class="dropdown-divider my-1" style="border-color: var(--gh-border);"></li>
                             {% for cat in all_categories %}
@@ -342,14 +343,14 @@
                     <i class="bi bi-geo-alt-fill"></i>
                     <span class="d-none d-xxl-inline">{% if IS_BANGLA %}ডেলিভারি:{% else %}Delivering to{% endif %}</span>
                     <strong class="current-delivery-location">Dhaka</strong>
-                    <span class="opacity-50 d-none d-xxl-inline">•</span>
+                    <span class="opacity-50 d-none d-xxl-inline">&bull;</span>
                     <span class="d-none d-xxl-inline current-delivery-slot-text">Today 4–7 PM</span>
                 </button>
             </nav>
 
-            <!-- Right: Clean Pill Search + Account + Wishlist + Green Cart Button -->
+            <!-- Right: Clean Pill Search + Account + Wishlist + Green Cart Pill -->
             <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                <form action="{% url 'product_list' %}" method="get" class="grocery-search-form d-none d-lg-block" style="width: 235px;">
+                <form action="{% url 'product_list' %}" method="get" class="grocery-search-form d-none d-lg-block" style="width: 230px;">
                     <div class="input-group grocery-search-wrap align-items-center pe-1">
                         <input type="text" name="q" class="form-control border-0 ps-3 py-1.5 shadow-none"
                                placeholder="{% if IS_BANGLA %}মধু, গুড়, বাদাম, সরিষার তেল...{% else %}Search honey, gur, nuts, oil...{% endif %}"
@@ -389,7 +390,7 @@
                 <!-- Wishlist Icon -->
                 <a href="{% url 'wishlist_view' %}" class="grocery-icon-pill position-relative text-decoration-none" title="{{ tr.wishlist }}">
                     <i class="bi bi-heart fs-6"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill grocery-badge-counter" id="navWishlistBadge">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill grocery-badge-counter" id="navWishlistBadge" {% if not global_wishlist_count %}style="display: none;"{% endif %}>
                         {{ global_wishlist_count|default:0 }}
                     </span>
                 </a>
@@ -419,13 +420,13 @@
             </button>
 
             <a href="{% url 'home' %}" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mx-auto">
-                <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 28px; height: 28px;"><i class="bi bi-flower2 small"></i></span>
+                <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 28px; height: 28px;"><i class="bi bi-flower2 small"></i></span>
                 <span class="natura-brand-serif fw-bold fs-6" style="color: var(--gh-text);">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</span>
             </a>
 
             <div class="d-flex align-items-center gap-1.5">
                 <a href="{% url 'wishlist_view' %}" class="grocery-icon-pill position-relative text-decoration-none" style="width: 34px; height: 34px;" title="{{ tr.wishlist }}">
-                    <i class="bi bi-heart-fill text-danger small"></i>
+                    <i class="bi bi-heart-fill small" style="color: #c85528;"></i>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill grocery-badge-counter">{{ global_wishlist_count|default:0 }}</span>
                 </a>
                 <button class="btn btn-sm grocery-btn-basket py-1 px-2.5 d-flex align-items-center gap-1"
@@ -450,19 +451,19 @@
     <div class="offcanvas offcanvas-start shadow grocery-offcanvas-panel" tabindex="-1" id="mobileGroceryOffcanvas" aria-labelledby="mobileGroceryOffcanvasLabel">
         <div class="offcanvas-header border-bottom py-3 grocery-surface-soft">
             <div class="d-flex align-items-center gap-2">
-                <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 32px; height: 32px;"><i class="bi bi-flower2"></i></span>
+                <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 32px; height: 32px;"><i class="bi bi-flower2"></i></span>
                 <h5 class="offcanvas-title natura-brand-serif fw-bold mb-0" id="mobileGroceryOffcanvasLabel">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</h5>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
 
         <div class="offcanvas-body p-3">
-            <div class="p-3 rounded-3 mb-3 text-white shadow-sm" style="background: linear-gradient(135deg, #1b7a3d 0%, #145c2d 100%);">
+            <div class="p-3 rounded-3 mb-3 text-white shadow-sm" style="background: linear-gradient(135deg, #1e7a32 0%, #165e26 100%);">
                 <div class="d-flex align-items-center justify-content-between mb-1">
-                    <strong class="small"><i class="bi bi-clock-history text-warning me-1"></i>{% if IS_BANGLA %}ডেলিভারি স্লট{% else %}Free Same-Day Delivery (৳750+){% endif %}</strong>
-                    <span class="badge bg-warning text-dark" style="font-size: 0.62rem;">Active</span>
+                    <strong class="small"><i class="bi bi-clock-history me-1" style="color: #f6c431;"></i>{% if IS_BANGLA %}ডেলিভারি স্লট{% else %}Free Same-Day Delivery (৳750+){% endif %}</strong>
+                    <span class="badge fw-bold" style="background: #f6c431; color: #152418; font-size: 0.62rem;">Active</span>
                 </div>
-                <button type="button" class="btn btn-sm btn-light fw-bold w-100 rounded-pill mt-2" data-bs-toggle="modal" data-bs-target="#deliverySlotModal" data-bs-dismiss="offcanvas" style="color: #145c2d; font-size: 0.78rem;">
+                <button type="button" class="btn btn-sm btn-light fw-bold w-100 rounded-pill mt-2" data-bs-toggle="modal" data-bs-target="#deliverySlotModal" data-bs-dismiss="offcanvas" style="color: #165e26; font-size: 0.78rem;">
                     <span class="current-delivery-location">Dhaka</span> &bull; <span class="current-delivery-slot-text">Today 4 PM - 7 PM</span>
                 </button>
             </div>
@@ -470,7 +471,7 @@
             <div class="list-group list-group-flush rounded-3 overflow-hidden border mb-3" style="border-color: var(--gh-border) !important;">
                 <a href="{% url 'product_list' %}" class="list-group-item list-group-item-action fw-bold" style="color: var(--gh-green); background: var(--gh-pill-bg);"><i class="bi bi-grid-fill me-2"></i>All Organic Groceries</a>
                 {% for cat in all_categories %}
-                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="list-group-item list-group-item-action"><i class="bi {{ cat.icon|default:'bi-flower2' }} me-2 text-success"></i>{{ cat.name }}</a>
+                    <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="list-group-item list-group-item-action"><i class="bi {{ cat.icon|default:'bi-flower2' }} me-2" style="color: var(--gh-green);"></i>{{ cat.name }}</a>
                 {% empty %}
                     <a href="{% url 'product_list' %}?category=raw-wild-honey" class="list-group-item list-group-item-action">Sundarbans Raw Honey</a>
                     <a href="{% url 'product_list' %}?q=Gur" class="list-group-item list-group-item-action">Khejur Gur &amp; Red Sugar</a>
@@ -486,16 +487,16 @@
 <div class="modal fade" id="deliverySlotModal" tabindex="-1" aria-labelledby="deliverySlotModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg grocery-modal-shell">
-            <div class="modal-header text-white p-4 border-0" style="background: linear-gradient(135deg, #1b7a3d 0%, #145c2d 100%);">
+            <div class="modal-header text-white p-4 border-0" style="background: linear-gradient(135deg, #1e7a32 0%, #165e26 100%);">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; color: #1b7a3d;">
+                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; color: #1e7a32;">
                         <i class="bi bi-clock-history fs-4"></i>
                     </div>
                     <div>
                         <h5 class="modal-title fw-bold mb-0 text-white" id="deliverySlotModalLabel">
                             {% if IS_BANGLA %}ডেলিভারি লোকেশন ও স্লট নির্বাচন করুন{% else %}Select Delivery Location &amp; Time Slot{% endif %}
                         </h5>
-                        <small class="text-white-50">Free Same-Day Delivery on orders over ৳750 across Bangladesh hubs</small>
+                        <small style="color: rgba(241, 248, 238, 0.85);">Free Same-Day Delivery on orders over ৳750 across Bangladesh hubs</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -520,7 +521,7 @@
                 <div class="mb-4">
                     <label class="form-label fw-bold small mb-2">2. Select Delivery Day</label>
                     <div class="row g-2" id="groceryDaySelectorGroup">
-                        <div class="col-4"><input type="radio" class="btn-check" name="deliveryDay" id="dayToday" value="Today" checked><label class="btn w-100 py-2 d-flex flex-column align-items-center slot-pill-option" for="dayToday"><span class="fw-bold small">Today</span><span class="badge bg-success-subtle text-success mt-1" style="font-size: 0.65rem;">Fastest</span></label></div>
+                        <div class="col-4"><input type="radio" class="btn-check" name="deliveryDay" id="dayToday" value="Today" checked><label class="btn w-100 py-2 d-flex flex-column align-items-center slot-pill-option" for="dayToday"><span class="fw-bold small">Today</span><span class="badge mt-1" style="background: var(--gh-pill-bg); color: var(--gh-green); font-size: 0.65rem;">Fastest</span></label></div>
                         <div class="col-4"><input type="radio" class="btn-check" name="deliveryDay" id="dayTomorrow" value="Tomorrow"><label class="btn w-100 py-2 d-flex flex-column align-items-center slot-pill-option" for="dayTomorrow"><span class="fw-bold small">Tomorrow</span><span class="grocery-muted" style="font-size: 0.68rem;">Morning harvest</span></label></div>
                         <div class="col-4"><input type="radio" class="btn-check" name="deliveryDay" id="dayAfter" value="Day After"><label class="btn w-100 py-2 d-flex flex-column align-items-center slot-pill-option" for="dayAfter"><span class="fw-bold small">Day After</span><span class="grocery-muted" style="font-size: 0.68rem;">Advance booking</span></label></div>
                     </div>
@@ -529,17 +530,17 @@
                 <div class="mb-3">
                     <label class="form-label fw-bold small mb-2">3. Choose Convenient Time Window</label>
                     <div class="row g-2" id="grocerySlotSelectorGroup">
-                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotMorning" value="8 AM - 11 AM"><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotMorning"><div><strong class="d-block small">Morning: 8:00 AM – 11:00 AM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Fresh Dawn Harvest</small></div><span class="badge bg-success-subtle text-success">Open</span></label></div>
-                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotAfternoon" value="1 PM - 4 PM"><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotAfternoon"><div><strong class="d-block small">Afternoon: 1:00 PM – 4:00 PM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Lunch Restock</small></div><span class="badge bg-success-subtle text-success">Open</span></label></div>
-                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotEvening" value="5 PM - 8 PM" checked><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotEvening"><div><strong class="d-block small">Evening: 5:00 PM – 8:00 PM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Dinner Prep</small></div><span class="badge bg-warning text-dark">Popular</span></label></div>
-                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotNight" value="8 PM - 11 PM"><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotNight"><div><strong class="d-block small">Night: 8:00 PM – 11:00 PM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Late Express</small></div><span class="badge bg-success-subtle text-success">Open</span></label></div>
+                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotMorning" value="8 AM - 11 AM"><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotMorning"><div><strong class="d-block small">Morning: 8:00 AM – 11:00 AM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Fresh Dawn Harvest</small></div><span class="badge" style="background: var(--gh-pill-bg); color: var(--gh-green);">Open</span></label></div>
+                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotAfternoon" value="1 PM - 4 PM"><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotAfternoon"><div><strong class="d-block small">Afternoon: 1:00 PM – 4:00 PM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Lunch Restock</small></div><span class="badge" style="background: var(--gh-pill-bg); color: var(--gh-green);">Open</span></label></div>
+                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotEvening" value="5 PM - 8 PM" checked><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotEvening"><div><strong class="d-block small">Evening: 5:00 PM – 8:00 PM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Dinner Prep</small></div><span class="badge fw-bold" style="background: #f6c431; color: #152418;">Popular</span></label></div>
+                        <div class="col-md-6 col-12"><input type="radio" class="btn-check" name="deliverySlot" id="slotNight" value="8 PM - 11 PM"><label class="btn w-100 p-3 text-start slot-pill-option d-flex align-items-center justify-content-between" for="slotNight"><div><strong class="d-block small">Night: 8:00 PM – 11:00 PM</strong><small class="grocery-muted" style="font-size: 0.72rem;">Late Express</small></div><span class="badge" style="background: var(--gh-pill-bg); color: var(--gh-green);">Open</span></label></div>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer border-top p-3 grocery-surface-soft">
                 <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn text-white btn-sm rounded-pill px-4 fw-bold" style="background: #1b7a3d;" onclick="saveGroceryDeliverySlot()">Confirm Slot</button>
+                <button type="button" class="btn text-white btn-sm rounded-pill px-4 fw-bold" style="background: #1e7a32;" onclick="saveGroceryDeliverySlot()">Confirm Slot</button>
             </div>
         </div>
     </div>

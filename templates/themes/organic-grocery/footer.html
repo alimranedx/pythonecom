@@ -1,19 +1,20 @@
 {% load static %}
-<!-- Organic Food & Daily Grocery Flagship Footer (Botanical Olive-Linen & Khaas/Chaldal Hybrid) -->
+<!-- Organic Food & Daily Grocery Flagship Footer (Sunlit Sage-Cream & Leaf Green Palette) -->
 <footer class="grocery-footer pt-5 pb-3 mt-auto">
     <style>
         .grocery-footer {
-            --gf-bg: #f4f8f2;
+            --gf-bg: #f2f6ee;
             --gf-card: #ffffff;
-            --gf-border: #e3ece0;
-            --gf-text: #142318;
-            --gf-muted: #556658;
-            --gf-forest: #1b7a3d;
-            --gf-forest-mid: #145c2d;
+            --gf-border: #dfe9d8;
+            --gf-text: #152418;
+            --gf-muted: #5a6b5d;
+            --gf-forest: #1e7a32;
+            --gf-forest-mid: #165e26;
             --gf-amber: #d97706;
-            --gf-pill-bg: #eef7f0;
-            --gf-pill-border: #cce3d2;
-            --gf-voucher-bg: #fef7e0;
+            --gf-gold: #f6c431;
+            --gf-pill-bg: #edf6ea;
+            --gf-pill-border: #d2e6cb;
+            --gf-voucher-bg: #fef6df;
             --gf-voucher-text: #92400e;
             background-color: var(--gf-bg);
             border-top: 1px solid var(--gf-border);
@@ -22,35 +23,37 @@
             font-size: 0.88rem;
         }
         [data-bs-theme="dark"] .grocery-footer {
-            --gf-bg: #0f1912 !important;
-            --gf-card: #16241b !important;
-            --gf-border: #274030 !important;
-            --gf-text: #f3f7f2 !important;
-            --gf-muted: #a4b7a8 !important;
-            --gf-forest: #4ade80 !important;
-            --gf-forest-mid: #22c55e !important;
+            --gf-bg: #0f1a12 !important;
+            --gf-card: #142218 !important;
+            --gf-border: #273e2d !important;
+            --gf-text: #f3f6ef !important;
+            --gf-muted: #9eb1a2 !important;
+            --gf-forest: #34d399 !important;
+            --gf-forest-mid: #10b981 !important;
             --gf-amber: #fbbf24 !important;
-            --gf-pill-bg: rgba(74, 222, 128, 0.14) !important;
-            --gf-pill-border: rgba(74, 222, 128, 0.28) !important;
+            --gf-gold: #fbbf24 !important;
+            --gf-pill-bg: rgba(52, 211, 153, 0.14) !important;
+            --gf-pill-border: rgba(52, 211, 153, 0.28) !important;
             --gf-voucher-bg: #2a2110 !important;
             --gf-voucher-text: #fde68a !important;
         }
         .grocery-footer .gf-pillar-card {
             background-color: var(--gf-card);
             border: 1px solid var(--gf-border);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 1.15rem 1rem;
+            box-shadow: 0 6px 18px -12px rgba(21, 36, 24, 0.12);
             transition: all 0.25s ease;
         }
         .grocery-footer .gf-pillar-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 24px rgba(27, 122, 61, 0.12);
-            border-color: var(--gf-forest-mid);
+            box-shadow: 0 12px 26px -12px rgba(30, 122, 50, 0.2);
+            border-color: var(--gf-forest);
         }
         .grocery-footer .gf-pillar-icon-wrap {
             width: 46px;
             height: 46px;
-            border-radius: 14px;
+            border-radius: 50%;
             background: var(--gf-pill-bg);
             color: var(--gf-forest);
             border: 1px solid var(--gf-pill-border);
@@ -61,9 +64,9 @@
             transition: all 0.2s ease;
         }
         .grocery-footer .gf-pillar-card:hover .gf-pillar-icon-wrap {
-            background: #1b7a3d;
+            background: #1e7a32;
             color: #ffffff;
-            border-color: #1b7a3d;
+            border-color: #1e7a32;
         }
         .grocery-footer .gf-heading {
             font-size: 0.8rem;
@@ -101,9 +104,9 @@
             text-decoration: none;
         }
         .grocery-footer .gf-social-icon:hover {
-            background: #1b7a3d;
+            background: #1e7a32;
             color: #ffffff;
-            border-color: #1b7a3d;
+            border-color: #1e7a32;
             transform: translateY(-2px);
         }
         .grocery-footer .gf-payment-chip {
@@ -120,7 +123,7 @@
         }
         .grocery-footer .gf-newsletter-input {
             background-color: var(--gf-card);
-            border: 1.5px solid #1b7a3d;
+            border: 1.5px solid #1e7a32;
             color: var(--gf-text);
             border-radius: 9999px 0 0 9999px;
             padding: 0.55rem 1rem;
@@ -128,17 +131,21 @@
         }
         .grocery-footer .gf-newsletter-input::placeholder { color: var(--gf-muted); }
         .grocery-footer .gf-newsletter-btn {
-            background: #1b7a3d;
+            background: #1e7a32;
             color: #ffffff;
-            border: 1.5px solid #1b7a3d;
+            border: 1.5px solid #1e7a32;
             border-radius: 0 9999px 9999px 0;
             font-size: 0.82rem;
             font-weight: 700;
             padding: 0.55rem 1.15rem;
         }
+        .grocery-footer .gf-newsletter-btn:hover {
+            background: #165e26;
+            border-color: #165e26;
+        }
         .grocery-footer .gf-voucher-tag {
             background-color: var(--gf-voucher-bg);
-            border: 1.5px dashed var(--gf-amber);
+            border: 1.5px dashed var(--gf-gold);
             color: var(--gf-voucher-text);
             border-radius: 10px;
             padding: 0.45rem 0.75rem;
@@ -177,7 +184,7 @@
             </div>
             <div class="col-lg-3 col-sm-6">
                 <div class="gf-pillar-card h-100 d-flex align-items-center gap-3">
-                    <div class="gf-pillar-icon-wrap" style="color: var(--gf-amber);"><i class="bi bi-droplet-half fs-4"></i></div>
+                    <div class="gf-pillar-icon-wrap" style="background: var(--gf-voucher-bg); border-color: rgba(246, 196, 49, 0.45); color: var(--gf-amber);"><i class="bi bi-droplet-half fs-4"></i></div>
                     <div>
                         <h6 class="mb-1 fw-bold gf-title" style="font-size: 0.86rem;">{% if IS_BANGLA %}কাঠের ঘানি ও কোল্ড-প্রেসড{% else %}Traditional Cold-Pressed{% endif %}</h6>
                         <p class="gf-muted mb-0" style="font-size: 0.74rem; line-height: 1.35;">{% if IS_BANGLA %}প্রাকৃতিক পুষ্টিগুণ ও ঘ্রাণ অটুট রেখে ভাঙানো।{% else %}Wood-milled extraction preserving natural aroma.{% endif %}</p>
@@ -200,21 +207,21 @@
             <div class="col-lg-4 col-md-6">
                 <a href="{% url 'home' %}" class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none">
                     {% if site_settings.brand_logo %}
-                        <img src="{{ site_settings.brand_logo.url }}?v=3" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.png?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <img src="{{ site_settings.brand_logo.url }}?v=4" alt="{{ site_settings.site_name|default:'Organic Store Logo' }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/themes/grocery_organic/logo.svg?v=4'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
                         <span class="brand-logo-fallback align-items-center gap-2">
-                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
-                            <span class="fw-bold fs-5 gf-title">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
+                            <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 34px; height: 34px;"><i class="bi bi-flower2 small"></i></span>
+                            <span class="fw-bold fs-5 gf-title" style="font-family: 'Playfair Display', Georgia, serif;">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</span>
                         </span>
                     {% elif CURRENT_THEME_DATA.logo_url %}
-                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
-                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=3" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=3'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <img src="{{ CURRENT_THEME_DATA.logo_url }}?v=4" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-light" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=4'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
+                        <img src="{{ CURRENT_THEME_DATA.logo_dark_url|default:CURRENT_THEME_DATA.logo_url }}?v=4" alt="{{ CURRENT_THEME_DATA.name }}" height="38" style="height: 38px; width: auto; max-width: 190px; object-fit: contain;" class="logo-dark" onerror="this.onerror=null; this.src='{{ CURRENT_THEME_DATA.logo_png_url }}?v=4'; this.onerror=function(){this.closest('a').classList.add('use-text-fallback');};">
                         <span class="brand-logo-fallback align-items-center gap-2">
-                            <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
-                            <span class="fw-bold fs-5 gf-title">{{ CURRENT_THEME_DATA.brand_name|default:'PURE HARVEST' }}</span>
+                            <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 34px; height: 34px;"><i class="bi bi-flower2 small"></i></span>
+                            <span class="fw-bold fs-5 gf-title" style="font-family: 'Playfair Display', Georgia, serif;">{{ CURRENT_THEME_DATA.brand_name|default:'Pure Harvest' }}</span>
                         </span>
                     {% else %}
-                        <span class="rounded-2 d-flex align-items-center justify-content-center text-white" style="background: #1b7a3d; width: 34px; height: 34px;"><i class="bi bi-basket2-fill small text-warning"></i></span>
-                        <span class="fw-bold fs-5 gf-title">{{ site_settings.get_effective_site_name|default:'PURE HARVEST' }}</span>
+                        <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background: #1e7a32; width: 34px; height: 34px;"><i class="bi bi-flower2 small"></i></span>
+                        <span class="fw-bold fs-5 gf-title" style="font-family: 'Playfair Display', Georgia, serif;">{{ site_settings.get_effective_site_name|default:'Pure Harvest' }}</span>
                     {% endif %}
                 </a>
 
@@ -228,15 +235,15 @@
 
                 <div class="small gf-muted d-flex flex-column gap-2 mb-3">
                     <div class="d-flex align-items-start gap-2">
-                        <i class="bi bi-geo-alt-fill text-danger flex-shrink-0 mt-1"></i>
+                        <i class="bi bi-geo-alt-fill flex-shrink-0 mt-1" style="color: #c85528;"></i>
                         <span>{{ site_settings.contact_address|default:'Central Packaging Hub: Tejgaon Industrial Area, Dhaka 1208, Bangladesh' }}</span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-telephone-inbound-fill text-success flex-shrink-0"></i>
+                        <i class="bi bi-telephone-inbound-fill flex-shrink-0" style="color: var(--gf-forest);"></i>
                         <span>Customer Helpline: <strong class="gf-title">{{ site_settings.contact_phone|default:'+880 9610-000000' }}</strong> (8 AM – 10 PM)</span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-envelope-fill text-warning flex-shrink-0"></i>
+                        <i class="bi bi-envelope-fill flex-shrink-0" style="color: var(--gf-amber);"></i>
                         <span>Support Email: <strong class="gf-title">{{ site_settings.contact_email|default:'care@pureharvest.com.bd' }}</strong></span>
                     </div>
                 </div>
@@ -267,10 +274,10 @@
                 <div class="d-flex flex-column">
                     <a href="javascript:void(0)" class="gf-link" data-bs-toggle="modal" data-bs-target="#deliverySlotModal"><i class="bi bi-clock-history small" style="color: var(--gf-forest);"></i><span>Delivery Slots Schedule</span></a>
                     <a href="{% url 'customer_orders' %}" class="gf-link"><i class="bi bi-truck small" style="color: var(--gf-forest);"></i><span>Track Fresh Delivery</span></a>
-                    <a href="{% url 'customer_orders' %}?action=repeat" class="gf-link"><i class="bi bi-arrow-repeat small text-warning"></i><span>Repeat Last Order</span></a>
-                    <a href="{% url 'product_list' %}" class="gf-link"><i class="bi bi-shield-check small text-success"></i><span>Replacement Policy</span></a>
+                    <a href="{% url 'customer_orders' %}?action=repeat" class="gf-link"><i class="bi bi-arrow-repeat small" style="color: var(--gf-amber);"></i><span>Repeat Last Order</span></a>
+                    <a href="{% url 'product_list' %}" class="gf-link"><i class="bi bi-shield-check small" style="color: var(--gf-forest);"></i><span>Replacement Policy</span></a>
                     <a href="{% url 'product_list' %}?in_stock=1" class="gf-link"><i class="bi bi-people small"></i><span>Farm Partner Sourcing</span></a>
-                    <a href="{% url 'wishlist_view' %}" class="gf-link"><i class="bi bi-heart small text-danger"></i><span>Saved Grocery List</span></a>
+                    <a href="{% url 'wishlist_view' %}" class="gf-link"><i class="bi bi-heart small" style="color: #c85528;"></i><span>Saved Grocery List</span></a>
                 </div>
             </div>
 
@@ -289,7 +296,7 @@
                         <i class="bi bi-tag-fill" style="color: var(--gf-amber);"></i>
                         <span>{% if IS_BANGLA %}কুপন কোড:{% else %}Voucher Code:{% endif %}</span>
                         <strong class="font-monospace">HARVEST100</strong>
-                        <span class="badge bg-warning text-dark" style="font-size: 0.64rem;" id="groceryCopyStatus">Copy</span>
+                        <span class="badge fw-bold" style="background: #f6c431; color: #152418; font-size: 0.64rem;" id="groceryCopyStatus">Copy</span>
                     </div>
                 </div>
 
@@ -298,23 +305,23 @@
                         <input type="email" class="form-control gf-newsletter-input" placeholder="{% if IS_BANGLA %}আপনার ইমেইল ঠিকানা...{% else %}Enter your email address...{% endif %}" required aria-label="Email address for harvest newsletter">
                         <button class="btn gf-newsletter-btn" type="submit">{% if IS_BANGLA %}যুক্ত হোন{% else %}Subscribe{% endif %}</button>
                     </div>
-                    <small id="footerSubStatus" class="text-success fw-semibold d-none mt-1"><i class="bi bi-check-circle-fill me-1"></i>Subscribed! Use HARVEST100 at checkout.</small>
+                    <small id="footerSubStatus" class="fw-semibold d-none mt-1" style="color: var(--gf-forest);"><i class="bi bi-check-circle-fill me-1"></i>Subscribed! Use HARVEST100 at checkout.</small>
                 </form>
 
                 <div class="mt-3">
                     <span class="d-block gf-muted small fw-bold text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                        <i class="bi bi-credit-card-2-back me-1 text-success"></i>{% if IS_BANGLA %}অনুমোদিত পেমেন্ট মাধ্যমসমূহ{% else %}Accepted Payment Methods{% endif %}
+                        <i class="bi bi-credit-card-2-back me-1" style="color: var(--gf-forest);"></i>{% if IS_BANGLA %}অনুমোদিত পেমেন্ট মাধ্যমসমূহ{% else %}Accepted Payment Methods{% endif %}
                     </span>
                     <div class="d-flex flex-wrap gap-2 align-items-center">
-                        <div class="gf-payment-chip"><span class="rounded-circle bg-success d-inline-block" style="width: 7px; height: 7px;"></span><span class="fw-bold" style="color: #e2136e;">bKash</span><span class="badge bg-success-subtle text-success" style="font-size: 0.58rem; padding: 2px 4px;">Active</span></div>
-                        <div class="gf-payment-chip"><i class="bi bi-cash-stack text-success"></i><span class="fw-bold">Cash on Delivery</span><span class="badge bg-success-subtle text-success" style="font-size: 0.58rem; padding: 2px 4px;">COD</span></div>
-                        <div class="gf-payment-chip"><span class="fw-bold" style="color: #f97316;">Nagad</span></div>
-                        <div class="gf-payment-chip"><i class="bi bi-credit-card text-primary"></i><span>Visa / Mastercard</span></div>
+                        <div class="gf-payment-chip"><span class="rounded-circle d-inline-block" style="width: 7px; height: 7px; background: #1e7a32;"></span><span class="fw-bold" style="color: #e2136e;">bKash</span><span class="badge" style="background: var(--gf-pill-bg); color: var(--gf-forest); font-size: 0.58rem; padding: 2px 4px;">Active</span></div>
+                        <div class="gf-payment-chip"><i class="bi bi-cash-stack" style="color: var(--gf-forest);"></i><span class="fw-bold">Cash on Delivery</span><span class="badge" style="background: var(--gf-pill-bg); color: var(--gf-forest); font-size: 0.58rem; padding: 2px 4px;">COD</span></div>
+                        <div class="gf-payment-chip"><span class="fw-bold" style="color: #d97706;">Nagad</span></div>
+                        <div class="gf-payment-chip"><i class="bi bi-credit-card" style="color: var(--gf-forest);"></i><span>Visa / Mastercard</span></div>
                     </div>
                 </div>
 
                 <div class="mt-3 pt-2 d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;"><i class="bi bi-patch-check-fill"></i></div>
+                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; background: #1e7a32;"><i class="bi bi-patch-check-fill"></i></div>
                     <div class="lh-sm">
                         <strong class="d-block gf-title small" style="font-size: 0.78rem;">100% Certified Chemical-Free</strong>
                         <small class="gf-muted" style="font-size: 0.7rem;">Lab Tested &amp; BSTI Verified Purity Standards</small>
@@ -331,7 +338,7 @@
                 {% if IS_BANGLA %}সর্বস্বত্ব সংরক্ষিত। খাঁটি খাদ্য ও কৃষকের সমৃদ্ধি।{% else %}All rights reserved. Dedicated to Farm-Fresh Wholesome Nutrition.{% endif %}
             </div>
             <div class="d-none d-lg-flex align-items-center gap-2 gf-muted" style="font-size: 0.76rem;">
-                <i class="bi bi-award-fill text-warning"></i>
+                <i class="bi bi-award-fill" style="color: var(--gf-amber);"></i>
                 <span>Direct Farmer Fair Trade &bull; Zero Formalin &bull; Hygienic Cold Storage</span>
             </div>
             <div>
@@ -351,12 +358,12 @@
                 var status = document.getElementById('groceryCopyStatus');
                 if (status) {
                     status.textContent = 'Copied!';
-                    status.classList.remove('bg-warning', 'text-dark');
-                    status.classList.add('bg-success', 'text-white');
+                    status.style.background = '#1e7a32';
+                    status.style.color = '#ffffff';
                     setTimeout(function() {
                         status.textContent = 'Copy';
-                        status.classList.remove('bg-success', 'text-white');
-                        status.classList.add('bg-warning', 'text-dark');
+                        status.style.background = '#f6c431';
+                        status.style.color = '#152418';
                     }, 2500);
                 }
             });

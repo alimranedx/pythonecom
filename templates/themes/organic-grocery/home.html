@@ -3,56 +3,62 @@
 {% load product_tags %}
 
 {% block title %}
-{% if CURRENT_THEME_DATA.name %}{{ CURRENT_THEME_DATA.name }} - {% endif %}{{ site_settings.get_effective_site_name|default:'Pure Harvest' }} | {% if IS_BANGLA %}১০০% খাঁটি অর্গানিক মধু, লাল চিনি, খেজুর গুড়, বাদাম ও নিত্যপ্রয়োজনীয় বাজার{% else %}Pure Organic Bangladeshi Pantry — Raw Honey, Khejur Gur, Red Sugar, Nuts &amp; Fresh Harvest{% endif %}
+{% if CURRENT_THEME_DATA.name %}{{ CURRENT_THEME_DATA.name }} - {% endif %}{{ site_settings.get_effective_site_name|default:'Pure Harvest' }} | {% if IS_BANGLA %}১০০% খাঁটি অর্গানিক মধু, লাল চিনি, খেজুর গুড়, বাদাম ও নিত্যপ্রয়োজনীয় বাজার{% else %}Fresh From Nature — Raw Honey, Khejur Gur, Red Sugar, Nuts &amp; Organic Pantry{% endif %}
 {% endblock %}
 
 {% block extra_head %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,600&family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
     /* =========================================================================
-       EDITORIAL ORGANIC HARVEST BROADSHEET ARCHITECTURE
-       Distinct asymmetric split-board hero, live Express Dispatch Ledger,
-       sticky vertical pantry index, botanical hairline dividers & forest spread.
+       NATURA MARKET INSPIRED SUNLIT ORGANIC HARVEST THEME SYSTEM
+       Warm Cream Canvas (#FAF9F3), Soft Botanical Sage (#F2F6EE),
+       Crisp White Cards (#FFFFFF), Leaf Green (#1E7A32), Honey Gold (#F6C431)
        ========================================================================= */
     :root {
-        --og-bg: #faf9f5;
+        --og-bg: #faf9f3;
         --og-paper: #ffffff;
-        --og-tint: #f1f5ed;
-        --og-canvas: #f8faf5;
-        --og-rule: #dde5d8;
-        --og-ink: #132217;
-        --og-muted: #526356;
-        --og-green: #1b7a3d;
-        --og-green-deep: #13572b;
-        --og-green-soft: #e8f4ec;
-        --og-gold: #f5b82e;
+        --og-tint: #f2f6ee;
+        --og-tint-warm: #fef6df;
+        --og-canvas: #f7f7ee;
+        --og-rule: #dfe9d8;
+        --og-ink: #152418;
+        --og-muted: #5a6b5d;
+        --og-green: #1e7a32;
+        --og-green-deep: #165e26;
+        --og-green-soft: #edf6ea;
+        --og-green-border: #d2e6cb;
+        --og-gold: #f6c431;
+        --og-gold-hover: #eab308;
         --og-amber: #b45309;
-        --og-amber-soft: #fef7e0;
-        --og-earth: #a84824;
-        --og-forest-band: #12281a;
-        --og-font-serif: 'Fraunces', 'Hind Siliguri', Georgia, serif;
+        --og-amber-soft: #fef6df;
+        --og-earth: #b85026;
+        --og-earth-soft: #fbeee8;
+        --og-font-serif: 'Playfair Display', 'Hind Siliguri', Georgia, serif;
         --og-font-sans: 'Plus Jakarta Sans', 'Hind Siliguri', system-ui, -apple-system, sans-serif;
     }
 
     [data-bs-theme="dark"] {
-        --og-bg: #0c150f !important;
-        --og-paper: #132018 !important;
-        --og-tint: #17271d !important;
-        --og-canvas: #16241b !important;
-        --og-rule: #253b2d !important;
-        --og-ink: #f1f6f0 !important;
-        --og-muted: #9eb1a3 !important;
-        --og-green: #4ade80 !important;
-        --og-green-deep: #22c55e !important;
-        --og-green-soft: rgba(74, 222, 128, 0.13) !important;
+        --og-bg: #0c160f !important;
+        --og-paper: #142218 !important;
+        --og-tint: #192b1f !important;
+        --og-tint-warm: #241f12 !important;
+        --og-canvas: #122017 !important;
+        --og-rule: #273e2d !important;
+        --og-ink: #f3f6ef !important;
+        --og-muted: #9eb1a2 !important;
+        --og-green: #34d399 !important;
+        --og-green-deep: #10b981 !important;
+        --og-green-soft: rgba(52, 211, 153, 0.14) !important;
+        --og-green-border: rgba(52, 211, 153, 0.28) !important;
         --og-gold: #fbbf24 !important;
+        --og-gold-hover: #f59e0b !important;
         --og-amber: #fde68a !important;
         --og-amber-soft: rgba(251, 191, 36, 0.14) !important;
         --og-earth: #fb923c !important;
-        --og-forest-band: #08110b !important;
+        --og-earth-soft: rgba(251, 146, 60, 0.14) !important;
     }
 
     body {
@@ -67,131 +73,64 @@
     .og-hairline-b { border-bottom: 1px solid var(--og-rule); }
     .og-hairline-t { border-top: 1px solid var(--og-rule); }
 
-    /* =========================================================================
-       1. ASYMMETRIC SPLIT-BOARD HERO + LIVE HARVEST DISPATCH DOCKET
-       ========================================================================= */
-    .og-split-hero-wrap {
-        margin-top: -1.5rem;
-        background: var(--og-bg);
-        border-bottom: 1px solid var(--og-rule);
-    }
-
-    .og-slider-frame {
-        background: var(--og-canvas);
-        border: 1px solid var(--og-rule);
-        border-radius: 24px;
-        overflow: hidden;
-        position: relative;
-    }
-    [data-bs-theme="dark"] .og-slider-frame {
-        background: linear-gradient(135deg, #132219 0%, #17291e 100%);
-    }
-
-    .og-slide-stage {
-        min-height: 470px;
-        display: grid;
-        grid-template-columns: 1fr;
-        position: relative;
-    }
     @media (min-width: 992px) {
-        .og-slide-stage {
-            grid-template-columns: 1.05fr 0.95fr;
-            min-height: 490px;
-        }
+        .row-cols-lg-8 > * { flex: 0 0 auto; width: 12.5%; }
     }
 
-    .og-slide-copy {
-        padding: 2.2rem 2rem 3.8rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        position: relative;
-        z-index: 4;
-    }
-    @media (min-width: 992px) {
-        .og-slide-copy {
-            padding: 2.75rem 2.25rem 4.2rem 2.75rem;
-        }
-    }
-
-    .og-slide-visual {
-        position: relative;
-        min-height: 280px;
-        overflow: hidden;
-        background: #f8faf5;
-    }
-    .og-slide-visual img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: 96% center;
-        display: block;
-    }
-    @media (min-width: 992px) {
-        .og-slide-visual {
-            border-left: 1px solid var(--og-rule);
-        }
-        html:not([data-bs-theme="dark"]) .og-slide-visual::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            width: 68px;
-            background: linear-gradient(90deg, #f8faf5 0%, rgba(248, 250, 245, 0) 100%);
-            z-index: 2;
-            pointer-events: none;
-        }
-        .og-slide-visual img {
-            transform: scale(1.12);
-            transform-origin: 96% 52%;
-        }
-    }
-
-    .og-hero-display {
-        font-family: var(--og-font-serif);
-        font-size: clamp(1.95rem, 3.2vw, 2.95rem);
-        font-weight: 700;
-        line-height: 1.08;
-        letter-spacing: -0.025em;
-        color: var(--og-ink);
-    }
-    .og-hero-display em {
-        font-style: italic;
+    .og-kicker {
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.13em;
         color: var(--og-green);
-    }
-
-    .btn-og-solid {
-        background: #1b7a3d;
-        color: #ffffff !important;
-        border: 1.5px solid #1b7a3d;
-        border-radius: 9999px;
-        padding: 0.65rem 1.45rem;
-        font-weight: 700;
-        font-size: 0.87rem;
+        font-weight: 800;
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        transition: all 0.2s ease;
+        gap: 0.4rem;
+    }
+    .og-heading {
+        font-family: var(--og-font-serif);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 2.7vw, 2.25rem);
+        line-height: 1.16;
+        color: var(--og-ink);
+        letter-spacing: -0.02em;
+    }
+
+    /* Pill Buttons Matching Natura Market Reference */
+    .btn-og-solid {
+        background: #1e7a32;
+        color: #ffffff !important;
+        border: 1.5px solid #1e7a32;
+        border-radius: 9999px;
+        padding: 0.72rem 1.65rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 10px 22px -6px rgba(30, 122, 50, 0.36);
+        transition: all 0.22s ease;
     }
     .btn-og-solid:hover {
-        background: #13572b;
-        border-color: #13572b;
+        background: #165e26;
+        border-color: #165e26;
         transform: translateY(-2px);
+        box-shadow: 0 14px 28px -6px rgba(22, 94, 38, 0.44);
     }
 
     .btn-og-gold {
-        background: #f5b82e;
-        color: #132217 !important;
-        border: 1.5px solid #f5b82e;
+        background: #f6c431;
+        color: #152418 !important;
+        border: 1.5px solid #f6c431;
         border-radius: 9999px;
-        padding: 0.65rem 1.45rem;
+        padding: 0.72rem 1.65rem;
         font-weight: 700;
-        font-size: 0.87rem;
+        font-size: 0.9rem;
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        transition: all 0.2s ease;
+        gap: 0.5rem;
+        box-shadow: 0 10px 22px -6px rgba(246, 196, 49, 0.36);
+        transition: all 0.22s ease;
     }
     .btn-og-gold:hover {
         background: #eab308;
@@ -199,200 +138,437 @@
         transform: translateY(-2px);
     }
 
-    /* Editorial Chapter Switcher Dock at bottom-left of Slider */
-    .og-slider-dock {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 8;
+    .btn-og-outline {
+        background: var(--og-paper);
+        color: var(--og-ink) !important;
+        border: 1.5px solid var(--og-rule);
+        border-radius: 9999px;
+        padding: 0.58rem 1.3rem;
+        font-weight: 700;
+        font-size: 0.84rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: all 0.2s ease;
+    }
+    .btn-og-outline:hover {
+        background: var(--og-green-soft);
+        border-color: var(--og-green);
+        color: var(--og-green) !important;
+    }
+
+    /* =========================================================================
+       1. SUNLIT NATURA MARKET HERO STAGE + FLOATING GLASS BADGES + TRUST BAR
+       ========================================================================= */
+    .natura-hero-wrapper {
+        margin-top: -1.5rem;
+        background: radial-gradient(circle at 8% 15%, rgba(235, 245, 230, 0.85) 0%, rgba(250, 249, 243, 0) 45%),
+                    radial-gradient(circle at 82% 20%, #edf4e8 0%, #f7f7ee 52%, #faf9f3 100%);
+        border-bottom: 1px solid var(--og-rule);
+        position: relative;
+        overflow: hidden;
+    }
+    [data-bs-theme="dark"] .natura-hero-wrapper {
+        background: radial-gradient(circle at 80% 18%, rgba(30, 122, 50, 0.2) 0%, #0f1c14 55%, #0c160f 100%);
+    }
+
+    .natura-hero-slide {
+        position: relative;
+        min-height: 495px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 0.7rem 1.5rem;
+        padding: 2.35rem 0 4.2rem;
+    }
+
+    .natura-light-only-bg { display: none; }
+    .natura-dark-only-frame { display: block; }
+
+    @media (min-width: 992px) {
+        .natura-hero-slide {
+            min-height: 530px;
+            padding: 2.85rem 0 5rem;
+        }
+        html:not([data-bs-theme="dark"]) .natura-light-only-bg {
+            display: block;
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+            background: #f8f8f0;
+        }
+        html:not([data-bs-theme="dark"]) .natura-light-only-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, #faf9f3 0%, #faf9f3 34%, rgba(250, 249, 243, 0.9) 45%, rgba(250, 249, 243, 0) 60%);
+        }
+        html:not([data-bs-theme="dark"]) .natura-light-only-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 95% center;
+            display: block;
+        }
+        html:not([data-bs-theme="dark"]) .natura-dark-only-frame {
+            display: none !important;
+        }
+        html:not([data-bs-theme="dark"]) .natura-hero-right-col {
+            min-height: 400px;
+        }
+    }
+
+    .natura-dark-only-frame {
+        position: relative;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #f7f7ee;
+        border: 1px solid var(--og-rule);
+        box-shadow: 0 20px 44px -16px rgba(21, 36, 24, 0.16);
+    }
+    .natura-dark-only-frame img {
+        width: 100%;
+        height: 285px;
+        object-fit: cover;
+        object-position: 96% center;
+        display: block;
+    }
+    [data-bs-theme="dark"] .natura-slide-stage-dark {
+        background: linear-gradient(135deg, #132218 0%, #182b1e 100%);
+        border: 1px solid var(--og-rule);
+        border-radius: 26px;
+        padding: 1.75rem;
+        box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.52);
+    }
+    @media (min-width: 992px) {
+        [data-bs-theme="dark"] .natura-slide-stage-dark {
+            padding: 2.25rem 2.5rem;
+        }
+        [data-bs-theme="dark"] .natura-dark-only-frame img {
+            height: 375px;
+            object-fit: cover;
+            object-position: 100% center;
+            transform: scale(1.14);
+            transform-origin: 96% 52%;
+        }
+    }
+
+    .natura-pill-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: var(--og-green-soft);
+        color: var(--og-green);
+        border: 1px solid var(--og-green-border);
+        border-radius: 9999px;
+        padding: 0.4rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .og-hero-display {
+        font-family: var(--og-font-serif);
+        font-size: clamp(2.1rem, 3.95vw, 3.45rem);
+        font-weight: 700;
+        line-height: 1.07;
+        letter-spacing: -0.025em;
+        color: var(--og-ink);
+    }
+    .og-hero-display .text-nature-green {
+        color: var(--og-green);
+    }
+
+    /* Slider Controls */
+    .natura-slider-arrow {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--og-rule);
+        color: #152418;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.88;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 20px -6px rgba(21, 36, 24, 0.16);
+    }
+    .natura-slider-arrow:hover {
+        opacity: 1;
+        background: #1e7a32;
+        border-color: #1e7a32;
+        color: #ffffff;
+    }
+    [data-bs-theme="dark"] .natura-slider-arrow {
+        background: rgba(20, 34, 24, 0.94);
+        color: #f3f6ef;
+    }
+    #groceryHeroCarousel .carousel-control-prev { left: 14px; width: auto; }
+    #groceryHeroCarousel .carousel-control-next { right: 14px; width: auto; }
+
+    .natura-slider-indicators {
+        position: absolute;
+        bottom: 2.55rem;
+        left: 50%;
+        right: auto !important;
+        width: max-content !important;
+        transform: translateX(-50%);
+        margin: 0;
+        z-index: 12;
+        gap: 0.4rem;
         background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        border-top: 1px solid var(--og-rule);
+        padding: 0.3rem 0.5rem;
+        border-radius: 9999px;
+        border: 1px solid var(--og-rule);
+        box-shadow: 0 8px 20px -8px rgba(21, 36, 24, 0.14);
     }
-    [data-bs-theme="dark"] .og-slider-dock {
-        background: rgba(16, 28, 20, 0.9);
+    [data-bs-theme="dark"] .natura-slider-indicators {
+        background: rgba(20, 34, 24, 0.92);
     }
-    .og-chapter-btn {
-        border: none;
+    .natura-slider-indicators [data-bs-target] {
+        width: auto !important;
+        height: auto !important;
+        text-indent: 0 !important;
+        margin: 0 !important;
+        padding: 0.26rem 0.75rem;
+        border-radius: 9999px;
+        border: none !important;
         background: transparent;
         color: var(--og-muted);
-        font-size: 0.76rem;
+        font-size: 0.72rem;
         font-weight: 700;
-        padding: 0.3rem 0.75rem;
-        border-radius: 9999px;
-        cursor: pointer;
-        transition: all 0.18s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
+        opacity: 1;
+        transition: all 0.2s ease;
+        white-space: nowrap;
     }
-    .og-chapter-btn.active {
-        background: #1b7a3d;
+    .natura-slider-indicators [data-bs-target].active {
+        background: #1e7a32;
         color: #ffffff;
     }
-    .og-dock-nav-btn {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: 1px solid var(--og-rule);
-        background: var(--og-paper);
+
+    /* 3 Floating Frosted Glass Status Pills */
+    .natura-float-card {
+        position: absolute;
+        z-index: 6;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(223, 233, 216, 0.95);
+        border-radius: 16px;
+        padding: 0.68rem 0.95rem;
+        box-shadow: 0 14px 32px -10px rgba(21, 36, 24, 0.16);
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        max-width: 235px;
+        transition: transform 0.25s ease;
+    }
+    .natura-float-card:hover { transform: translateY(-3px); }
+    [data-bs-theme="dark"] .natura-float-card {
+        background: rgba(20, 34, 24, 0.94);
+        border-color: var(--og-rule);
         color: var(--og-ink);
+    }
+    .natura-float-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+    .natura-float-top { top: 8%; left: 2%; }
+    .natura-float-bottom { bottom: 12%; left: 0; cursor: pointer; }
+    .natura-float-right { top: 44%; right: 0; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+
+    .natura-avatar-stack { display: flex; align-items: center; }
+    .natura-avatar-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        transition: all 0.18s ease;
-    }
-    .og-dock-nav-btn:hover {
-        background: #1b7a3d;
+        font-size: 0.62rem;
+        font-weight: 800;
         color: #ffffff;
-        border-color: #1b7a3d;
+        margin-left: -6px;
     }
+    .natura-avatar-circle:first-child { margin-left: 0; }
 
-    /* Right Side Column: Morning Harvest Express Dispatch Docket */
-    .og-dispatch-panel {
+    /* Floating White 4-Pillar Trust Bar Overlapping Hero Bottom */
+    .natura-trust-strip {
         background: var(--og-paper);
         border: 1px solid var(--og-rule);
-        border-radius: 24px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-        overflow: hidden;
+        border-radius: 20px;
+        padding: 1.25rem 1.6rem;
+        box-shadow: 0 20px 42px -18px rgba(21, 36, 24, 0.14);
+        position: relative;
+        z-index: 10;
+        margin-top: -1.85rem;
+        margin-bottom: 1.5rem;
     }
-    .og-dispatch-head {
-        background: var(--og-tint);
-        border-bottom: 1px solid var(--og-rule);
-        padding: 0.9rem 1.2rem;
-    }
-    .og-dispatch-row {
+    .natura-trust-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--og-green-soft);
+        color: var(--og-green);
+        border: 1px solid var(--og-green-border);
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 0.62rem 1.2rem;
-        border-bottom: 1px dashed var(--og-rule);
+        justify-content: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    /* =========================================================================
+       2. HARVEST AISLES & BANGLADESHI SPECIALTIES
+       ========================================================================= */
+    .harvest-tile {
+        background: var(--og-paper);
+        border: 1px solid var(--og-rule);
+        border-radius: 18px;
+        padding: 1.15rem 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
         text-decoration: none;
         color: var(--og-ink);
-        transition: background 0.16s ease;
-        font-size: 0.82rem;
-    }
-    .og-dispatch-row:last-child { border-bottom: none; }
-    .og-dispatch-row:hover {
-        background: var(--og-tint);
-        color: var(--og-green);
-    }
-
-    /* =========================================================================
-       2. LIVE MARQUEE & ARCHITECTURAL NUMBERED LEDGER
-       ========================================================================= */
-    .og-marquee-strip {
-        background: #13572b;
-        color: #f3f7f2;
-        font-size: 0.76rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        padding: 0.55rem 0;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-    .og-marquee-track {
-        display: inline-flex;
-        gap: 2.25rem;
-        animation: ogTickerScroll 34s linear infinite;
-    }
-    .og-marquee-strip:hover .og-marquee-track { animation-play-state: paused; }
-    @keyframes ogTickerScroll {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-    }
-
-    .og-ledger-cell {
-        padding: 1.35rem 1.25rem;
-        border-bottom: 1px solid var(--og-rule);
         height: 100%;
+        transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
     }
-    @media (min-width: 992px) {
-        .og-ledger-cell {
-            border-bottom: none;
-            border-right: 1px solid var(--og-rule);
-        }
-        .og-ledger-col:last-child .og-ledger-cell { border-right: none; }
+    .harvest-tile:hover {
+        transform: translateY(-5px);
+        border-color: var(--og-green);
+        box-shadow: 0 14px 28px -12px rgba(30, 122, 50, 0.2);
     }
-    .og-ledger-num {
-        font-family: var(--og-font-serif);
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--og-green);
-        line-height: 1;
-        margin-bottom: 0.45rem;
-    }
-
-    /* =========================================================================
-       3. STICKY SIDEBAR PANTRY EXPLORER + BAZAR ESTIMATOR
-       ========================================================================= */
-    .og-sticky-rail {
-        position: sticky;
-        top: 5.5rem;
-        background: var(--og-paper);
-        border: 1px solid var(--og-rule);
-        border-radius: 20px;
-        padding: 1.25rem;
-    }
-    .grocery-tab-pill {
-        width: 100%;
-        text-align: left;
-        border: 1px solid transparent;
-        background: transparent;
-        color: var(--og-ink);
-        padding: 0.58rem 0.8rem;
-        border-radius: 12px;
-        font-size: 0.83rem;
-        font-weight: 600;
-        cursor: pointer;
+    .harvest-icon-medallion {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        transition: all 0.16s ease;
+        justify-content: center;
+        margin-bottom: 0.72rem;
+        font-size: 1.75rem;
+        transition: transform 0.25s ease;
     }
-    .grocery-tab-pill:hover {
-        background: var(--og-tint);
-        color: var(--og-green);
+    .harvest-tile:hover .harvest-icon-medallion { transform: scale(1.08); }
+    .harvest-tile-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--og-ink);
+        line-height: 1.25;
+        margin-bottom: 0.2rem;
     }
-    .grocery-tab-pill.active {
-        background: #1b7a3d;
-        color: #ffffff;
-        box-shadow: 0 6px 14px -6px rgba(27, 122, 61, 0.45);
+    .harvest-tile-sub {
+        font-size: 0.7rem;
+        color: var(--og-muted);
+        font-weight: 500;
     }
-    .grocery-tab-pill.active small { color: #fef08a !important; }
 
     /* =========================================================================
-       4. SWEETENER & VITALITY MATRIX (Honey / Gur / Red Sugar / Nuts)
+       3. SOFT BOTANICAL SAGE BAND: DAILY PICK, SWEETENERS & DISPATCH
        ========================================================================= */
-    .og-matrix-card {
+    .og-sage-band {
+        background: var(--og-tint);
+        border-top: 1px solid var(--og-rule);
+        border-bottom: 1px solid var(--og-rule);
+    }
+    .og-spotlight-card {
         background: var(--og-paper);
         border: 1px solid var(--og-rule);
         border-radius: 20px;
-        padding: 1.45rem;
+        padding: 1.5rem;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        box-shadow: 0 8px 24px -16px rgba(21, 36, 24, 0.14);
         transition: transform 0.22s ease, border-color 0.22s ease;
     }
-    .og-matrix-card:hover {
-        transform: translateY(-4px);
+    .og-spotlight-card:hover {
+        transform: translateY(-3px);
         border-color: var(--og-green);
+    }
+    .og-sweetener-card {
+        background: linear-gradient(145deg, #fffdf6 0%, var(--og-paper) 100%);
+    }
+    [data-bs-theme="dark"] .og-sweetener-card {
+        background: linear-gradient(145deg, #1d2215 0%, var(--og-paper) 100%);
+    }
+
+    /* Pantry Interactive Filter Tabs */
+    .grocery-tab-pill {
+        border: 1px solid var(--og-rule);
+        background: var(--og-paper);
+        color: var(--og-ink);
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 0.5rem 1.1rem;
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .grocery-tab-pill:hover,
+    .grocery-tab-pill.active {
+        background: #1e7a32;
+        border-color: #1e7a32;
+        color: #ffffff;
+        box-shadow: 0 6px 14px -4px rgba(30, 122, 50, 0.35);
     }
 
     /* =========================================================================
-       5. BESTSELLER FEATURED EDITORIAL SPLIT
+       4. SUNLIT BOTANICAL ORIGIN STORY (Sirajganj / Sundarbans / Dinajpur)
+       ========================================================================= */
+    .og-origin-band {
+        background: linear-gradient(135deg, #ebf4e6 0%, #faf8ee 55%, #fdf3d8 100%);
+        border-top: 1px solid var(--og-rule);
+        border-bottom: 1px solid var(--og-rule);
+        color: var(--og-ink);
+    }
+    [data-bs-theme="dark"] .og-origin-band {
+        background: linear-gradient(135deg, #112016 0%, #16291c 60%, #1d2614 100%);
+    }
+    .origin-region-btn {
+        background: var(--og-paper);
+        border: 1px solid var(--og-rule);
+        color: var(--og-ink);
+        border-radius: 14px;
+        padding: 0.72rem 1rem;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px -8px rgba(21, 36, 24, 0.12);
+    }
+    .origin-region-btn:hover,
+    .origin-region-btn.active {
+        background: #1e7a32;
+        border-color: #1e7a32;
+        color: #ffffff;
+        box-shadow: 0 10px 22px -8px rgba(30, 122, 50, 0.36);
+    }
+    .origin-region-btn small { color: var(--og-muted); }
+    .origin-region-btn.active small { color: #fef08a !important; }
+    .og-origin-dossier {
+        background: var(--og-paper);
+        border: 1px solid var(--og-rule);
+        border-radius: 22px;
+        padding: 2rem;
+        box-shadow: 0 16px 36px -18px rgba(21, 36, 24, 0.14);
+    }
+
+    /* =========================================================================
+       5. BESTSELLER FEATURED PICK, BRANDS, HARVEST BOX & NEWSLETTER
        ========================================================================= */
     .og-featured-hero-pick {
         background: linear-gradient(155deg, var(--og-green-soft) 0%, var(--og-paper) 65%);
@@ -405,44 +581,6 @@
         justify-content: space-between;
     }
 
-    /* =========================================================================
-       6. DEEP FOREST ORIGIN BROADSHEET BAND
-       ========================================================================= */
-    .og-origin-band {
-        background: var(--og-forest-band);
-        color: #f3f7f2;
-        border-top: 1px solid #22442e;
-        border-bottom: 1px solid #22442e;
-    }
-    .origin-region-btn {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        color: #e2eee5;
-        border-radius: 14px;
-        padding: 0.72rem 1rem;
-        font-size: 0.84rem;
-        font-weight: 700;
-        cursor: pointer;
-        text-align: left;
-        transition: all 0.2s ease;
-    }
-    .origin-region-btn:hover,
-    .origin-region-btn.active {
-        background: #f5b82e;
-        border-color: #f5b82e;
-        color: #132217;
-    }
-    .origin-region-btn.active small { color: #36473a !important; }
-    .og-origin-dossier {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 22px;
-        padding: 2rem;
-    }
-
-    /* =========================================================================
-       7. BRANDS, HARVEST BOX & BROADSHEET NEWSLETTER
-       ========================================================================= */
     .og-brand-tile {
         background: var(--og-paper);
         border: 1px solid var(--og-rule);
@@ -459,6 +597,7 @@
     .og-brand-tile:hover {
         border-color: var(--og-green);
         transform: translateY(-3px);
+        box-shadow: 0 10px 24px -12px rgba(30, 122, 50, 0.2);
     }
 
     .og-box-panel {
@@ -466,9 +605,10 @@
         border: 1px solid var(--og-rule);
         border-radius: 24px;
         overflow: hidden;
+        box-shadow: 0 18px 40px -20px rgba(21, 36, 24, 0.14);
     }
     .og-box-left {
-        background: linear-gradient(135deg, #156231 0%, #1b7a3d 100%);
+        background: linear-gradient(135deg, #165e26 0%, #1e7a32 100%);
         color: #ffffff;
         padding: 2.25rem;
     }
@@ -488,7 +628,7 @@
 
     .voucher-pill {
         background: var(--og-amber-soft);
-        border: 1.5px dashed #f5b82e;
+        border: 1.5px dashed #f6c431;
         color: #b45309;
         border-radius: 10px;
         padding: 0.45rem 0.95rem;
@@ -519,324 +659,336 @@
 <div class="grocery-store-home pb-5">
 
     <!-- ====================================================== -->
-    <!-- SECTION 1: ASYMMETRIC SPLIT-BOARD HERO SLIDER + DOCKET -->
+    <!-- SECTION 1: SUNLIT NATURA MARKET HERO SLIDER            -->
     <!-- ====================================================== -->
-    <section class="og-split-hero-wrap py-4">
-        <div class="container">
-            <div class="row g-3 align-items-stretch">
+    <section class="natura-hero-wrapper">
+        <div id="groceryHeroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
 
-                <!-- LEFT ~68%: Interactive 3-Slide Studio Editorial Showcase -->
-                <div class="col-lg-8">
-                    <div id="groceryHeroCarousel" class="carousel slide og-slider-frame h-100" data-bs-ride="carousel" data-bs-interval="6000">
-                        <div class="carousel-inner h-100">
+            <!-- Compact Floating Pill Chapter Indicators -->
+            <div class="carousel-indicators natura-slider-indicators d-none d-md-flex">
+                <button type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1: Harvest Basket">
+                    <i class="bi bi-flower2 me-1"></i>Harvest Basket
+                </button>
+                <button type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="1" aria-label="Slide 2: Honey, Gur and Red Sugar">
+                    <i class="bi bi-droplet-fill me-1"></i>Honey, Gur &amp; Red Sugar
+                </button>
+                <button type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="2" aria-label="Slide 3: Mustard Oil and Nuts">
+                    <i class="bi bi-gem me-1"></i>Mustard Oil &amp; Nuts
+                </button>
+            </div>
 
-                            <!-- SLIDE 1: Farm to Table Bangladeshi Organic Harvest -->
-                            <div class="carousel-item active h-100">
-                                <div class="og-slide-stage h-100">
-                                    <div class="og-slide-copy">
-                                        <span class="badge rounded-pill px-3 py-1.5 mb-3 align-self-start fw-bold" style="background: var(--og-green-soft); color: var(--og-green); font-size: 0.72rem; letter-spacing: 0.04em;">
-                                            <i class="bi bi-flower2 me-1"></i> {% if IS_BANGLA %}১০০% নির্ভেজাল অর্গানিক মার্কেট{% else %}ISSUE NO. 01 &bull; PURE BY NATURE{% endif %}
+            <div class="carousel-inner">
+
+                <!-- SLIDE 1: COMPLETE FARM HARVEST -->
+                <div class="carousel-item active">
+                    <div class="natura-hero-slide">
+                        <div class="natura-light-only-bg">
+                            <img src="{% static 'images/themes/grocery_organic/hero-natura-harvest.jpg' %}"
+                                 alt="Fresh organic produce basket, mustard oil, raw honey, nuts, Khejur Gur and red sugar">
+                        </div>
+
+                        <div class="container position-relative" style="z-index: 4;">
+                            <div class="natura-slide-stage-dark">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-lg-6 position-relative" style="z-index: 5;">
+                                        <span class="natura-pill-kicker mb-3">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                            {% if IS_BANGLA %}পরিবারের জন্য খাঁটি। প্রকৃতির কাছ থেকে সরাসরি।{% else %}Good for You. Good for Nature.{% endif %}
                                         </span>
 
                                         <h1 class="og-hero-display mb-3">
                                             {% if IS_BANGLA %}
-                                                খামার থেকে সরাসরি <em>আপনার টেবিলে</em> খাঁটি অর্গানিক খাদ্য
+                                                খামার থেকে <span class="text-nature-green">তাজা ও খাঁটি</span>,<br>আপনার টেবিলে
                                             {% else %}
-                                                Pure Organic Harvest — From <em>Farm</em> to Your <em>Table</em>
+                                                Fresh From <span class="text-nature-green">Nature</span>,<br>Delivered to Your Table
                                             {% endif %}
                                         </h1>
 
-                                        <p class="og-muted mb-3" style="font-size: 0.92rem; line-height: 1.6;">
+                                        <p class="og-muted mb-4" style="font-size: 0.98rem; line-height: 1.62; max-width: 500px;">
                                             {% if IS_BANGLA %}
-                                                সুন্দরবনের মধু, পাটালি খেজুর গুড়, আখের লাল চিনি, কাঠবাদাম-কাজু, কাঠের ঘানি ভাঙা সরিষার তেল ও প্রতিদিনের তাজা সবজি।
+                                                সুন্দরবনের মধু, খেজুর গুড়, লাল চিনি, কাঠবাদাম-কাজু, কাঠের ঘানির সরিষার তেল ও প্রতিদিনের তাজা সবজি।
                                             {% else %}
-                                                Featuring <strong>Sundarban Raw Honey</strong>, crisp <strong>Almonds &amp; Cashews</strong>, sulfur-free <strong>Red Sugar (লাল চিনি)</strong>, winter <strong>Khejur Gur</strong> &amp; <strong>Sirajganj Mustard Oil</strong>.
+                                                Discover 100% organic groceries, Sundarbans raw honey, winter Patali Khejur Gur, sulfur-free red sugar, crisp almonds &amp; cold-pressed mustard oil.
                                             {% endif %}
                                         </p>
 
-                                        <div class="d-flex flex-wrap gap-2">
+                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
                                             <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-og-solid">
                                                 <span>{% if IS_BANGLA %}এখনই কিনুন{% else %}Shop Farm Harvest{% endif %}</span>
                                                 <i class="bi bi-arrow-right"></i>
                                             </a>
                                             <a href="#pantry-explorer" class="btn btn-og-gold">
-                                                <span>{% if IS_BANGLA %}পণ্য দেখুন{% else %}Explore Aisles{% endif %}</span>
+                                                <span>{% if IS_BANGLA %}পণ্য দেখুন{% else %}Explore Products{% endif %}</span>
+                                                <i class="bi bi-arrow-right"></i>
                                             </a>
+                                        </div>
+
+                                        <div class="d-flex flex-wrap align-items-center gap-3 small og-muted pt-1">
+                                            <button type="button" class="btn btn-link p-0 text-decoration-none fw-semibold small d-inline-flex align-items-center gap-1" style="color: var(--og-green);" data-bs-toggle="modal" data-bs-target="#deliverySlotModal">
+                                                <i class="bi bi-clock-history"></i>
+                                                <span>Schedule Delivery Slot</span>
+                                            </button>
+                                            <span>&bull;</span>
+                                            <span><i class="bi bi-shield-check me-1" style="color: var(--og-green);"></i>Zero Formalin &amp; Chemical-Free</span>
                                         </div>
                                     </div>
 
-                                    <div class="og-slide-visual">
-                                        <img src="{% static 'images/themes/grocery_organic/hero-natura-harvest.jpg' %}"
-                                             alt="Organic Basket, Mustard Oil, Raw Honey, Almonds, Khejur Gur and Red Sugar">
+                                    <div class="col-lg-6 position-relative natura-hero-right-col">
+                                        <div class="natura-dark-only-frame">
+                                            <img src="{% static 'images/themes/grocery_organic/hero-natura-harvest.jpg' %}"
+                                                 alt="Bangladeshi Organic Harvest: Honey, Khejur Gur, Red Sugar, Mustard Oil &amp; Nuts">
+                                        </div>
+
+                                        <!-- 3 Floating Frosted Badges Matching Reference -->
+                                        <div class="natura-float-card natura-float-top d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: var(--og-green-soft); color: var(--og-green);"><i class="bi bi-shield-fill-check"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">100% Natural</div>
+                                                <div class="og-muted" style="font-size: 0.69rem;">No chemicals. Lab tested.</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-bottom d-none d-md-flex" data-bs-toggle="modal" data-bs-target="#deliverySlotModal" role="button">
+                                            <div class="natura-float-icon" style="background: var(--og-amber-soft); color: #d99b06;"><i class="bi bi-truck"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Same Day Delivery</div>
+                                                <div class="og-muted" style="font-size: 0.69rem;">Freshness, delivered fast.</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-right d-none d-md-flex">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; background: var(--og-amber-soft); color: #eab308;"><i class="bi bi-star-fill small"></i></span>
+                                                <div class="lh-1">
+                                                    <div class="fw-bold small">4.9/5</div>
+                                                    <div class="og-muted" style="font-size: 0.66rem;">12K+ Reviews</div>
+                                                </div>
+                                            </div>
+                                            <div class="natura-avatar-stack ps-1">
+                                                <span class="natura-avatar-circle" style="background: #1e7a32;">N</span>
+                                                <span class="natura-avatar-circle" style="background: #b85026;">R</span>
+                                                <span class="natura-avatar-circle" style="background: #d97706;">T</span>
+                                                <span class="natura-avatar-circle" style="background: #2f6b3f;">S</span>
+                                                <span class="natura-avatar-circle" style="background: #1e7a32;">+</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- SLIDE 2: Unrefined Honey, Khejur Gur & Red Sugar -->
-                            <div class="carousel-item h-100">
-                                <div class="og-slide-stage h-100">
-                                    <div class="og-slide-copy">
-                                        <span class="badge rounded-pill px-3 py-1.5 mb-3 align-self-start fw-bold" style="background: var(--og-amber-soft); color: var(--og-amber); font-size: 0.72rem; letter-spacing: 0.04em;">
-                                            <i class="bi bi-stars me-1"></i> {% if IS_BANGLA %}শীতকালীন গুড় ও মধু সংগ্রহ{% else %}HARVEST SPOTLIGHT &bull; NATURAL SWEETENERS{% endif %}
+                <!-- SLIDE 2: HONEY, KHEJUR GUR & RED SUGAR -->
+                <div class="carousel-item">
+                    <div class="natura-hero-slide">
+                        <div class="natura-light-only-bg">
+                            <img src="{% static 'images/themes/grocery_organic/hero-slide-sweeteners.jpg' %}"
+                                 alt="Sundarbans Raw Honey, Patali Khejur Gur and Unrefined Red Sugar (Lal Chini)">
+                        </div>
+
+                        <div class="container position-relative" style="z-index: 4;">
+                            <div class="natura-slide-stage-dark">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-lg-6 position-relative" style="z-index: 5;">
+                                        <span class="natura-pill-kicker mb-3" style="background: var(--og-amber-soft); color: var(--og-amber); border-color: rgba(246, 196, 49, 0.4);">
+                                            <i class="bi bi-stars"></i>
+                                            {% if IS_BANGLA %}সুন্দরবন ও রাজশাহীর শীতকালীন সংগ্রহ{% else %}Sundarbans &amp; Rajshahi Natural Sweeteners{% endif %}
                                         </span>
 
                                         <h2 class="og-hero-display mb-3">
                                             {% if IS_BANGLA %}
-                                                <em>সুন্দরবনের মধু</em>, খেজুর গুড় ও লাল চিনি
+                                                খাঁটি <span class="text-nature-green">মধু, খেজুর গুড়</span><br>ও আখের লাল চিনি
                                             {% else %}
-                                                Raw Honey, <em>Khejur Gur</em> &amp; Red Sugar (লাল চিনি)
+                                                Raw Honey, <span class="text-nature-green">Khejur Gur</span><br>&amp; Unrefined Red Sugar
                                             {% endif %}
                                         </h2>
 
-                                        <p class="og-muted mb-3" style="font-size: 0.92rem; line-height: 1.6;">
+                                        <p class="og-muted mb-4" style="font-size: 0.98rem; line-height: 1.62; max-width: 500px;">
                                             {% if IS_BANGLA %}
-                                                ফিটকিরি বা কৃত্রিম চিনি ছাড়াই সনাতনী পদ্ধতিতে তৈরি খাঁটি পাটালি ও ঝোলা খেজুর গুড় এবং অরিজিনাল চাকের মধু।
+                                                ফিটকিরি বা কৃত্রিম চিনি ছাড়াই সনাতনী পদ্ধতিতে তৈরি খাঁটি পাটালি খেজুর গুড়, চাকের মধু ও লাল চিনি।
                                             {% else %}
                                                 Unfiltered honeycomb nectar gathered by Sundarban Mowals, earthen-pot Patali Khejur Gur from Rajshahi &amp; iron-rich Lal Chini cane sugar.
                                             {% endif %}
                                         </p>
 
-                                        <div class="d-flex flex-wrap gap-2">
+                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
                                             <a href="{% url 'product_list' %}?category=raw-wild-honey" class="btn btn-og-solid">
                                                 <span>Shop Honey &amp; Gur</span>
                                                 <i class="bi bi-arrow-right"></i>
                                             </a>
                                             <a href="{% url 'product_list' %}?q=Sugar" class="btn btn-og-gold">
                                                 <span>Shop Red Sugar</span>
+                                                <i class="bi bi-arrow-right"></i>
                                             </a>
+                                        </div>
+
+                                        <div class="small og-muted pt-1">
+                                            <i class="bi bi-patch-check-fill me-1" style="color: var(--og-green);"></i>100% Lab-Verified Sundarban Honey &bull; Authentic Winter Gur Batch
                                         </div>
                                     </div>
 
-                                    <div class="og-slide-visual">
-                                        <img src="{% static 'images/themes/grocery_organic/hero-slide-sweeteners.jpg' %}"
-                                             alt="Raw Sundarbans Honey Jar, Earthen Patali Khejur Gur Bowl and Red Sugar Pouch">
+                                    <div class="col-lg-6 position-relative natura-hero-right-col">
+                                        <div class="natura-dark-only-frame">
+                                            <img src="{% static 'images/themes/grocery_organic/hero-slide-sweeteners.jpg' %}"
+                                                 alt="Raw Sundarbans Honey Jar, Earthen Patali Khejur Gur Bowl and Red Sugar Pouch">
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-top d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: var(--og-amber-soft); color: var(--og-amber);"><i class="bi bi-hexagon-fill"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Artisanal Patali Gur</div>
+                                                <div class="og-muted" style="font-size: 0.69rem;">Zero added sugar or soda</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="natura-float-card natura-float-bottom d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: var(--og-green-soft); color: var(--og-green);"><i class="bi bi-droplet-fill"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Unfiltered Raw Honey</div>
+                                                <div class="og-muted" style="font-size: 0.69rem;">Direct Sundarbans harvest</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- SLIDE 3: Cold-Pressed Mustard Oil, Crispy Nuts & Greens -->
-                            <div class="carousel-item h-100">
-                                <div class="og-slide-stage h-100">
-                                    <div class="og-slide-copy">
-                                        <span class="badge rounded-pill px-3 py-1.5 mb-3 align-self-start fw-bold" style="background: var(--og-green-soft); color: var(--og-green); font-size: 0.72rem; letter-spacing: 0.04em;">
-                                            <i class="bi bi-droplet-half me-1"></i> {% if IS_BANGLA %}কাঠের ঘানি ও খামার-তাজা বাদাম{% else %}COLD-PRESSED &bull; BELOW 38°C EXTRACTION{% endif %}
+                <!-- SLIDE 3: MUSTARD OIL & CRISPY NUTS -->
+                <div class="carousel-item">
+                    <div class="natura-hero-slide">
+                        <div class="natura-light-only-bg">
+                            <img src="{% static 'images/themes/grocery_organic/hero-slide-oils-nuts.jpg' %}"
+                                 alt="Cold-Pressed Mustard Oil Bottle, Fresh Harvest Basket, Honey and Roasted Almonds">
+                        </div>
+
+                        <div class="container position-relative" style="z-index: 4;">
+                            <div class="natura-slide-stage-dark">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-lg-6 position-relative" style="z-index: 5;">
+                                        <span class="natura-pill-kicker mb-3">
+                                            <i class="bi bi-droplet-half"></i>
+                                            {% if IS_BANGLA %}সিরাজগঞ্জের কাঠের ঘানি ও তাজা বাদাম{% else %}Cold-Pressed Below 38°C &amp; Crispy Nuts{% endif %}
                                         </span>
 
                                         <h2 class="og-hero-display mb-3">
                                             {% if IS_BANGLA %}
-                                                ঘানি ভাঙা <em>সরিষার তেল</em> ও তাজা বাদাম
+                                                ঘানি ভাঙা <span class="text-nature-green">সরিষার তেল</span>,<br>বাদাম ও তাজা সবজি
                                             {% else %}
-                                                Wood-Pressed <em>Mustard Oil</em> &amp; Crispy Nuts
+                                                Wood-Pressed <span class="text-nature-green">Mustard Oil</span>,<br>Crispy Nuts &amp; Produce
                                             {% endif %}
                                         </h2>
 
-                                        <p class="og-muted mb-3" style="font-size: 0.92rem; line-height: 1.6;">
+                                        <p class="og-muted mb-4" style="font-size: 0.98rem; line-height: 1.62; max-width: 500px;">
                                             {% if IS_BANGLA %}
                                                 সিরাজগঞ্জের দেশি মাঘী সরিষার তেল, ক্যালিফোর্নিয়া কাঠবাদাম-কাজু, খেজুর ও সকালের তাজা শাকসবজি।
                                             {% else %}
-                                                Authentic pungent Maghi mustard oil pressed in wooden ghanis alongside crunchy almonds, walnuts, jumbo dates &amp; dawn produce.
+                                                Authentic pungent Maghi mustard oil pressed in wooden ghanis alongside crunchy almonds, walnuts, jumbo Medjool dates &amp; dawn greens.
                                             {% endif %}
                                         </p>
 
-                                        <div class="d-flex flex-wrap gap-2">
+                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
                                             <a href="{% url 'product_list' %}?category=cold-pressed-mustard-oils" class="btn btn-og-solid">
-                                                <span>Shop Oils &amp; Ghee</span>
+                                                <span>Shop Cold-Pressed Oils</span>
                                                 <i class="bi bi-arrow-right"></i>
                                             </a>
                                             <a href="{% url 'product_list' %}?category=premium-dry-fruits-nuts" class="btn btn-og-gold">
                                                 <span>Shop Nuts &amp; Dates</span>
+                                                <i class="bi bi-arrow-right"></i>
                                             </a>
                                         </div>
+
+                                        <div class="small og-muted pt-1">
+                                            <i class="bi bi-truck me-1" style="color: var(--og-green);"></i>Same-Day Chilled Van Delivery Across Dhaka &bull; 1-Hr Express Ready
+                                        </div>
                                     </div>
 
-                                    <div class="og-slide-visual">
-                                        <img src="{% static 'images/themes/grocery_organic/hero-slide-oils-nuts.jpg' %}"
-                                             alt="Cold-Pressed Mustard Oil Bottle, Fresh Harvest Basket, Honey and Roasted Almonds">
-                                    </div>
-                                </div>
-                            </div>
+                                    <div class="col-lg-6 position-relative natura-hero-right-col">
+                                        <div class="natura-dark-only-frame">
+                                            <img src="{% static 'images/themes/grocery_organic/hero-slide-oils-nuts.jpg' %}"
+                                                 alt="Cold-Pressed Mustard Oil Bottle, Fresh Harvest Basket, Honey and Roasted Almonds">
+                                        </div>
 
-                        </div>
+                                        <div class="natura-float-card natura-float-top d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: var(--og-amber-soft); color: var(--og-amber);"><i class="bi bi-moisture"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Wood Ghani Oil</div>
+                                                <div class="og-muted" style="font-size: 0.69rem;">Sirajganj Maghi Mustard</div>
+                                            </div>
+                                        </div>
 
-                        <!-- Bottom Architectural Chapter Control Dock (replaces generic Bootstrap carousel UI) -->
-                        <div class="og-slider-dock">
-                            <div class="d-flex flex-wrap align-items-center gap-1" id="ogChapterTabs">
-                                <button type="button" class="og-chapter-btn active" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="0" aria-current="true">
-                                    <span>01</span><span class="d-none d-sm-inline">Harvest Basket</span>
-                                </button>
-                                <button type="button" class="og-chapter-btn" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="1">
-                                    <span>02</span><span class="d-none d-sm-inline">Honey, Gur &amp; Red Sugar</span>
-                                </button>
-                                <button type="button" class="og-chapter-btn" data-bs-target="#groceryHeroCarousel" data-bs-slide-to="2">
-                                    <span>03</span><span class="d-none d-sm-inline">Mustard Oil &amp; Nuts</span>
-                                </button>
-                            </div>
-                            <div class="d-flex align-items-center gap-1.5">
-                                <button class="og-dock-nav-btn" type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide="prev" aria-label="Previous slide">
-                                    <i class="bi bi-arrow-left small"></i>
-                                </button>
-                                <button class="og-dock-nav-btn" type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide="next" aria-label="Next slide">
-                                    <i class="bi bi-arrow-right small"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- RIGHT ~32%: Live Fresh Dispatch Docket & Quick Pantry Index -->
-                <div class="col-lg-4">
-                    <aside class="og-dispatch-panel" aria-label="Today's Harvest Dispatch and Quick Order">
-                        <div>
-                            <!-- Live Dispatch Slot Header -->
-                            <div class="og-dispatch-head d-flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="d-block fw-bold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.1em; color: var(--og-green);">
-                                        <i class="bi bi-broadcast me-1"></i>DHAKA FRESH DISPATCH
-                                    </span>
-                                    <div class="fw-bold small og-ink">Delivery Slot: Today 4–7 PM</div>
-                                </div>
-                                <button type="button" class="btn btn-sm rounded-pill fw-bold px-2.5 py-1" style="background: #1b7a3d; color: #fff; font-size: 0.72rem;" data-bs-toggle="modal" data-bs-target="#deliverySlotModal">
-                                    Schedule Delivery
-                                </button>
-                            </div>
-
-                            <!-- Live Daily Farm Pick Spotlight inside Docket -->
-                            {% with pick=daily_farm_pick|default:best_sellers.0 %}
-                            <div class="p-3 og-hairline-b" style="background: var(--og-green-soft);">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="fw-bold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.08em; color: var(--og-green);">
-                                        <i class="bi bi-sun-fill text-warning me-1"></i>DAILY FARM PICK
-                                    </span>
-                                    <span class="badge bg-white text-dark border rounded-pill" style="font-size: 0.64rem;">4.9 ★ Batch</span>
-                                </div>
-                                {% if pick %}
-                                <div class="d-flex align-items-center gap-2.5 mb-2">
-                                    <div class="rounded-3 bg-white border p-1.5 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 58px; height: 58px; border-color: var(--og-rule) !important;">
-                                        {% if pick.image %}
-                                            <img src="{{ pick.image.url }}" alt="{{ pick.name }}" class="img-fluid" style="max-height: 48px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                                            <i class="bi bi-basket2-fill fs-4 text-success" style="display:none;"></i>
-                                        {% else %}
-                                            <i class="bi bi-basket2-fill fs-4 text-success"></i>
-                                        {% endif %}
-                                    </div>
-                                    <div class="min-w-0 flex-grow-1">
-                                        <a href="{% url 'product_detail' pick.pk %}" class="fw-bold og-ink text-decoration-none d-block text-truncate small">{{ pick.name }}</a>
-                                        <div class="d-flex align-items-baseline gap-2">
-                                            <span class="fw-bold" style="color: var(--og-green);">৳{{ pick.effective_price }}</span>
-                                            <small class="og-muted">{{ pick|grocery_package_size }}</small>
+                                        <div class="natura-float-card natura-float-bottom d-none d-md-flex">
+                                            <div class="natura-float-icon" style="background: var(--og-green-soft); color: var(--og-green);"><i class="bi bi-gem"></i></div>
+                                            <div class="lh-sm">
+                                                <div class="fw-bold small">Jumbo Nuts &amp; Dates</div>
+                                                <div class="og-muted" style="font-size: 0.69rem;">Vacuum packed fresh crop</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <form action="{% url 'add_to_cart' pick.pk %}" method="post" class="grocery-add-basket-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-sm btn-og-solid w-100 justify-content-center py-1.5" style="font-size: 0.78rem;">
-                                        <i class="bi bi-basket2-fill"></i> Add Daily Pick to Basket
-                                    </button>
-                                </form>
-                                {% endif %}
-                            </div>
-                            {% endwith %}
-
-                            <!-- Scannable Bangladeshi Organic Price Board -->
-                            <div class="py-1">
-                                <div class="px-3 pt-2 pb-1 fw-bold text-uppercase og-muted" style="font-size: 0.65rem; letter-spacing: 0.1em;">
-                                    Today's Pure Harvest Index
-                                </div>
-                                <a href="{% url 'product_list' %}?category=raw-wild-honey" class="og-dispatch-row">
-                                    <span><i class="bi bi-flower2 text-warning me-2"></i><strong>Raw Honey</strong> <small class="og-muted">Sundarbans</small></span>
-                                    <span class="fw-bold" style="color: var(--og-green);">Shop <i class="bi bi-chevron-right small"></i></span>
-                                </a>
-                                <a href="{% url 'product_list' %}?q=Gur" class="og-dispatch-row">
-                                    <span><i class="bi bi-hexagon-fill me-2" style="color: var(--og-earth);"></i><strong>Khejur Gur</strong> <small class="og-muted">Rajshahi Patali</small></span>
-                                    <span class="fw-bold" style="color: var(--og-green);">Shop <i class="bi bi-chevron-right small"></i></span>
-                                </a>
-                                <a href="{% url 'product_list' %}?q=Sugar" class="og-dispatch-row">
-                                    <span><i class="bi bi-stars me-2" style="color: var(--og-amber);"></i><strong>Red Sugar</strong> <small class="og-muted">Lal Chini</small></span>
-                                    <span class="fw-bold" style="color: var(--og-green);">Shop <i class="bi bi-chevron-right small"></i></span>
-                                </a>
-                                <a href="{% url 'product_list' %}?category=premium-dry-fruits-nuts" class="og-dispatch-row">
-                                    <span><i class="bi bi-gem text-success me-2"></i><strong>Crispy Nuts</strong> <small class="og-muted">Almonds &amp; Dates</small></span>
-                                    <span class="fw-bold" style="color: var(--og-green);">Shop <i class="bi bi-chevron-right small"></i></span>
-                                </a>
-                                <a href="{% url 'product_list' %}?category=cold-pressed-mustard-oils" class="og-dispatch-row">
-                                    <span><i class="bi bi-droplet-fill text-warning me-2"></i><strong>Mustard Oil</strong> <small class="og-muted">Sirajganj Ghani</small></span>
-                                    <span class="fw-bold" style="color: var(--og-green);">Shop <i class="bi bi-chevron-right small"></i></span>
-                                </a>
                             </div>
                         </div>
-
-                        <div class="px-3 py-2 og-hairline-t d-flex align-items-center justify-content-between small" style="background: var(--og-tint);">
-                            <span class="og-muted" style="font-size: 0.74rem;"><i class="bi bi-shield-check text-success me-1"></i>100% Purity Guarantee</span>
-                            <a href="#weekly-harvest-box" class="fw-bold text-decoration-none" style="color: var(--og-green); font-size: 0.75rem;">Weekly Box &minus;15%</a>
-                        </div>
-                    </aside>
+                    </div>
                 </div>
+
             </div>
+
+            <!-- Frosted Prev/Next Arrows -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide="prev" aria-label="Previous Hero Slide">
+                <span class="natura-slider-arrow" aria-hidden="true"><i class="bi bi-chevron-left fw-bold"></i></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#groceryHeroCarousel" data-bs-slide="next" aria-label="Next Hero Slide">
+                <span class="natura-slider-arrow" aria-hidden="true"><i class="bi bi-chevron-right fw-bold"></i></span>
+            </button>
         </div>
     </section>
 
     <!-- ====================================================== -->
-    <!-- KINETIC PURITY TICKER STRIP                            -->
+    <!-- FLOATING WHITE 4-PILLAR TRUST BAR (Natura Signature)   -->
     <!-- ====================================================== -->
-    <div class="og-marquee-strip" aria-hidden="true">
-        <div class="og-marquee-track">
-            <span><i class="bi bi-patch-check-fill text-warning me-1"></i> 100% Adulteration-Free Organic Harvest</span>
-            <span>&bull;</span>
-            <span>Sundarbans Raw Wild Honey</span>
-            <span>&bull;</span>
-            <span>Rajshahi Patali Khejur Gur</span>
-            <span>&bull;</span>
-            <span>Unrefined Lal Chini Red Sugar</span>
-            <span>&bull;</span>
-            <span>Sirajganj Wood-Pressed Cold Mustard Oil (&lt;38°C)</span>
-            <span>&bull;</span>
-            <span>Crispy California Almonds &amp; Medjool Dates</span>
-            <span>&bull;</span>
-            <span>2-Hour Same-Day Express Delivery in Dhaka</span>
-            <span>&bull;</span>
-            <span>100% Adulteration-Free Organic Harvest</span>
-            <span>&bull;</span>
-            <span>Sundarbans Raw Wild Honey</span>
-            <span>&bull;</span>
-            <span>Rajshahi Patali Khejur Gur</span>
-            <span>&bull;</span>
-            <span>Unrefined Lal Chini Red Sugar</span>
-        </div>
-    </div>
-
-    <!-- ====================================================== -->
-    <!-- SECTION 2: SWISS NUMBERED PURITY LEDGER                -->
-    <!-- ====================================================== -->
-    <section class="og-hairline-b" style="background: var(--og-paper);">
+    <section class="pb-4">
         <div class="container">
-            <div class="row g-0">
-                <div class="col-6 col-lg-3 og-ledger-col">
-                    <div class="og-ledger-cell">
-                        <div class="og-ledger-num">01</div>
-                        <div class="fw-bold small og-ink mb-1">100% Pure &amp; Adulteration-Free</div>
-                        <p class="og-muted mb-0" style="font-size: 0.76rem; line-height: 1.45;">Zero formalin, artificial bleach, or sugar syrup across every batch.</p>
+            <div class="natura-trust-strip">
+                <div class="row g-3 align-items-center">
+                    <div class="col-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="natura-trust-icon" aria-hidden="true">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="fw-bold small og-ink">100% Pure &amp; Organic</div>
+                                <div class="og-muted" style="font-size: 0.74rem;">Certified &amp; adulteration-free</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-6 col-lg-3 og-ledger-col">
-                    <div class="og-ledger-cell">
-                        <div class="og-ledger-num">02</div>
-                        <div class="fw-bold small og-ink mb-1">Traditional Cold-Pressed</div>
-                        <p class="og-muted mb-0" style="font-size: 0.76rem; line-height: 1.45;">Sirajganj wood-milled (ghani) extraction keeping enzymes intact.</p>
+                    <div class="col-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="natura-trust-icon"><i class="bi bi-shield-check"></i></div>
+                            <div>
+                                <div class="fw-bold small og-ink">Cold-Pressed &amp; Secure</div>
+                                <div class="og-muted" style="font-size: 0.74rem;">Wood ghani &amp; safe checkout</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-6 col-lg-3 og-ledger-col">
-                    <div class="og-ledger-cell">
-                        <div class="og-ledger-num">03</div>
-                        <div class="fw-bold small og-ink mb-1">Express Farm-to-Door</div>
-                        <p class="og-muted mb-0" style="font-size: 0.76rem; line-height: 1.45;">Dispatched daily in glass jars &amp; eco kraft pouches within 2 hours.</p>
+                    <div class="col-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="natura-trust-icon"><i class="bi bi-recycle"></i></div>
+                            <div>
+                                <div class="fw-bold small og-ink">Sustainable Packaging</div>
+                                <div class="og-muted" style="font-size: 0.74rem;">Eco-friendly &amp; recyclable</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-6 col-lg-3 og-ledger-col">
-                    <div class="og-ledger-cell">
-                        <div class="og-ledger-num">04</div>
-                        <div class="fw-bold small og-ink mb-1">Doorstep Replacement</div>
-                        <p class="og-muted mb-0" style="font-size: 0.76rem; line-height: 1.45;">Inspect quality on arrival — no-questions instant return promise.</p>
+                    <div class="col-6 col-lg-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="natura-trust-icon"><i class="bi bi-emoji-smile"></i></div>
+                            <div>
+                                <div class="fw-bold small og-ink">Express Farm-to-Door</div>
+                                <div class="og-muted" style="font-size: 0.74rem;">Trusted by 24,000+ families</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -844,206 +996,273 @@
     </section>
 
     <!-- ====================================================== -->
-    <!-- SECTION 3: STICKY HARVEST AISLE EXPLORER + PANTRY GRID -->
+    <!-- SECTION 2: SHOP BY HARVEST & PURE SPECIALTIES          -->
     <!-- ====================================================== -->
-    <section id="pantry-explorer" class="py-5">
-        <div class="container">
-            <div class="row g-4 align-items-start">
-
-                <!-- LEFT STICKY DIRECTORY (Replaces ordinary 8-tile banner strip) -->
-                <div class="col-lg-3">
-                    <div class="og-sticky-rail">
-                        <span class="fw-bold text-uppercase d-block mb-1" style="font-size: 0.68rem; letter-spacing: 0.12em; color: var(--og-green);">
-                            Shop by Harvest Aisle
-                        </span>
-                        <h3 class="font-serif-editorial fw-bold og-ink fs-4 mb-3">Kitchen Pantry Index</h3>
-
-                        <div class="d-flex flex-column gap-1 mb-3" id="pantryTabPills">
-                            <button type="button" class="grocery-tab-pill active" data-pantry-filter="all">
-                                <span><i class="bi bi-grid-fill me-2"></i>All Pantry Staples</span>
-                                <small class="og-muted">All</small>
-                            </button>
-                            <button type="button" class="grocery-tab-pill" data-pantry-filter="raw-wild-honey">
-                                <span><i class="bi bi-flower2 me-2"></i>Raw Honey &amp; Gur</span>
-                                <small class="og-muted">Sundarbans</small>
-                            </button>
-                            <button type="button" class="grocery-tab-pill" data-pantry-filter="premium-dry-fruits-nuts">
-                                <span><i class="bi bi-gem me-2"></i>Nuts &amp; Dates</span>
-                                <small class="og-muted">Dry Fruits</small>
-                            </button>
-                            <button type="button" class="grocery-tab-pill" data-pantry-filter="cold-pressed-mustard-oils">
-                                <span><i class="bi bi-droplet-fill me-2"></i>Mustard Oil &amp; Ghee</span>
-                                <small class="og-muted">Ghani</small>
-                            </button>
-                            <button type="button" class="grocery-tab-pill" data-pantry-filter="aromatic-rice-grains">
-                                <span><i class="bi bi-basket3-fill me-2"></i>Chinigura Rice &amp; Daal</span>
-                                <small class="og-muted">Dinajpur</small>
-                            </button>
-                            <button type="button" class="grocery-tab-pill" data-pantry-filter="whole-ground-spices">
-                                <span><i class="bi bi-fire me-2"></i>Pure Hand Spices</span>
-                                <small class="og-muted">Stone Mill</small>
-                            </button>
-                            <button type="button" class="grocery-tab-pill" data-pantry-filter="fresh-farm-vegetables">
-                                <span><i class="bi bi-tree-fill me-2"></i>Fresh Farm Produce</span>
-                                <small class="og-muted">Daily</small>
-                            </button>
-                        </div>
-
-                        <!-- Quick Links for Red Sugar & Khejur Gur Discovery -->
-                        <div class="d-flex flex-wrap gap-1.5 pb-3 mb-3 og-hairline-b">
-                            <a href="{% url 'product_list' %}?q=Sugar" class="badge rounded-pill text-decoration-none px-2.5 py-1.5" style="background: var(--og-amber-soft); color: var(--og-amber);">Red Sugar (Lal Chini)</a>
-                            <a href="{% url 'product_list' %}?q=Gur" class="badge rounded-pill text-decoration-none px-2.5 py-1.5" style="background: var(--og-green-soft); color: var(--og-green);">Patali Khejur Gur</a>
-                        </div>
-
-                        <!-- Integrated Family Bazar Planner right in Sticky Rail -->
-                        <div class="p-3 rounded-4" style="background: var(--og-tint); border: 1px solid var(--og-rule);">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="fw-bold small og-ink"><i class="bi bi-calculator me-1 text-success"></i>Family Bazar Plan</span>
-                                <select id="bazarFamilySize" class="form-select form-select-sm w-auto py-0 px-2" aria-label="Household size" style="font-size: 0.74rem; background: var(--og-paper); color: var(--og-ink); border-color: var(--og-rule);">
-                                    <option value="2">2 Members</option>
-                                    <option value="4" selected>4 Members</option>
-                                    <option value="6">6+ Members</option>
-                                </select>
-                            </div>
-                            <p class="og-muted mb-1" style="font-size: 0.75rem; line-height: 1.4;" id="bazarEstimateSummary">
-                                2L Mustard Oil &bull; 10Kg Rice &bull; 500g Khejur Gur &amp; Wild Honey &bull; 500g Nuts
-                            </p>
-                            <div class="fw-bold small" style="color: var(--og-green);" id="bazarEstimateTotal">Est. Monthly Pantry: ৳3,450 / mo</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- RIGHT 3-COLUMN BREATHABLE PANTRY PRODUCT SHELF -->
-                <div class="col-lg-9">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 pb-3 og-hairline-b">
-                        <div>
-                            <span class="fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.12em; color: var(--og-green);">CURATED DAILY INVENTORY</span>
-                            <h2 class="font-serif-editorial fw-bold og-ink mb-1" style="font-size: clamp(1.6rem, 2.5vw, 2.15rem);">Daily Pantry Essentials</h2>
-                            <p class="og-muted small mb-0">Filter by aisle on the left — raw forest honey, red sugar, mustard oil, unpolished rice &amp; hand-ground turmeric.</p>
-                        </div>
-                        <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-sm btn-og-solid mt-3 mt-md-0">
-                            Browse All Products <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-
-                    <div class="row row-cols-2 row-cols-md-3 g-3 g-md-4" id="pantryEssentialsGrid">
-                        {% for product in pantry_essentials|slice:":8" %}
-                            <div class="col grocery-pantry-item" data-cat-slug="{{ product.category.slug|default:'general' }}">
-                                {% include 'themes/organic-grocery/product_card.html' with product=product %}
-                            </div>
-                        {% empty %}
-                            {% for product in latest_products|slice:":8" %}
-                                <div class="col grocery-pantry-item" data-cat-slug="{{ product.category.slug|default:'general' }}">
-                                    {% include 'themes/organic-grocery/product_card.html' with product=product %}
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ====================================================== -->
-    <!-- SECTION 4: BANGLADESHI NATURAL SWEETENER & VITALITY    -->
-    <!-- ====================================================== -->
-    <section id="harvest-categories" class="py-5 og-hairline-t og-hairline-b" style="background: var(--og-tint);">
-        <div class="container">
-            <div class="row align-items-end mb-4">
-                <div class="col-lg-8">
-                    <span class="fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.12em; color: var(--og-amber);">SIGNATURE BANGLADESHI PANTRY</span>
-                    <h2 class="font-serif-editorial fw-bold og-ink mb-1" style="font-size: clamp(1.6rem, 2.5vw, 2.15rem);">Honey, Khejur Gur, Red Sugar &amp; Crisp Nuts Guide</h2>
-                </div>
-                <div class="col-lg-4 text-lg-end">
-                    <a href="{% url 'product_list' %}?theme=grocery_organic" class="fw-bold text-decoration-none small" style="color: var(--og-green);">View Complete Catalog <i class="bi bi-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <div class="row g-3">
-                <div class="col-md-6 col-xl-3">
-                    <div class="og-matrix-card">
-                        <div>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge rounded-pill px-2.5 py-1" style="background: var(--og-amber-soft); color: var(--og-amber); font-size: 0.68rem;">SUNDARBANS MOWAL</span>
-                                <i class="bi bi-flower2 fs-4 text-warning"></i>
-                            </div>
-                            <h5 class="font-serif-editorial fw-bold og-ink mb-2">Raw Wild Honey</h5>
-                            <p class="og-muted small mb-3">Unheated mangrove nectar gathered in spring. Packed with natural enzymes &amp; antioxidants.</p>
-                        </div>
-                        <a href="{% url 'product_list' %}?category=raw-wild-honey" class="fw-bold text-decoration-none small" style="color: var(--og-green);">Shop Wild Honey <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="og-matrix-card">
-                        <div>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge rounded-pill px-2.5 py-1" style="background: #fceee8; color: var(--og-earth); font-size: 0.68rem;">RAJSHAHI &amp; JESSORE</span>
-                                <i class="bi bi-hexagon-fill fs-4" style="color: var(--og-earth);"></i>
-                            </div>
-                            <h5 class="font-serif-editorial fw-bold og-ink mb-2">Patali Khejur Gur</h5>
-                            <p class="og-muted small mb-3">Slow-reduced winter date palm sap poured into clay molds with zero soda or cane sugar mix.</p>
-                        </div>
-                        <a href="{% url 'product_list' %}?q=Gur" class="fw-bold text-decoration-none small" style="color: var(--og-green);">Shop Khejur Gur <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="og-matrix-card">
-                        <div>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge rounded-pill px-2.5 py-1" style="background: var(--og-amber-soft); color: var(--og-amber); font-size: 0.68rem;">UNREFINED LAL CHINI</span>
-                                <i class="bi bi-stars fs-4 text-warning"></i>
-                            </div>
-                            <h5 class="font-serif-editorial fw-bold og-ink mb-2">Organic Red Sugar</h5>
-                            <p class="og-muted small mb-3">Traditional sulfur-free Bengal brown cane sugar retaining iron, calcium &amp; warm molasses notes.</p>
-                        </div>
-                        <a href="{% url 'product_list' %}?q=Sugar" class="fw-bold text-decoration-none small" style="color: var(--og-green);">Shop Red Sugar <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="og-matrix-card">
-                        <div>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge rounded-pill px-2.5 py-1" style="background: var(--og-green-soft); color: var(--og-green); font-size: 0.68rem;">DRY FRUITS &amp; DATES</span>
-                                <i class="bi bi-gem fs-4" style="color: var(--og-green);"></i>
-                            </div>
-                            <h5 class="font-serif-editorial fw-bold og-ink mb-2">Almonds, Cashews &amp; Nuts</h5>
-                            <p class="og-muted small mb-3">Whole crunchy roasted almonds, W180 cashews, Kashmiri walnuts &amp; soft Medjool dates.</p>
-                        </div>
-                        <a href="{% url 'product_list' %}?category=premium-dry-fruits-nuts" class="fw-bold text-decoration-none small" style="color: var(--og-green);">Shop Nuts &amp; Dates <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ====================================================== -->
-    <!-- SECTION 5: ASYMMETRIC BESTSELLER FEATURE + SHELF       -->
-    <!-- ====================================================== -->
-    <section class="grocery-bestsellers-section py-5">
+    <section id="harvest-categories" class="py-4">
         <div class="container">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
                 <div>
-                    <span class="fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.12em; color: var(--og-green);"><i class="bi bi-trophy-fill me-1 text-warning"></i> COMMUNITY TOP PICKS</span>
-                    <h2 class="font-serif-editorial fw-bold og-ink mb-1" style="font-size: clamp(1.6rem, 2.5vw, 2.15rem);">Bestselling Organic Harvest</h2>
+                    <span class="og-kicker mb-1"><i class="bi bi-grid-fill"></i> BANGLADESHI PANTRY AISLES</span>
+                    <h2 class="og-heading mb-1">Shop by Harvest &amp; Pure Specialties</h2>
+                    <p class="og-muted small mb-0">Raw forest honey, patali Khejur Gur, unrefined red sugar, crisp nuts, cold-pressed mustard oil, ghee &amp; dawn produce.</p>
+                </div>
+                <div class="mt-3 mt-md-0">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-og-outline">All Organic Aisles <i class="bi bi-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+
+            <div class="row row-cols-2 row-cols-sm-4 row-cols-lg-8 g-3">
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&category=raw-wild-honey" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #fef6df; color: #b45309;"><i class="bi bi-droplet-fill"></i></div>
+                        <div class="harvest-tile-title">Raw Honey</div>
+                        <span class="harvest-tile-sub">Sundarban Wild</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&q=gur" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #fbeee8; color: #b85026;"><i class="bi bi-hexagon-fill"></i></div>
+                        <div class="harvest-tile-title">Khejur Gur &amp; Lal Chini</div>
+                        <span class="harvest-tile-sub">Red Sugar &amp; Jaggery</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&category=premium-dry-fruits-nuts" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #fef4d6; color: #a16207;"><i class="bi bi-gem"></i></div>
+                        <div class="harvest-tile-title">Nuts &amp; Dates</div>
+                        <span class="harvest-tile-sub">Almonds &amp; Cashews</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&category=cold-pressed-mustard-oils" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #fdf9df; color: #b45309;"><i class="bi bi-moisture"></i></div>
+                        <div class="harvest-tile-title">Mustard Oils</div>
+                        <span class="harvest-tile-sub">Sirajganj Ghani</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&category=desi-ghee-dairy-butter" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #fef6df; color: #d97706;"><i class="bi bi-cup-hot-fill"></i></div>
+                        <div class="harvest-tile-title">Desi Cow Ghee</div>
+                        <span class="harvest-tile-sub">Baghabari Danedar</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&category=aromatic-rice-grains" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #edf6ea; color: #1e7a32;"><i class="bi bi-basket3-fill"></i></div>
+                        <div class="harvest-tile-title">Chinigura Rice</div>
+                        <span class="harvest-tile-sub">Dinajpur Heirloom</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&category=whole-ground-spices" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #fbeee8; color: #c85528;"><i class="bi bi-fire"></i></div>
+                        <div class="harvest-tile-title">Pure Spices</div>
+                        <span class="harvest-tile-sub">Stone-Milled</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'product_list' %}?theme=grocery_organic&category=fresh-farm-vegetables" class="harvest-tile">
+                        <div class="harvest-icon-medallion" style="background: #e9f5ec; color: #165e26;"><i class="bi bi-tree-fill"></i></div>
+                        <div class="harvest-tile-title">Farm Greens</div>
+                        <span class="harvest-tile-sub">Dawn Harvest</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- SECTION 3: SOFT SAGE BAND — DAILY PICK, SWEETENERS, SLOTS -->
+    <!-- ====================================================== -->
+    <section class="og-sage-band py-5">
+        <div class="container">
+            <div class="row g-3 align-items-stretch">
+                <!-- Card 1: Live Daily Farm Pick -->
+                <div class="col-lg-5">
+                    {% with pick=daily_farm_pick|default:best_sellers.0 %}
+                    <div class="og-spotlight-card">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge rounded-pill px-3 py-1 fw-bold" style="background: var(--og-green-soft); color: var(--og-green); border: 1px solid var(--og-green-border); font-size: 0.7rem;">
+                                    <i class="bi bi-sun-fill me-1" style="color: #eab308;"></i>DAILY FARM PICK
+                                </span>
+                                <span class="badge rounded-pill" style="background: var(--og-amber-soft); color: var(--og-amber); font-size: 0.68rem;">4.9 ★ Fresh Batch</span>
+                            </div>
+
+                            {% if pick %}
+                            <div class="d-flex align-items-center gap-3 my-3">
+                                <div class="rounded-4 border p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 96px; height: 96px; background: var(--og-tint); border-color: var(--og-rule) !important;">
+                                    {% if pick.image %}
+                                        <img src="{{ pick.image.url }}" alt="{{ pick.name }}" class="img-fluid rounded-2" style="max-height: 80px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                        <i class="bi bi-basket2-fill fs-1" style="display: none; color: var(--og-green);"></i>
+                                    {% else %}
+                                        <i class="bi bi-basket2-fill fs-1" style="color: var(--og-green);"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 min-w-0">
+                                    <a href="{% url 'product_detail' pick.pk %}" class="text-decoration-none og-ink fw-bold d-block mb-1" style="font-size: 1rem;">
+                                        {{ pick.name|truncatewords:9 }}
+                                    </a>
+                                    <div class="d-flex align-items-baseline gap-2 mb-1">
+                                        <span class="fs-4 fw-bold" style="color: var(--og-green);">৳{{ pick.effective_price }}</span>
+                                        <small class="og-muted">{{ pick|grocery_package_size }}</small>
+                                        {% if pick.has_discount %}
+                                            <span class="text-decoration-line-through og-muted small">৳{{ pick.price }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="small fw-semibold" style="color: var(--og-amber);">
+                                        <i class="bi bi-star-fill me-1"></i>4.9 <span class="og-muted fw-normal">(120+ household reviews)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if pick %}
+                        <form action="{% url 'add_to_cart' pick.pk %}" method="post" class="grocery-add-basket-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-og-solid w-100 justify-content-center py-2">
+                                <i class="bi bi-basket2-fill"></i> Add Daily Pick to Basket
+                            </button>
+                        </form>
+                        {% else %}
+                        <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-og-solid w-100 justify-content-center py-2">Browse Today's Pick</a>
+                        {% endif %}
+                    </div>
+                    {% endwith %}
+                </div>
+
+                <!-- Card 2: Honey, Nuts, Red Sugar & Khejur Gur Showcase -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="og-spotlight-card og-sweetener-card">
+                        <div>
+                            <span class="badge rounded-pill px-3 py-1 fw-bold mb-2" style="background: var(--og-amber-soft); color: var(--og-amber); font-size: 0.7rem;">
+                                SIGNATURE BANGLADESHI PANTRY
+                            </span>
+                            <h5 class="font-serif-editorial fw-bold og-ink mb-2">Honey, Gur, Red Sugar &amp; Nuts</h5>
+                            <p class="og-muted small mb-3" style="line-height: 1.55;">
+                                Unrefined mineral-rich <strong>Lal Chini (লাল চিনি)</strong>, Rajshahi <strong>Patali Khejur Gur</strong>, raw <strong>Sundarban Honey</strong>, and crisp <strong>Almonds &amp; Cashews</strong>.
+                            </p>
+                            <div class="d-flex flex-wrap gap-1.5 mb-3">
+                                <a href="{% url 'product_list' %}?category=raw-wild-honey" class="badge rounded-pill text-decoration-none px-2.5 py-1.5" style="background: var(--og-amber-soft); color: var(--og-amber);">Wild Honey</a>
+                                <a href="{% url 'product_list' %}?q=Gur" class="badge rounded-pill text-decoration-none px-2.5 py-1.5" style="background: var(--og-earth-soft); color: var(--og-earth);">Khejur Gur</a>
+                                <a href="{% url 'product_list' %}?q=Sugar" class="badge rounded-pill text-decoration-none px-2.5 py-1.5" style="background: var(--og-amber-soft); color: var(--og-amber);">Red Sugar</a>
+                                <a href="{% url 'product_list' %}?category=premium-dry-fruits-nuts" class="badge rounded-pill text-decoration-none px-2.5 py-1.5" style="background: var(--og-green-soft); color: var(--og-green);">Almonds &amp; Dates</a>
+                            </div>
+                        </div>
+                        <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-og-gold w-100 justify-content-center py-2">
+                            <span>Shop Sweeteners &amp; Nuts</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 3: Dhaka Delivery Slot & Family Bazar Planner -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="og-spotlight-card">
+                        <div>
+                            <span class="badge rounded-pill px-2.5 py-1 fw-bold mb-2" style="background: var(--og-green-soft); color: var(--og-green); font-size: 0.68rem;">
+                                <i class="bi bi-broadcast me-1"></i>DHAKA FRESH DISPATCH
+                            </span>
+                            <div class="fw-bold og-ink small mb-2">Delivery Slot: <span class="current-delivery-slot-text" style="color: var(--og-green);">Today 4–7 PM</span></div>
+
+                            <div class="p-2.5 rounded-3 mb-3" style="background: var(--og-tint); border: 1px solid var(--og-rule);">
+                                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                    <span class="fw-bold small og-ink"><i class="bi bi-calculator me-1" style="color: var(--og-green);"></i>Family Bazar</span>
+                                    <select id="bazarFamilySize" class="form-select form-select-sm w-auto py-0 px-2" aria-label="Household size" style="font-size: 0.72rem; background: var(--og-paper); color: var(--og-ink); border-color: var(--og-rule);">
+                                        <option value="2">2 Members</option>
+                                        <option value="4" selected>4 Members</option>
+                                        <option value="6">6+ Members</option>
+                                    </select>
+                                </div>
+                                <p class="og-muted mb-1" style="font-size: 0.73rem; line-height: 1.38;" id="bazarEstimateSummary">
+                                    2L Mustard Oil &bull; 10Kg Rice &bull; 500g Khejur Gur &amp; Wild Honey &bull; 500g Nuts
+                                </p>
+                                <div class="fw-bold" style="color: var(--og-green); font-size: 0.78rem;" id="bazarEstimateTotal">Est. Monthly Pantry: ৳3,450 / mo</div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-og-outline w-100 justify-content-center py-2" data-bs-toggle="modal" data-bs-target="#deliverySlotModal">
+                            <i class="bi bi-clock-history"></i> Schedule Delivery
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- SECTION 4: DAILY PANTRY ESSENTIALS + INTERACTIVE TABS  -->
+    <!-- ====================================================== -->
+    <section id="pantry-explorer" class="py-5">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-3">
+                <div>
+                    <span class="og-kicker mb-1">CURATED DAILY INVENTORY</span>
+                    <h2 class="og-heading mb-1">Daily Pantry Essentials</h2>
+                    <p class="og-muted small mb-0">Filter by aisle — raw forest honey, red sugar, mustard oil, unpolished rice &amp; hand-ground turmeric.</p>
+                </div>
+                <a href="{% url 'product_list' %}?theme=grocery_organic" class="btn btn-og-solid btn-sm mt-3 mt-md-0">
+                    Browse All Products <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Clean Horizontal Pill Filter Bar -->
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-2" id="pantryTabPills">
+                <button type="button" class="grocery-tab-pill active" data-pantry-filter="all">All Pantry Staples</button>
+                <button type="button" class="grocery-tab-pill" data-pantry-filter="raw-wild-honey">Raw Honey &amp; Gur</button>
+                <button type="button" class="grocery-tab-pill" data-pantry-filter="premium-dry-fruits-nuts">Nuts &amp; Dates</button>
+                <button type="button" class="grocery-tab-pill" data-pantry-filter="cold-pressed-mustard-oils">Mustard Oil &amp; Ghee</button>
+                <button type="button" class="grocery-tab-pill" data-pantry-filter="aromatic-rice-grains">Chinigura Rice &amp; Daal</button>
+                <button type="button" class="grocery-tab-pill" data-pantry-filter="whole-ground-spices">Pure Hand Spices</button>
+                <button type="button" class="grocery-tab-pill" data-pantry-filter="fresh-farm-vegetables">Fresh Farm Produce</button>
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4" id="pantryEssentialsGrid">
+                {% for product in pantry_essentials|slice:":8" %}
+                    <div class="col grocery-pantry-item" data-cat-slug="{{ product.category.slug|default:'general' }}">
+                        {% include 'themes/organic-grocery/product_card.html' with product=product %}
+                    </div>
+                {% empty %}
+                    {% for product in latest_products|slice:":8" %}
+                        <div class="col grocery-pantry-item" data-cat-slug="{{ product.category.slug|default:'general' }}">
+                            {% include 'themes/organic-grocery/product_card.html' with product=product %}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- SECTION 5: BESTSELLING ORGANIC HARVEST                 -->
+    <!-- ====================================================== -->
+    <section class="grocery-bestsellers-section py-5 og-sage-band">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
+                <div>
+                    <span class="og-kicker mb-1"><i class="bi bi-trophy-fill" style="color: #eab308;"></i> COMMUNITY TOP PICKS</span>
+                    <h2 class="og-heading mb-1">Bestselling Organic Harvest</h2>
                     <p class="og-muted small mb-0">Ordered weekly by 24,000+ Bangladeshi homes across Dhaka &amp; Chattogram.</p>
                 </div>
                 <a href="{% url 'product_list' %}?theme=grocery_organic&sort=rating" class="fw-bold text-decoration-none small mt-2 mt-md-0" style="color: var(--og-green);">See All Bestsellers <i class="bi bi-arrow-right"></i></a>
             </div>
 
             <div class="row g-4 align-items-stretch">
-                <!-- Left Tall Feature Card: #1 Harvest Champion -->
                 <div class="col-lg-4">
                     {% with hero_best=grocery_bestsellers.0|default:best_sellers.0 %}
-                    <div class="og-featured-hero-pick">
+                    <div class="og-featured-hero-pick shadow-xs">
                         <div>
-                            <span class="badge rounded-pill px-3 py-1 fw-bold mb-3" style="background: #1b7a3d; color: #fff; font-size: 0.7rem;">#1 HOUSEHOLD FAVORITE</span>
+                            <span class="badge rounded-pill px-3 py-1 fw-bold mb-3" style="background: #1e7a32; color: #fff; font-size: 0.7rem;">#1 HOUSEHOLD FAVORITE</span>
                             {% if hero_best %}
                                 <div class="rounded-4 bg-white border p-4 text-center mb-3 d-flex align-items-center justify-content-center" style="min-height: 220px; border-color: var(--og-rule) !important;">
                                     {% if hero_best.image %}
                                         <img src="{{ hero_best.image.url }}" alt="{{ hero_best.name }}" class="img-fluid" style="max-height: 185px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                                        <i class="bi bi-award-fill display-3 text-success" style="display:none;"></i>
+                                        <i class="bi bi-award-fill display-3" style="display:none; color: var(--og-green);"></i>
                                     {% else %}
-                                        <i class="bi bi-award-fill display-3 text-success"></i>
+                                        <i class="bi bi-award-fill display-3" style="color: var(--og-green);"></i>
                                     {% endif %}
                                 </div>
                                 <div class="fw-bold text-uppercase small mb-1" style="color: var(--og-green); font-size: 0.7rem;">
@@ -1064,7 +1283,7 @@
                                     <span class="fs-3 fw-bold" style="color: var(--og-green);">৳{{ hero_best.effective_price }}</span>
                                     <small class="og-muted ms-1">{{ hero_best|grocery_unit_price }}</small>
                                 </div>
-                                <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1">Fresh Stock</span>
+                                <span class="badge rounded-pill px-2.5 py-1" style="background: var(--og-green-soft); color: var(--og-green);">Fresh Stock</span>
                             </div>
                             <form action="{% url 'add_to_cart' hero_best.pk %}" method="post" class="grocery-add-basket-form">
                                 {% csrf_token %}
@@ -1079,13 +1298,12 @@
                     {% endwith %}
                 </div>
 
-                <!-- Right Clean Grid Rendering All Bestselling Products -->
                 <div class="col-lg-8">
                     <div class="row row-cols-2 row-cols-md-3 g-3">
-                        {% for product in grocery_bestsellers|slice:":8" %}
+                        {% for product in grocery_bestsellers|slice:":6" %}
                             <div class="col">{% include 'themes/organic-grocery/product_card.html' with product=product %}</div>
                         {% empty %}
-                            {% for product in best_sellers|slice:":8" %}
+                            {% for product in best_sellers|slice:":6" %}
                                 <div class="col">{% include 'themes/organic-grocery/product_card.html' with product=product %}</div>
                             {% endfor %}
                         {% endfor %}
@@ -1096,19 +1314,19 @@
     </section>
 
     <!-- ====================================================== -->
-    <!-- SECTION 6: DEEP FOREST EDITORIAL ORIGIN CHRONICLE      -->
+    <!-- SECTION 6: SUNLIT BOTANICAL FARM PROVENANCE STORY      -->
     <!-- ====================================================== -->
     <section id="origin-story-section" class="og-origin-band py-5">
         <div class="container py-2">
             <div class="row g-4 align-items-center">
                 <div class="col-lg-6">
-                    <span class="fw-bold text-uppercase d-block mb-2 text-warning" style="font-size: 0.72rem; letter-spacing: 0.14em;">
-                        <i class="bi bi-geo-alt-fill me-1"></i> FIELD PROVENANCE &bull; ORIGIN STORY
+                    <span class="og-kicker mb-2">
+                        <i class="bi bi-geo-alt-fill"></i> FIELD PROVENANCE &bull; ORIGIN STORY
                     </span>
-                    <h2 class="font-serif-editorial fw-bold text-white mb-3" style="font-size: clamp(1.85rem, 3vw, 2.55rem); line-height: 1.15;">
+                    <h2 class="font-serif-editorial fw-bold og-ink mb-3" style="font-size: clamp(1.85rem, 3vw, 2.55rem); line-height: 1.15;">
                         From Mindful Farmers to Your Table
                     </h2>
-                    <p class="mb-4" style="color: #bfd1c4; font-size: 0.95rem; line-height: 1.65;">
+                    <p class="og-muted mb-4" style="font-size: 0.95rem; line-height: 1.65;">
                         &ldquo;True wholesome food needs no chemical disguise.&rdquo; Every jar of Sundarban honey, block of Rajshahi Patali Khejur Gur, bottle of Sirajganj mustard oil &amp; pouch of Dinajpur Lal Chini carries direct harvest traceability.
                     </p>
 
@@ -1116,25 +1334,25 @@
                         <div class="col-6">
                             <button type="button" class="origin-region-btn active w-100" data-region="sirajganj">
                                 01 &bull; Sirajganj Ghani Oil
-                                <small class="d-block fw-normal" style="color: #9cb4a3;">Cold-Pressed Maghi Mustard</small>
+                                <small class="d-block fw-normal">Cold-Pressed Maghi Mustard</small>
                             </button>
                         </div>
                         <div class="col-6">
                             <button type="button" class="origin-region-btn w-100" data-region="sundarbans">
                                 02 &bull; Sundarbans Honey
-                                <small class="d-block fw-normal" style="color: #9cb4a3;">Wild Mangrove Mowal Harvest</small>
+                                <small class="d-block fw-normal">Wild Mangrove Mowal Harvest</small>
                             </button>
                         </div>
                         <div class="col-6">
                             <button type="button" class="origin-region-btn w-100" data-region="dinajpur">
                                 03 &bull; Dinajpur Grains
-                                <small class="d-block fw-normal" style="color: #9cb4a3;">Chinigura &amp; Red Sugar</small>
+                                <small class="d-block fw-normal">Chinigura &amp; Red Sugar</small>
                             </button>
                         </div>
                         <div class="col-6">
                             <button type="button" class="origin-region-btn w-100" data-region="rajshahi">
                                 04 &bull; Rajshahi &amp; Jessore
-                                <small class="d-block fw-normal" style="color: #9cb4a3;">Patali Khejur Gur &amp; Nuts</small>
+                                <small class="d-block fw-normal">Patali Khejur Gur &amp; Nuts</small>
                             </button>
                         </div>
                     </div>
@@ -1142,27 +1360,27 @@
 
                 <div class="col-lg-6">
                     <div class="og-origin-dossier">
-                        <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold mb-3" id="originRegionBadge" style="font-size: 0.72rem;">
+                        <span class="badge rounded-pill px-3 py-1 fw-bold mb-3" id="originRegionBadge" style="background: #f6c431; color: #152418; font-size: 0.72rem;">
                             Sirajganj &amp; Natore Harvest
                         </span>
-                        <h3 class="font-serif-editorial fw-bold text-white mb-3" id="originRegionTitle">
+                        <h3 class="font-serif-editorial fw-bold og-ink mb-3" id="originRegionTitle">
                             Traditional Wooden Ghani Cold-Pressed Below 38°C
                         </h3>
-                        <p class="mb-4" id="originRegionDesc" style="color: #c8dad0; font-size: 0.92rem; line-height: 1.7;">
+                        <p class="og-muted mb-4" id="originRegionDesc" style="font-size: 0.92rem; line-height: 1.7;">
                             Local indigenous Maghi mustard seeds are slowly cold-pressed in traditional wooden ghanis without hexane solvents, preserving pungent natural aroma and vitamin E.
                         </p>
-                        <div class="row g-3 text-center pt-3 border-top" style="border-color: rgba(255,255,255,0.16) !important;">
+                        <div class="row g-3 text-center pt-3 og-hairline-t">
                             <div class="col-4">
-                                <div class="font-serif-editorial fw-bold fs-3 text-warning">140+</div>
-                                <div class="small" style="color: #9cb4a3;">Partner Farms</div>
+                                <div class="font-serif-editorial fw-bold fs-3" style="color: var(--og-green);">140+</div>
+                                <div class="small og-muted">Partner Farms</div>
                             </div>
                             <div class="col-4">
-                                <div class="font-serif-editorial fw-bold fs-3 text-warning">100%</div>
-                                <div class="small" style="color: #9cb4a3;">Lab-Verified Pure</div>
+                                <div class="font-serif-editorial fw-bold fs-3" style="color: var(--og-green);">100%</div>
+                                <div class="small og-muted">Lab-Verified Pure</div>
                             </div>
                             <div class="col-4">
-                                <div class="font-serif-editorial fw-bold fs-3 text-warning">0%</div>
-                                <div class="small" style="color: #9cb4a3;">Artificial Bleach</div>
+                                <div class="font-serif-editorial fw-bold fs-3" style="color: var(--og-amber);">0%</div>
+                                <div class="small og-muted">Artificial Bleach</div>
                             </div>
                         </div>
                     </div>
@@ -1179,10 +1397,10 @@
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 pb-3 og-hairline-b">
                 <div>
                     <span class="fw-bold text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.12em; color: var(--og-earth);">SMALL BATCH HARVEST</span>
-                    <h2 class="font-serif-editorial fw-bold og-ink mb-1" style="font-size: clamp(1.55rem, 2.5vw, 2.1rem);">Seasonal Harvest &amp; Small Batches</h2>
+                    <h2 class="og-heading mb-1">Seasonal Harvest &amp; Small Batches</h2>
                     <p class="og-muted small mb-0">Winter Khejur Gur, jumbo Medjool dates, crispy roasted nuts &amp; floral raw honey at peak harvest.</p>
                 </div>
-                <span class="badge rounded-pill px-3 py-2 text-white mt-2 mt-md-0" style="background: #a84824; font-size: 0.74rem;"><i class="bi bi-clock-history me-1"></i>Limited Harvest Stock</span>
+                <span class="badge rounded-pill px-3 py-2 mt-2 mt-md-0 fw-bold" style="background: var(--og-earth-soft); color: var(--og-earth); border: 1px solid rgba(184, 80, 38, 0.22); font-size: 0.74rem;"><i class="bi bi-clock-history me-1"></i>Limited Harvest Stock</span>
             </div>
 
             <div class="row row-cols-2 row-cols-md-4 g-3 g-md-4 mb-5">
@@ -1195,7 +1413,7 @@
                 {% endfor %}
             </div>
 
-            <!-- Partner Brand Ledger Row -->
+            <!-- Partner Brand Ledger Row (Unified Botanical Palette) -->
             <div class="pt-4 og-hairline-t">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
                     <span class="fw-bold text-uppercase og-muted" style="font-size: 0.72rem; letter-spacing: 0.1em;">Verified Bangladeshi Organic Brands</span>
@@ -1205,24 +1423,24 @@
                     <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=khaas-food" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1" style="color: var(--og-green);">Khaas Food</div><small class="og-muted">Oils, Gur &amp; Honey</small></a></div>
                     <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=chaldal-organic" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1" style="color: var(--og-amber);">Chaldal Organic</div><small class="og-muted">Nuts, Dates &amp; Rice</small></a></div>
                     <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=aarong-dairy" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1" style="color: var(--og-green);">Aarong Dairy</div><small class="og-muted">Golden Cow Ghee</small></a></div>
-                    <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=pran" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1 text-danger">PRAN Natural</div><small class="og-muted">Pink Salt &amp; Staples</small></a></div>
-                    <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=kazi-and-kazi" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1 text-success">Kazi &amp; Kazi</div><small class="og-muted">Organic Flush Tea</small></a></div>
-                    <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=aci-pure" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1 text-info">ACI Pure</div><small class="og-muted">Miniket &amp; Masala</small></a></div>
+                    <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=pran" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1" style="color: var(--og-earth);">PRAN Natural</div><small class="og-muted">Pink Salt &amp; Staples</small></a></div>
+                    <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=kazi-and-kazi" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1" style="color: var(--og-green);">Kazi &amp; Kazi</div><small class="og-muted">Organic Flush Tea</small></a></div>
+                    <div class="col"><a href="{% url 'product_list' %}?theme=grocery_organic&brand=aci-pure" class="og-brand-tile"><div class="fw-bold font-serif-editorial fs-6 mb-1" style="color: var(--og-ink);">ACI Pure</div><small class="og-muted">Miniket &amp; Masala</small></a></div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ====================================================== -->
-    <!-- SECTION 8: SPLIT WEEKLY HARVEST BOX + NEWSLETTER       -->
+    <!-- SECTION 8: WEEKLY HARVEST BOX + NEWSLETTER VOUCHER     -->
     <!-- ====================================================== -->
     <section id="weekly-harvest-box" class="pb-5">
         <div class="container">
-            <div class="og-box-panel shadow-xs mb-4">
+            <div class="og-box-panel mb-4">
                 <div class="row g-0">
                     <div class="col-lg-5 og-box-left d-flex flex-column justify-content-between">
                         <div>
-                            <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1 mb-3" style="font-size: 0.7rem;">WEEKLY HARVEST PASS</span>
+                            <span class="badge fw-bold rounded-pill px-3 py-1 mb-3" style="background: #f6c431; color: #152418; font-size: 0.7rem;">WEEKLY HARVEST PASS</span>
                             <h2 class="font-serif-editorial fw-bold text-white mb-2" style="font-size: clamp(1.6rem, 2.5vw, 2.1rem);">Fresh Farm Harvest Box Subscription</h2>
                             <p class="text-white opacity-90 small mb-4">
                                 সাপ্তাহিক তাজা সবজি ও অর্গানিক প্যান্ট্রি বক্স সাবস্ক্রিপশন — Save 15% on twice-weekly Dhaka delivery.
@@ -1247,7 +1465,7 @@
                         <div class="box-tier-chip active" onclick="selectHarvestBox('family', this)">
                             <div class="d-flex justify-content-between align-items-center gap-2">
                                 <div>
-                                    <div class="fw-bold og-ink">Standard Family Harvest Box (7–8 kg) <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">POPULAR</span></div>
+                                    <div class="fw-bold og-ink">Standard Family Harvest Box (7–8 kg) <span class="badge ms-1 fw-bold" style="background: #f6c431; color: #152418; font-size: 0.6rem;">POPULAR</span></div>
                                     <div class="small og-muted">5 Greens, 6 Cooking Veggies, 1kg Fruit &amp; Herbs</div>
                                 </div>
                                 <div class="text-end flex-shrink-0"><div class="fw-bold fs-5" style="color: var(--og-green);">৳850</div><div class="small og-muted">/ week</div></div>
@@ -1268,9 +1486,9 @@
             </div>
 
             <!-- Horizontal Editorial Welcome Gift Voucher Bar -->
-            <div class="p-4 rounded-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4" style="background: var(--og-paper); border: 1px solid var(--og-rule);">
+            <div class="p-4 rounded-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4" style="background: linear-gradient(135deg, var(--og-paper) 0%, var(--og-tint) 100%); border: 1px solid var(--og-rule);">
                 <div>
-                    <span class="fw-bold text-uppercase d-block mb-1" style="font-size: 0.68rem; letter-spacing: 0.12em; color: var(--og-green);">EXCLUSIVE FIRST BASKET OFFER</span>
+                    <span class="og-kicker mb-1">EXCLUSIVE FIRST BASKET OFFER</span>
                     <h4 class="font-serif-editorial fw-bold og-ink mb-1">Get ৳100 Off Your First Organic Order</h4>
                     <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
                         <span class="small og-muted">Tap to copy voucher:</span>
@@ -1278,16 +1496,16 @@
                             <span>HARVEST100</span>
                             <i class="bi bi-clipboard"></i>
                         </div>
-                        <small id="voucherFeedback" class="text-success fw-semibold" style="display: none;"><i class="bi bi-check-circle me-1"></i>Copied!</small>
+                        <small id="voucherFeedback" class="fw-semibold" style="display: none; color: var(--og-green);"><i class="bi bi-check-circle me-1"></i>Copied!</small>
                     </div>
                 </div>
 
                 <form style="min-width: 310px; max-width: 440px; width: 100%;" onsubmit="handleNewsletterSubmit(event, this)">
-                    <div class="input-group shadow-xs" style="border-radius: 9999px; overflow: hidden; border: 1.5px solid #1b7a3d;">
-                        <input type="email" class="form-control border-0 ps-4" placeholder="Enter your email for harvest drops..." required aria-label="Email Address" style="background: var(--og-bg); color: var(--og-ink);">
+                    <div class="input-group shadow-xs" style="border-radius: 9999px; overflow: hidden; border: 1.5px solid #1e7a32;">
+                        <input type="email" class="form-control border-0 ps-4" placeholder="Enter your email for harvest drops..." required aria-label="Email Address" style="background: var(--og-paper); color: var(--og-ink);">
                         <button class="btn btn-og-solid rounded-0 px-4" type="submit">Claim ৳100</button>
                     </div>
-                    <small id="homeNewsletterStatus" class="text-success fw-semibold d-none mt-2"><i class="bi bi-check-circle-fill me-1"></i>Welcome! Use HARVEST100 at checkout.</small>
+                    <small id="homeNewsletterStatus" class="fw-semibold d-none mt-2" style="color: var(--og-green);"><i class="bi bi-check-circle-fill me-1"></i>Welcome! Use HARVEST100 at checkout.</small>
                 </form>
             </div>
         </div>
@@ -1301,12 +1519,12 @@
         <div class="modal-content grocery-modal-card">
             <div class="modal-header border-bottom" style="border-color: var(--og-rule) !important;">
                 <h5 class="modal-title font-serif-editorial fw-bold og-ink" id="harvestBoxModalLabel">
-                    <i class="bi bi-box2-heart text-success me-2"></i>Weekly Harvest Box Pass
+                    <i class="bi bi-box2-heart me-2" style="color: var(--og-green);"></i>Weekly Harvest Box Pass
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <div class="p-3 rounded-3 mb-3" style="background: var(--og-green-soft); border: 1px solid rgba(27, 122, 61, 0.22);">
+                <div class="p-3 rounded-3 mb-3" style="background: var(--og-green-soft); border: 1px solid var(--og-green-border);">
                     <div class="fw-bold mb-1" style="color: var(--og-green);" id="modalBoxTitle">Standard Family Harvest Box (7-8 kg)</div>
                     <div class="og-muted small mb-2" id="modalBoxDesc">5 Greens, 6 Cooking Veggies, 1kg Fruit &amp; Herbs</div>
                     <div class="fs-4 fw-bold og-ink" id="modalBoxPrice">৳850 <span class="small fw-normal og-muted">/ week</span></div>
@@ -1334,8 +1552,8 @@
                     </select>
                 </div>
 
-                <div class="alert alert-warning py-2 px-3 small mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-gift-fill text-warning fs-5"></i>
+                <div class="p-2.5 px-3 rounded-3 small mb-0 d-flex align-items-center gap-2" style="background: var(--og-amber-soft); color: var(--og-amber); border: 1px solid rgba(246, 196, 49, 0.45);">
+                    <i class="bi bi-gift-fill fs-5"></i>
                     <span>Use voucher <strong>HARVEST100</strong> at checkout for ৳100 off your first week box!</span>
                 </div>
             </div>
@@ -1351,24 +1569,7 @@
 
 <script>
     (function() {
-        // Sync custom editorial chapter tabs with Bootstrap carousel slide transitions
-        var heroEl = document.getElementById('groceryHeroCarousel');
-        var chapterBtns = document.querySelectorAll('#ogChapterTabs .og-chapter-btn');
-        if (heroEl && chapterBtns.length) {
-            heroEl.addEventListener('slid.bs.carousel', function(ev) {
-                chapterBtns.forEach(function(btn, idx) {
-                    if (idx === ev.to) {
-                        btn.classList.add('active');
-                        btn.setAttribute('aria-current', 'true');
-                    } else {
-                        btn.classList.remove('active');
-                        btn.removeAttribute('aria-current');
-                    }
-                });
-            });
-        }
-
-        // Sticky Left Kitchen Pantry Index Live Filter
+        // Horizontal Kitchen Pantry Index Live Filter
         var tabBtns = document.querySelectorAll('#pantryTabPills .grocery-tab-pill');
         var pantryItems = document.querySelectorAll('#pantryEssentialsGrid .grocery-pantry-item');
         if (tabBtns.length && pantryItems.length) {
@@ -1394,7 +1595,7 @@
             });
         }
 
-        // Deep Forest Origin Story Region Chapters
+        // Botanical Provenance Origin Chapters
         var originData = {
             sirajganj: {
                 badge: 'Sirajganj & Natore Harvest',

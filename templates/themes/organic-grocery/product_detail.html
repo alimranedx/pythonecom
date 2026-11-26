@@ -9,31 +9,33 @@
 {% block extra_head %}
 <style>
     :root {
-        --gd-bg: #fcfbf8;
+        --gd-bg: #faf9f3;
         --gd-surface: #ffffff;
-        --gd-soft: #f4f8f2;
-        --gd-border: #e3ece0;
-        --gd-text: #142318;
-        --gd-muted: #556658;
-        --gd-forest: #1b7a3d;
-        --gd-forest-deep: #145c2d;
+        --gd-soft: #f2f6ee;
+        --gd-border: #dfe9d8;
+        --gd-text: #152418;
+        --gd-muted: #5a6b5d;
+        --gd-forest: #1e7a32;
+        --gd-forest-deep: #165e26;
         --gd-amber: #d97706;
-        --gd-pill-bg: #eef7f0;
-        --gd-pill-border: #cce3d2;
-        --gd-spice: #c25525;
+        --gd-gold: #f6c431;
+        --gd-pill-bg: #edf6ea;
+        --gd-pill-border: #d2e6cb;
+        --gd-spice: #c85528;
     }
     [data-bs-theme="dark"] {
-        --gd-bg: #0f1912 !important;
-        --gd-surface: #16241b !important;
-        --gd-soft: #1b2e22 !important;
-        --gd-border: #274030 !important;
-        --gd-text: #f3f7f2 !important;
-        --gd-muted: #a4b7a8 !important;
-        --gd-forest: #4ade80 !important;
-        --gd-forest-deep: #22c55e !important;
+        --gd-bg: #0c160f !important;
+        --gd-surface: #142218 !important;
+        --gd-soft: #192b1f !important;
+        --gd-border: #273e2d !important;
+        --gd-text: #f3f6ef !important;
+        --gd-muted: #9eb1a2 !important;
+        --gd-forest: #34d399 !important;
+        --gd-forest-deep: #10b981 !important;
         --gd-amber: #fbbf24 !important;
-        --gd-pill-bg: rgba(74, 222, 128, 0.14) !important;
-        --gd-pill-border: rgba(74, 222, 128, 0.28) !important;
+        --gd-gold: #fbbf24 !important;
+        --gd-pill-bg: rgba(52, 211, 153, 0.14) !important;
+        --gd-pill-border: rgba(52, 211, 153, 0.28) !important;
         --gd-spice: #fb923c !important;
     }
     body {
@@ -162,9 +164,9 @@
     .grocery-size-chip:hover,
     .grocery-size-chip.active {
         border-color: transparent;
-        background: #1b7a3d;
+        background: #1e7a32;
         color: #ffffff;
-        box-shadow: 0 3px 10px rgba(22, 48, 32, 0.22);
+        box-shadow: 0 3px 10px rgba(30, 122, 50, 0.24);
     }
 
     .grocery-stepper-box {
@@ -440,13 +442,13 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn flex-grow-1 fw-bold py-2.5 rounded-pill d-flex align-items-center justify-content-center gap-2 shadow-xs text-white" {% if product.stock <= 0 %}disabled{% endif %} style="background: #1b7a3d; border: none;">
+                        <button type="submit" class="btn flex-grow-1 fw-bold py-2.5 rounded-pill d-flex align-items-center justify-content-center gap-2 shadow-xs text-white" {% if product.stock <= 0 %}disabled{% endif %} style="background: #1e7a32; border: none;">
                             <i class="bi bi-basket2-fill fs-5"></i>
                             <span>Add to Grocery Basket</span>
                         </button>
 
-                        <button type="submit" name="buy_now" value="1" class="btn fw-bold py-2.5 px-3.5 rounded-pill d-flex align-items-center justify-content-center gap-1.5 shadow-xs" {% if product.stock <= 0 %}disabled{% endif %} style="background: var(--gd-soft); color: var(--gd-forest); border: 1.5px solid var(--gd-forest);">
-                            <i class="bi bi-lightning-charge-fill text-warning"></i>
+                        <button type="submit" name="buy_now" value="1" class="btn fw-bold py-2.5 px-3.5 rounded-pill d-flex align-items-center justify-content-center gap-1.5 shadow-xs" {% if product.stock <= 0 %}disabled{% endif %} style="background: #f6c431; color: #152418; border: 1.5px solid #f6c431;">
+                            <i class="bi bi-lightning-charge-fill"></i>
                             <span>Express Checkout</span>
                         </button>
                     </div>
@@ -584,7 +586,7 @@
                 <form action="{% url 'add_to_cart' product.pk %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="btn w-100 fw-bold py-2.5 rounded-pill shadow-xs text-white" style="background: #1b7a3d; border: none;">
+                    <button type="submit" class="btn w-100 fw-bold py-2.5 rounded-pill shadow-xs text-white" style="background: #1e7a32; border: none;">
                         <i class="bi bi-basket2-fill me-1.5"></i> Add Pantry Bundle to Basket
                     </button>
                 </form>

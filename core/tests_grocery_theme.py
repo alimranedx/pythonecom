@@ -1057,3 +1057,40 @@ class CrossThemeIsolationAndFallbackRegressionTests(BaseGroceryThemeTestCase):
         # Grocery product in tech theme raises 404
         res_grocery_under_tech = self.client.get(f"/product/{self.product_mustard.pk}/")
         self.assertEqual(res_grocery_under_tech.status_code, 404)
+
+
+class OrganicPaletteAndBackgroundTests(BaseGroceryThemeTestCase):
+    """
+    8. Tests verifying the sunlit Natura-inspired organic background and color combination
+    tokens across base layout, homepage hero, floating badges, trust strip, and dark mode.
+    """
+
+    def test_organic_theme_registry_tokens(self):
+        """Organic theme registry exposes sunlit cream, leaf green, and honey gold tokens."""
+        theme = theme_registry.get("organic-grocery")
+        tokens = theme.design_tokens
+        self.assertEqual(tokens.get("primary"), "#1e7a32")
+        self.assertEqual(tokens.get("primary_hover"), "#165e26")
+        self.assertEqual(tokens.get("primary_light"), "#edf6ea")
+        self.assertEqual(tokens.get("accent"), "#f6c431")
+        self.assertEqual(tokens.get("hero_gradient_start"), "#faf9f3")
+        self.assertEqual(tokens.get("hero_gradient_end"), "#f2f5eb")
+
+    def test_organic_storefront_background_and_natura_layout_markers(self):
+        """Base layout and homepage apply warm cream background, forest green/gold CTAs, floating cards, and trust strip."""
+        res = self.client.get("/")
+        self.assertEqual(res.status_code, 200)
+        html = res.content.decode("utf-8")
+
+        self.assertIn('data-store-theme="organic-grocery"', html)
+        self.assertIn("#faf9f3", html)
+        self.assertIn("#f2f6ee", html)
+        self.assertIn("#1e7a32", html)
+        self.assertIn("#f6c431", html)
+        self.assertIn("#0c160f", html)
+        self.assertIn("natura-hero-wrapper", html)
+        self.assertIn("natura-float-card", html)
+        self.assertIn("natura-trust-strip", html)
+        self.assertIn("btn-og-solid", html)
+        self.assertIn("btn-og-gold", html)
+

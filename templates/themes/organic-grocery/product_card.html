@@ -4,41 +4,41 @@
 <style>
     .grocery-product-card {
         --gc-bg: #ffffff;
-        --gc-img-bg: #f4f7f1;
-        --gc-border: #dde5d8;
-        --gc-title: #132217;
-        --gc-muted: #526356;
-        --gc-brand: #1b7a3d;
-        --gc-price: #1b7a3d;
-        --gc-chip-bg: #f1f5ed;
-        --gc-chip-border: #d5dfd0;
-        --gc-chip-text: #354739;
-        --gc-stepper-bg: #f4f7f1;
-        --gc-stepper-border: #cde0d1;
+        --gc-img-bg: radial-gradient(circle at 50% 45%, #fcfdf9 0%, #f1f6ec 100%);
+        --gc-border: #dfe9d8;
+        --gc-title: #152418;
+        --gc-muted: #5a6b5d;
+        --gc-brand: #1e7a32;
+        --gc-price: #1e7a32;
+        --gc-chip-bg: #edf6ea;
+        --gc-chip-border: #d2e6cb;
+        --gc-chip-text: #27452e;
+        --gc-stepper-bg: #f2f6ee;
+        --gc-stepper-border: #cde0c9;
         background: var(--gc-bg) !important;
         border: 1px solid var(--gc-border) !important;
-        border-radius: 16px !important;
-        box-shadow: none !important;
+        border-radius: 18px !important;
+        box-shadow: 0 4px 16px -12px rgba(21, 36, 24, 0.14) !important;
         overflow: hidden;
-        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.24s ease, box-shadow 0.24s ease;
     }
     [data-bs-theme="dark"] .grocery-product-card {
-        --gc-bg: #132018 !important;
-        --gc-img-bg: #17271d !important;
-        --gc-border: #253b2d !important;
-        --gc-title: #f1f6f0 !important;
-        --gc-muted: #9eb1a3 !important;
-        --gc-brand: #4ade80 !important;
-        --gc-price: #4ade80 !important;
-        --gc-chip-bg: #1b2e22 !important;
+        --gc-bg: #142218 !important;
+        --gc-img-bg: radial-gradient(circle at 50% 45%, #1c3022 0%, #132118 100%) !important;
+        --gc-border: #273e2d !important;
+        --gc-title: #f3f6ef !important;
+        --gc-muted: #9eb1a2 !important;
+        --gc-brand: #34d399 !important;
+        --gc-price: #34d399 !important;
+        --gc-chip-bg: #1b2d20 !important;
         --gc-chip-border: #2c4a38 !important;
-        --gc-chip-text: #d6dfd7 !important;
-        --gc-stepper-bg: #17271d !important;
+        --gc-chip-text: #d7e4d9 !important;
+        --gc-stepper-bg: #192b1f !important;
         --gc-stepper-border: #2c4a38 !important;
     }
     .grocery-product-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 26px -14px rgba(19, 34, 23, 0.22) !important;
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px -12px rgba(30, 122, 50, 0.2) !important;
         border-color: var(--gc-brand) !important;
     }
     .grocery-product-card .grocery-card-img-wrapper {
@@ -50,16 +50,15 @@
         justify-content: center;
         overflow: hidden;
         padding: 1rem;
-        margin: 0;
-        border-bottom: 1px solid var(--gc-border);
-        border-radius: 0;
+        margin: 0.45rem 0.45rem 0;
+        border-radius: 14px;
         position: relative;
     }
     .grocery-product-card .grocery-card-img {
-        max-height: 168px;
+        max-height: 164px;
         width: auto;
         object-fit: contain;
-        filter: drop-shadow(0 8px 14px rgba(20, 35, 24, 0.08));
+        filter: drop-shadow(0 8px 14px rgba(21, 36, 24, 0.09));
         transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .grocery-product-card:hover .grocery-card-img { transform: scale(1.06); }
@@ -86,50 +85,50 @@
     .grocery-product-card .grocery-basket-btn {
         height: 36px;
         font-size: 0.8rem;
-        background: #1b7a3d;
+        background: #1e7a32;
         color: #ffffff;
         border: none;
         border-radius: 9999px;
         transition: all 0.22s ease;
     }
     .grocery-product-card .grocery-basket-btn:hover {
-        background: #145c2d;
-        box-shadow: 0 4px 12px rgba(27, 122, 61, 0.28);
+        background: #165e26;
+        box-shadow: 0 6px 14px rgba(30, 122, 50, 0.3);
     }
 </style>
 
 <!-- Organic Food & Daily Grocery Boutique Product Card -->
-<div class="card h-100 product-card grocery-product-card shadow-xs position-relative">
+<div class="card h-100 product-card grocery-product-card position-relative">
     <div class="text-center grocery-card-img-wrapper">
         <!-- Top Left Badges -->
         <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style="z-index: 3;">
             {% if product.has_discount %}
-                <span class="badge shadow-xs fw-bold px-2 py-0.5 rounded-pill" style="background: #c25525; color: #ffffff; font-size: 0.67rem;">
+                <span class="badge shadow-xs fw-bold px-2 py-0.5 rounded-pill" style="background: #c85528; color: #ffffff; font-size: 0.67rem;">
                     -{{ product.discount_percent }}%
                 </span>
             {% endif %}
 
             {% if "oil" in product.name|lower or "ghee" in product.name|lower %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #1b7a3d; color: #ffffff; font-size: 0.63rem;">
-                    <i class="bi bi-droplet-fill text-warning me-0.5"></i>Cold Pressed
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #1e7a32; color: #ffffff; font-size: 0.63rem;">
+                    <i class="bi bi-droplet-fill me-0.5" style="color: #f6c431;"></i>Cold Pressed
                 </span>
             {% elif "honey" in product.name|lower %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #b45309; color: #ffffff; font-size: 0.63rem;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #f6c431; color: #152418; font-size: 0.63rem;">
                     <i class="bi bi-flower2 me-0.5"></i>100% Pure Raw
                 </span>
             {% elif product.is_featured %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #1b7a3d; color: #ffffff; font-size: 0.63rem;">
-                    <i class="bi bi-patch-check-fill text-warning me-0.5"></i>100% Pure
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: #1e7a32; color: #ffffff; font-size: 0.63rem;">
+                    <i class="bi bi-patch-check-fill me-0.5" style="color: #f6c431;"></i>100% Pure
                 </span>
             {% else %}
-                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: rgba(255, 255, 255, 0.94); color: #1b7a3d; border: 1px solid #cce3d2; font-size: 0.62rem;">
+                <span class="badge shadow-xs fw-semibold px-2 py-0.5 rounded-pill" style="background: rgba(255, 255, 255, 0.94); color: #1e7a32; border: 1px solid #d2e6cb; font-size: 0.62rem;">
                     <i class="bi bi-shield-check me-0.5"></i>Chemical Free
                 </span>
             {% endif %}
         </div>
 
         <!-- Wishlist Button -->
-        <button type="button" class="btn btn-sm rounded-circle shadow-xs position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center grocery-wishlist-btn" style="width: 32px; height: 32px; z-index: 5; background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(215, 205, 185, 0.9);" onclick="toggleWishlist({{ product.pk }}, this)" title="Add to Grocery Wishlist" aria-label="Add to Wishlist">
+        <button type="button" class="btn btn-sm rounded-circle shadow-xs position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center grocery-wishlist-btn" style="width: 32px; height: 32px; z-index: 5; background: rgba(255, 255, 255, 0.94); border: 1px solid #dfe9d8;" onclick="toggleWishlist({{ product.pk }}, this)" title="Add to Grocery Wishlist" aria-label="Add to Wishlist">
             {% if product.pk in user_wishlist_ids %}
                 <i class="bi bi-heart-fill text-danger fs-6"></i>
             {% else %}
@@ -164,8 +163,8 @@
 
         <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 0.71rem;">
             {% if product.stock > 0 %}
-                <span class="text-success fw-semibold d-inline-flex align-items-center gap-1">
-                    <span class="rounded-circle d-inline-block bg-success" style="width: 6px; height: 6px;"></span>
+                <span class="fw-semibold d-inline-flex align-items-center gap-1" style="color: var(--gc-brand);">
+                    <span class="rounded-circle d-inline-block" style="width: 6px; height: 6px; background: var(--gc-brand);"></span>
                     In Stock - Fresh Batch
                 </span>
             {% else %}
@@ -176,7 +175,7 @@
             {% endif %}
 
             <div class="d-inline-flex align-items-center gap-1" style="color: var(--gc-muted);">
-                <span class="text-warning"><i class="bi bi-star-fill" style="font-size: 0.68rem;"></i></span>
+                <span style="color: #eab308;"><i class="bi bi-star-fill" style="font-size: 0.68rem;"></i></span>
                 <span class="fw-bold" style="color: var(--gc-title);">{% if product.avg_rating %}{{ product.avg_rating|floatformat:1 }}{% else %}4.9{% endif %}</span>
                 <span>({% if product.reviews_count %}{{ product.reviews_count }}{% elif product.reviews.count %}{{ product.reviews.count }}{% else %}88{% endif %})</span>
             </div>
