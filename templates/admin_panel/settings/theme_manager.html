@@ -187,7 +187,7 @@
                     <span class="theme-version-pill shadow-sm">v{{ item.version }}</span>
 
                     <!-- Theme SVG/Image Preview -->
-                    <img src="{{ item.preview_image_url }}" alt="{{ item.name }} Mockup" onerror="this.onerror=null; this.src='/static/images/themes/previews/{{ item.id }}.svg';">
+                    <img src="{{ item.preview_image_url }}?v=2" alt="{{ item.name }} Mockup" onerror="this.onerror=null; this.src='/static/images/themes/previews/{{ item.id }}.svg?v=2';">
 
                     <!-- Hover Quick Preview Overlay -->
                     <div class="theme-preview-overlay">
